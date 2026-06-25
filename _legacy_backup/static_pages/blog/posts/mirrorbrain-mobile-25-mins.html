@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MirrorBrain Mobile: A Sovereign Phone in 25 Minutes — Active Mirror</title>
+    <meta name="description"
+        content="Active Mirror blog: How we built a sovereign AI phone launcher in 25 minutes using the Orchestrator Model.">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="" style="height: 28px; filter: invert(1);">Active
+                Mirror</a>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+    <article class="section" style="padding-top: 60px;">
+        <div class="container" style="max-width: 700px;">
+            <div style="color: var(--accent-color); font-family: monospace; margin-bottom: 16px;">Jan 2, 2026 ·
+                Velocity</div>
+            <h1 style="margin-bottom: 32px; font-size: 2.5rem;">MirrorBrain Mobile: A Sovereign Phone in 25 Minutes</h1>
+            <p class="text-secondary" style="font-size: 1.2rem; margin-bottom: 40px;">When your identity, memory, and
+                governance are handled by the kernel, building a new interface is just "UI over Logic".</p>
+
+            <div class="content" style="line-height: 1.8; color: var(--text-secondary);">
+                <p>Yesterday, we released <strong>MirrorBrain Mobile v2.0</strong>, a React Native launcher that turns a
+                    Pixel 9 into a sovereign AI node. It features an on-device Llama 3.2 model (via ExecuTorch), direct
+                    vault sync (Syncthing), and a voice interface (Whisper).</p>
+
+                <p>The build time was <strong>25 minutes</strong>.</p>
+
+                <p>This claim usually elicits skepticism. "Mobile apps take weeks," people say. "Auth, backend, API
+                    design, state management, offline sync — you can't build that in 25 minutes."</p>
+
+                <p>They are right. You can't build the <em>stack</em> in 25 minutes. But we didn't build the stack. We
+                    just connected to it.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">The Kernel Advantage</h3>
+                <p>The reason most apps take weeks is that they reinvent the wheel. They build a new user database
+                    (Auth). They build a new API layer (Backend). They build a new storage schema (Database).</p>
+
+                <p>With Active Mirror, those problems are solved at the infrastructure level:</p>
+                <ul style="margin-bottom: 24px;">
+                    <li><strong>Identity:</strong> The <code>ami_active-mirror.json</code> file IS the user. No new auth
+                        system needed.</li>
+                    <li><strong>Memory:</strong> The MirrorDNA Vault IS the database. We just mount it.</li>
+                    <li><strong>Intelligence:</strong> The node (phone) already has an inference engine (ExecuTorch). We
+                        just prompt it.</li>
+                </ul>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">The Orchestrator Workflow
+                </h3>
+                <p>The 25-minute build wasn't a solo sprint. It was an orchestration. I defined the requirement in a
+                    task file:</p>
+                <div
+                    style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px; font-family: monospace; font-size: 0.9rem; margin-bottom: 24px;">
+                    Create a mobile launcher with 4 quadrants: NOW, ASK, VAULT, ACTIONS.<br>
+                    Use react-native-fs for vault access.<br>
+                    Use local Llama 3.2 for the ASK quadrant.
+                </div>
+                <p>My "Execution Twin" (Antigravity) scaffolded the React Native app, installed the dependencies, and
+                    wrote the components. My "Reflection Twin" (Claude) verified the architecture against our security
+                    constraints (no open ports, data stays local).</p>
+
+                <p>I acted as the conductor, reviewing the code, installing the APK, and validating the feel. 25 minutes
+                    later, it was my daily driver.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">Sovereignty is Speed</h3>
+                <p>This proves a critical point about sovereign AI: <strong>Control is velocity.</strong> When you own
+                    the full stack—from the hardware to the kernel—you don't wait for API access. You don't read docs
+                    for a changed SDK. You just build.</p>
+
+                <p>MirrorBrain Mobile isn't a product we sell. It's a demo of what you can build when you stop renting
+                    your intelligence.</p>
+
+                <div style="margin-top: 48px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorBrain-Mobile"
+                        class="btn btn-primary">Check out the Repo →</a>
+                </div>
+            </div>
+        </div>
+    </article>
+    <footer style="border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 40px;">
+        <div class="container text-center">
+            <p class="text-secondary">© 2026 Active Mirror</p>
+        </div>
+    </footer>
+</body>
+
+</html>

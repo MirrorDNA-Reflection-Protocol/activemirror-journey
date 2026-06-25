@@ -1,0 +1,16 @@
+{
+    "name": "MirrorMesh — Sovereign AI",
+    "short_name": "Mirror",
+    "description": "AI that runs in your browser. No cloud. No tracking. Yours.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#10b981",
+    "icons": [
+        {
+            "src": "/assets/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

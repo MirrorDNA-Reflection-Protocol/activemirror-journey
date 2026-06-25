@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Acknowledgments — Active Mirror</title>
+    <link rel="canonical" href="https://activemirror.ai/security-acknowledgments/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Security researchers who have helped improve Active Mirror security.">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror"
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="padding: 120px 0 60px;">
+        <div class="container">
+            <p class="text-accent"
+                style="margin-bottom: 16px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;">
+                Security</p>
+            <h1>Security Acknowledgments</h1>
+            <p class="text-secondary">Researchers who have helped improve Active Mirror security.</p>
+        </div>
+    </section>
+
+    <div class="container" style="max-width: 800px; padding-bottom: 80px;">
+        <section>
+            <p style="color: var(--text-secondary); margin-bottom: 32px;">
+                We thank the following individuals for responsibly disclosing security issues:
+            </p>
+
+            <div
+                style="padding: 48px; text-align: center; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.02);">
+                <p style="color: var(--text-muted); font-style: italic; margin-bottom: 16px;">
+                    No acknowledgments yet. Be the first!
+                </p>
+                <p style="color: var(--text-secondary);">
+                    Found a vulnerability? Report it to
+                    <a href="mailto:paul@activemirror.ai" class="text-accent">paul@activemirror.ai</a>
+                </p>
+            </div>
+
+            <div style="margin-top: 48px; padding: 24px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="margin-bottom: 16px;">Responsible Disclosure Policy</h3>
+                <ul style="color: var(--text-secondary); line-height: 1.8;">
+                    <li>We ask that you give us reasonable time to fix issues before public disclosure</li>
+                    <li>We will acknowledge your contribution (if you wish) on this page</li>
+                    <li>We do not currently offer a bug bounty program</li>
+                    <li>Please include steps to reproduce any vulnerability you report</li>
+                </ul>
+                <p style="color: var(--text-muted); margin-top: 16px; font-size: 0.9rem;">
+                    See our <a href="/.well-known/security.txt" class="text-accent">security.txt</a> for contact
+                    details.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4><img src="/assets/logo.png" alt=""
+                            style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                        Mirror</h4>
+                    <p>Built by Paul Desai<br>N1 Intelligence (OPC) Pvt Ltd<br>Goa, India</p>
+                </div>
+                <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            </div>
+            <div class="copyright">
+                © 2025-2026 N1 Intelligence. Open source under MIT.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    </script>
+</body>
+
+</html>

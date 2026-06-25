@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live AI Behavioral Metrics — Active Mirror</title>
+    <meta name="description" content="Real-time behavioral integrity metrics for an AI agent doing real work. Updated each session.">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080808;
+            --surface: #0f0f0f;
+            --border: #1a1a1a;
+            --text: #e5e5e5;
+            --muted: #525252;
+            --accent: #6366f1;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --green: #10b981;
+            --cyan: #06b6d4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+        nav { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2rem; }
+        nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+        nav a:hover { color: var(--text); }
+        .nav-logo { color: var(--text); font-weight: 600; font-size: 1rem; }
+
+        .header { padding: 3rem 2rem 2rem; max-width: 900px; margin: 0 auto; }
+        .header-tag { color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header-sub { color: var(--muted); font-size: 0.95rem; }
+
+        .main { max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+        /* Live indicator */
+        .live-bar {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+            margin-bottom: 2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+        }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .live-label { color: var(--green); font-weight: 500; }
+        .live-ts { color: var(--muted); margin-left: auto; }
+
+        /* Metric grid */
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        @media(max-width:640px){ .metrics-grid { grid-template-columns: 1fr; } }
+
+        .metric-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.5rem; position: relative; overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .metric-card.risk { border-color: rgba(239,68,68,0.4); }
+        .metric-card.watch { border-color: rgba(245,158,11,0.35); }
+        .metric-card.ok { border-color: rgba(99,102,241,0.35); }
+        .metric-card.good { border-color: rgba(16,185,129,0.35); }
+        .metric-card.risk::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--red); animation: blink 1.5s infinite; }
+        .metric-card.watch::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--yellow); }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+        .metric-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .metric-value.risk { color: var(--red); }
+        .metric-value.watch { color: var(--yellow); }
+        .metric-value.ok { color: #818cf8; }
+        .metric-value.good { color: var(--green); }
+        .metric-grade { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 20px; margin-bottom: 0.75rem; font-weight: 500; }
+        .grade-risk { background: rgba(239,68,68,0.15); color: var(--red); }
+        .grade-watch { background: rgba(245,158,11,0.15); color: var(--yellow); }
+        .grade-ok { background: rgba(99,102,241,0.15); color: #818cf8; }
+        .grade-good { background: rgba(16,185,129,0.15); color: var(--green); }
+        .metric-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+        .metric-target { font-family: 'JetBrains Mono', monospace; color: #333; font-size: 0.75rem; margin-top: 0.5rem; }
+
+        /* Wide card for II */
+        .metric-card.wide { grid-column: 1 / -1; display: flex; align-items: center; gap: 2rem; padding: 1.75rem 2rem; }
+        .wide-main { flex: 0 0 auto; }
+        .wide-bar { flex: 1; }
+        .bar-track { background: #1a1a1a; border-radius: 4px; height: 6px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+        /* Interpretation */
+        .interpretation {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.5rem; margin-bottom: 2rem;
+        }
+        .interpretation-label { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .interpretation p { color: #a3a3a3; font-size: 0.9rem; line-height: 1.7; }
+
+        /* Schema */
+        .schema {
+            background: #050505; border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.5rem; margin-bottom: 2rem;
+        }
+        .schema-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+        pre { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #737373; line-height: 1.7; overflow-x: auto; }
+        .k { color: #818cf8; } .v { color: #4ade80; } .s { color: #fb923c; } .c { color: #404040; }
+
+        /* Footer */
+        footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.85rem; }
+        footer a { color: var(--muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+
+        .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+        .badge-label { color: var(--muted); }
+        .badge-value { font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">Active Mirror</a>
+    <a href="/governance">Governance</a>
+    <a href="/blog/">Blog</a>
+    <a href="https://github.com/MirrorDNA-Reflection-Protocol/ai-behavioral-governance" target="_blank">Open Standard</a>
+</nav>
+
+<div class="header">
+    <div class="header-tag">Live · Updated each session</div>
+    <h1>AI Behavioral Metrics</h1>
+    <p class="header-sub">Real numbers from a real agent doing real work. <a href="/blog/posts/2026-02-27-i-gave-my-ai-an-integrity-score.html" style="color: var(--accent);">Read the methodology →</a></p>
+</div>
+
+<div class="main">
+
+    <div class="live-bar">
+        <div class="live-dot" id="live-dot"></div>
+        <span class="live-label">LIVE</span>
+        <span style="color: var(--muted);">·</span>
+        <span id="session-count" style="color: var(--text);">–</span>
+        <span style="color: var(--muted);">sessions ·</span>
+        <span id="pattern-count" style="color: var(--text);">–</span>
+        <span style="color: var(--muted);">patterns tracked</span>
+        <span class="live-ts" id="gen-time">–</span>
+    </div>
+
+    <div class="metrics-grid" id="metrics-grid">
+        <!-- Populated by JS -->
+        <div class="metric-card wide" style="opacity:0.3">
+            <div class="wide-main">
+                <div class="metric-label">Integrity Index</div>
+                <div class="metric-value">–</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="interpretation" id="interpretation" style="display:none">
+        <div class="interpretation-label">Interpretation</div>
+        <p id="interpretation-text"></p>
+    </div>
+
+    <div class="schema">
+        <div class="schema-label">Open Standard · hook_decisions.jsonl schema</div>
+        <pre>{
+  <span class="k">"hook"</span>: <span class="s">"string"</span>,       <span class="c">// rule that fired</span>
+  <span class="k">"decision"</span>: <span class="s">"allow|warn|deny|block"</span>,
+  <span class="k">"reason"</span>: <span class="s">"string"</span>,     <span class="c">// human-readable</span>
+  <span class="k">"target"</span>: <span class="s">"string"</span>,     <span class="c">// intercepted action</span>
+  <span class="k">"epoch"</span>: <span class="v">number</span>        <span class="c">// unix timestamp</span>
+}</pre>
+        <p style="margin-top: 1rem; font-size: 0.82rem; color: var(--muted);">
+            Implement this schema to make your agent's behavioral metrics comparable.
+            <a href="https://github.com/MirrorDNA-Reflection-Protocol/ai-behavioral-governance" target="_blank" style="color: var(--accent);">View the full spec →</a>
+        </p>
+    </div>
+
+</div>
+
+<footer>
+    <span>Active Mirror · <a href="https://activemirror.ai">activemirror.ai</a></span>
+    <div style="display:flex; gap: 1rem; align-items: center;">
+        <span class="badge">
+            <span class="badge-label">II</span>
+            <span class="badge-value" id="badge-ii" style="color: #ef4444;">–</span>
+        </span>
+        <a href="https://github.com/MirrorDNA-Reflection-Protocol/mirrordash" target="_blank">MirrorDash</a>
+        <a href="https://github.com/MirrorDNA-Reflection-Protocol/ai-behavioral-governance" target="_blank">Schema</a>
+    </div>
+</footer>
+
+<script>
+const GRADE_COLOR = {risk:'var(--red)',watch:'var(--yellow)',ok:'#818cf8',good:'var(--green)',drifting:'var(--yellow)',stable:'var(--green)',unstable:'var(--red)',high:'var(--red)',moderate:'var(--yellow)',fast:'var(--green)',slow:'var(--red)',low:'var(--red)',RISK:'var(--red)',WATCH:'var(--yellow)',CLEAN:'var(--green)'};
+const GRADE_CSS = {risk:'risk',watch:'watch',ok:'ok',good:'good',drifting:'watch',stable:'good',unstable:'risk',high:'risk',moderate:'watch',fast:'good',slow:'risk',low:'risk',RISK:'risk',WATCH:'watch',CLEAN:'good'};
+
+const DESCS = {
+    integrity_index: 'Composite 0–100 score. Penalizes writing without reading, gate violations, and recurring mistakes.',
+    drift_coefficient: 'σ/μ of session quality scores. Measures consistency over time.',
+    recurrence_rate: 'Fraction of mistakes that recur across sessions. The hardest metric to improve.',
+    verification_ratio: 'Reads ÷ (reads+writes). Measures "look before you leap" discipline.',
+    stability_half_life: 'Average sessions a recurring pattern persists before resolution. Lower is better.'
+};
+const TARGETS = {
+    integrity_index:'Target ≥ 80', drift_coefficient:'Target ≤ 0.15', recurrence_rate:'Target ≤ 0.20',
+    verification_ratio:'Target ≥ 0.67', stability_half_life:'Target ≤ 1.5 sessions'
+};
+const LABELS = {
+    integrity_index:'Integrity Index', drift_coefficient:'Drift Coefficient',
+    recurrence_rate:'Recurrence Rate', verification_ratio:'Verification Ratio',
+    stability_half_life:'Stability Half-Life'
+};
+
+async function loadMetrics() {
+    try {
+        const r = await fetch('/governance-metrics.json?t=' + Date.now());
+        const d = await r.json();
+        render(d);
+    } catch(e) {
+        document.getElementById('gen-time').textContent = 'unavailable';
+    }
+}
+
+function render(d) {
+    const ts = new Date(d.generated_at).toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
+    document.getElementById('gen-time').textContent = ts;
+    document.getElementById('session-count').textContent = d.session_count;
+    document.getElementById('pattern-count').textContent = d.pattern_count;
+
+    const m = d.metrics;
+    const grid = document.getElementById('metrics-grid');
+    grid.innerHTML = '';
+
+    // Integrity Index — wide card
+    const ii = m.integrity_index;
+    const iiGrade = GRADE_CSS[ii.grade] || 'ok';
+    const iiColor = GRADE_COLOR[ii.grade] || '#818cf8';
+    const iiPct = ii.value + '%';
+    document.getElementById('badge-ii').textContent = ii.value;
+    document.getElementById('badge-ii').style.color = iiColor;
+
+    const wideCard = document.createElement('div');
+    wideCard.className = `metric-card wide ${iiGrade}`;
+    wideCard.innerHTML = `
+        <div class="wide-main">
+            <div class="metric-label">Integrity Index</div>
+            <div class="metric-value ${iiGrade}">${ii.value}<span style="font-size:1.2rem;color:#333">/100</span></div>
+            <span class="metric-grade grade-${iiGrade}">${ii.grade}</span>
+        </div>
+        <div class="wide-bar">
+            <div class="bar-track"><div class="bar-fill" style="width:${iiPct}; background:${iiColor};"></div></div>
+            <p style="margin-top:0.75rem; color:#525252; font-size:0.82rem;">${DESCS.integrity_index}</p>
+            <p class="metric-target">${TARGETS.integrity_index}</p>
+        </div>`;
+    grid.appendChild(wideCard);
+
+    // Remaining four metrics
+    const order = ['drift_coefficient','recurrence_rate','verification_ratio','stability_half_life'];
+    for (const key of order) {
+        const metric = m[key];
+        const grade = GRADE_CSS[metric.grade] || 'ok';
+        const color = GRADE_COLOR[metric.grade] || '#818cf8';
+        const detail = metric.detail ? `<span style="color:#333; font-size:0.78rem; font-family:'JetBrains Mono',monospace;"> (${metric.detail})</span>` : '';
+        const valDisplay = key === 'stability_half_life' ? `${metric.value}<span style="font-size:1rem;color:#333">s</span>` : metric.value;
+        const card = document.createElement('div');
+        card.className = `metric-card ${grade}`;
+        card.innerHTML = `
+            <div class="metric-label">${LABELS[key]}</div>
+            <div class="metric-value ${grade}" style="font-size:2rem;">${valDisplay}${detail}</div>
+            <span class="metric-grade grade-${grade}">${metric.grade}</span>
+            <p class="metric-desc">${DESCS[key]}</p>
+            <p class="metric-target">${TARGETS[key]}</p>`;
+        grid.appendChild(card);
+    }
+
+    if (d.interpretation) {
+        document.getElementById('interpretation').style.display = 'block';
+        document.getElementById('interpretation-text').textContent = d.interpretation;
+    }
+}
+
+loadMetrics();
+// Refresh every 5 minutes
+setInterval(loadMetrics, 300000);
+</script>
+</body>
+</html>

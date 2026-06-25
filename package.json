@@ -1,0 +1,44 @@
+{
+    "name": "activemirror-site",
+    "private": true,
+    "version": "2.0.0",
+    "description": "Active Mirror — Sovereign AI that reflects, not directs",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && cp dist/index.html dist/404.html",
+        "preview": "vite preview",
+        "guard:redaction": "bash scripts/redaction_guard.sh",
+        "ops:snapshot": "bash scripts/control_plane_snapshot.sh",
+        "ops:diff": "bash scripts/control_plane_diff.sh",
+        "smoke:prod": "bash scripts/smoke_prod.sh",
+        "proxy": "cd safety_proxy && python3 safety_proxy.py",
+        "deploy": "gh-pages -d dist --dotfiles"
+    },
+    "dependencies": {
+        "@mlc-ai/web-llm": "^0.2.80",
+        "@studio-freight/lenis": "^1.0.42",
+        "clsx": "^2.1.1",
+        "framer-motion": "^11.18.2",
+        "html2canvas": "^1.4.1",
+        "lucide-react": "^0.469.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-router-dom": "^7.11.0",
+        "tailwind-merge": "^2.6.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.3.4",
+        "autoprefixer": "^10.4.20",
+        "gh-pages": "^6.3.0",
+        "postcss": "^8.4.49",
+        "tailwindcss": "^3.4.17",
+        "vite": "^6.4.1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MirrorDNA-Reflection-Protocol/activemirror-site"
+    },
+    "author": "N1 Intelligence (OPC) Pvt Ltd",
+    "license": "MIT"
+}

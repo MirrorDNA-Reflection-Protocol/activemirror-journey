@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background: black;
+    color: white;
+    overflow-x: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ⟡ Glyph Breathing Animation */
+.glyph-breathe {
+    display: inline-block;
+    animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glyph {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+.glyph-pulse {
+    animation: pulse-glyph 1.5s ease-in-out infinite;
+    display: inline-block;
+}
+
+/* Global Polish */
+::selection {
+    background: rgba(123, 217, 255, 0.34);
+    color: #031018;
+}
+
+/* Utility: Hide Scrollbar but keep functionality */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Mirror response styling */
+.mirror-response {
+    line-height: 1.8;
+}
+
+.mirror-response .glyph {
+    color: #a855f7;
+    /* purple-500 */
+    font-weight: 500;
+}
+
+/* Late night mode - softer, warmer */
+.late-night .mirror-response {
+    color: #d4d4d8;
+    /* zinc-300 */
+}
+
+.late-night .glyph {
+    color: #c084fc;
+    /* purple-400 */
+}
+
+.homepage-surface {
+    position: relative;
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+.homepage-surface h1,
+.homepage-surface h2,
+.homepage-surface h3,
+.homepage-surface .display-copy {
+    font-family: "Sora", "IBM Plex Sans", system-ui, sans-serif;
+    letter-spacing: -0.05em;
+}
+
+.homepage-surface::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(115deg, rgba(123, 217, 255, 0.1) 0%, transparent 24%, transparent 62%, rgba(255, 143, 122, 0.08) 100%),
+        radial-gradient(circle at 22% 16%, rgba(124, 240, 203, 0.14), transparent 20%),
+        radial-gradient(circle at 82% 24%, rgba(123, 217, 255, 0.14), transparent 18%);
+    mix-blend-mode: screen;
+    opacity: 0.72;
+    animation: homepage-prism 18s ease-in-out infinite;
+    z-index: 0;
+}
+
+.homepage-surface::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(rgba(255, 255, 255, 0.1) 0.6px, transparent 0.8px),
+        radial-gradient(rgba(123, 217, 255, 0.08) 0.6px, transparent 0.8px);
+    background-position: 0 0, 14px 14px;
+    background-size: 22px 22px, 22px 22px;
+    opacity: 0.06;
+    mix-blend-mode: soft-light;
+    z-index: 0;
+}
+
+@keyframes homepage-prism {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate3d(1.2%, -1%, 0) scale(1.03);
+    }
+
+    66% {
+        transform: translate3d(-1.4%, 1.1%, 0) scale(1.02);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research — Active Mirror</title>
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/research/">
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <meta name="description"
+        content="Active Mirror Research: Peer-reviewed protocols for sovereign AI. SCD v3.1, Truth-States, and Refusal Logic.">
+</head>
+
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; filter: invert(1); margin-right:8px;">Active Mirror</a>
+            <button class="mobile-menu-btn">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero" style="padding-bottom: 40px;">
+            <div class="container">
+                <h1>Protocols over Platforms</h1>
+                <p>We believe that for AI to be safe, its governance must be public, peer-reviewed, and mathematically
+                    verifiable.</p>
+            </div>
+        </section>
+
+        <!-- SCD Protocol -->
+        <section class="section" style="background: rgba(255,255,255,0.02); border-top: 1px solid var(--border-color);">
+            <div class="container">
+                <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 40px; align-items: start;">
+                    <div>
+                        <h2 style="margin-bottom: 16px;">SCD Protocol v3.1</h2>
+                        <h4 style="color: var(--text-secondary); margin-bottom: 24px;">Sovereign Compact Directive</h4>
+                        <p style="margin-bottom: 24px;">
+                            The SCD is a formal protocol for defining the "Constitution" of a local AI system.
+                            It enforces truth-state classification (FACT/ESTIMATE/UNKNOWN) at the kernel level, ensuring
+                            that model outputs are strictly bounded by verifiable data.
+                        </p>
+                        <div style="display: flex; gap: 16px;">
+                            <a href="https://doi.org/10.5281/zenodo.17787619" class="btn btn-primary"
+                                target="_blank">View DOI Record →</a>
+                            <a href="https://github.com/MirrorDNA-Reflection-Protocol/SCD-Protocol"
+                                class="btn btn-secondary" target="_blank">View Source</a>
+                        </div>
+                    </div>
+                    <div
+                        style="background: var(--card-bg); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="font-family: monospace; font-size: 0.85rem; color: var(--text-secondary);">
+                            <strong>Citation:</strong><br><br>
+                            Desai, P. (2025). <em>The Sovereign Compact Directive: A Protocol for Truth-State
+                                Enforcement in Local AI.</em> Zenodo. https://doi.org/10.5281/zenodo.17787619
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Papers Grid -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 48px;">Publications & Preprints</h2>
+                <div class="grid" style="gap: 24px;">
+
+                    <!-- Paper 1 -->
+                    <div class="card" style="flex-direction: row; align-items: center; gap: 32px; text-align: left;">
+                        <div style="flex: 1;">
+                            <h3>Governance and Boundary Conditions for Reflective AI Systems</h3>
+                            <p style="margin-bottom: 12px; color: var(--text-secondary);">aiXiv Preprint · Dec 2025</p>
+                            <p>Proposes a novel architecture where "Reflection" is not just a prompting strategy, but a
+                                separate, adversarial node in the system topology.</p>
+                        </div>
+                        <a href="https://aixiv.science/abs/aixiv.251217.000002" class="btn btn-secondary"
+                            target="_blank" style="white-space: nowrap;">Read on aiXiv</a>
+                    </div>
+
+                    <!-- Paper 2 -->
+                    <div class="card" style="flex-direction: row; align-items: center; gap: 32px; text-align: left;">
+                        <div style="flex: 1;">
+                            <h3>Layered Governance for Large Language Model Systems</h3>
+                            <p style="margin-bottom: 12px; color: var(--text-secondary);">aiXiv Preprint · Dec 2025</p>
+                            <p>A framework for "Governance as Code," moving safety checks from the model weights (RLHF)
+                                to the orchestration layer (Runtime).</p>
+                        </div>
+                        <a href="https://aixiv.science/abs/aixiv.251218.000003" class="btn btn-secondary"
+                            target="_blank" style="white-space: nowrap;">Read on aiXiv</a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Validation Approach -->
+        <section class="section" style="background: rgba(168, 85, 247, 0.05);">
+            <div class="container text-center">
+                <h2>Our Validation Philosophy</h2>
+                <div
+                    style="max-width: 800px; margin: 32px auto 0; display: flex; gap: 40px; justify-content: center; text-align: left;">
+                    <div>
+                        <h3 style="color: var(--accent-color); margin-bottom: 8px;">1. Public Proof</h3>
+                        <p class="text-secondary" style="font-size: 0.95rem;">All safety claims must be backed by
+                            reproducible code and public datasets. No "black box" safety.</p>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--accent-color); margin-bottom: 8px;">2. Adversarial Design</h3>
+                        <p class="text-secondary" style="font-size: 0.95rem;">Systems are secure only when they survive
+                            dedicated red-teaming. Our "M1 Adversary" node is proof of this commitment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            <div class="copyright">&copy; 2026 Active Mirror.</div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

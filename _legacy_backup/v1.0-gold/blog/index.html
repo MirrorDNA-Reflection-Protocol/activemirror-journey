@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog — Active Mirror</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/blog/">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .blog-card {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .blog-meta {
+            color: var(--accent-color);
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .blog-title {
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            line-height: 1.3;
+        }
+
+        .blog-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+
+        /* Featured Post Styling */
+        .blog-card.featured {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.05), rgba(168, 85, 247, 0.05));
+            border-color: rgba(168, 85, 247, 0.3);
+            flex-direction: row;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .blog-card.featured .content-wrapper {
+            flex: 1;
+        }
+
+        .blog-card.featured .blog-title {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .blog-card.featured .blog-excerpt {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .blog-card.featured {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .blog-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section" style="padding-top: 120px; padding-bottom: 60px;">
+        <div class="container">
+            <div style="margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 8px;">Insights</h1>
+                <p style="color: var(--text-secondary); font-size: 1.1rem; margin: 0;">
+                    Thoughts on sovereign AI, local-first architecture, and the future of intelligence.
+                </p>
+            </div>
+
+            <div class="blog-grid">
+
+                <!-- Featured Post: MirrorBrain Mobile -->
+                <a href="/blog/posts/mirrorbrain-mobile-25-mins.html" class="blog-card featured">
+                    <div class="content-wrapper">
+                        <div class="blog-meta">
+                            <span>Velocity</span>
+                            <span>Jan 2, 2026 · 4 min read</span>
+                        </div>
+                        <h2 class="blog-title">MirrorBrain Mobile: A Sovereign Phone in 25 Minutes</h2>
+                        <p class="blog-excerpt">The velocity story. How we built a secure, syncing, AI-powered launcher
+                            in less time than a lunch break. Proof that kernel-first architecture changes the physics of
+                            software development.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- Post: Adversarial Grid -->
+                <a href="/blog/posts/adversarial-grid.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Security</span>
+                        <span>Jan 2, 2026 · 3 min read</span>
+                    </div>
+                    <h2 class="blog-title">The Adversarial Grid: Why Your AI Needs a Red Team</h2>
+                    <p class="blog-excerpt">Trust comes from verification. We built a dedicated node whose only job is
+                        to try to break the system. Why dual-node architecture is the only safe way forward.</p>
+                </a>
+
+                <!-- Post: Local LLMs (Formerly Featured) -->
+                <a href="/blog/posts/why-local-llms-future-enterprise.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Strategy</span>
+                        <span>Dec 28 · 5 min read</span>
+                    </div>
+                    <h2 class="blog-title">Why Local LLMs Are the Future of Enterprise AI</h2>
+                    <p class="blog-excerpt">The cloud era of AI is a temporary anomaly. Physics, economics, and
+                        regulation are driving intelligence to the edge. Why bringing compute to data wins every
+                        time.
+                    </p>
+                </a>
+
+                <!-- Post: SaaS Trap -->
+                <a href="/blog/posts/saas-trap.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Business</span>
+                        <span>Dec 31 · 4 min read</span>
+                    </div>
+                    <h2 class="blog-title">The SaaS Trap: Why Renting Intelligence is a Dead End</h2>
+                    <p class="blog-excerpt">Paying monthly for an API that learns from your prompts is double taxation.
+                        Stop
+                        training your competitors.</p>
+                </a>
+
+                <!-- Post: Beyond RAG -->
+                <a href="/blog/posts/beyond-rag.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Engineering</span>
+                        <span>Dec 31 · 6 min read</span>
+                    </div>
+                    <h2 class="blog-title">Beyond RAG: Why You Need a Vault, Not Just a Vector DB</h2>
+                    <p class="blog-excerpt">Vector similarity is fuzzy. Truth is precise. Why we combine vector search
+                        with
+                        graph-based lineage.</p>
+                </a>
+
+                <!-- Post: Orchestrator -->
+                <a href="/blog/posts/orchestrator-model.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Philosophy</span>
+                        <span>Dec 30 · 5 min read</span>
+                    </div>
+                    <h2 class="blog-title">The Orchestrator Model: One Human, Unlimited Leverage</h2>
+                    <p class="blog-excerpt">The "Individual Contributor" is dead. Long live the Orchestrator. Directing
+                        AI
+                        swarms for 100x output.</p>
+                </a>
+
+                <!-- Post: ADHD -->
+                <a href="/blog/posts/adhd-and-ai.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Neurodivergence</span>
+                        <span>Dec 30 · 4 min read</span>
+                    </div>
+                    <h2 class="blog-title">ADHD and AI: The Executive Function Exoskeleton</h2>
+                    <p class="blog-excerpt">AI handles linear execution. The ADHD mind handles lateral connection. Why
+                        neurodivergence is an edge.</p>
+                </a>
+
+                <!-- Post: Red Team -->
+                <a href="/blog/posts/building-red-team-node.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Security</span>
+                        <span>Dec 29 · 3 min read</span>
+                    </div>
+                    <h2 class="blog-title">Building a Red-Team Node: The Adversarial Twin</h2>
+                    <p class="blog-excerpt">We built a specialized AI whose only job is to attack our code. Simulating
+                        millions of localized attacks.</p>
+                </a>
+
+                <!-- Post: Truth State -->
+                <a href="/blog/posts/truth-state-enforcement.html" class="blog-card">
+                    <div class="blog-meta">
+                        <span>Engineering</span>
+                        <span>Dec 29 · 5 min read</span>
+                    </div>
+                    <h2 class="blog-title">Truth-State Enforcement: Solving Hallucinations</h2>
+                    <p class="blog-excerpt">Business needs deterministic answers. How we classify AI output as FACT,
+                        ESTIMATE, or UNKNOWN.</p>
+                </a>
+
+            </div>
+    </section>
+
+    <footer style="border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 40px;">
+        <div class="container text-center">
+            <p class="text-secondary">© 2025 N1 Intelligence</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu
+        const menuBtn = document.querySelector(".mobile-menu-btn");
+        const navLinks = document.querySelector(".nav-links");
+        if (menuBtn) {
+            menuBtn.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+                menuBtn.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
+            });
+        }
+    </script>
+</body>
+
+</html>

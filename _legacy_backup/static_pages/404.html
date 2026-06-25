@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found — Active Mirror</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror"
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="min-height: 60vh; display: flex; align-items: center;">
+        <div class="container text-center">
+            <div style="font-size: 6rem; margin-bottom: 24px;">⟡</div>
+            <h1 style="margin-bottom: 16px;">404</h1>
+            <p style="font-size: 1.5rem; margin-bottom: 32px;">Page not found</p>
+            <p class="text-secondary" style="margin-bottom: 40px;">The page you're looking for doesn't exist or has been
+                moved.</p>
+            <div class="buttons">
+                <a href="/" class="btn btn-primary">← Back to Home</a>
+                <a href="/contact/" class="btn btn-secondary">Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4><img src="/assets/logo.png" alt=""
+                            style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                        Mirror</h4>
+                    <p>Built by Paul Desai<br>N1 Intelligence (OPC) Pvt Ltd<br>Goa, India</p>
+                </div>
+                <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            </div>
+            <div class="copyright">
+                © 2025 N1 Intelligence. Open source under MIT.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    </script>
+</body>
+
+</html>

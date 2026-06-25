@@ -1,0 +1,18 @@
+# Active Mirror - Robots.txt
+# https://activemirror.ai
+
+User-agent: *
+Allow: /
+Allow: /mirror/
+Allow: /privacy/
+Allow: /terms/
+Allow: /confessions/
+
+# Don't index API endpoints
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://activemirror.ai/sitemap.xml
+
+# Crawl delay (be nice to our servers)
+Crawl-delay: 1

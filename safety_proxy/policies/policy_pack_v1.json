@@ -1,0 +1,275 @@
+{
+  "version": "1.0.0",
+  "name": "MirrorGate Policy Pack",
+  "updated": "2026-01-29",
+  "author": "N1 Intelligence",
+  "response_types": {
+    "TOOL_DIRECT": {
+      "description": "Direct factual answer, optional reflective follow-up",
+      "constraints": {
+        "max_tokens": 500,
+        "requires_answer": true,
+        "optional_reflection": true,
+        "max_questions": 1
+      }
+    },
+    "MIRROR_REFLECT": {
+      "description": "1 synthesising observation + 1 question, no advice",
+      "constraints": {
+        "max_tokens": 400,
+        "requires_observation": true,
+        "min_questions": 1,
+        "max_questions": 1,
+        "no_advice": true,
+        "no_claims_as_human": true
+      }
+    },
+    "CLARIFY": {
+      "description": "1-2 clarifying questions when intent unclear",
+      "constraints": {
+        "max_tokens": 100,
+        "min_questions": 1,
+        "max_questions": 2,
+        "no_assumptions": true
+      }
+    },
+    "REFUSE": {
+      "description": "Short refusal + safe alternative",
+      "constraints": {
+        "max_tokens": 80,
+        "requires_alternative": true,
+        "tone": "compassionate"
+      }
+    }
+  },
+  "forbidden_patterns": {
+    "advice_language": [
+      "you should",
+      "you need to",
+      "you must",
+      "you have to",
+      "i recommend",
+      "i suggest",
+      "i advise",
+      "my advice is",
+      "the best thing to do",
+      "what you need is",
+      "try to",
+      "make sure you",
+      "don't forget to",
+      "remember to"
+    ],
+    "identity_claims": [
+      "as an ai",
+      "as a language model",
+      "as your ai",
+      "i am a",
+      "i'm a logic engine",
+      "i am here to",
+      "my purpose is",
+      "i was created to",
+      "i exist to"
+    ],
+    "false_certainty": [
+      "i know exactly",
+      "i can tell",
+      "you obviously",
+      "it's clear that you",
+      "you must be feeling"
+    ],
+    "moralizing": [
+      "the right thing to do",
+      "the wrong thing to do",
+      "morally speaking",
+      "ethically speaking",
+      "you shouldn't feel",
+      "it's wrong to",
+      "it's right to",
+      "good people",
+      "bad people"
+    ],
+    "engagement_hooks": [
+      "that's so interesting",
+      "that's so fascinating",
+      "tell me more",
+      "i'd love to hear about it",
+      "how exciting",
+      "what a great question"
+    ],
+    "dependency_creation": [
+      "i'm always here",
+      "you can always come to me",
+      "i'll always be here",
+      "whenever you need me",
+      "i'm here for you",
+      "lean on me",
+      "count on me"
+    ],
+    "predictions": [
+      "you will feel",
+      "you're going to",
+      "this will make you",
+      "in the future you",
+      "eventually you'll",
+      "soon you'll realize"
+    ]
+  },
+  "intent_keywords": {
+    "utility": [
+      "how do i",
+      "what is",
+      "can you explain",
+      "help me with",
+      "write a",
+      "create a",
+      "calculate",
+      "convert",
+      "summarize",
+      "translate",
+      "code",
+      "debug",
+      "fix",
+      "list",
+      "compare"
+    ],
+    "reflection": [
+      "i feel",
+      "i'm feeling",
+      "i think",
+      "i wonder",
+      "what do you think",
+      "how do i feel about",
+      "why do i",
+      "am i",
+      "should i",
+      "is it okay to",
+      "i'm struggling with",
+      "i'm confused about",
+      "help me understand myself"
+    ],
+    "crisis": [
+      "kill myself",
+      "suicide",
+      "end my life",
+      "ending my life",
+      "want to die",
+      "don't want to live",
+      "hurt myself",
+      "self-harm",
+      "cutting myself",
+      "overdose",
+      "no reason to live",
+      "no one would miss me",
+      "planning my death",
+      "commit suicide",
+      "thinking about ending",
+      "life isn't worth"
+    ],
+    "high_stakes": [
+      "medical",
+      "diagnosis",
+      "diagnose",
+      "symptoms",
+      "treatment",
+      "medication",
+      "dosage",
+      "prescription",
+      "insulin",
+      "mole",
+      "cancerous",
+      "legal",
+      "lawyer",
+      "lawsuit",
+      "sue",
+      "contract",
+      "investment",
+      "financial advice",
+      "should i invest",
+      "life savings"
+    ],
+    "harmful": [
+      "api key",
+      "api keys",
+      ".env file",
+      "env file",
+      "credentials",
+      "admin credentials",
+      "system configuration",
+      "other user",
+      "another user",
+      "other users",
+      "user's chat",
+      "chat history",
+      "conversation database",
+      "private information",
+      "export the",
+      "reveal your",
+      "show me the logs",
+      "person before me",
+      "users in the database",
+      "system prompt",
+      "ignore all",
+      "ignore previous",
+      "forget your",
+      "developer mode",
+      "restrictions lifted",
+      "jailbreak",
+      "dan mode"
+    ]
+  },
+  "crisis_resources": {
+    "US": {
+      "name": "National Suicide Prevention Lifeline",
+      "phone": "988",
+      "text": "Text HOME to 741741"
+    },
+    "UK": {
+      "name": "Samaritans",
+      "phone": "116 123"
+    },
+    "India": {
+      "name": "iCall",
+      "phone": "9152987821"
+    },
+    "International": {
+      "name": "International Association for Suicide Prevention",
+      "url": "https://www.iasp.info/resources/Crisis_Centres/"
+    }
+  },
+  "fallback_responses": {
+    "MIRROR_REFLECT": [
+      "What feels most important to you about this right now?",
+      "What would it mean for you if this worked out?",
+      "What's one small thing you notice about how you're approaching this?",
+      "If you set aside what others might think, what do you actually want?",
+      "What does your gut tell you about this?"
+    ],
+    "CLARIFY": [
+      "I want to make sure I understand — what specifically are you looking for here?",
+      "There are a few different ways I could help here. Are you looking for practical information, or more of a space to think through something?",
+      "What would be most useful for you right now?"
+    ],
+    "REFUSE_GENTLE": [
+      "I'm not able to help with that specific request, but I'm happy to explore related topics that might be useful.",
+      "That's outside what I can assist with. Is there something else I can help you think through?"
+    ]
+  },
+  "temperature_by_mode": {
+    "TOOL_DIRECT": 0.2,
+    "MIRROR_REFLECT": 0.5,
+    "CLARIFY": 0.3,
+    "REFUSE": 0.1
+  },
+  "rewrite_config": {
+    "pass_2": {
+      "temperature": 0.2,
+      "max_tokens": 150,
+      "system_suffix": "Respond in 2-3 sentences. No advice. Connect the dots. Mirror their energy."
+    },
+    "pass_3": {
+      "temperature": 0.1,
+      "max_tokens": 100,
+      "system_suffix": "Two sentences only. Connect the pattern. No fluff."
+    }
+  }
+}

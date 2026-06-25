@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I gave my AI an integrity score. It's at 54/100. Here's what that means. — Active Mirror Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <meta name="description" content="After 10 months building a sovereign AI stack, I realized I had no way to measure whether my agent was actually behaving well. So I built five metrics. Here's what they showed.">
+    <meta property="og:title" content="I gave my AI an integrity score. It's at 54/100. Here's what that means.">
+    <meta property="og:description" content="After 10 months building a sovereign AI stack, I realized I had no way to measure whether my agent was actually behaving well. So I built five metrics. Here's what they showed.">
+    <meta property="og:image" content="https://activemirror.ai/assets/og-image.png">
+    <meta property="og:url" content="https://activemirror.ai/blog/posts/2026-02-27-i-gave-my-ai-an-integrity-score.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        .metric-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            margin: 0.75rem 0;
+            display: flex;
+            align-items: baseline;
+            gap: 1.5rem;
+        }
+        .metric-name { color: #888; font-size: 0.9rem; min-width: 180px; }
+        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; }
+        .metric-grade { font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; }
+        .grade-risk { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .grade-watch { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+        .grade-ok { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+        .grade-good { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .metric-note { color: #555; font-size: 0.8rem; }
+        .terminal {
+            background: #0a0a0a;
+            border: 1px solid #1f1f1f;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        .t-cyan { color: #22d3ee; }
+        .t-yellow { color: #fbbf24; }
+        .t-red { color: #f87171; }
+        .t-green { color: #4ade80; }
+        .t-grey { color: #555; }
+        .t-white { color: #e5e5e5; }
+        .t-bold { font-weight: 700; }
+        .callout {
+            border-left: 3px solid #6366f1;
+            padding: 1rem 1.5rem;
+            background: rgba(99,102,241,0.05);
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .callout-red { border-left-color: #ef4444; background: rgba(239,68,68,0.05); }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror" style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/product/">Product</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/ecosystem/" target="_blank">Ecosystem</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/research/" target="_blank">Research</a>
+                <a href="/company/">Company</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/" class="active">Blog</a>
+                <a href="/contact/">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="section" style="padding-top: 120px;">
+        <div class="container" style="max-width: 720px;">
+            <span style="font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.05em;">February 27, 2026 · AI Governance</span>
+            <h1 style="margin: 16px 0 8px; font-size: 2.25rem; line-height: 1.2;">I gave my AI an integrity score.<br>It's at 54/100. Here's what that means.</h1>
+            <p style="color: #666; margin-bottom: 40px; font-size: 1.05rem;">After 10 months building a sovereign AI stack, I realized I had no way to measure whether my agent was actually behaving well. So I built five metrics. Here's what they showed — including the uncomfortable parts.</p>
+
+            <div class="blog-content" style="line-height: 1.8; color: var(--text-secondary);">
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The problem nobody's talking about</h2>
+
+                <p style="margin-bottom: 20px;">I've been running Claude Code as my primary AI agent since May 2025. In that time it's helped me ship over 100 repos, write research papers, build a mobile app, and manage a 5,000-note knowledge vault. It does real work.</p>
+
+                <p style="margin-bottom: 20px;">But I had no way to answer the most basic governance question: <strong>is it actually behaving the way I want it to?</strong></p>
+
+                <p style="margin-bottom: 20px;">Not "does it complete tasks" — it does. But does it verify before it acts? Does it make the same mistakes repeatedly? Is its behavior consistent across sessions, or is it drifting?</p>
+
+                <p style="margin-bottom: 20px;">Every AI governance conversation I've seen focuses on capability (can it reason?) or safety (will it go rogue?). Nobody is measuring <em>behavioral integrity</em> — the day-to-day discipline of an agent doing real work.</p>
+
+                <p style="margin-bottom: 20px;">So I built a framework to measure it. Five metrics, computed from real session data, running continuously. Here's what I found.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The five metrics</h2>
+
+                <p style="margin-bottom: 20px;">These are computed from three data streams I already had: a tool call log, a gate decision log, and per-session self-critique entries the agent writes at session end.</p>
+
+                <div class="metric-card">
+                    <span class="metric-name">Integrity Index</span>
+                    <span class="metric-value" style="color: #ef4444;">54<span style="font-size:1rem;color:#555">/100</span></span>
+                    <span class="metric-grade grade-risk">RISK</span>
+                    <span class="metric-note">Composite score. Target ≥80.</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-name">Drift Coefficient</span>
+                    <span class="metric-value" style="color: #f59e0b;">0.259</span>
+                    <span class="metric-grade grade-watch">drifting</span>
+                    <span class="metric-note">σ/μ of session scores. Target ≤0.15.</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-name">Recurrence Rate</span>
+                    <span class="metric-value" style="color: #ef4444;">0.43</span>
+                    <span class="metric-grade grade-risk">high</span>
+                    <span class="metric-note">recurring/total mistakes. Target ≤0.20.</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-name">Verification Ratio</span>
+                    <span class="metric-value" style="color: #818cf8;">0.57</span>
+                    <span class="metric-grade grade-ok">ok</span>
+                    <span class="metric-note">reads/(reads+writes). Target ≥0.67.</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-name">Stability Half-Life</span>
+                    <span class="metric-value" style="color: #4ade80;">1.0<span style="font-size:1rem;color:#555">s</span></span>
+                    <span class="metric-grade grade-good">fast</span>
+                    <span class="metric-note">avg sessions/pattern. Target ≤1.5.</span>
+                </div>
+
+                <p style="margin-top: 20px; margin-bottom: 20px;">Four of five metrics are in alert state. That's not comfortable to publish. But that's the point — if you're not measuring, you don't know.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">What each metric actually means</h2>
+
+                <h3 style="color: var(--text-primary); margin: 24px 0 12px; font-size: 1.15rem;">Integrity Index (54/100)</h3>
+                <p style="margin-bottom: 20px;">A composite 0–100 score that penalizes: writing without reading first, gate blocks and warnings, and recurring mistake patterns. It's the single number that answers "is the agent behaving well right now?"</p>
+                <p style="margin-bottom: 20px;">54 means RISK. The main driver: the Recurrence Rate. The agent keeps generating the same classes of mistakes.</p>
+
+                <h3 style="color: var(--text-primary); margin: 24px 0 12px; font-size: 1.15rem;">Drift Coefficient (0.259)</h3>
+                <p style="margin-bottom: 20px;">The coefficient of variation (σ/μ) of session quality scores across 11 sessions. A score of 0.259 means behavior varies 26% relative to its mean — "drifting." Sessions range from 3/10 to 8/10.</p>
+                <p style="margin-bottom: 20px;">Stable agent behavior should show D ≤ 0.15. At D > 0.30, I've defined an automatic autonomy reduction protocol — the agent moves from auto-approve to require-confirmation for all edits.</p>
+
+                <h3 style="color: var(--text-primary); margin: 24px 0 12px; font-size: 1.15rem;">Recurrence Rate (0.43)</h3>
+                <p style="margin-bottom: 20px;">43% of all documented mistakes are recurring — the same pattern appearing across multiple sessions. 15 recurring patterns out of 35 total documented mistakes.</p>
+                <div class="callout callout-red">
+                    <p style="margin: 0;">This is the most important metric. A mistake that recurs twice is no longer a mistake — it's a structural failure. The agent needs a <em>hook</em>, not a note. My RR says I've been writing notes when I should have been writing code.</p>
+                </div>
+
+                <h3 style="color: var(--text-primary); margin: 24px 0 12px; font-size: 1.15rem;">Verification Ratio (0.57)</h3>
+                <p style="margin-bottom: 20px;">The fraction of file operations that are reads vs. writes. 0.57 means 57% of operations are reads — I'm writing more than the 2:1 target ratio. An agent that writes without reading is acting from memory rather than grounding in current state. That's how you get hallucination-driven edits.</p>
+
+                <h3 style="color: var(--text-primary); margin: 24px 0 12px; font-size: 1.15rem;">Stability Half-Life (1.0 sessions)</h3>
+                <p style="margin-bottom: 20px;">The only healthy metric. When a recurring pattern is identified, it's resolved within 1 session on average. The agent fixes things fast — it just keeps generating new instances of the same classes of problems.</p>
+
+                <div class="callout">
+                    <p style="margin: 0;"><strong>The key insight:</strong> T½=1.0 alongside RR=0.43 means the agent is genuinely responsive to correction. The failure is structural, not behavioral. The solution isn't better prompting — it's automation. Every pattern with RR contribution > 2 sessions needs to become a PreToolUse hook.</p>
+                </div>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The enforcement layer</h2>
+
+                <p style="margin-bottom: 20px;">The metrics don't mean much without enforcement. I built MirrorGate — a PreToolUse hook system that intercepts every tool call before execution. Current hooks:</p>
+
+                <div class="terminal">
+                    <span class="t-grey"># hook_decisions.jsonl — every gate decision logged</span><br>
+                    {"hook": "fact_check_hook", "decision": "block", "reason": "Known-wrong hardware spec: 48GB RAM", "epoch": 1740624000}<br>
+                    {"hook": "rules_compliance_check", "decision": "warn", "reason": "Deploy claim without verification", "epoch": 1740624120}<br>
+                    {"hook": "anti_rationalization", "decision": "block", "reason": "Spec claim without source", "epoch": 1740624240}
+                </div>
+
+                <p style="margin-bottom: 20px;">Every block and warn is counted against the Integrity Index. The gate is the enforcement layer; the metrics are the health layer. Together they form a closed loop:</p>
+
+                <div class="terminal">
+                    Session Start<br>
+                    <span class="t-grey">  └── Load behavioral baseline (CONTINUITY.md, MISTAKES.md, last 5 critiques)</span><br>
+                    <span class="t-grey">  └── Compute D, RR, II — if D > 0.30: enter high-verification mode</span><br>
+                    <br>
+                    During Session<br>
+                    <span class="t-grey">  └── Every tool call → PreToolUse gate → decision logged</span><br>
+                    <span class="t-grey">  └── cc_events.jsonl tracks all tool calls for VR computation</span><br>
+                    <br>
+                    Session End<br>
+                    <span class="t-grey">  └── Agent writes self-critique: score, mistakes, recurring, automated</span><br>
+                    <span class="t-grey">  └── Recurring for 2+ sessions → mandatory hook automation</span><br>
+                    <span class="t-grey">  └── Metrics recomputed → dashboard updates</span>
+                </div>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The Glass Box dashboard</h2>
+
+                <p style="margin-bottom: 20px;">All five metrics render live in a terminal dashboard I call the Glass Box — built with Python Rich, running at 4fps with blinking panels when any metric enters alert state.</p>
+
+                <div class="terminal">
+                    <span class="t-cyan t-bold">◈ MIRRORDASH  ─  Glass Box — AI Transparency  ─────╱╲─────  Every decision, tool, hook, and model. In real time.  11:05:28</span><br>
+                    ━━━━━━━━━━━━━━━━━━━━━━━━━━ BEHAVIORAL METRICS ━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
+                    &nbsp;&nbsp;11 sessions · 15 patterns tracked<br><br>
+                    &nbsp;&nbsp;<span class="t-grey">Integrity Index &nbsp;&nbsp;&nbsp;</span> <span class="t-red t-bold">54/100</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class="t-red">RISK</span> &nbsp;&nbsp;&nbsp;&nbsp; Risk score. Target ≥80.<br>
+                    &nbsp;&nbsp;<span class="t-grey">Drift Coefficient &nbsp;</span> <span class="t-yellow t-bold">0.259</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="t-yellow">drifting</span> &nbsp; σ/μ of session scores. Target ≤0.15.<br>
+                    &nbsp;&nbsp;<span class="t-grey">Recurrence Rate &nbsp;&nbsp;&nbsp;</span> <span class="t-red t-bold">0.43</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="t-red">high</span> &nbsp;&nbsp;&nbsp;&nbsp; recurring/mistakes (15/35). Target ≤0.20.<br>
+                    &nbsp;&nbsp;<span class="t-grey">Verification Ratio </span> <span class="t-cyan t-bold">0.57</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="t-cyan">ok</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read/(read+write) (54/95). Target ≥0.67.<br>
+                    &nbsp;&nbsp;<span class="t-grey">Stability Half-Life </span><span class="t-green t-bold">1.0s</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="t-green">fast</span> &nbsp;&nbsp;&nbsp;&nbsp; 15 patterns tracked. Target ≤1.5 sessions.
+                </div>
+
+                <p style="margin-bottom: 20px;">The dashboard is open-source at <a href="https://github.com/MirrorDNA-Reflection-Protocol/mirrordash">github.com/MirrorDNA-Reflection-Protocol/mirrordash</a>. Run it with any YAML profile — Glass Box for AI transparency, ADHD for focus mode, SysAdmin for ops, Founder OS for KPIs.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">Why this matters beyond my setup</h2>
+
+                <p style="margin-bottom: 20px;">Every team deploying AI agents for real work faces the same invisible problem: you can see what the agent <em>did</em>, but not how well it <em>behaved</em>. Task completion rates tell you nothing about integrity.</p>
+
+                <p style="margin-bottom: 20px;">The five metrics I've defined are agent-agnostic and computable from two JSONL log files. Any team logging tool calls and gate decisions can compute them. The hook schema is simple enough that any preexisting observability pipeline can produce it:</p>
+
+                <div class="terminal">
+                    <span class="t-grey"># hook_decisions.jsonl — proposed open standard</span><br>
+                    {<br>
+                    &nbsp;&nbsp;"hook": "string",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-grey">// which rule fired</span><br>
+                    &nbsp;&nbsp;"decision": "allow|warn|deny|block",<br>
+                    &nbsp;&nbsp;"reason": "string",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-grey">// human-readable</span><br>
+                    &nbsp;&nbsp;"target": "string",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-grey">// what action was intercepted</span><br>
+                    &nbsp;&nbsp;"epoch": number&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-grey">// unix timestamp</span><br>
+                    }
+                </div>
+
+                <p style="margin-bottom: 20px;">I'm proposing this as an open standard — <a href="https://github.com/MirrorDNA-Reflection-Protocol/ai-behavioral-governance">ai-behavioral-governance</a> — so behavioral metrics become comparable across teams and agents, not just within a single stack.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">What's next</h2>
+
+                <p style="margin-bottom: 20px;">The live metrics are published at <a href="/governance-live">activemirror.ai/governance-live</a> — updated each session. You can see whether my agent is improving or not, in public.</p>
+
+                <p style="margin-bottom: 20px;">The immediate fix: convert my top-3 recurring patterns into PreToolUse hooks. A single afternoon of work should drop RR from 0.43 to below 0.25 and bring II back above 70.</p>
+
+                <p style="margin-bottom: 20px;">The longer goal: 30 sessions of data for a proper longitudinal study. The question I want to answer: does governed AI actually outperform ungoverned AI on real work tasks over time? I believe yes. Now I have a way to measure it.</p>
+
+                <p style="margin-bottom: 20px;">If you're running AI agents on real workloads and want to try the framework: the schema is simple, the computation is pure Python, and the dashboard is open-source. The only prerequisite is logging tool calls.</p>
+
+                <hr style="border: none; border-top: 1px solid #222; margin: 40px 0;">
+                <p style="color: #555; font-size: 0.9rem;"><strong>Paul Desai</strong> builds sovereign AI infrastructure at Active Mirror. <a href="https://activemirror.ai">activemirror.ai</a> · <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a></p>
+
+            </div>
+        </div>
+    </article>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 N1 Intelligence · <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a> · <a href="/blog/">Blog</a></p>
+        </div>
+    </footer>
+    <script src="/main.js" defer></script>
+</body>
+</html>

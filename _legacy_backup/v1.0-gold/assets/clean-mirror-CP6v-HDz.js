@@ -1,0 +1,1 @@
+import{R as o,M as e}from"./index-Beru5Ypu.js";import{j as r}from"./vendor-motion-BUkllMwd.js";import{B as t}from"./vendor-react-DsSpNa6n.js";o.createRoot(document.getElementById("root")).render(r.jsx(t,{children:r.jsx(e,{})}));

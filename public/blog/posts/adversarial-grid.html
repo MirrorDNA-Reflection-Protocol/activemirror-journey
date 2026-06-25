@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Adversarial Grid: Why Your AI Needs a Red Team — Active Mirror</title>
+    <meta name="description"
+        content="Active Mirror blog: Dedicated adversarial nodes for truth verification. Why we run an M1 Max just to disagree with us.">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="" style="height: 28px; filter: invert(1);">Active
+                Mirror</a>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+    <article class="section" style="padding-top: 60px;">
+        <div class="container" style="max-width: 700px;">
+            <div style="color: var(--accent-color); font-family: monospace; margin-bottom: 16px;">Jan 2, 2026 ·
+                Security</div>
+            <h1 style="margin-bottom: 32px; font-size: 2.5rem;">The Adversarial Grid: Why Your AI Needs a Red Team</h1>
+            <p class="text-secondary" style="font-size: 1.2rem; margin-bottom: 40px;">Trust comes from verification. We
+                built a dedicated node whose only job is to try to break the system.</p>
+
+            <div class="content" style="line-height: 1.8; color: var(--text-secondary);">
+                <p>In most AI deployments, the model is treated as an oracle. You ask a question, it gives an answer,
+                    and you trust it. This is dangerous. Models hallucinate. Models drift. Models can be manipulated.
+                </p>
+
+                <p>At Active Mirror, we don't trust the model. We trust the <strong>Grid</strong>.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">The M4 and the M1</h3>
+                <p>Our standard deployment uses two primary nodes:</p>
+                <ul>
+                    <li><strong>Node 1 (M4 Max):</strong> The "Hub". Runs the primary heavy models (Llama 3 70B, Qwen
+                        2.5 72B). It tries to be helpful.</li>
+                    <li><strong>Node 2 (M1 Max):</strong> The "Adversary". Runs smaller, faster models (Llama 3.2 3B).
+                        It tries to be skeptical.</li>
+                </ul>
+
+                <p>Every time the Hub generates a significant claim (marked as FACT), the Adversary wakes up. It runs
+                    the <strong>Truth Scanner Protocol</strong>. It checks the claim against the Vault. It checks the
+                    claim against known constraints. If it finds a discrepancy, it flags it.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">Self-Healing Loops</h3>
+                <p>When the Adversary flags an error, the system enters a "Self-Healing Loop". The Hub is forced to
+                    regenerate the response, this time with the Adversary's critique as context. It's an automated
+                    debate, happening in milliseconds, before the user ever sees the output.</p>
+
+                <p>This is "Governance as Code". We don't just prompt the model to be accurate. We architect the system
+                    to enforce accuracy.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">Security by Design</h3>
+                <p>The Adversary also runs Red Team attacks. It tries prompt injection. It tries to exfiltrate data. It
+                    tries to override kernel rules. Because it runs on a physically separate machine, even if the Hub is
+                    compromised, the Adversary remains a sentinel.</p>
+
+                <p>We believe this dual-node, adversarial architecture is the only way to safely deploy autonomous
+                    agents. You need a second pair of eyes, even if they are silicon.</p>
+
+                <div style="margin-top: 48px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                    <a href="/architecture/" class="btn btn-primary">See the Architecture →</a>
+                </div>
+            </div>
+        </div>
+    </article>
+    <footer style="border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 40px;">
+        <div class="container text-center">
+            <p class="text-secondary">© 2026 Active Mirror</p>
+        </div>
+    </footer>
+</body>
+
+</html>

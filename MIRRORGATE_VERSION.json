@@ -1,0 +1,30 @@
+{
+  "spec_version": "5.1",
+  "spec_codename": "Two-Lane + Polish",
+  "next_version": "6.0",
+  "next_codename": "Lattice",
+  "last_updated": "2026-01-05",
+  "last_writer": "antigravity",
+  "features_implemented": {
+    "two_lane_rendering": true,
+    "intent_router": true,
+    "utility_shortcut": true,
+    "crisis_gates": true,
+    "illegal_gates": true,
+    "schema_validation": true,
+    "deterministic_templates": true,
+    "meta_language_strip": true,
+    "lane_mixer_dial": true
+  },
+  "features_roadmap_v6": {
+    "shield_layer": false,
+    "shadow_layer": false,
+    "silent_observer": false,
+    "lattice_zkp": false,
+    "simulation_mode": false
+  },
+  "spec_files": {
+    "current": "MIRRORGATE_V4_HANDOFF.md",
+    "lattice_roadmap": "Vault:Superagent/ingested_specs/mirrorgate_v6_lattice.md"
+  }
+}

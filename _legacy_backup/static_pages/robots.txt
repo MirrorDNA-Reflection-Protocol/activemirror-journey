@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://activemirror.ai/sitemap.xml
+
+# Crawl-delay (optional, be nice to the server)
+Crawl-delay: 1

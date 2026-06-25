@@ -1,0 +1,38 @@
+name: Production Smoke Check
+
+on:
+  schedule:
+    # Daily at 07:00 UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+          sudo apt-get install -y dnsutils
+
+      - name: Run redaction guard
+        run: bash scripts/redaction_guard.sh
+
+      - name: Run production smoke checks
+        run: bash scripts/smoke_prod.sh https://activemirror.ai
+
+      - name: Capture control-plane snapshot
+        run: bash scripts/control_plane_snapshot.sh https://activemirror.ai ops/control-plane-snapshots ci-latest
+
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: control-plane-ci-latest
+          path: ops/control-plane-snapshots/ci-latest

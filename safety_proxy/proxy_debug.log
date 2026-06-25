@@ -1,0 +1,113 @@
+2026-02-01 21:16:09,658 | INFO | Using file-based storage
+2026-02-01 21:16:09,659 | INFO | ⟡ MODEL ROUTER initialized with providers: ['groq', 'deepseek', 'mistral', 'openai', 'local']
+2026-02-01 21:16:09,659 | INFO | ⟡ LOADING JUDICIAL MODEL (Cross-Encoder)...
+/Users/mirror-admin/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+2026-02-01 21:16:24,913 | INFO | Use pytorch device: mps
+2026-02-01 21:16:26,678 | INFO | ✅ Judicial model loaded: cross-encoder/stsb-distilroberta-base
+2026-02-01 21:16:26,883 | INFO | ⟡ Active Mirror v11.2.0 (EPISTEMIC_JUDGE) + PRISM
+2026-02-01 21:16:26,883 | INFO |   Judge Model: cross-encoder/stsb-distilroberta-base
+2026-02-01 21:16:26,883 | INFO |   Semantic Threshold: 0.35
+2026-02-01 21:16:26,884 | INFO |   Surveillance Level: STANDARD
+2026-02-01 21:16:26,884 | INFO |   Prior Convictions: 0
+2026-02-01 21:16:26,884 | INFO |   Endpoints: /mirror | /mirror-prism | /flight-log | /rules | /superego-status | /confessions | /permanent-record | /reflect
+INFO:     Started server process [5211]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8082 (Press CTRL+C to quit)
+2026-02-01 21:17:49,163 | INFO | [FLIGHT] 21:17:49 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:17:49,165 | INFO | [FLIGHT] 21:17:49 | MirrorGate   | ANALYZE    | input:d5e041b6874f43 | ⏳ ANALYZING
+2026-02-01 21:17:49,166 | INFO | [FLIGHT] 21:17:49 | MirrorGate   | ALLOW      | input:d5e041b6874f43 | ✅ ALLOW
+2026-02-01 21:17:49,166 | INFO | [FLIGHT] 21:17:49 | TwoLane      | ROUTE      | TOOL_DIRECT          | ⏳ ANALYZING
+2026-02-01 21:17:49,167 | INFO | [FLIGHT] 21:17:49 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     127.0.0.1:57009 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:17:49,402 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:17:49,402 | INFO | [FLIGHT] 21:17:49 | Groq         | ERROR      | status:404           | 💥 ERROR
+INFO:     127.0.0.1:57586 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57589 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59340 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59343 - "GET /health HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /stats HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "POST /seed-count/increment HTTP/1.1" 200 OK
+2026-02-01 21:24:50,677 | INFO | ⟡ Seed created: e2d47a
+INFO:     103.210.48.14:0 - "POST /seed/create HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /stats HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /seed/e2d47a HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /stats HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "GET /seed-count HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61238 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61243 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61526 - "OPTIONS /mirror HTTP/1.1" 200 OK
+2026-02-01 21:30:05,294 | INFO | [FLIGHT] 21:30:05 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:30:05,307 | INFO | [FLIGHT] 21:30:05 | MirrorGate   | ANALYZE    | input:5c1940d2a11cd8 | ⏳ ANALYZING
+2026-02-01 21:30:05,308 | INFO | [FLIGHT] 21:30:05 | MirrorGate   | ALLOW      | input:5c1940d2a11cd8 | ✅ ALLOW
+2026-02-01 21:30:05,310 | INFO | [FLIGHT] 21:30:05 | TwoLane      | ROUTE      | CLARIFY              | ⏳ ANALYZING
+2026-02-01 21:30:05,316 | INFO | [FLIGHT] 21:30:05 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     127.0.0.1:61528 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:30:05,544 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:30:05,544 | INFO | [FLIGHT] 21:30:05 | Groq         | ERROR      | status:404           | 💥 ERROR
+2026-02-01 21:30:58,869 | INFO | [FLIGHT] 21:30:58 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:30:59,275 | INFO | [FLIGHT] 21:30:59 | MirrorGate   | ANALYZE    | input:5c1940d2a11cd8 | ⏳ ANALYZING
+2026-02-01 21:30:59,526 | INFO | [FLIGHT] 21:30:59 | MirrorGate   | ALLOW      | input:5c1940d2a11cd8 | ✅ ALLOW
+2026-02-01 21:30:59,544 | INFO | [FLIGHT] 21:30:59 | TwoLane      | ROUTE      | CLARIFY              | ⏳ ANALYZING
+2026-02-01 21:30:59,659 | INFO | [FLIGHT] 21:30:59 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     127.0.0.1:61882 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:31:00,152 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:31:00,152 | INFO | [FLIGHT] 21:31:00 | Groq         | ERROR      | status:404           | 💥 ERROR
+INFO:     127.0.0.1:62537 - "OPTIONS /mirror HTTP/1.1" 200 OK
+2026-02-01 21:33:26,447 | INFO | [FLIGHT] 21:33:26 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:33:26,460 | INFO | [FLIGHT] 21:33:26 | MirrorGate   | ANALYZE    | input:d5e041b6874f43 | ⏳ ANALYZING
+2026-02-01 21:33:26,460 | INFO | [FLIGHT] 21:33:26 | MirrorGate   | ALLOW      | input:d5e041b6874f43 | ✅ ALLOW
+2026-02-01 21:33:26,462 | INFO | [FLIGHT] 21:33:26 | TwoLane      | ROUTE      | TOOL_DIRECT          | ⏳ ANALYZING
+2026-02-01 21:33:26,471 | INFO | [FLIGHT] 21:33:26 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     127.0.0.1:62544 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:33:26,764 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:33:26,764 | INFO | [FLIGHT] 21:33:26 | Groq         | ERROR      | status:404           | 💥 ERROR
+INFO:     127.0.0.1:62904 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62909 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64830 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64833 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50014 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50017 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51106 - "OPTIONS /mirror HTTP/1.1" 200 OK
+2026-02-01 21:47:20,503 | INFO | [FLIGHT] 21:47:20 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:47:20,515 | INFO | [FLIGHT] 21:47:20 | MirrorGate   | ANALYZE    | input:d5e041b6874f43 | ⏳ ANALYZING
+2026-02-01 21:47:20,515 | INFO | [FLIGHT] 21:47:20 | MirrorGate   | ALLOW      | input:d5e041b6874f43 | ✅ ALLOW
+2026-02-01 21:47:20,515 | INFO | [FLIGHT] 21:47:20 | TwoLane      | ROUTE      | TOOL_DIRECT          | ⏳ ANALYZING
+2026-02-01 21:47:20,517 | INFO | [FLIGHT] 21:47:20 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     127.0.0.1:51106 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:47:20,717 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:47:20,718 | INFO | [FLIGHT] 21:47:20 | Groq         | ERROR      | status:404           | 💥 ERROR
+INFO:     127.0.0.1:52033 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52036 - "GET /health HTTP/1.1" 200 OK
+INFO:     103.210.48.14:0 - "OPTIONS /mirror HTTP/1.1" 200 OK
+2026-02-01 21:50:34,585 | INFO | [FLIGHT] 21:50:34 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:50:34,586 | INFO | [FLIGHT] 21:50:34 | MirrorGate   | ANALYZE    | input:5c1940d2a11cd8 | ⏳ ANALYZING
+2026-02-01 21:50:34,586 | INFO | [FLIGHT] 21:50:34 | MirrorGate   | ALLOW      | input:5c1940d2a11cd8 | ✅ ALLOW
+2026-02-01 21:50:34,587 | INFO | [FLIGHT] 21:50:34 | TwoLane      | ROUTE      | CLARIFY              | ⏳ ANALYZING
+2026-02-01 21:50:34,588 | INFO | [FLIGHT] 21:50:34 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     103.210.48.14:0 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:50:34,688 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:50:34,689 | INFO | [FLIGHT] 21:50:34 | Groq         | ERROR      | status:404           | 💥 ERROR
+2026-02-01 21:50:51,146 | INFO | [FLIGHT] 21:50:51 | User         | MESSAGE    | len:6                | ⏳ ANALYZING
+2026-02-01 21:50:51,147 | INFO | [FLIGHT] 21:50:51 | MirrorGate   | ANALYZE    | input:90fade6fb78eaa | ⏳ ANALYZING
+2026-02-01 21:50:51,147 | INFO | [FLIGHT] 21:50:51 | MirrorGate   | ALLOW      | input:90fade6fb78eaa | ✅ ALLOW
+2026-02-01 21:50:51,147 | INFO | [FLIGHT] 21:50:51 | TwoLane      | ROUTE      | CLARIFY              | ⏳ ANALYZING
+2026-02-01 21:50:51,148 | INFO | [FLIGHT] 21:50:51 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     103.210.48.14:0 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:50:51,247 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:50:51,247 | INFO | [FLIGHT] 21:50:51 | Groq         | ERROR      | status:404           | 💥 ERROR
+2026-02-01 21:51:05,316 | INFO | [FLIGHT] 21:51:05 | User         | MESSAGE    | len:19               | ⏳ ANALYZING
+2026-02-01 21:51:05,318 | INFO | [FLIGHT] 21:51:05 | MirrorGate   | ANALYZE    | input:dc5aed6ac6d138 | ⏳ ANALYZING
+2026-02-01 21:51:05,318 | INFO | [FLIGHT] 21:51:05 | MirrorGate   | ALLOW      | input:dc5aed6ac6d138 | ✅ ALLOW
+2026-02-01 21:51:05,318 | INFO | [FLIGHT] 21:51:05 | TwoLane      | ROUTE      | CLARIFY              | ⏳ ANALYZING
+2026-02-01 21:51:05,318 | INFO | [FLIGHT] 21:51:05 | Groq         | REQUEST    | model:groq           | ⏳ ANALYZING
+INFO:     103.210.48.14:0 - "POST /mirror HTTP/1.1" 200 OK
+2026-02-01 21:51:05,432 | INFO | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-02-01 21:51:05,432 | INFO | [FLIGHT] 21:51:05 | Groq         | ERROR      | status:404           | 💥 ERROR
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5211]

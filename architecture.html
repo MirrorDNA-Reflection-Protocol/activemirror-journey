@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture — Active MirrorOS™ | N1 Intelligence</title>
+    <meta name="description" content="System architecture and technical specifications for Active MirrorOS™. Learn about the MirrorDNA protocol, memory layers, and governance mechanisms.">
+    <meta name="author" content="Paul Desai">
+    <link rel="canonical" href="https://activemirror.ai/architecture">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "name": "Active MirrorOS Architecture",
+        "headline": "System Architecture for Sovereign AI",
+        "description": "Technical architecture of the Active MirrorOS system including MirrorDNA protocol, memory layers, and governance mechanisms",
+        "url": "https://activemirror.ai/architecture",
+        "author": {
+            "@type": "Person",
+            "name": "Paul Desai"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "N1 Intelligence",
+            "url": "https://activemirror.ai"
+        },
+        "about": {
+            "@type": "SoftwareApplication",
+            "name": "Active MirrorOS",
+            "applicationCategory": "AI Operating System",
+            "operatingSystem": "Cross-platform"
+        }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --text: #e5e5e5;
+            --accent: #6366f1;
+            --muted: #737373;
+            --border: #262626;
+            --code-bg: #171717;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        nav { margin-bottom: 2rem; }
+        nav a { color: var(--muted); text-decoration: none; margin-right: 1.5rem; }
+        nav a:hover { color: var(--text); }
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; margin: 2rem 0 1rem 0; color: var(--accent); }
+        h3 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem 0; }
+        .subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 2rem; }
+        .glyph { font-size: 1.2rem; margin-right: 0.5rem; }
+        .layer {
+            border-left: 3px solid var(--accent);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .layer-name { font-weight: 600; color: var(--accent); }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+        .diagram {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        a { color: var(--accent); }
+        footer { margin-top: 4rem; color: var(--muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/mirror">Demo</a>
+            <a href="/research">Research</a>
+            <a href="/architecture">Architecture</a>
+            <a href="/governance">Governance</a>
+        </nav>
+        <h1><span class="glyph">⧈</span>Architecture</h1>
+        <p class="subtitle">System design for Active MirrorOS™ and MirrorDNA™ protocol</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>System Overview</h2>
+            <p>Active MirrorOS™ is a sovereign AI operating system built on the MirrorDNA™ protocol. It provides persistent AI identity, memory, and governance without centralized infrastructure.</p>
+
+            <div class="diagram">┌─────────────────────────────────────────────────────────┐
+│                    Active MirrorOS™                      │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │  MirrorGate │  │   Memory    │  │  Inference  │     │
+│  │  Governance │  │   Palace    │  │   Router    │     │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │
+│         │                │                │             │
+│         └────────────────┼────────────────┘             │
+│                          │                              │
+│                 ┌────────┴────────┐                     │
+│                 │   MirrorDNA™    │                     │
+│                 │    Protocol     │                     │
+│                 └────────┬────────┘                     │
+│                          │                              │
+│         ┌────────────────┼────────────────┐             │
+│         │                │                │             │
+│  ┌──────┴──────┐  ┌──────┴──────┐  ┌──────┴──────┐     │
+│  │   Local     │  │   Hybrid    │  │    Edge     │     │
+│  │   Models    │  │   Cloud     │  │   Devices   │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+└─────────────────────────────────────────────────────────┘</div>
+        </section>
+
+        <section>
+            <h2>Core Layers</h2>
+
+            <div class="layer">
+                <p><span class="layer-name">MirrorDNA Protocol</span></p>
+                <p>The foundational layer enabling identity persistence across sessions. Implements Structured Contextual Distillation (SCD) for memory without model modification.</p>
+                <p>Key files: <code>~/.mirrordna/</code>, <code>bus/</code>, <code>handoff.json</code></p>
+            </div>
+
+            <div class="layer">
+                <p><span class="layer-name">Memory Palace</span></p>
+                <p>Hierarchical memory system with hot (session), warm (recent), and cold (archival) layers. Implements semantic indexing via beacon glyphs.</p>
+                <p>Key components: <code>memory.db</code>, <code>chromadb/</code>, RAG server</p>
+            </div>
+
+            <div class="layer">
+                <p><span class="layer-name">MirrorGate Governance</span></p>
+                <p>Safety and governance layer with explicit constraints. All actions pass through governance checks before execution.</p>
+                <p>Key files: <code>intent.md</code>, <code>SAFETY_CONTRACT.md</code></p>
+            </div>
+
+            <div class="layer">
+                <p><span class="layer-name">Inference Consortium</span></p>
+                <p>Multi-provider inference routing with local fallback. Routes queries to optimal provider based on task type, cost, and availability.</p>
+                <p>Providers: Groq, DeepSeek, Mistral, OpenAI, Ollama (local)</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Memory Bus Protocol</h2>
+            <p>The Memory Bus is the single source of truth for system state. All agents read from and write to the bus.</p>
+
+            <pre><code># Read current state
+bus read
+
+# Write after session
+bus write "Session summary" --json '{"phase": "done"}'
+
+# Check health
+bus health</code></pre>
+        </section>
+
+        <section>
+            <h2>Beacon Glyphs</h2>
+            <p>Semantic retrieval anchors embedded in artifacts:</p>
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li><strong>⟡</strong> — Reflection over prediction</li>
+                <li><strong>⧉</strong> — Governance before generation</li>
+                <li><strong>⧈</strong> — Memory without reification</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Specifications</h2>
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li><a href="/specs/amds">AMDS v1.0</a> — Discoverability System</li>
+                <li><a href="/governance">MirrorGate v4</a> — Safety Specification</li>
+                <li><a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorDNA-Standard">MirrorDNA Standard</a> — Protocol Specification</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 N1 Intelligence · <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a></p>
+    </footer>
+</body>
+</html>

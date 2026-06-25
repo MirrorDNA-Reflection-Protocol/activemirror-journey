@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond RAG — Active Mirror</title>
+    <meta name="description" content="Active Mirror blog: Beyond RAG">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="" style="height: 28px; filter: invert(1);">Active
+                Mirror</a>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+    <article class="section" style="padding-top: 60px;">
+        <div class="container" style="max-width: 700px;">
+            <div style="color: var(--accent-color); font-family: monospace; margin-bottom: 16px;">Dec 31, 2025 ·
+                Engineering</div>
+            <h1 style="margin-bottom: 32px; font-size: 2.5rem;">Beyond RAG: Why You Need a Vault, Not Just a Vector DB
+            </h1>
+            <p class="text-secondary" style="font-size: 1.2rem; margin-bottom: 40px;">Vector similarity is fuzzy. Truth
+                is precise. The case for graph-based memory.</p>
+
+            <div class="content" style="line-height: 1.8; color: var(--text-secondary);">
+                <p>Retrieval-Augmented Generation (RAG) is the current gold standard for giving AI memory. You chunk
+                    your documents, embed them into vectors, and perform a cosine similarity search.</p>
+
+                <p>It works for broad queries. It fails for precise knowledge.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">The "Vector Soup" Problem
+                </h3>
+                <p>If you ask a RAG system "Who is the CEO?", it might retrieve a document from 2020 and a document from
+                    2025. It sees them as semantically similar ("documents about CEOs"). It doesn't inherently
+                    understand <em>time</em> or <em>currency</em>.</p>
+
+                <p>Vectors are probabilistic. They tell you what things "feel" alike. They don't tell you what things
+                    <em>are</em>.</p>
+
+                <h3 style="color: var(--text-primary); margin-top: 40px; margin-bottom:16px;">Enter the Knowledge Graph
+                    (The Vault)</h3>
+                <p>Active Mirror uses a hybrid memory architecture we call "The Vault." It combines:</p>
+                <ol style="margin: 24px 0; padding-left: 20px;">
+                    <li><strong>Vector Store:</strong> For fuzzy semantic search ("Find concepts related to privacy").
+                    </li>
+                    <li><strong>Lineage Graph:</strong> For strict relationships ("Document A supersedes Document B").
+                    </li>
+                    <li><strong>Truth-State Ledger:</strong> For fact verification ("This entity was verified as CEO on
+                        2025-12-01").</li>
+                </ol>
+
+                <p>When you query Active Mirror, it doesn't just do a similarity search. It traverses the graph. It
+                    checks the timestamps. It verifies the cryptographic signature of the source file. This is how we
+                    move from "hallucination-resistant" to "truth-enforced."</p>
+            </div>
+        </div>
+    </article>
+    <footer style="border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 40px;">
+        <div class="container text-center">
+            <p class="text-secondary">© 2025 N1 Intelligence</p>
+        </div>
+    </footer>
+</body>
+
+</html>

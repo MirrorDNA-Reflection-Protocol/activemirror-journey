@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Architecture — Active Mirror</title>
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/architecture/">
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Mermaid JS for Diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+    </script>
+
+    <meta name="description"
+        content="Active Mirror System Architecture: Dual-node grid (M4 Hub + M1 Adversary), Mobile third node, and Tailscale mesh topology.">
+</head>
+
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; filter: invert(1); margin-right:8px;">Active Mirror</a>
+            <button class="mobile-menu-btn">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero" style="padding-bottom: 40px;">
+            <div class="container">
+                <h1>The Adversarial Grid</h1>
+                <p>A physically distributed, multi-node architecture designed for self-correction and resilience.</p>
+            </div>
+        </section>
+
+        <!-- Topology Diagram -->
+        <section class="section" style="padding-top: 0;">
+            <div class="container text-center">
+                <div
+                    style="background: rgba(255,255,255,0.02); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
+                    <pre class="mermaid">
+                    graph TD
+                        subgraph "NODE 1: THE HUB (M4 Max)"
+                            A[Active Mirror OS] --> B[Ollama: Think]
+                            A --> C[Docker Services]
+                            C --> D[SearXNG]
+                            C --> E[Open-WebUI]
+                        end
+
+                        subgraph "NODE 2: ADVERSARY (M1 Max)"
+                            F[Truth Scanner] --> G[Ollama: AMI]
+                            F --> H[Red Team Loops]
+                        end
+
+                        subgraph "NODE 3: FIELD AGENT (Pixel 9)"
+                            I[MirrorBrain Mobile] --> J[ExecuTorch Llama]
+                            I --> K[Mic/Cam Sensors]
+                        end
+
+                        B <--> G
+                        E <--> I
+                        H -.-> A
+                        
+                        style A fill:#1e1e2e,stroke:#6366f1,stroke-width:2px
+                        style F fill:#1e1e2e,stroke:#ef4444,stroke-width:2px
+                        style I fill:#1e1e2e,stroke:#10b981,stroke-width:2px
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hardware Specs -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 48px;">Hardware Specifications</h2>
+                <div class="grid grid-3-cols">
+
+                    <!-- Node 1 -->
+                    <div class="card">
+                        <h3 style="color: var(--accent-color);">Node 1: The Hub</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 16px;">Primary orchestration and heavy inference.
+                        </p>
+                        <ul
+                            style="list-style: none; padding: 0; color: var(--text-secondary); line-height: 1.6; font-size: 0.9rem;">
+                            <li><strong>Device:</strong> MacBook Pro (M4 Max)</li>
+                            <li><strong>RAM:</strong> 128GB Unified</li>
+                            <li><strong>Role:</strong> Host of Active Mirror OS</li>
+                            <li><strong>Models:</strong> Llama 3.1 70B, Qwen 2.5 72B</li>
+                            <li><strong>Services:</strong> Docker, Vector DB, WebUI</li>
+                        </ul>
+                    </div>
+
+                    <!-- Node 2 -->
+                    <div class="card">
+                        <h3 style="color: #ef4444;">Node 2: The Adversary</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 16px;">Dedicated red-teaming and truth verification.
+                        </p>
+                        <ul
+                            style="list-style: none; padding: 0; color: var(--text-secondary); line-height: 1.6; font-size: 0.9rem;">
+                            <li><strong>Device:</strong> MacBook Pro (M1 Max)</li>
+                            <li><strong>RAM:</strong> 64GB Unified</li>
+                            <li><strong>Role:</strong> Truth Scanner & Drift Monitor</li>
+                            <li><strong>Models:</strong> Llama 3.2 3B (Fast checks)</li>
+                            <li><strong>Logic:</strong> "Trust but Verify" Loop</li>
+                        </ul>
+                    </div>
+
+                    <!-- Node 3 -->
+                    <div class="card">
+                        <h3 style="color: #10b981;">Node 3: Field Agent</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 16px;">Input collection and context gathering.</p>
+                        <ul
+                            style="list-style: none; padding: 0; color: var(--text-secondary); line-height: 1.6; font-size: 0.9rem;">
+                            <li><strong>Device:</strong> Pixel 9 Pro</li>
+                            <li><strong>Chip:</strong> Google Tensor G4</li>
+                            <li><strong>Role:</strong> Voice/Image Input, Context</li>
+                            <li><strong>Models:</strong> Llama 3.2 3B (ExecuTorch)</li>
+                            <li><strong>OS:</strong> GrapheneOS (De-Googled)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Network -->
+        <section class="section" style="background: rgba(255,255,255,0.02);">
+            <div class="container">
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+                    <div>
+                        <h2>The Mesh Network</h2>
+                        <p class="text-secondary" style="margin-bottom: 24px;">
+                            Nodes communicate via a private, encrypted mesh network using <strong>Tailscale</strong>.
+                            This allows the "Field Agent" (Phone) to talk to the "Hub" (Desktop) securely from anywhere
+                            in the world,
+                            without exposing ports to the public internet.
+                        </p>
+                        <ul style="list-style: none; padding: 0; line-height: 2;">
+                            <li>✓ End-to-End Encrypted (WireGuard)</li>
+                            <li>✓ No Open Ports</li>
+                            <li>✓ Direct P2P Connections</li>
+                            <li>✓ DNS Magic for device naming</li>
+                        </ul>
+                    </div>
+                    <div class="code-block" style="margin: 0;">
+                        # example_topology.json
+                        {
+                        "mesh": "tailscale0",
+                        "nodes": [
+                        {
+                        "id": "active-mirror-hub",
+                        "ip": "100.x.y.z",
+                        "role": "master"
+                        },
+                        {
+                        "id": "mirror-adversary",
+                        "ip": "100.a.b.c",
+                        "role": "audit"
+                        },
+                        {
+                        "id": "mirror-mobile",
+                        "ip": "100.m.n.o",
+                        "role": "client"
+                        }
+                        ]
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            <div class="copyright">&copy; 2026 Active Mirror.</div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

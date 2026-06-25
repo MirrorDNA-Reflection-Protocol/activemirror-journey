@@ -1,0 +1,11 @@
+Contact: mailto:paul@activemirror.ai
+Preferred-Languages: en
+Canonical: https://activemirror.ai/.well-known/security.txt
+Policy: https://activemirror.ai/privacy/
+Acknowledgments: https://activemirror.ai/security-acknowledgments/
+Expires: 2026-12-31T23:59:00.000Z
+
+# Active Mirror Security Contact
+# We take security seriously. If you find a vulnerability,
+# please report it responsibly to the email above.
+# We will acknowledge your contribution if you wish.

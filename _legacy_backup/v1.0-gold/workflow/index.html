@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflection Workflow — Active Mirror</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/workflow/">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="How Active Mirror uses multi-model reflection to guarantee truth and prevent hallucination.">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="padding: 120px 0 60px;">
+        <div class="container text-center">
+            <h1>The Reflection Workflow</h1>
+            <p style="max-width: 600px; margin: 0 auto; color: var(--text-secondary);">
+                How we achieve <span
+                    style="color: var(--text-primary); font-weight: 600;">Hallucination-Resistance</span>
+                using multi-model consensus and truth-state enforcement.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <!-- Diagram -->
+            <div
+                style="max-width: 600px; margin: 0 auto 80px; position: relative; padding-left: 40px; border-left: 2px solid var(--border-color);">
+
+                <!-- Step 1 -->
+                <div style="position: relative; margin-bottom: 60px;">
+                    <div
+                        style="position: absolute; left: -51px; top: 0; width: 20px; height: 20px; background: var(--bg-color); border: 2px solid var(--text-secondary); border-radius: 50%;">
+                    </div>
+                    <h3 style="margin-bottom: 8px;">1. User Input</h3>
+                    <p class="text-secondary">"Draft a contract based on our standard NDA."</p>
+                    <div
+                        style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; margin-top: 12px; font-family: monospace; font-size: 0.9rem;">
+                        <span style="color: grey;">></span> Input received via WebUI / CLI
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div style="position: relative; margin-bottom: 60px;">
+                    <div
+                        style="position: absolute; left: -51px; top: 0; width: 20px; height: 20px; background: var(--bg-color); border: 2px solid var(--accent-color); border-radius: 50%;">
+                    </div>
+                    <h3 style="margin-bottom: 8px; color: var(--accent-color);">2. AMGL Guard Check</h3>
+                    <p class="text-secondary">Pre-inference security scan. Checks for prompt injection, jailbreaks, and
+                        PII leakage.</p>
+                    <div
+                        style="background: rgba(168, 85, 247, 0.1); padding: 12px; border-radius: 6px; margin-top: 12px; font-family: monospace; font-size: 0.9rem; border: 1px solid rgba(168, 85, 247, 0.3);">
+                        <span style="color: #a855f7;">✔</span> AMGL_STATUS: PASS
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div style="position: relative; margin-bottom: 60px;">
+                    <div
+                        style="position: absolute; left: -51px; top: 0; width: 20px; height: 20px; background: var(--bg-color); border: 2px solid var(--text-secondary); border-radius: 50%;">
+                    </div>
+                    <h3 style="margin-bottom: 8px;">3. Vault Retrieval (RAG)</h3>
+                    <p class="text-secondary">Query local vector store for "Standard NDA". Fetch context from your
+                        filesystem.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div style="position: relative; margin-bottom: 60px;">
+                    <div
+                        style="position: absolute; left: -51px; top: 0; width: 20px; height: 20px; background: var(--bg-color); border: 2px solid var(--text-secondary); border-radius: 50%;">
+                    </div>
+                    <h3 style="margin-bottom: 8px;">4. Generation (Model A)</h3>
+                    <p class="text-secondary">Primary model (e.g., Claude 3.5 Sonnet) generates the draft.</p>
+                </div>
+
+                <!-- Step 5 -->
+                <div style="position: relative; margin-bottom: 60px;">
+                    <div
+                        style="position: absolute; left: -51px; top: 0; width: 20px; height: 20px; background: var(--bg-color); border: 2px solid var(--accent-color); border-radius: 50%;">
+                    </div>
+                    <h3 style="margin-bottom: 8px; color: var(--accent-color);">5. Reflection (Model B)</h3>
+                    <p class="text-secondary">Secondary model (e.g., GPT-4o or Local Llama 3) critiques the output
+                        against the retrieved context.</p>
+                    <div
+                        style="background: rgba(168, 85, 247, 0.1); padding: 12px; border-radius: 6px; margin-top: 12px; font-family: monospace; font-size: 0.9rem; border: 1px solid rgba(168, 85, 247, 0.3);">
+                        <span style="color: #a855f7;">?</span> Truth Check: VERIFYING...<br>
+                        <span style="color: #a855f7;">✔</span> Compliance: MATCH
+                    </div>
+                </div>
+
+                <!-- Step 6 -->
+                <div style="position: relative;">
+                    <div
+                        style="position: absolute; left: -51px; top: 0; width: 20px; height: 20px; background: var(--accent-color); border: 2px solid var(--accent-color); border-radius: 50%;">
+                    </div>
+                    <h3 style="margin-bottom: 8px;">6. Final Output</h3>
+                    <p class="text-secondary">Validated response presented to user. Signed with SHA256 hash.</p>
+                </div>
+
+            </div>
+
+            <div class="text-center">
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" class="btn btn-primary">Read
+                    Technical Docs →</a>
+            </div>
+
+        </div>
+    </section>
+
+    <footer style="border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 40px;">
+        <div class="container text-center">
+            <p class="text-secondary">© 2025 N1 Intelligence</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector(".mobile-menu-btn");
+        const navLinks = document.querySelector(".nav-links");
+        if (menuBtn) {
+            menuBtn.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+                menuBtn.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
+            });
+        }
+    </script>
+</body>
+
+</html>

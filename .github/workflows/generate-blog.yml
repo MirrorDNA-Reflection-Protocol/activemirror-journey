@@ -1,0 +1,49 @@
+name: Generate Weekly Blog Post
+
+on:
+  schedule:
+    # Runs every Sunday at 9:00 AM IST (3:30 AM UTC)
+    - cron: '30 3 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+jobs:
+  generate-blog:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install openai python-slugify
+
+      - name: Generate blog post
+        run: python scripts/generate_blog.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Update blog index
+        run: python scripts/update_blog_index.py
+
+      - name: Update RSS feed
+        run: python scripts/update_feed.py
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Blog Bot"
+          git add -A
+          git diff --staged --quiet || git commit -m "📝 Auto-generated weekly blog post - $(date +'%Y-%m-%d')"
+          git push

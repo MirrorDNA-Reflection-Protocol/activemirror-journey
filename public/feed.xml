@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Active Mirror Blog</title>
+    <description>Insights on sovereign AI, local LLMs, identity persistence, and the future of human-AI collaboration.</description>
+    <link>https://activemirror.ai/blog/</link>
+    <atom:link href="https://activemirror.ai/feed.xml" rel="self" type="application/rss+xml"/>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 29 Dec 2024 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>The Importance of Local LLMs for Privacy Protection</title>
+      <link>https://activemirror.ai/blog/posts/2025-12-29-the-importance-of-local-llms-for-privacy-protection.html</link>
+      <description>Discover why running LLMs locally is essential for privacy. Learn about sovereign AI infrastructure and data ownership.</description>
+      <pubDate>Sun, 29 Dec 2024 00:00:00 +0000</pubDate>
+      <guid>https://activemirror.ai/blog/posts/2025-12-29-the-importance-of-local-llms-for-privacy-protection.html</guid>
+      <category>AI Sovereignty</category>
+    </item>
+  </channel>
+</rss>

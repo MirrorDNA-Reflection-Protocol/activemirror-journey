@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Active Mirror</title>
+    <meta name="description" content="Sovereign AI that runs in your browser. No cloud. No tracking. You own it.">
+    <link rel="stylesheet" href="app.css?v=20250103">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⟡</text></svg>">
+    <script>
+        // Force unregister old service workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (var reg of registrations) {
+                    reg.unregister();
+                    console.log('Unregistered SW:', reg.scope);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Welcome / Model Selection -->
+    <div id="view-welcome" class="view">
+        <div class="welcome-container">
+            <div class="logo">
+                <span class="glyph">⟡</span>
+                <h1>Active Mirror</h1>
+                <p class="tagline">Sovereign AI. Runs locally. You own it.</p>
+            </div>
+
+            <div class="model-section">
+                <h2>Choose Your Model</h2>
+                <p class="model-hint">Click to download and start</p>
+                <div class="model-grid" id="model-grid">
+                    <!-- Models injected by JS -->
+                </div>
+            </div>
+
+            <div class="privacy-note">
+                <span>🔒</span> Everything runs in your browser. No data leaves your device.
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="view-loading" class="view hidden">
+        <div class="loading-container">
+            <div class="loading-ring">
+                <svg viewBox="0 0 100 100">
+                    <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+                    <circle class="ring-progress" id="progress-ring" cx="50" cy="50" r="45"></circle>
+                </svg>
+                <div class="loading-percent" id="loading-percent">0%</div>
+            </div>
+            <div class="loading-status" id="loading-status">Initializing...</div>
+        </div>
+    </div>
+
+    <!-- Chat -->
+    <div id="view-chat" class="view hidden">
+        <header class="chat-header">
+            <div class="header-left">
+                <span class="glyph">⟡</span>
+                <span>Active Mirror</span>
+            </div>
+            <div class="header-right">
+                <span class="badge">Local</span>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="chat-messages"></div>
+
+        <div class="chat-input-wrapper">
+            <div class="suggestions" id="suggestions">
+                <button class="suggestion-chip" data-prompt="Help me think through a decision I'm facing">Decision
+                    help</button>
+                <button class="suggestion-chip" data-prompt="What makes you different from ChatGPT?">Why local
+                    AI?</button>
+                <button class="suggestion-chip" data-prompt="Explain how you work technically">How it works</button>
+            </div>
+
+            <div class="input-row">
+                <textarea id="user-input" placeholder="What's on your mind?" rows="1"></textarea>
+                <button id="btn-send" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="app.js?v=20250103"></script>
+</body>
+
+</html>

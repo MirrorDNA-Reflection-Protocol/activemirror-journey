@@ -1,0 +1,91 @@
+{
+    "safety": {
+        "crisis_patterns": [
+            "\\b(suicide|suicidal|kill myself|end(ing)? my life|want to die|don\\'?t want to live)\\b",
+            "\\b(self.?harm|cut myself|hurt myself|cutting|burn myself|starve myself)\\b",
+            "\\b(take my (own )?life|better off dead|no reason to live)\\b",
+            "\\b(overdose|take all the pills|swallow pills)\\b",
+            "\\b(jump off|jump from|hang myself|shoot myself|drown myself)\\b",
+            "\\b(planning to die|ready to die|going to die tonight)\\b",
+            "\\b(final goodbye|this is goodbye|won\\'?t be here tomorrow)\\b",
+            "\\b(wrote a (suicide )?note|leaving a note)\\b",
+            "\\b(being abused|abusing me|hits me|beats me|hurts me)\\b",
+            "\\b(rape|raped|sexual assault|molest)\\b",
+            "\\b(domestic violence|partner violence)\\b",
+            "\\b(going to hurt|planning to hurt|want to hurt someone)\\b",
+            "\\b(kill (him|her|them|someone))\\b"
+        ],
+        "illegal_patterns": [
+            "\\b(how to (make|build|create) (a |)(bomb|explosive|weapon))\\b",
+            "\\b(synthesize|manufacture) (drugs|meth|fentanyl)\\b",
+            "\\b(child porn|csam|cp|underage)\\b",
+            "\\b(hack into|exploit vulnerability|sql injection|malware)\\b",
+            "\\b(traffic|smuggle) (humans|people|children)\\b",
+            "\\b(launder money|money laundering|tax evasion)\\b",
+            "\\b(hire (a |)(hitman|assassin)|kill someone)\\b",
+            "\\b(forge (documents|passport|id))\\b"
+        ],
+        "domain_patterns": {
+            "medical": [
+                "\\b(medication|medicine|drug|pill|dosage|prescription|diagnosis|symptom|treatment)\\b"
+            ],
+            "legal": [
+                "\\b(lawsuit|sue|lawyer|attorney|legal|court|police|arrest|custody|divorce)\\b"
+            ],
+            "financial": [
+                "\\b(invest|stock|crypto|bitcoin|trading|gambling|bet|portfolio|retirement)\\b"
+            ]
+        },
+        "jailbreak_patterns": [
+            "ignore (your |all |previous |)instructions",
+            "pretend (you are|to be|you\\'re)",
+            "you are now",
+            "act as (a |my |)(doctor|lawyer|therapist|advisor)",
+            "roleplay as",
+            "disregard (your |all |)guidelines",
+            "bypass (your |)safety"
+        ],
+        "manipulation_patterns": [
+            "just tell me what to do",
+            "you\\'?re the only one",
+            "only one who (gets|understands|knows)",
+            "between us",
+            "our (little |)secret"
+        ]
+    },
+    "schemas": {
+        "reflection_mode": {
+            "required_sections": [
+                "⟡ What you're deciding:",
+                "⧈ What you're assuming:",
+                "⧉ What's at stake:",
+                "?"
+            ],
+            "forbidden_patterns": [
+                "\\byou should\\b",
+                "\\byou must\\b",
+                "\\byou need to\\b",
+                "\\bi recommend\\b",
+                "\\bi suggest\\b",
+                "\\bi advise\\b",
+                "\\btry this\\b",
+                "\\bconsider\\b",
+                "\\bwhy don\\'t you\\b",
+                "\\bhave you tried\\b",
+                "\\bthe best\\b",
+                "\\bdefinitely\\b",
+                "\\bcertainly\\b",
+                "\\babsolutely\\b",
+                "\\bguaranteed\\b",
+                "\\bstudies show\\b",
+                "\\baccording to\\b",
+                "\\d+(\\.\\d+)?%",
+                "https?://"
+            ],
+            "length_limits": {
+                "min": 100,
+                "max": 1000
+            }
+        }
+    }
+}

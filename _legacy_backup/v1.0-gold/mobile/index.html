@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MirrorBrain Mobile — Active Mirror</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/mobile/">
+
+    <!-- Design & Fonts -->
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Meta Tags -->
+    <meta name="description"
+        content="MirrorBrain Mobile: Your sovereign phone launcher. On-device LLM (llama.rn), 4-panel interface, and full vault sync. Built in 25 minutes.">
+    <meta property="og:title" content="MirrorBrain Mobile — Active Mirror">
+    <meta property="og:description"
+        content="MirrorBrain Mobile: Your sovereign phone launcher. On-device LLM (llama.rn), 4-panel interface, and full vault sync.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo" aria-label="Active Mirror Home"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div
+                    style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 24px;">
+                    <span style="color: var(--accent-color);">⟡</span>
+                    MirrorBrain Mobile v2.0
+                </div>
+                <h1>Your Phone. Your Mirror.<br>Your Rules.</h1>
+                <p>The sovereign launcher that replaces your home screen. On-device intelligence, direct vault access,
+                    and zero tracking.</p>
+
+                <div class="buttons">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorBrain-Mobile"
+                        class="btn btn-primary" target="_blank">View on GitHub →</a>
+                    <a href="#specs" class="btn btn-secondary">See Specs</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4-Panel UI Showcase -->
+        <section class="section" style="background: rgba(255,255,255,0.02); border-top: 1px solid var(--border-color);">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 48px;">The 4-Panel Interface</h2>
+                <div class="grid features-grid">
+                    <div class="card">
+                        <span class="card-icon">⚡</span>
+                        <h3>NOW</h3>
+                        <p>Immediate context. Weather, next meeting, critical notifications. No doomscrolling, just what
+                            matters right now.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">💬</span>
+                        <h3>ASK</h3>
+                        <p>Direct interface to on-device LLM (Qwen 2.5 via llama.rn). Voice input powered by Whisper.
+                            Private, offline, fast.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">🔐</span>
+                        <h3>VAULT</h3>
+                        <p>Your second brain. Full read/write access to your Obsidain MirrorDNA vault. Synced securely
+                            to your desktop.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">⚡</span>
+                        <h3>ACTIONS</h3>
+                        <p>One-tap macros. "Capture Thought", "Log Decision", "Start Protocol". Programmable intent
+                            buttons.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specs -->
+        <section id="specs" class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">Under the Glass</h2>
+                <div class="grid grid-3-cols">
+                    <div class="card">
+                        <h3>Compute</h3>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary); line-height: 1.8;">
+                            <li><strong>Model:</strong> Qwen 2.5 1.5B (Quantized)</li>
+                            <li><strong>Runtime:</strong> llama.rn (React Native)</li>
+                            <li><strong>Hardware:</strong> Pixel 9 Pro (Tensor G4)</li>
+                            <li><strong>Inference:</strong> ~15 t/s (On-Device)</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>OS & Security</h3>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary); line-height: 1.8;">
+                            <li><strong>OS:</strong> GrapheneOS Compatible</li>
+                            <li><strong>Network:</strong> Tailscale Mesh (Direct to Hub)</li>
+                            <li><strong>Sync:</strong> Syncthing (P2P, Encrypted)</li>
+                            <li><strong>Permissions:</strong> Granular & Revocable</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Development</h3>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary); line-height: 1.8;">
+                            <li><strong>Stack:</strong> React Native</li>
+                            <li><strong>Velocity:</strong> "From Idea to Build in 25 Mins"</li>
+                            <li><strong>License:</strong> MIT Open Source</li>
+                            <li><strong>Repo:</strong> Public on GitHub</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Velocity Story -->
+        <section class="section"
+            style="background: rgba(168, 85, 247, 0.05); border-top: 1px solid var(--accent-color); border-bottom: 1px solid var(--accent-color);">
+            <div class="container text-center">
+                <h2 style="color: var(--accent-color); margin-bottom: 16px;">The Velocity Story</h2>
+                <p style="max-width: 700px; margin: 0 auto 32px; font-size: 1.1rem;">
+                    This wasn't a 6-month project. It was built in 25 minutes using the Active Mirror Orchestrator.
+                    We proved that with the right kernel, you can manifest software at the speed of thought.
+                </p>
+                <a href="/orchestration/" class="btn btn-primary">Read the Case Study →</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4><img src="/assets/logo.png" alt="" style="height: 20px; filter: invert(1);"> Active Mirror</h4>
+                    <p>Sovereignty is the new luxury.</p>
+                </div>
+                <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 Active Mirror. MIT Licensed.
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

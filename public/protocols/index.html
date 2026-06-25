@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocols — Active Mirror</title>
+    <link rel="canonical" href="https://activemirror.ai/protocols/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="Open protocols for sovereign AI: SCD Protocol, MirrorDNA, Truth-State Classification, and more. Adoptable standards, not proprietary tools.">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror"
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="padding: 120px 0 60px;">
+        <div class="container">
+            <p class="text-accent"
+                style="margin-bottom: 16px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;">Open
+                Standards</p>
+            <h1>Protocols</h1>
+            <p class="text-secondary" style="max-width: 600px; margin: 0 auto;">Open standards for sovereign AI.
+                Adoptable by anyone. Owned by no one.</p>
+        </div>
+    </section>
+
+    <div class="container" style="max-width: 900px; padding-bottom: 80px;">
+
+        <!-- Introduction -->
+        <section style="margin-bottom: 64px;">
+            <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.1rem;">
+                These aren't proprietary tools. They're open standards. We've published them, documented them, and
+                released them under MIT license so anyone can implement them. The goal isn't lock-in — it's
+                infrastructure that outlasts any single company.
+            </p>
+        </section>
+
+        <!-- Protocols Grid -->
+        <section class="grid" style="grid-template-columns: 1fr; gap: 32px;">
+
+            <!-- SCD Protocol -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h3 style="color: var(--accent-color); margin-bottom: 8px;">⟡ SCD Protocol v3.1</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Structured Claim Discipline</p>
+                    </div>
+                    <a href="https://zenodo.org/records/17787619" target="_blank" rel="noopener"
+                        style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">
+                        DOI: 10.5281/zenodo.17787619
+                    </a>
+                </div>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    The core governance protocol. Classifies every claim as FACT, ESTIMATE, or UNKNOWN. Enforces
+                    truth-state discipline across AI responses. Prevents confident wrongness through structural design.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://zenodo.org/records/17787619" target="_blank" rel="noopener"
+                        class="text-accent">Read
+                        the paper →</a>
+                </div>
+            </div>
+
+            <!-- MirrorDNA Protocol -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">△ MirrorDNA Protocol v1.0</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Identity Reflection Standard</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    Portable, user-sovereign identity format. The MIRROR SEED spec that allows your identity to work
+                    across any AI platform. You own the file. You control where it goes.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorDNA-Docs#readme" target="_blank"
+                        rel="noopener" class="text-accent">Documentation →</a>
+                </div>
+            </div>
+
+            <!-- Truth-State Classification -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">◈ Truth-State Classification v1.0</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">FACT / ESTIMATE / UNKNOWN</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    Every claim must declare its confidence level. FACT (verified, citeable), ESTIMATE (reasoned but
+                    uncertain), or UNKNOWN (explicit uncertainty). No more confident wrongness.
+                </p>
+                <div
+                    style="margin-top: 16px; font-family: monospace; font-size: 0.85rem; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                    <span style="color: #10b981;">FACT:</span> Verified claim with source<br>
+                    <span style="color: #f59e0b;">ESTIMATE:</span> Reasoned but uncertain<br>
+                    <span style="color: #6b7280;">UNKNOWN:</span> I don't know
+                </div>
+            </div>
+
+            <!-- AMGL Guard -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">⧉ AMGL Guard v1.0</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Active Mirror Governance Layer</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    The security gating layer. Validates requests before they reach the AI. Enforces boundaries,
+                    prevents prompt injection, maintains integrity. Red-team tested.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/AMGL-Guard#readme" target="_blank"
+                        rel="noopener" class="text-accent">View on GitHub →</a>
+                </div>
+            </div>
+
+            <!-- Identity Kernel -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">⟡ Identity Kernel v1.1</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">AMI (Active Mirror Identity)</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    The JSON schema for machine-readable identity. Includes human profile, communication preferences,
+                    governance rules, and continuity chain. The foundation of sovereign AI identity.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity#readme"
+                        target="_blank" rel="noopener" class="text-accent">Specification →</a>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- New Protocols Row -->
+        <section class="grid" style="grid-template-columns: 1fr; gap: 32px; margin-top: 32px;">
+
+            <!-- Truth Scanner Protocol -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">◈ Truth Scanner Protocol v1.0</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Automated Verification</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    A dedicated adversarial loop that scans all AI outputs for truth-state violations. If a FACT claim
+                    is made without citation, the scanner flags it. If an ESTIMATE is presented as certainty, it
+                    downgrades it.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS/tree/main/DesktopCommander/05_truth_scanner.py"
+                        target="_blank" rel="noopener" class="text-accent">View Scanner Code →</a>
+                </div>
+            </div>
+
+            <!-- Self-Healing Loop Protocol -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">△ Self-Healing Loop Protocol v1.0</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Adversarial Correction</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    The system doesn't just fail; it repairs. When the Truth Scanner detects drift, the Self-Healing
+                    Loop triggers an immediate correction cycle, updating the kernel state without human intervention.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS/tree/main/DesktopCommander/07_self_healing_loop.py"
+                        target="_blank" rel="noopener" class="text-accent">View Loop Logic →</a>
+                </div>
+            </div>
+
+            <!-- Daily Briefing Protocol -->
+            <div style="padding: 32px; border: 1px solid var(--border-color); border-radius: 12px;">
+                <h3 style="color: var(--accent-color); margin-bottom: 8px;">⧉ Daily Briefing Protocol v1.0</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Context Synthesis</p>
+                <p style="color: var(--text-secondary); margin-top: 16px; line-height: 1.7;">
+                    Automated pre-dawn synthesis of open loops, calendar events, and vault notes. The AI "wakes up"
+                    before you do, preparing a structured briefing document for your review.
+                </p>
+                <div style="margin-top: 16px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS/tree/main/DesktopCommander/06_daily_briefing.py"
+                        target="_blank" rel="noopener" class="text-accent">View Briefing Code →</a>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Adoption -->
+        <section style="margin-top: 64px; text-align: center;">
+            <h2 style="margin-bottom: 24px;">Implement These Protocols</h2>
+            <p
+                style="color: var(--text-secondary); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                All protocols are MIT licensed. You can implement them in your own systems, contribute improvements, or
+                build compatible tools. The goal is interoperability, not vendor lock-in.
+            </p>
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol#readme" target="_blank" rel="noopener"
+                    class="btn btn-secondary" style="padding: 12px 24px;">View All Repositories →</a>
+                <a href="/contact/" class="btn btn-primary" style="padding: 12px 24px;">Discuss Implementation →</a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4><img src="/assets/logo.png" alt=""
+                            style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                        Mirror</h4>
+                    <p>Built by Paul Desai<br>N1 Intelligence (OPC) Pvt Ltd<br>Goa, India</p>
+                </div>
+                <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            </div>
+            <div class="copyright">
+                © 2025-2026 N1 Intelligence. Open source under MIT.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    </script>
+</body>
+
+</html>

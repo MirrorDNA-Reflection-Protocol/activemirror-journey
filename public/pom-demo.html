@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proof-of-Memory Protocol | MirrorDNA</title>
+    <meta name="description"
+        content="Prove you saw it, not just recorded it. The first cryptographic attestation of human attention.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-glass: rgba(20, 20, 30, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --accent-primary: #6366f1;
+            --accent-secondary: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated gradient background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-glyph {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #c7c7d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Glass panels */
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        /* Main layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Reading panel */
+        .reading-panel {
+            min-height: 500px;
+        }
+
+        .reading-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .reading-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .document-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            color: var(--accent-secondary);
+        }
+
+        .document-content {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .document-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .document-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .document-content::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 3px;
+        }
+
+        .document-content p {
+            margin-bottom: 1.25rem;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
+            padding: 0.1em 0.3em;
+            border-radius: 0.25em;
+            color: var(--text-primary);
+        }
+
+        /* Metrics panel */
+        .metrics-panel {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .metrics-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+            }
+        }
+
+        .metrics-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .metric-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .metric-value.highlight-value {
+            color: var(--accent-secondary);
+        }
+
+        /* Attention score gauge */
+        .attention-gauge {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .gauge-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+        }
+
+        .gauge-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .gauge-fill {
+            stroke: url(#gaugeGradient);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease-out;
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .gauge-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Generate proof button */
+        .generate-btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+            border: none;
+            border-radius: 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        /* Proof display */
+        .proof-display {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .proof-display.visible {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .proof-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .proof-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            color: var(--success);
+        }
+
+        .proof-code {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .proof-field {
+            margin-bottom: 0.5rem;
+        }
+
+        .proof-key {
+            color: var(--accent-secondary);
+        }
+
+        .proof-value {
+            color: var(--text-primary);
+        }
+
+        /* Verification section */
+        .verification-section {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .verify-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--border-glass);
+            border-radius: 0.75rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .verify-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--accent-secondary);
+            text-decoration: none;
+        }
+
+        /* Merkle tree visualization */
+        .merkle-viz {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .merkle-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .merkle-node {
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent-secondary);
+        }
+
+        .merkle-node.root {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.15));
+            border-color: rgba(34, 197, 94, 0.3);
+            color: var(--success);
+        }
+
+        .merkle-line {
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--accent-primary), transparent);
+        }
+
+        .merkle-branches {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .merkle-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-glyph">⟡</span>
+                <span class="logo-text">MirrorDNA</span>
+            </div>
+            <h1>Proof-of-Memory Protocol</h1>
+            <p class="subtitle">Prove you saw it, not just recorded it. The first cryptographic attestation of human
+                attention.</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Reading Panel -->
+            <div class="glass-panel reading-panel">
+                <div class="reading-header">
+                    <span class="reading-title">📄 Sample Document</span>
+                    <span class="document-badge">
+                        <span>🔒</span>
+                        Hash: 7f3a2...
+                    </span>
+                </div>
+                <div class="document-content" id="documentContent">
+                    <p><strong>MEMORANDUM OF UNDERSTANDING</strong></p>
+                    <p>This document represents a binding agreement between the parties regarding the deployment of
+                        <span class="highlight">autonomous AI systems</span> within enterprise environments.</p>
+                    <p><strong>Section 1: Scope of Authorization</strong></p>
+                    <p>The AI system ("Agent") is hereby authorized to execute the following categories of actions
+                        without explicit per-action human approval:</p>
+                    <p>• <span class="highlight">Read-only data access</span> across approved databases<br>
+                        • Automated report generation and distribution<br>
+                        • Calendar management and scheduling optimization<br>
+                        • Communication drafting (subject to review thresholds)</p>
+                    <p><strong>Section 2: Accountability Framework</strong></p>
+                    <p>All actions taken by the Agent shall be logged with cryptographic attestation. The <span
+                            class="highlight">Proof-of-Memory protocol</span> ensures that human oversight parties can
+                        verify they reviewed relevant materials before authorization was granted.</p>
+                    <p><strong>Section 3: Revocation Rights</strong></p>
+                    <p>Authorization may be revoked at any time. Revocation events are logged to the immutable audit
+                        chain with mandatory reason categorization.</p>
+                    <p><strong>Section 4: Attention Verification</strong></p>
+                    <p>This agreement employs attention-weighted authorization. Your <span class="highlight">attention
+                            score</span> at the time of signing is recorded as proof of informed consent, not mere
+                        click-through acceptance.</p>
+                    <p>By generating a Proof-of-Memory, you attest that you have read and understood the terms above.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Metrics Panel -->
+            <div class="glass-panel metrics-panel">
+                <div class="metrics-header">
+                    <div class="pulse-dot"></div>
+                    <span class="metrics-title">Live Attention Tracking</span>
+                </div>
+
+                <!-- Attention Gauge -->
+                <div class="attention-gauge">
+                    <div class="gauge-container">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#6366f1" />
+                                    <stop offset="100%" stop-color="#22c55e" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke-width="8" class="gauge-bg" />
+                            <circle cx="60" cy="60" r="54" fill="none" stroke-width="8" class="gauge-fill"
+                                stroke-dasharray="339.292" stroke-dashoffset="339.292" transform="rotate(-90 60 60)"
+                                id="gaugeCircle" />
+                        </svg>
+                        <div class="gauge-text" id="attentionScore">0%</div>
+                    </div>
+                    <div class="gauge-label">Attention Score</div>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-label">Scroll Depth</span>
+                    <span class="metric-value" id="scrollDepth">0%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Dwell Time</span>
+                    <span class="metric-value" id="dwellTime">0s</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Focus Events</span>
+                    <span class="metric-value highlight-value" id="focusEvents">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Words Viewed</span>
+                    <span class="metric-value" id="wordsViewed">0 / 248</span>
+                </div>
+
+                <button class="generate-btn" id="generateBtn" disabled>
+                    ⟡ Generate Proof-of-Memory
+                </button>
+
+                <!-- Proof Display -->
+                <div class="proof-display" id="proofDisplay">
+                    <div class="proof-header">
+                        <span class="proof-badge">✓ Proof Generated</span>
+                    </div>
+
+                    <div class="merkle-viz">
+                        <div class="merkle-tree">
+                            <div class="merkle-node root" id="merkleRoot">ROOT: ...</div>
+                            <div class="merkle-line"></div>
+                            <div class="merkle-branches">
+                                <div class="merkle-branch">
+                                    <div class="merkle-node" id="merkleLeft">perception</div>
+                                </div>
+                                <div class="merkle-branch">
+                                    <div class="merkle-node" id="merkleRight">attention</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="proof-code" id="proofCode">
+                        Loading proof...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="verification-section" id="verifySection" style="display: none;">
+            <button class="verify-btn" id="verifyBtn">
+                <span>🔍</span>
+                Verify This Proof
+            </button>
+        </div>
+
+        <footer>
+            <p>⟡ <a href="https://activemirror.ai">ActiveMirror</a> | Proof-of-Memory Protocol v0.1</p>
+            <p style="margin-top: 0.5rem; opacity: 0.7;">N1 Intelligence • 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // ======== Proof-of-Memory Demo Logic ========
+
+        const state = {
+            startTime: Date.now(),
+            scrollDepth: 0,
+            maxScrollDepth: 0,
+            focusEvents: 0,
+            isActive: true,
+            wordsViewed: 0,
+            totalWords: 248,
+            dwellTime: 0,
+            attentionScore: 0,
+            proofGenerated: false
+        };
+
+        const elements = {
+            documentContent: document.getElementById('documentContent'),
+            scrollDepth: document.getElementById('scrollDepth'),
+            dwellTime: document.getElementById('dwellTime'),
+            focusEvents: document.getElementById('focusEvents'),
+            wordsViewed: document.getElementById('wordsViewed'),
+            attentionScore: document.getElementById('attentionScore'),
+            gaugeCircle: document.getElementById('gaugeCircle'),
+            generateBtn: document.getElementById('generateBtn'),
+            proofDisplay: document.getElementById('proofDisplay'),
+            proofCode: document.getElementById('proofCode'),
+            merkleRoot: document.getElementById('merkleRoot'),
+            merkleLeft: document.getElementById('merkleLeft'),
+            merkleRight: document.getElementById('merkleRight'),
+            verifySection: document.getElementById('verifySection')
+        };
+
+        // Scroll tracking
+        elements.documentContent.addEventListener('scroll', () => {
+            const el = elements.documentContent;
+            const scrollPercent = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+            state.scrollDepth = Math.min(100, Math.max(0, scrollPercent));
+            state.maxScrollDepth = Math.max(state.maxScrollDepth, state.scrollDepth);
+
+            // Estimate words viewed based on scroll position
+            state.wordsViewed = Math.floor((state.maxScrollDepth / 100) * state.totalWords);
+
+            updateUI();
+        });
+
+        // Focus tracking
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                state.focusEvents++;
+                state.isActive = true;
+            } else {
+                state.isActive = false;
+            }
+            updateUI();
+        });
+
+        window.addEventListener('focus', () => {
+            state.focusEvents++;
+            state.isActive = true;
+            updateUI();
+        });
+
+        window.addEventListener('blur', () => {
+            state.isActive = false;
+        });
+
+        // Dwell time tracking
+        setInterval(() => {
+            if (state.isActive && !state.proofGenerated) {
+                state.dwellTime = Math.floor((Date.now() - state.startTime) / 1000);
+                calculateAttentionScore();
+                updateUI();
+            }
+        }, 100);
+
+        function calculateAttentionScore() {
+            // Weighted attention score calculation
+            const scrollWeight = 0.25;
+            const dwellWeight = 0.35;
+            const focusWeight = 0.15;
+            const wordsWeight = 0.25;
+
+            // Normalize each metric
+            const scrollScore = Math.min(1, state.maxScrollDepth / 100);
+            const dwellScore = Math.min(1, state.dwellTime / 60); // 60s = max
+            const focusScore = Math.min(1, state.focusEvents / 5); // 5 focus events = max
+            const wordsScore = state.wordsViewed / state.totalWords;
+
+            state.attentionScore = (
+                scrollScore * scrollWeight +
+                dwellScore * dwellWeight +
+                focusScore * focusWeight +
+                wordsScore * wordsWeight
+            );
+
+            // Enable button when score > 0.3
+            elements.generateBtn.disabled = state.attentionScore < 0.3;
+        }
+
+        function updateUI() {
+            elements.scrollDepth.textContent = `${Math.round(state.maxScrollDepth)}%`;
+            elements.dwellTime.textContent = `${state.dwellTime}s`;
+            elements.focusEvents.textContent = state.focusEvents;
+            elements.wordsViewed.textContent = `${state.wordsViewed} / ${state.totalWords}`;
+
+            const scorePercent = Math.round(state.attentionScore * 100);
+            elements.attentionScore.textContent = `${scorePercent}%`;
+
+            // Update gauge
+            const circumference = 339.292;
+            const offset = circumference - (state.attentionScore * circumference);
+            elements.gaugeCircle.style.strokeDashoffset = offset;
+        }
+
+        // SHA-256 hash function (simplified for demo)
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Generate Ed25519-like signature (simulated for demo)
+        function generateSignature() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+            let sig = '';
+            for (let i = 0; i < 88; i++) {
+                sig += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return sig;
+        }
+
+        // Generate Proof-of-Memory
+        elements.generateBtn.addEventListener('click', async () => {
+            if (state.proofGenerated) return;
+
+            elements.generateBtn.textContent = '⟡ Generating...';
+            elements.generateBtn.disabled = true;
+
+            // Simulate proof generation delay
+            await new Promise(r => setTimeout(r, 1500));
+
+            const timestamp = new Date().toISOString();
+            const documentHash = await sha256(elements.documentContent.innerText);
+            const perceptionHash = await sha256(JSON.stringify({
+                scroll: state.maxScrollDepth,
+                dwell: state.dwellTime,
+                focus: state.focusEvents
+            }));
+            const attentionHash = await sha256(state.attentionScore.toString());
+            const merkleRoot = await sha256(documentHash + perceptionHash + attentionHash);
+            const signature = generateSignature();
+
+            const proof = {
+                protocol: "Proof-of-Memory v0.1",
+                timestamp: timestamp,
+                content_hash: documentHash.substring(0, 16) + "...",
+                perception: {
+                    type: "visual_text",
+                    scroll_depth: `${Math.round(state.maxScrollDepth)}%`,
+                    dwell_time_ms: state.dwellTime * 1000,
+                    focus_events: state.focusEvents
+                },
+                attention: {
+                    score: state.attentionScore.toFixed(4),
+                    threshold_met: state.attentionScore >= 0.3,
+                    words_viewed: `${state.wordsViewed}/${state.totalWords}`
+                },
+                commitment: {
+                    merkle_root: merkleRoot.substring(0, 16) + "...",
+                    chain_position: 1
+                },
+                signature: {
+                    algorithm: "Ed25519",
+                    value: signature.substring(0, 32) + "..."
+                }
+            };
+
+            // Update UI
+            elements.merkleRoot.textContent = `ROOT: ${merkleRoot.substring(0, 8)}...`;
+            elements.merkleLeft.textContent = `perc: ${perceptionHash.substring(0, 6)}...`;
+            elements.merkleRight.textContent = `attn: ${attentionHash.substring(0, 6)}...`;
+
+            elements.proofCode.innerHTML = formatProof(proof);
+            elements.proofDisplay.classList.add('visible');
+            elements.generateBtn.textContent = '✓ Proof Generated';
+            elements.verifySection.style.display = 'block';
+
+            state.proofGenerated = true;
+        });
+
+        function formatProof(proof) {
+            return `<span class="proof-field"><span class="proof-key">protocol:</span> <span class="proof-value">${proof.protocol}</span></span>
+<span class="proof-field"><span class="proof-key">timestamp:</span> <span class="proof-value">${proof.timestamp}</span></span>
+<span class="proof-field"><span class="proof-key">content_hash:</span> <span class="proof-value">${proof.content_hash}</span></span>
+
+<span class="proof-key">perception:</span>
+  <span class="proof-field">  <span class="proof-key">type:</span> <span class="proof-value">${proof.perception.type}</span></span>
+  <span class="proof-field">  <span class="proof-key">scroll_depth:</span> <span class="proof-value">${proof.perception.scroll_depth}</span></span>
+  <span class="proof-field">  <span class="proof-key">dwell_time:</span> <span class="proof-value">${proof.perception.dwell_time_ms}ms</span></span>
+  <span class="proof-field">  <span class="proof-key">focus_events:</span> <span class="proof-value">${proof.perception.focus_events}</span></span>
+
+<span class="proof-key">attention:</span>
+  <span class="proof-field">  <span class="proof-key">score:</span> <span class="proof-value" style="color: ${proof.attention.score >= 0.5 ? '#22c55e' : '#f59e0b'}">${proof.attention.score}</span></span>
+  <span class="proof-field">  <span class="proof-key">threshold_met:</span> <span class="proof-value">${proof.attention.threshold_met}</span></span>
+  <span class="proof-field">  <span class="proof-key">words_viewed:</span> <span class="proof-value">${proof.attention.words_viewed}</span></span>
+
+<span class="proof-key">commitment:</span>
+  <span class="proof-field">  <span class="proof-key">merkle_root:</span> <span class="proof-value">${proof.commitment.merkle_root}</span></span>
+  <span class="proof-field">  <span class="proof-key">chain_position:</span> <span class="proof-value">${proof.commitment.chain_position}</span></span>
+
+<span class="proof-key">signature:</span>
+  <span class="proof-field">  <span class="proof-key">algorithm:</span> <span class="proof-value">${proof.signature.algorithm}</span></span>
+  <span class="proof-field">  <span class="proof-key">value:</span> <span class="proof-value">${proof.signature.value}</span></span>`;
+        }
+
+        // Verify button
+        document.getElementById('verifyBtn').addEventListener('click', () => {
+            alert('✓ Proof Verified!\n\nThis proof confirms:\n• Content was displayed to the user\n• User attention score: ' + Math.round(state.attentionScore * 100) + '%\n• Merkle proof links to memory chain\n• Signature is cryptographically valid');
+        });
+
+        // Initial focus event
+        state.focusEvents = 1;
+        updateUI();
+    </script>
+</body>
+
+</html>

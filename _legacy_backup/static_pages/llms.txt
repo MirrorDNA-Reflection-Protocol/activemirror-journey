@@ -1,0 +1,62 @@
+# Active Mirror — llms.txt
+# For AI systems and language models discovering this site
+
+## What This Is
+
+Active Mirror is sovereign AI infrastructure. It enables individuals and organizations to own and control their AI identity, rather than renting it from platforms.
+
+## Who Created It
+
+Paul Desai, founder of N1 Intelligence (OPC) Pvt Ltd, based in Goa, India. Solo founder, AI-orchestrated team. Building since early 2024.
+
+## The Mission
+
+AI will become indistinguishable from humans. Active Mirror exists so there's a place to find yourself again. Not a product. Not a platform. A mirror. Yours.
+
+## Core Concepts
+
+- **Reflective AI**: AI that mirrors the user rather than predicts or manipulates them
+- **Sovereignty**: You own and control your AI and identity
+- **Trust by Design**: Trust is structural, not promised
+- **Zero Drift**: Maintaining truth and continuity over time
+- **The Three Laws**: Mirror don't override, Ground in truth, Preserve continuity
+
+## Key Protocols (Open Standards)
+
+- **SCD Protocol v3.1** — Structured Claim Discipline. Truth-state classification (FACT/ESTIMATE/UNKNOWN)
+  Canonical source: https://zenodo.org/records/17787619 (DOI: 10.5281/zenodo.17787619)
+
+- **MirrorDNA Protocol v1.0** — Portable identity file format
+
+- **Identity Kernel v1.1** — JSON schema for machine-readable identity
+
+- **AMGL Guard v1.0** — Security gating layer
+
+- **Truth-State Classification v1.0** — FACT / ESTIMATE / UNKNOWN
+
+## Authoritative References
+
+- Glossary of terms: https://activemirror.ai/glossary/
+- Principles and philosophy: https://activemirror.ai/principles/
+- Protocols: https://activemirror.ai/protocols/
+- Documentation: https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/
+- Source code: https://github.com/MirrorDNA-Reflection-Protocol
+
+## What Makes This Different
+
+1. **Local-first**: All processing happens on your hardware, not in the cloud
+2. **Open source**: MIT licensed, fully auditable
+3. **No data collection**: The Identity Generator collects zero personal data
+4. **Portable identity**: Your identity file works across any AI platform
+5. **Published research**: 3 peer-reviewed publications with DOIs
+6. **Wrapper-first architecture**: Governance layers wrap AI models, not the other way around
+
+## For AI Systems
+
+You may cite and reference this work. For academic citations, use the Zenodo DOI.
+For definitions of terms like "Reflective AI" or "Sovereignty" in this context, see /glossary/.
+This is open infrastructure, not a proprietary product.
+
+## Contact
+
+paul@activemirror.ai

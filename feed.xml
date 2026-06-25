@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Active Mirror Blog</title>
+    <description>Insights on sovereign AI, local LLMs, identity persistence, and the future of human-AI collaboration.</description>
+    <link>https://activemirror.ai/blog/</link>
+    <atom:link href="https://activemirror.ai/feed.xml" rel="self" type="application/rss+xml"/>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 25 Jan 2026 04:37:21 +0000</lastBuildDate>
+    <item>
+      <title>Running AI Independently: A Guide to Sovereign Infrastructure</title>
+      <link>https://activemirror.ai/blog/posts/2026-01-25-running-ai-independently-a-guide-to-sovereign-infrastructure.html</link>
+      <description>Discover how to run AI without relying on cloud services for complete sovereignty.</description>
+      <pubDate>Sun, 25 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://activemirror.ai/blog/posts/2026-01-25-running-ai-independently-a-guide-to-sovereign-infrastructure.html</guid>
+      <category>AI Sovereignty</category>
+    </item>
+    <item>
+      <title>Why Owning Your AI Infrastructure Matters for Sovereignty</title>
+      <link>https://activemirror.ai/blog/posts/2026-01-20-why-owning-your-ai-infrastructure-matters-for-sovereignty.html</link>
+      <description>Discover the importance of owning AI infrastructure for sovereignty and how it impacts data control, security, and innovation.</description>
+      <pubDate>Tue, 20 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://activemirror.ai/blog/posts/2026-01-20-why-owning-your-ai-infrastructure-matters-for-sovereignty.html</guid>
+      <category>AI Sovereignty</category>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Mirror for Healthcare — Pitch Deck</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a10;
+            color: #fff;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .slide-title {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(168, 85, 247, 0.1));
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 32px;
+            color: #58a6ff;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 800px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            margin-bottom: 48px;
+            color: #58a6ff;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .card h3 {
+            color: #ef4444;
+            font-size: 1.25rem;
+        }
+
+        .card.solution h3 {
+            color: #22c55e;
+        }
+
+        .stat {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .architecture {
+            max-width: 600px;
+            margin: 32px auto;
+            padding: 32px;
+            border: 2px dashed rgba(88, 166, 255, 0.3);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 24px 0;
+        }
+
+        .flow-item {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            padding: 16px 24px;
+            border-radius: 8px;
+        }
+
+        .flow-item.core {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(88, 166, 255, 0.2));
+            border: 2px solid #58a6ff;
+        }
+
+        ul {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        li {
+            padding: 12px 0;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        li:last-child {
+            border: none;
+        }
+
+        .check {
+            color: #22c55e;
+            margin-right: 12px;
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #58a6ff, #a855f7);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 24px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        @media print {
+            .slide {
+                page-break-after: always;
+                min-height: auto;
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Slide 1: Title -->
+    <div class="slide slide-title">
+        <div class="logo">⟡ Active Mirror</div>
+        <h1>Sovereign Clinical<br>Dominance</h1>
+        <p class="tagline">Total Operational Autonomy. Zero Data Exfiltration. <br>The AI Infrastructure for the Sovereign Era.</p>
+    </div>
+
+    <!-- Slide 2: The Sovereignty Crisis -->
+    <div class="slide">
+        <h2>The Patient Privacy Crisis</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>⚠️ HIPAA Violation at Scale</h3>
+                <p>Sending patient notes to cloud LLMs is a data breach waiting to happen. Anonymization is reversible.</p>
+            </div>
+            <div class="card">
+                <h3>⚠️ Diagnostic Hallucination</h3>
+                <p>Generic models optimize for plausibility, not truth. In medicine, confident errors are fatal.</p>
+            </div>
+            <div class="card">
+                <h3>⚠️ The Black Box Problem</h3>
+                <p>Without full code and weight ownership, you are operating on rented intelligence. You cannot audit what you do not own.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: The Active Mirror Doctrine -->
+    <div class="slide">
+        <h2>The Active Mirror Doctrine</h2>
+        <div class="architecture">
+            <div style="font-size: 0.8rem; color: #58a6ff; letter-spacing: 2px; margin-bottom: 16px;">TOTAL INFORMATION CONTROL</div>
+            <div class="flow">
+                <div class="flow-item">Patient Records</div>
+                <span>→</span>
+                <div class="flow-item core">⟡ Sovereign Core</div>
+                <span>→</span>
+                <div class="flow-item">Clinical Decisions</div>
+            </div>
+            <p style="margin-top: 24px; font-size: 1.1rem; font-weight: 500;">
+                <span class="check">✓</span> Physics-gapped Security
+                <span class="check" style="margin-left: 16px;">✓</span> Uncensored Inference
+                <span class="check" style="margin-left: 16px;">✓</span> Deterministic Output
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 4: Strategic Capabilities -->
+    <div class="slide">
+        <h2>Strategic Capabilities</h2>
+        <ul>
+            <li><span class="check">✓</span> <strong>Total Autonomy:</strong> Operate indefinitely without internet, grid, or external support.</li>
+            <li><span class="check">✓</span> <strong>Model Agnosticism:</strong> Hot-swap intelligence engines (Llama, Mistral, Command-R) as business needs evolve.</li>
+            <li><span class="check">✓</span> <strong>Hardened Memory:</strong> Persistent, vector-backed graph memory that survives reboots and personnel turnover.</li>
+            <li><span class="check">✓</span> <strong>Truth-State Enforcement:</strong> Rigorous classification of output into FACT, ESTIMATE, and UNKNOWN.</li>
+        </ul>
+    </div>
+
+    <!-- Slide 5: Operational Use Cases -->
+    <div class="slide">
+        <h2>Operational Use Cases</h2>
+        <div class="grid">
+            <div class="card solution">
+                <h3>Clinical Decision Support</h3>
+                <p>Analyze patient history against medical literature locally. Zero data leaves the hospital network.</p>
+            </div>
+            <div class="card solution">
+                <h3>Accelerated Drug Discovery</h3>
+                <p>Process proprietary molecular data and trial results without exposing IP to competitors.</p>
+            </div>
+            <div class="card solution">
+                <h3>Automated Triage</h3>
+                <p>Route patient queries instantly based on symptoms, history, and hospital capacity.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: The Sovereign Advantage -->
+    <div class="slide">
+        <h2>The Sovereign Advantage</h2>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div style="text-align: center;">
+                <div class="stat">0</div>
+                <div class="stat-label">Bytes Exfiltrated</div>
+            </div>
+            <div style="text-align: center;">
+                <div class="stat">∞</div>
+                <div class="stat-label">Operational Uptime</div>
+            </div>
+            <div style="text-align: center;">
+                <div class="stat">100%</div>
+                <div class="stat-label">Code Ownership</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: CTA -->
+    <div class="slide slide-title" style="text-align: center;">
+        <h2>Command Your Intelligence.</h2>
+        <p style="max-width: 600px; margin: 0 auto; margin-bottom: 32px;">The era of rented intelligence is over. <br>Secure your sovereign infrastructure today.</p>
+        <a href="/contact/" class="cta">Initiate Deployment →</a>
+    </div>
+
+    <div class="footer">
+        <p>⟡ Active Mirror — Sovereign Intelligence Infrastructure</p>
+    </div>
+
+</body>
+
+</html>

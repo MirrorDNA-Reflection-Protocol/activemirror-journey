@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Source — Active Mirror</title>
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/open-source/">
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <meta name="description"
+        content="Active Mirror Open Source: MIT Licensed, community-driven, transparent AI infrastructure. Contribute on GitHub.">
+</head>
+
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; filter: invert(1); margin-right:8px;">Active Mirror</a>
+            <button class="mobile-menu-btn">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero" style="padding-bottom: 40px;">
+            <div class="container">
+                <h1>Code is Law</h1>
+                <p>We believe sovereign AI must be open source. You can't trust what you can't read.</p>
+                <div class="buttons" style="margin-top: 32px;">
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol" class="btn btn-primary"
+                        target="_blank">Visit GitHub Org →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Bar -->
+        <section
+            style="background: rgba(255,255,255,0.02); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 24px 0;">
+            <div class="container text-center">
+                <div class="grid grid-3-cols" style="gap: 16px;">
+                    <div><strong>7</strong> PRs Merged</div>
+                    <div><strong>8</strong> Open Issues</div>
+                    <div><strong>MIT</strong> Licensed</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Repos -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 48px;">Key Repositories</h2>
+                <div class="grid features-grid">
+
+                    <div class="card">
+                        <h3>active-mirror-identity</h3>
+                        <p style="margin-bottom: 16px;">The kernel. Contains the JSON schema for identity portability
+                            and the drift measurement tools.</p>
+                        <div style="margin-top: auto;">
+                            <a href="https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity"
+                                class="text-accent">View Repo →</a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>ActiveMirrorOS</h3>
+                        <p style="margin-bottom: 16px;">The runtime governance layer. Handles request gating,
+                            truth-state enforcement, and refusal logic.</p>
+                        <div style="margin-top: auto;">
+                            <a href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS"
+                                class="text-accent">View Repo →</a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>MirrorBrain-Mobile</h3>
+                        <p style="margin-bottom: 16px;">React Native application for the "Field Agent" node. On-device
+                            LLM and vault sync.</p>
+                        <div style="margin-top: auto;">
+                            <a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorBrain-Mobile"
+                                class="text-accent">View Repo →</a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>MirrorDNA-Docs</h3>
+                        <p style="margin-bottom: 16px;">Documentation site generator. The single source of truth for all
+                            protocols.</p>
+                        <div style="margin-top: auto;">
+                            <a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorDNA-Docs"
+                                class="text-accent">View Repo →</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Contribution Philosophy -->
+        <section class="section">
+            <div class="container">
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+                    <div>
+                        <h2>Contribution Philosophy</h2>
+                        <p class="text-secondary" style="margin-bottom: 24px; line-height: 1.8;">
+                            We optimize for <strong>clarity over cleverness</strong>.
+                            Our goal is to build infrastructure that a single developer can maintain and audit.
+                            If a feature requires a PhD to understand, we probably won't merge it.
+                        </p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/.github/blob/main/CONTRIBUTING.md"
+                            class="btn btn-secondary">Read Contributing Guide</a>
+                    </div>
+                    <div class="card" style="background: #000; border: 1px solid var(--border-color);">
+                        <code style="color: var(--text-secondary); font-size: 0.9rem;">
+                            git clone https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity.git<br>
+                            cd active-mirror-identity<br>
+                            ./scripts/validate.sh<br>
+                            <span style="color: #10b981;">✔ Integrity Check Passed</span>
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            <div class="copyright">&copy; 2026 Active Mirror.</div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
