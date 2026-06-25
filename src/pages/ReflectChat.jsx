@@ -92,7 +92,6 @@ function MirrorTurn({ data }) {
                     <div className="text-base font-semibold leading-6 tracking-[-0.01em] text-white">{mirror.question}</div>
                 </div>
             )}
-            <Visual visual={mirror.visual} />
             <div className="flex max-w-[46rem] gap-3 rounded-[1.5rem] border border-emerald-300/15 bg-emerald-300/[0.08] px-5 py-4">
                 <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-300" />
                 <div>
@@ -100,6 +99,7 @@ function MirrorTurn({ data }) {
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
+            <Visual visual={mirror.visual} />
             <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
                 <summary className="cursor-pointer list-none font-medium text-zinc-400">
                     Private by default · what stayed out
