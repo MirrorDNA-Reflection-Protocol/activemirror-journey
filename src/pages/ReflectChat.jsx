@@ -11,6 +11,23 @@ const STARTERS = [
     'I am stuck between two choices and keep going in circles.',
 ];
 
+function makeFollowUps(mirror = {}) {
+    return [
+        mirror.question && {
+            label: 'Help me answer this question',
+            intent: `Help me answer this real question: ${mirror.question}`,
+        },
+        {
+            label: 'What am I not admitting?',
+            intent: 'Reflect what I may not be admitting to myself yet.',
+        },
+        mirror.move && {
+            label: 'Make the next move smaller',
+            intent: `Make this next move smaller and easier to start: ${mirror.move}`,
+        },
+    ].filter(Boolean);
+}
+
 function Visual({ visual }) {
     if (!visual) return null;
 
@@ -60,23 +77,9 @@ function Visual({ visual }) {
     return null;
 }
 
-function MirrorTurn({ data, onFollowUp, busy }) {
+function MirrorTurn({ data }) {
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
-    const followUps = [
-        mirror.question && {
-            label: 'Help me answer this question',
-            intent: `Help me answer this real question: ${mirror.question}`,
-        },
-        {
-            label: 'What am I not admitting?',
-            intent: 'Reflect what I may not be admitting to myself yet.',
-        },
-        mirror.move && {
-            label: 'Make the next move smaller',
-            intent: `Make this next move smaller and easier to start: ${mirror.move}`,
-        },
-    ].filter(Boolean);
 
     return (
         <div className="flex flex-col gap-3">
@@ -97,21 +100,6 @@ function MirrorTurn({ data, onFollowUp, busy }) {
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
-            {followUps.length > 0 && (
-                <div className="flex max-w-[46rem] flex-wrap gap-2">
-                    {followUps.map((item) => (
-                        <button
-                            key={item.label}
-                            type="button"
-                            onClick={() => onFollowUp(item.intent)}
-                            disabled={busy}
-                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-zinc-400 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            {item.label}
-                        </button>
-                    ))}
-                </div>
-            )}
             <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
                 <summary className="cursor-pointer list-none font-medium text-zinc-400">
                     Private by default · what stayed out
@@ -142,16 +130,31 @@ export default function ReflectChat() {
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const turnNum = useRef(0);
+    const mainRef = useRef(null);
     const latestTurnRef = useRef(null);
-    const endRef = useRef(null);
+    const latestMirror = [...turns].reverse().find((turn) => turn.data?.mirror)?.data?.mirror;
+    const latestFollowUps = latestMirror ? makeFollowUps(latestMirror) : [];
 
     useEffect(() => {
+        const main = mainRef.current;
+        if (!main) return;
+
         if (busy) {
-            endRef.current?.scrollIntoView({ behavior: 'smooth' });
+            requestAnimationFrame(() => {
+                main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+            });
             return;
         }
 
-        latestTurnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const target = latestTurnRef.current;
+        if (!target) return;
+
+        requestAnimationFrame(() => {
+            const mainBox = main.getBoundingClientRect();
+            const targetBox = target.getBoundingClientRect();
+            const top = main.scrollTop + targetBox.top - mainBox.top - 20;
+            main.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        });
     }, [turns, busy]);
 
     async function ask(intent) {
@@ -225,8 +228,8 @@ export default function ReflectChat() {
                 </Link>
             </header>
 
-            <main className="relative z-10 min-h-0 flex-1 overflow-auto">
-                <div className="mx-auto flex max-w-[48rem] flex-col gap-7 px-4 py-7">
+            <main ref={mainRef} className="relative z-10 min-h-0 flex-1 overflow-auto">
+                <div className="mx-auto flex max-w-[48rem] flex-col gap-7 px-4 pt-7 pb-44 sm:pb-36">
                     {turns.map((turn, index) => {
                         const isLatest = index === turns.length - 1;
 
@@ -281,16 +284,30 @@ export default function ReflectChat() {
 
                         return (
                             <div key={index} ref={isLatest ? latestTurnRef : null} className="scroll-mt-6">
-                                <MirrorTurn data={turn.data} onFollowUp={useStarter} busy={busy} />
+                                <MirrorTurn data={turn.data} />
                             </div>
                         );
                     })}
                     {busy && <div className="text-zinc-500">reflecting...</div>}
-                    <div ref={endRef} />
                 </div>
             </main>
 
             <footer className="relative z-10 border-t border-white/10 bg-black/70 px-3 py-3 backdrop-blur-xl">
+                {latestFollowUps.length > 0 && (
+                    <div className="mx-auto mb-3 flex max-w-[48rem] gap-2 overflow-x-auto pb-1">
+                        {latestFollowUps.map((item) => (
+                            <button
+                                key={item.label}
+                                type="button"
+                                onClick={() => useStarter(item.intent)}
+                                disabled={busy}
+                                className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
                 <form className="mx-auto flex max-w-[48rem] items-end gap-2" onSubmit={submit}>
                     <textarea
                         rows={1}
