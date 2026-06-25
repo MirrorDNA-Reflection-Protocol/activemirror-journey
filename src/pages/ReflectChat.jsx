@@ -1,20 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowUp, ChevronDown, ShieldCheck } from 'lucide-react';
 import { getArchetype } from '../lib/mirror-state';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
+
+const STARTERS = [
+    'I keep asking AI for help, but I still do not know what to do next.',
+    'I have a messy idea and need the real question underneath it.',
+    'I am stuck between two choices and keep going in circles.',
+];
 
 function Visual({ visual }) {
     if (!visual) return null;
 
     if (visual.kind === 'reframe') {
         return (
-            <div className="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-[0_1px_0_rgba(11,18,32,0.03)]">
-                <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">The real question</div>
+            <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.06] p-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Reframe</div>
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-                    <div className="text-sm text-slate-400 line-through decoration-slate-200">{visual.left}</div>
-                    <div className="text-emerald-700">→</div>
-                    <div className="text-sm font-semibold text-slate-950">{visual.right}</div>
+                    <div className="text-sm text-zinc-500 line-through decoration-zinc-600">{visual.left}</div>
+                    <div className="text-cyan-200">→</div>
+                    <div className="text-sm font-semibold text-white">{visual.right}</div>
                 </div>
             </div>
         );
@@ -22,14 +29,14 @@ function Visual({ visual }) {
 
     if (visual.kind === 'axes') {
         return (
-            <div className="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-[0_1px_0_rgba(11,18,32,0.03)]">
-                <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.06] p-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">
                     {visual.note || 'Two forces in tension'}
                 </div>
                 <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-4 text-sm font-semibold">
-                    <div className="text-right text-slate-950">{visual.left}</div>
-                    <div className="w-px bg-slate-200" />
-                    <div className="text-emerald-700">{visual.right}</div>
+                    <div className="text-right text-white">{visual.left}</div>
+                    <div className="w-px bg-white/15" />
+                    <div className="text-cyan-200">{visual.right}</div>
                 </div>
             </div>
         );
@@ -37,14 +44,14 @@ function Visual({ visual }) {
 
     if (visual.kind === 'spectrum') {
         return (
-            <div className="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-[0_1px_0_rgba(11,18,32,0.03)]">
-                <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.06] p-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">
                     {visual.note || 'A range, not a binary'}
                 </div>
-                <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-slate-950 to-emerald-700" />
+                <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-purple-300 to-cyan-200" />
                 <div className="flex justify-between gap-4 text-sm font-semibold">
                     <span>{visual.left}</span>
-                    <span className="text-right text-emerald-700">{visual.right}</span>
+                    <span className="text-right text-cyan-200">{visual.right}</span>
                 </div>
             </div>
         );
@@ -53,24 +60,78 @@ function Visual({ visual }) {
     return null;
 }
 
-function MirrorTurn({ data }) {
+function MirrorTurn({ data, onFollowUp, busy }) {
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
+    const followUps = [
+        mirror.question && {
+            label: 'Help me answer this question',
+            intent: `Help me answer this real question: ${mirror.question}`,
+        },
+        {
+            label: 'What am I not admitting?',
+            intent: 'Reflect what I may not be admitting to myself yet.',
+        },
+        mirror.move && {
+            label: 'Make the next move smaller',
+            intent: `Make this next move smaller and easier to start: ${mirror.move}`,
+        },
+    ].filter(Boolean);
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="max-w-[46rem] text-[1.05rem] leading-7 tracking-[-0.01em] text-slate-950">
+            <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.06] px-5 py-4 text-[1.05rem] leading-7 tracking-[-0.01em] text-zinc-100 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
                 {mirror.reflection}
             </div>
+            {mirror.question && (
+                <div className="max-w-[46rem] rounded-[1.5rem] border border-purple-300/20 bg-purple-300/[0.08] px-5 py-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+                    <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">The real question</div>
+                    <div className="text-base font-semibold leading-6 tracking-[-0.01em] text-white">{mirror.question}</div>
+                </div>
+            )}
             <Visual visual={mirror.visual} />
-            <div className="flex max-w-[46rem] gap-3 rounded-2xl border border-emerald-800/15 bg-emerald-800/[0.06] px-4 py-3">
-                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-700" />
+            <div className="flex max-w-[46rem] gap-3 rounded-[1.5rem] border border-emerald-300/15 bg-emerald-300/[0.08] px-5 py-4">
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-300" />
                 <div>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-800">One thing</div>
-                    <div className="mt-1 text-sm leading-6 text-slate-950">{mirror.move}</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">One thing</div>
+                    <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
-            <div className="font-mono text-xs text-slate-400">reflected from your words only · {keptOut}</div>
+            {followUps.length > 0 && (
+                <div className="flex max-w-[46rem] flex-wrap gap-2">
+                    {followUps.map((item) => (
+                        <button
+                            key={item.label}
+                            type="button"
+                            onClick={() => onFollowUp(item.intent)}
+                            disabled={busy}
+                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-zinc-400 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+            <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
+                <summary className="cursor-pointer list-none font-medium text-zinc-400">
+                    Private by default · what stayed out
+                    <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
+                </summary>
+                <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
+                    <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
+                        <div className="mt-1 leading-6">{mirror.receipt?.context_used || 'Only the sentence you typed.'}</div>
+                    </div>
+                    <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Left out</div>
+                        <div className="mt-1 leading-6">{keptOut}</div>
+                    </div>
+                    <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Memory</div>
+                        <div className="mt-1 leading-6">{mirror.receipt?.memory_decision || 'Nothing is saved unless you choose it.'}</div>
+                    </div>
+                </div>
+            </details>
         </div>
     );
 }
@@ -81,10 +142,16 @@ export default function ReflectChat() {
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const turnNum = useRef(0);
+    const latestTurnRef = useRef(null);
     const endRef = useRef(null);
 
     useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (busy) {
+            endRef.current?.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        latestTurnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, [turns, busy]);
 
     async function ask(intent) {
@@ -124,6 +191,11 @@ export default function ReflectChat() {
         }
     }
 
+    function useStarter(intent) {
+        if (busy) return;
+        ask(intent);
+    }
+
     function submit(event) {
         event.preventDefault();
         const intent = text.trim();
@@ -133,29 +205,34 @@ export default function ReflectChat() {
     }
 
     return (
-        <div className="flex h-dvh flex-col bg-[#fafbfd] text-slate-950">
-            <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-3">
+        <div className="relative flex h-dvh flex-col overflow-hidden bg-black text-white">
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.20),transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(34,211,238,0.12),transparent_36%),#000]" />
+            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:46px_46px] opacity-25" />
+
+            <header className="relative z-10 flex items-center justify-between gap-4 border-b border-white/10 bg-black/60 px-4 py-3 backdrop-blur-xl">
                 <Link to="/" className="inline-flex items-center gap-3">
                     <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true">
-                        <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="#0A6B42" strokeWidth="1.6" />
-                        <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="#0A6B42" strokeWidth="1.6" />
+                        <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="#a78bfa" strokeWidth="1.6" />
+                        <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="#22d3ee" strokeWidth="1.6" />
                     </svg>
                     <div>
-                        <div className="text-sm font-semibold tracking-[-0.01em]">Active Mirror</div>
-                        <div className="hidden text-xs text-slate-500 sm:block">tells you what you need to hear</div>
+                        <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
+                        <div className="hidden text-xs text-zinc-500 sm:block">one thing in, one move out</div>
                     </div>
                 </Link>
-                <Link to="/start" className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300">
+                <Link to="/start" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:text-white">
                     BrainScan
                 </Link>
             </header>
 
-            <main className="min-h-0 flex-1 overflow-auto">
+            <main className="relative z-10 min-h-0 flex-1 overflow-auto">
                 <div className="mx-auto flex max-w-[48rem] flex-col gap-7 px-4 py-7">
                     {turns.map((turn, index) => {
+                        const isLatest = index === turns.length - 1;
+
                         if (turn.who === 'you') {
                             return (
-                                <div key={index} className="flex justify-end">
+                                <div key={index} ref={isLatest ? latestTurnRef : null} className="flex scroll-mt-6 justify-end">
                                     <div className="max-w-[80%] rounded-2xl rounded-br-md bg-slate-950 px-4 py-3 text-sm leading-6 text-white">
                                         {turn.text}
                                     </div>
@@ -165,29 +242,55 @@ export default function ReflectChat() {
 
                         if (turn.intro) {
                             return (
-                                <div key={index} className="max-w-[44rem] text-[1.08rem] leading-7 tracking-[-0.01em]">
-                                    Bring one real thing you are stuck on. Active Mirror will reflect the real question and give you one next move.
+                                <div key={index} ref={isLatest ? latestTurnRef : null} className="max-w-[44rem] scroll-mt-6 rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 text-[1.08rem] leading-7 tracking-[-0.01em] shadow-[0_0_50px_rgba(168,85,247,0.10)] backdrop-blur-2xl sm:p-6">
+                                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1 text-xs font-semibold text-emerald-200">
+                                        <ShieldCheck size={14} />
+                                        Private first
+                                    </div>
+                                    <div className="text-2xl font-semibold leading-tight tracking-[-0.04em] sm:text-3xl">
+                                        Bring one real thing you are stuck on.
+                                    </div>
+                                    <div className="mt-3 text-base leading-7 text-zinc-400">
+                                        Active Mirror reflects the real question and gives you one move.
+                                    </div>
                                     {seed && (
-                                        <div className="mt-4 inline-flex rounded-full border border-emerald-800/15 bg-emerald-800/[0.06] px-3 py-1 text-xs font-semibold text-emerald-800">
+                                        <div className="mt-4 inline-flex rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1 text-xs font-semibold text-purple-200">
                                             Using your local seed: {seed.archetypeName || seed.archetype}
                                         </div>
                                     )}
+                                    <div className="mt-6 grid gap-2">
+                                        {STARTERS.map((starter) => (
+                                            <button
+                                                key={starter}
+                                                type="button"
+                                                onClick={() => useStarter(starter)}
+                                                disabled={busy}
+                                                className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left text-sm leading-6 text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                {starter}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             );
                         }
 
                         if (turn.error) {
-                            return <div key={index} className="max-w-[44rem] text-[1.08rem] leading-7">{turn.error}</div>;
+                            return <div key={index} ref={isLatest ? latestTurnRef : null} className="max-w-[44rem] scroll-mt-6 rounded-[1.5rem] border border-red-300/15 bg-red-300/[0.08] px-5 py-4 text-[1.05rem] leading-7 text-red-100">{turn.error}</div>;
                         }
 
-                        return <MirrorTurn key={index} data={turn.data} />;
+                        return (
+                            <div key={index} ref={isLatest ? latestTurnRef : null} className="scroll-mt-6">
+                                <MirrorTurn data={turn.data} onFollowUp={useStarter} busy={busy} />
+                            </div>
+                        );
                     })}
-                    {busy && <div className="text-slate-500">reflecting...</div>}
+                    {busy && <div className="text-zinc-500">reflecting...</div>}
                     <div ref={endRef} />
                 </div>
             </main>
 
-            <footer className="border-t border-slate-200 bg-white px-3 py-3">
+            <footer className="relative z-10 border-t border-white/10 bg-black/70 px-3 py-3 backdrop-blur-xl">
                 <form className="mx-auto flex max-w-[48rem] items-end gap-2" onSubmit={submit}>
                     <textarea
                         rows={1}
@@ -201,18 +304,18 @@ export default function ReflectChat() {
                                 submit(event);
                             }
                         }}
-                        className="max-h-36 min-h-11 flex-1 resize-none rounded-2xl border border-slate-200 px-4 py-3 text-base leading-6 outline-none transition focus:border-emerald-700"
+                        className="max-h-36 min-h-11 flex-1 resize-none rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-300/45"
                     />
                     <button
                         type="submit"
                         disabled={busy || text.trim().length < 12}
-                        className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-950 text-xl text-white transition disabled:cursor-not-allowed disabled:opacity-40"
+                        className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.28)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
                         aria-label="Send"
                     >
-                        ↑
+                        <ArrowUp size={19} />
                     </button>
                 </form>
-                <div className="mx-auto mt-2 max-w-[48rem] text-center text-xs text-slate-400">One sentence is enough. Nothing is saved.</div>
+                <div className="mx-auto mt-2 max-w-[48rem] text-center text-xs text-zinc-500">One sentence is enough. Nothing is saved.</div>
             </footer>
         </div>
     );
