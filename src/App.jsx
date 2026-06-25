@@ -1,83 +1,85 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ScrollToTop from './components/ScrollToTop';
 
-// Main pages
 import HomePage from './pages/HomePage';
-import Landing from './pages/Landing';
-import ProofPage from './pages/ProofPage';
-import Demo from './pages/Demo';
-import MirrorPage from './pages/MirrorPage';
-import MirrorWithAuth from './pages/MirrorWithAuth';
-import Pricing from './pages/Pricing';
-import Legal from './pages/Legal';
-import Terms from './pages/Terms';
-import Privacy from './pages/Privacy';
-import Trust from './pages/Trust';
-import Platform from './pages/Platform';
-import ChetanaLanding from './pages/ChetanaLanding';
-import TestLab from './pages/TestLab';
-import Hub from './pages/Hub';
-import DashGen from './pages/DashGen';
-import Confessions from './pages/Confessions';
-import NotFound from './pages/NotFound';
-import MirrorAmbient from './pages/MirrorAmbient';
-import Research from './pages/Research';
-import Scan from './pages/Scan';
-import Twins from './pages/Twins';
-import Brief from './pages/Brief';
-import Cast from './pages/Cast';
-import Start from './pages/Start';
-import Setup from './pages/Setup';
-import Ecosystem from './pages/Ecosystem';
-import Skills from './pages/Skills';
-import Features from './pages/Features';
-import Builds from './pages/Builds';
-import Status from './pages/Status';
-import LivePulse from './pages/LivePulse';
-import AppShell from './pages/AppShell.jsx';
+import ReflectChat from './pages/ReflectChat.jsx';
 
-// Products
-import ProductsIndex from './pages/products/index';
-import MirrorGate from './pages/products/MirrorGate';
-import MirrorBrain from './pages/products/MirrorBrain';
-import LingOS from './pages/products/LingOS';
-import MirrorRecall from './pages/products/MirrorRecall';
-import GlyphTrail from './pages/products/GlyphTrail';
-import TrustByDesign from './pages/products/TrustByDesign';
-import AgentDNA from './pages/products/AgentDNA';
-import Vault from './pages/products/Vault';
-import MirrorBalance from './pages/products/MirrorBalance';
-import CognitiveDashboard from './pages/products/CognitiveDashboard';
-import Kavach from './pages/products/Kavach';
-import Chetana from './pages/products/Chetana';
+const Landing = lazy(() => import('./pages/Landing'));
+const ProofPage = lazy(() => import('./pages/ProofPage'));
+const Demo = lazy(() => import('./pages/Demo'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const Legal = lazy(() => import('./pages/Legal'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Trust = lazy(() => import('./pages/Trust'));
+const Platform = lazy(() => import('./pages/Platform'));
+const ChetanaLanding = lazy(() => import('./pages/ChetanaLanding'));
+const TestLab = lazy(() => import('./pages/TestLab'));
+const Hub = lazy(() => import('./pages/Hub'));
+const DashGen = lazy(() => import('./pages/DashGen'));
+const Confessions = lazy(() => import('./pages/Confessions'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Research = lazy(() => import('./pages/Research'));
+const Scan = lazy(() => import('./pages/Scan'));
+const Twins = lazy(() => import('./pages/Twins'));
+const Brief = lazy(() => import('./pages/Brief'));
+const Cast = lazy(() => import('./pages/Cast'));
+const Start = lazy(() => import('./pages/Start'));
+const Setup = lazy(() => import('./pages/Setup'));
+const Ecosystem = lazy(() => import('./pages/Ecosystem'));
+const Skills = lazy(() => import('./pages/Skills'));
+const Features = lazy(() => import('./pages/Features'));
+const Builds = lazy(() => import('./pages/Builds'));
+const Status = lazy(() => import('./pages/Status'));
+const LivePulse = lazy(() => import('./pages/LivePulse'));
+const MirrorAmbient = lazy(() => import('./pages/MirrorAmbient'));
+const AppShell = lazy(() => import('./pages/AppShell.jsx'));
+const MirrorPage = lazy(() => import('./pages/MirrorPage'));
+const MirrorWithAuth = lazy(() => import('./pages/MirrorWithAuth'));
+const ProductsIndex = lazy(() => import('./pages/products/index'));
+const MirrorGate = lazy(() => import('./pages/products/MirrorGate'));
+const MirrorBrain = lazy(() => import('./pages/products/MirrorBrain'));
+const LingOS = lazy(() => import('./pages/products/LingOS'));
+const MirrorRecall = lazy(() => import('./pages/products/MirrorRecall'));
+const GlyphTrail = lazy(() => import('./pages/products/GlyphTrail'));
+const TrustByDesign = lazy(() => import('./pages/products/TrustByDesign'));
+const AgentDNA = lazy(() => import('./pages/products/AgentDNA'));
+const Vault = lazy(() => import('./pages/products/Vault'));
+const MirrorBalance = lazy(() => import('./pages/products/MirrorBalance'));
+const CognitiveDashboard = lazy(() => import('./pages/products/CognitiveDashboard'));
+const Kavach = lazy(() => import('./pages/products/Kavach'));
+const Chetana = lazy(() => import('./pages/products/Chetana'));
+const UseCasesIndex = lazy(() => import('./pages/use-cases/index'));
+const Individuals = lazy(() => import('./pages/use-cases/Individuals'));
+const Teams = lazy(() => import('./pages/use-cases/Teams'));
+const Enterprise = lazy(() => import('./pages/use-cases/Enterprise'));
+const Government = lazy(() => import('./pages/use-cases/Government'));
+const Healthcare = lazy(() => import('./pages/use-cases/Healthcare'));
+const Education = lazy(() => import('./pages/use-cases/Education'));
+const DocsIndex = lazy(() => import('./pages/docs/index'));
+const Architecture = lazy(() => import('./pages/docs/Architecture'));
+const SelfHosting = lazy(() => import('./pages/docs/SelfHosting'));
+const APIDoc = lazy(() => import('./pages/docs/API'));
+const AboutIndex = lazy(() => import('./pages/about/index'));
+const Roadmap = lazy(() => import('./pages/about/Roadmap'));
+const Contact = lazy(() => import('./pages/about/Contact'));
 
-// Use Cases
-import UseCasesIndex from './pages/use-cases/index';
-import Individuals from './pages/use-cases/Individuals';
-import Teams from './pages/use-cases/Teams';
-import Enterprise from './pages/use-cases/Enterprise';
-import Government from './pages/use-cases/Government';
-import Healthcare from './pages/use-cases/Healthcare';
-import Education from './pages/use-cases/Education';
-
-// Docs
-import DocsIndex from './pages/docs/index';
-import Architecture from './pages/docs/Architecture';
-import SelfHosting from './pages/docs/SelfHosting';
-import APIDoc from './pages/docs/API';
-
-// About
-import AboutIndex from './pages/about/index';
-import Roadmap from './pages/about/Roadmap';
-import Contact from './pages/about/Contact';
+function LazyRoute({ children }) {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black text-white" />}>
+            {children}
+        </Suspense>
+    );
+}
 
 export default function App() {
     return (
         <ThemeProvider>
             <BrowserRouter>
                 <ScrollToTop />
+                <Suspense fallback={<div className="min-h-screen bg-black text-white" />}>
                 <Routes>
                     {/* Main pages */}
                     <Route path="/" element={<HomePage />} />
@@ -91,15 +93,16 @@ export default function App() {
                     <Route path="/trust" element={<Trust />} />
                     <Route path="/platform" element={<Platform />} />
                     <Route path="/chetana" element={<ChetanaLanding />} />
-                    <Route path="/mirror" element={<MirrorAmbient />} />
-                    <Route path="/mirror-beta" element={<MirrorWithAuth />} />
+                    <Route path="/mirror" element={<ReflectChat />} />
+                    <Route path="/mirror-ambient" element={<LazyRoute><MirrorAmbient /></LazyRoute>} />
+                    <Route path="/mirror-beta" element={<LazyRoute><MirrorWithAuth /></LazyRoute>} />
                     <Route path="/demo" element={<Demo />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/lab" element={<TestLab />} />
                     <Route path="/hub" element={<Hub />} />
                     <Route path="/dashgen" element={<DashGen />} />
                     <Route path="/confessions" element={<Confessions />} />
-                    <Route path="/prism" element={<MirrorPage />} />
+                    <Route path="/prism" element={<LazyRoute><MirrorPage /></LazyRoute>} />
                     <Route path="/research" element={<Research />} />
                     <Route path="/scan" element={<Scan />} />
                     <Route path="/twins" element={<Twins />} />
@@ -111,7 +114,8 @@ export default function App() {
                     <Route path="/builds" element={<Builds />} />
                     <Route path="/status" element={<Status />} />
                     <Route path="/live" element={<LivePulse />} />
-                    <Route path="/app" element={<AppShell />} />
+                    <Route path="/app" element={<ReflectChat />} />
+                    <Route path="/workspace" element={<LazyRoute><AppShell /></LazyRoute>} />
 
                     {/* Products */}
                     <Route path="/products" element={<ProductsIndex />} />
@@ -152,6 +156,7 @@ export default function App() {
                     {/* 404 */}
                     <Route path="*" element={<NotFound />} />
                 </Routes>
+                </Suspense>
             </BrowserRouter>
         </ThemeProvider>
     );
