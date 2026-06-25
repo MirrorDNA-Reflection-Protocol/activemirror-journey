@@ -67,6 +67,7 @@ export default function App() {
                     <Route path="/brainscan" element={<Navigate to="/start" replace />} />
                     <Route path="/reflect" element={<Navigate to="/mirror" replace />} />
                     <Route path="/app" element={<Navigate to="/mirror" replace />} />
+                    <Route path="/index.html" element={<Navigate to="/" replace />} />
 
                     {staleRoutes.map((path) => (
                         <Route key={path} path={path} element={<Navigate to="/" replace />} />
