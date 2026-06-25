@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact — Active Mirror</title>
+    <link rel="canonical" href="https://activemirror.ai/impact/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="The environmental and social impact of local-first AI. Reduce carbon, costs, and cognitive load.">
+    <meta property="og:title" content="Impact — Active Mirror">
+    <meta property="og:description" content="The environmental and social impact of local-first AI.">
+    <meta property="og:image" content="https://activemirror.ai/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror"
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="padding: 120px 0 60px;">
+        <div class="container text-center">
+            <h1>The Hidden Cost of Cloud AI</h1>
+            <p style="max-width: 600px; margin: 0 auto; color: var(--text-secondary);">
+                Every API call has a footprint. Local-first AI changes the equation.
+            </p>
+        </div>
+    </section>
+
+    <div class="container" style="max-width: 900px;">
+
+        <!-- The Problem -->
+        <section class="section">
+            <h2 style="margin-bottom: 32px;">What Cloud AI Actually Costs</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">⚡</div>
+                    <h4>Energy</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Data center compute + network + cooling
+                        for every query</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🌡️</div>
+                    <h4>Carbon</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Estimated 25-50g CO2 per complex AI
+                        query</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">💧</div>
+                    <h4>Water</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Billions of gallons annually for data
+                        center cooling</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🏢</div>
+                    <h4>Concentration</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">AI capability controlled by 3-4
+                        companies globally</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Alternative -->
+        <section class="section" style="border-top: 1px solid var(--border-color);">
+            <h2 style="margin-bottom: 32px;">The Local-First Alternative</h2>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 32px;">
+                <div>
+                    <h4 style="margin-bottom: 16px; color: var(--text-secondary);">Cloud AI</h4>
+                    <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                        <li style="margin-bottom: 12px;">✗ Every query = data center round-trip</li>
+                        <li style="margin-bottom: 12px;">✗ Cooling infrastructure required</li>
+                        <li style="margin-bottom: 12px;">✗ Network transmission overhead</li>
+                        <li style="margin-bottom: 12px;">✗ Redundant compute (same questions, repeated)</li>
+                        <li>✗ Vendor lock-in and dependency</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 16px; color: var(--accent-color);">Local-First AI</h4>
+                    <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                        <li style="margin-bottom: 12px;">✓ Efficient local chips (M4 = ~30W)</li>
+                        <li style="margin-bottom: 12px;">✓ Passive cooling sufficient</li>
+                        <li style="margin-bottom: 12px;">✓ Zero network for inference</li>
+                        <li style="margin-bottom: 12px;">✓ RAG = compute once, retrieve forever</li>
+                        <li>✓ Full independence and portability</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Setup -->
+        <section class="section" style="border-top: 1px solid var(--border-color);">
+            <h2 style="margin-bottom: 32px;">What We Actually Run</h2>
+            <div class="card" style="padding: 32px;">
+                <h4 style="margin-bottom: 16px;">The Active Mirror Production Stack</h4>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+                    <div>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                            <strong style="color: var(--text-primary);">Hardware</strong><br>
+                            Mac Mini M4 (24GB unified memory)
+                        </p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                            <strong style="color: var(--text-primary);">Power Draw</strong><br>
+                            ~30W typical, ~65W peak
+                        </p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                            <strong style="color: var(--text-primary);">Daily Energy</strong><br>
+                            ~0.7 kWh (24/7 operation)
+                        </p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                            <strong style="color: var(--text-primary);">Models</strong><br>
+                            Ollama (Qwen, Llama, Mistral)
+                        </p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                            <strong style="color: var(--text-primary);">Vector Store</strong><br>
+                            ChromaDB (~9,500 chunks)
+                        </p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                            <strong style="color: var(--text-primary);">Location</strong><br>
+                            Goa, India (your grid, your rules)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact Services -->
+        <section class="section" style="border-top: 1px solid var(--border-color);">
+            <h2 style="margin-bottom: 32px;">How We Help</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                <div class="card">
+                    <h4 style="margin-bottom: 12px;">🌱 Green AI Audit</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Assess your current AI carbon footprint. Identify migration paths to lower-impact architecture.
+                    </p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-bottom: 12px;">🌍 Democratization Support</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Low-cost, offline-capable AI deployment for organizations with limited resources or
+                        connectivity.
+                    </p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-bottom: 12px;">🧠 Cognitive Load Reduction</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Context persistence and identity systems so humans stop repeating themselves to machines.
+                    </p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-bottom: 12px;">🏛️ Resilience Planning</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Ensure your AI capability survives vendor outages, price changes, and policy shifts.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="section" style="border-top: 1px solid var(--border-color); text-align: center;">
+            <h2 style="margin-bottom: 16px;">Get an Impact Assessment</h2>
+            <p
+                style="color: var(--text-secondary); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Understand the true cost of your AI operations — and what local-first could save.
+            </p>
+            <a href="/contact/" class="btn btn-primary">Request Assessment →</a>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4><img src="/assets/logo.png" alt=""
+                            style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                        Mirror</h4>
+                    <p>Built by Paul Desai<br>N1 Intelligence (OPC) Pvt Ltd<br>Goa, India</p>
+                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 12px;">Last updated: December 2025
+                    </p>
+                </div>
+                <div class="footer-links">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                <a href="https://twitter.com/pauldesai123">Twitter</a>
+                <a href="mailto:paul@activemirror.ai">Email</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="/protocols/">Protocols</a>
+                <a href="/blog/">Blog</a>
+            </div>
+            </div>
+            <div class="copyright">
+                © 2025-2026 N1 Intelligence. Open source under MIT.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        menuBtn?.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    </script>
+</body>
+
+</html>

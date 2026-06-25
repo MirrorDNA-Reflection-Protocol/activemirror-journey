@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Mirror — Sovereign AI Infrastructure</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/">
+
+    <!-- Design & Fonts -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Meta Tags -->
+    <meta name="description"
+        content="Active Mirror is local-first AI infrastructure for individuals and enterprises. On-device AI, air-gapped deployment, prompt injection defense, and full audit trails.">
+    <meta property="og:title" content="Active Mirror — Sovereign AI Infrastructure">
+    <meta property="og:description"
+        content="Active Mirror is local-first AI infrastructure for individuals and enterprises. On-device AI, air-gapped deployment, prompt injection defense, and full audit trails.">
+    <meta property="og:image" content="https://activemirror.ai/assets/og-image.png">
+    <meta property="og:url" content="https://activemirror.ai">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- RSS Feed -->
+
+    <!-- JSON-LD Structured Data: Organization -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Active Mirror",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Linux",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "N1 Intelligence",
+            "url": "https://activemirror.ai",
+            "founder": {
+                "@type": "Person",
+                "name": "Paul Desai"
+            },
+            "sameAs": [
+                "https://github.com/MirrorDNA-Reflection-Protocol"
+            ]
+        }
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: FAQ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Is this free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Open source, MIT licensed. Run it yourself, forever."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Do I need to be technical?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For now, yes. This is for builders. We are working on easier onboarding."
+        }
+      }, {
+        "@type": "Question",
+        "name": "How is this different from ChatGPT/Claude?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "They own your data and context. Active Mirror runs on your hardware. You own everything."
+        }
+      }, {
+        "@type": "Question",
+        "name": "What models does it work with?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Claude, Gemini, GPT, Ollama, any MCP-compatible model. No lock-in."
+        }
+      }]
+    }
+    </script>
+
+</head>
+
+<body>
+
+    <a href="#main-content"
+        style="position:absolute; top:-40px; left:0; background:#000; color:#fff; padding:8px; z-index:1001; transition:top 0.3s; text-decoration:none;">Skip
+        to Content</a>
+
+    <!-- Sticky Header CTA -->
+    <div id="sticky-header"
+        style="position:fixed; top:0; left:0; right:0; background:rgba(10,10,16,0.95); border-bottom:1px solid var(--border-color); padding:12px 0; z-index:1000; transform:translateY(-100%); transition:transform 0.3s ease; backdrop-filter:blur(10px);">
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight:600; font-size:0.9rem;">Active Mirror</div>
+            <a href="https://id.activemirror.ai" class="btn btn-secondary" aria-label="Launch Identity Generator"
+                style="font-size:0.85rem; padding:8px 16px;">Launch Identity Generator →</a>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('sticky-header');
+            if (window.scrollY > 600) { // After hero
+                header.style.transform = 'translateY(0)';
+            } else {
+                header.style.transform = 'translateY(-100%)';
+            }
+        });
+    </script>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo" aria-label="Active Mirror Home">
+                <img src="/assets/logo.png" alt=""
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active Mirror
+            </a>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
+            <div class="nav-links">
+                <a href="/mirror/">Mirror</a>
+                <a href="/blog/">Blog</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content ID for Skip Link -->
+    <main id="main-content">
+
+        <!-- 1. Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <!-- Trust Badge -->
+                <div
+                    style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 24px;">
+                    <span style="color: var(--accent-color);">⟡</span>
+                    Open source · MIT Licensed · No tracking · No cloud dependency
+                </div>
+                <img src="/assets/logo.png" alt=""
+                    style="height: 80px; margin: 0 auto 24px auto; filter: invert(1); display: block;">
+                <h1>Your AI. Your Hardware.<br>Your Rules.</h1>
+                <p>Sovereign AI infrastructure for builders who want control. Start with your identity kernel — runs on
+                    your hardware, works with major models.</p>
+
+                <!-- Primary CTA -->
+                <div
+                    style="display: flex; gap: 16px; justify-content: center; margin-top: 32px; flex-wrap: wrap; align-items: center;">
+                    <a href="https://id.activemirror.ai" class="btn btn-primary" aria-label="Launch Identity Generator"
+                        style="font-size: 1.1rem; padding: 14px 32px; background:var(--accent-color); color:black; font-weight:600;">Start
+                        Free →</a>
+                </div>
+                <!-- Secondary Link -->
+                <div style="margin-top: 16px; font-size: 0.9rem;">
+                    <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/"
+                        style="color: var(--text-secondary); text-decoration: underline;">Read the Docs</a>
+                    <span style="color: var(--text-secondary); margin: 0 8px;">·</span>
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol"
+                        style="color: var(--text-secondary); text-decoration: underline;">View on GitHub</a>
+                </div>
+                <p style="margin-top: 12px; font-size: 0.8rem; color: var(--text-secondary); opacity: 0.8;">
+                    Builder-first today. Non-technical users can still try it safely.</p>
+            </div>
+        </section>
+
+        <!-- 2. Jump Links -->
+        <div class="container text-center" style="margin-bottom:40px;">
+            <div class="jump-links" style="font-size:0.9rem; color:var(--text-secondary);">
+                <a href="#get-started" style="color:var(--text-primary); text-decoration:none;">Get Started</a> <span
+                    style="opacity:0.3; margin:0 8px;">·</span>
+                <a href="#how-it-works" style="color:var(--text-primary); text-decoration:none;">How It Works</a> <span
+                    style="opacity:0.3; margin:0 8px;">·</span>
+                <a href="#proof" style="color:var(--text-primary); text-decoration:none;">Proof</a> <span
+                    style="opacity:0.3; margin:0 8px;">·</span>
+                <a href="#repos" style="color:var(--text-primary); text-decoration:none;">Repositories</a> <span
+                    style="opacity:0.3; margin:0 8px;">·</span>
+                <a href="#enterprise" style="color:var(--text-primary); text-decoration:none;">Enterprise</a>
+            </div>
+        </div>
+
+        <!-- 3. Quick Scan Row -->
+        <section
+            style="background:rgba(255,255,255,0.02); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color); padding:32px 0;">
+            <div class="container">
+                <h3
+                    style="text-align:center; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary); margin-bottom:24px;">
+                    At a Glance</h3>
+                <div class="grid"
+                    style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:24px; text-align:center;">
+
+                    <div>
+                        <div
+                            style="border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:12px; font-weight:600;">
+                            1-Click Identity Kernel</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">60 second setup</div>
+                    </div>
+
+                    <div>
+                        <div
+                            style="border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:12px; font-weight:600;">
+                            Governance Gates</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Pre-inference blocking</div>
+                    </div>
+
+                    <div>
+                        <div
+                            style="border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:12px; font-weight:600;">
+                            Vault Memory</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Local-first storage</div>
+                    </div>
+
+                    <div>
+                        <div
+                            style="border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:12px; font-weight:600;">
+                            Works With Major Models</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Claude, GPT, Ollama (and
+                            MCP-compatible models)</div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. The Problem -->
+        <section class="section">
+            <div class="container text-center">
+                <h2 style="margin-bottom: 24px;">The Problem</h2>
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <p class="text-secondary" style="font-size: 1.1rem; margin-bottom: 24px;">
+                        You don't own your AI. Your conversations live on someone else's servers. Your context resets
+                        every
+                        session. Your prompts train their models. When they change their terms, raise prices, or shut
+                        down —
+                        you lose everything.
+                    </p>
+                    <p style="font-weight: 600; font-size: 1.2rem;">Active Mirror is the exit door.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Identity Generator (Entry Point) -->
+        <section id="get-started" class="section"
+            style="background: linear-gradient(180deg, var(--bg-color) 0%, rgba(255,255,255,0.03) 100%);">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 16px;">Start With Your Kernel</h2>
+                <p class="text-center text-secondary" style="margin-bottom: 48px;">The Identity Generator creates your
+                    portable identity kernel. Governance, memory, and orchestration are added by the full stack.</p>
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
+                    <!-- Step 1 -->
+                    <div class="card" style="border:none; background:transparent; padding:0;">
+                        <div style="font-size:3rem; color:var(--text-secondary); opacity:0.3; margin-bottom:16px;">01
+                        </div>
+                        <h3 style="margin-bottom:12px;">Configure</h3>
+                        <p style="color:var(--text-secondary); margin-bottom:24px;">Answer 5 questions about your
+                            preferences, communication style, and privacy boundaries. Instant setup.</p>
+                        <div
+                            style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:16px;">
+                            <div
+                                style="height:8px; width:40%; background:var(--accent-color); border-radius:4px; margin-bottom:12px; opacity:0.5;">
+                            </div>
+                            <div
+                                style="height:8px; width:70%; background:var(--text-secondary); border-radius:4px; margin-bottom:8px; opacity:0.2;">
+                            </div>
+                            <div
+                                style="height:8px; width:50%; background:var(--text-secondary); border-radius:4px; opacity:0.2;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="card" style="border:none; background:transparent; padding:0;">
+                        <div style="font-size:3rem; color:var(--text-secondary); opacity:0.3; margin-bottom:16px;">02
+                        </div>
+                        <h3 style="margin-bottom:12px;">Download</h3>
+                        <p style="color:var(--text-secondary); margin-bottom:24px;">Get your portable identity kernel. A
+                            standard JSON file that lives on your device.</p>
+                        <div
+                            style="background:#000; border:1px solid var(--border-color); border-radius:8px; padding:16px; font-family:monospace; font-size:0.75rem; color:var(--text-secondary); position:relative; overflow:hidden;">
+                            <span style="color:var(--accent-color);">"identity"</span>: {<br>
+                            &nbsp;&nbsp;"name": "Alex",<br>
+                            &nbsp;&nbsp;"role": "Architect",<br>
+                            &nbsp;&nbsp;"style": "Direct"<br>
+                            },<br>
+                            <span style="color:var(--accent-color);">"integrity"</span>: "sha256..."
+                            <div
+                                style="position:absolute; bottom:0; left:0; right:0; height:40px; background:linear-gradient(to top, #000, transparent);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="card" style="border:none; background:transparent; padding:0;">
+                        <div style="font-size:3rem; color:var(--text-secondary); opacity:0.3; margin-bottom:16px;">03
+                        </div>
+                        <h3 style="margin-bottom:12px;">Use Everywhere</h3>
+                        <p style="color:var(--text-secondary); margin-bottom:24px;">Load into Claude, ChatGPT, Gemini,
+                            or Ollama. Your context travels with you.</p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <span
+                                style="background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:20px; font-size:0.8rem;">Claude</span>
+                            <span
+                                style="background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:20px; font-size:0.8rem;">GPT</span>
+                            <span
+                                style="background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:20px; font-size:0.8rem;">Ollama</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Definition Clarity -->
+                <div class="grid"
+                    style="grid-template-columns: 1fr 1fr; gap:40px; max-width:800px; margin:60px auto 0; background:rgba(255,255,255,0.02); padding:32px; border-radius:12px; border:1px solid var(--border-color);">
+                    <div>
+                        <h4 style="margin-bottom:16px; color:var(--accent-color);">The Identity Generator ✨</h4>
+                        <ul
+                            style="list-style:none; padding:0; margin:0; color:var(--text-secondary); font-size:0.9rem; line-height:1.6;">
+                            <li>✓ Portable identity kernel (JSON)</li>
+                            <li>✓ Works with Claude, GPT, Gemini</li>
+                            <li>✓ Frictionless setup</li>
+                            <li>✓ <strong>The Entry Point</strong></li>
+                        </ul>
+                    </div>
+                    <div style="border-left:1px solid var(--border-color); padding-left:40px;">
+                        <h4 style="margin-bottom:16px; color:var(--text-primary);">The Full Stack 🏗️</h4>
+                        <ul
+                            style="list-style:none; padding:0; margin:0; color:var(--text-secondary); font-size:0.9rem; line-height:1.6;">
+                            <li>✓ Runtime governance & gates</li>
+                            <li>✓ Vault-backed persistent memory</li>
+                            <li>✓ Local orchestration</li>
+                            <li>✓ <strong>The Full System</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center" style="margin-top: 48px;">
+                    <a href="https://id.activemirror.ai" class="btn btn-primary"
+                        style="padding: 16px 40px; font-size: 1.1rem;">Start Free →</a>
+                    <div style="margin-top:12px; font-size:0.9rem; color:var(--text-secondary);">v1.4 · Web-based ·
+                        Local Generation</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Proof Strip (Enforcement Mechanism) -->
+        <section id="proof"
+            style="background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); padding: 60px 0;">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom:16px;">How Enforcement Works</h2>
+                <p class="text-center text-secondary" style="margin-bottom:40px;">Don't trust claims. Verify mechanisms.
+                </p>
+
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
+                        <thead style="border-bottom:1px solid var(--border-color);">
+                            <tr>
+                                <th style="padding:16px; color:var(--text-secondary);">What's Enforced</th>
+                                <th style="padding:16px; color:var(--text-secondary);">Where It Happens</th>
+                                <th style="padding:16px; color:var(--text-secondary);">Verify</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:16px; font-weight:600;">Truth-state classification</td>
+                                <td style="padding:16px; color:var(--text-secondary);">Truth Validator</td>
+                                <td style="padding:16px;"><a
+                                        href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS"
+                                        style="color:var(--accent-color);">View Code →</a></td>
+                            </tr>
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:16px; font-weight:600;">Prompt injection blocking</td>
+                                <td style="padding:16px; color:var(--text-secondary);">AMGL Guard v1.1 <span
+                                        style="font-size:0.8rem; opacity:0.6; display:block;">Blocks prompt injection,
+                                        system override attempts, role hijacking, and credential exfiltration.</span>
+                                </td>
+                                <td style="padding:16px;"><a
+                                        href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS"
+                                        style="color:var(--accent-color);">View Code →</a></td>
+                            </tr>
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:16px; font-weight:600;">Identity integrity</td>
+                                <td style="padding:16px; color:var(--text-secondary);">SHA256 Drift Monitor <span
+                                        style="font-size:0.8rem; opacity:0.6; display:block;">(Cryptographic drift
+                                        alert)</span></td>
+                                <td style="padding:16px;"><a
+                                        href="https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity"
+                                        style="color:var(--accent-color);">View Code →</a></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:16px; font-weight:600;">Memory boundaries</td>
+                                <td style="padding:16px; color:var(--text-secondary);">Vault Access Layer</td>
+                                <td style="padding:16px;"><a
+                                        href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorBrain"
+                                        style="color:var(--accent-color);">View Code →</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. The Stack (Metrics) -->
+        <section class="section" style="border-bottom: 1px solid var(--border-color);">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 32px; font-size:1.5rem;">The Stack</h2>
+                <div class="grid stats-grid"
+                    style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:24px;">
+                    <div class="stat-item">
+                        <div class="stat-number">64</div>
+                        <div class="stat-label">Repositories<br><span style="font-size:0.8rem; opacity:0.7;">All MIT
+                                licensed. Verifiable.</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Months<br><span style="font-size:0.8rem; opacity:0.7;">Daily production
+                                use.</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1</div>
+                        <div class="stat-label">Human<br><span style="font-size:0.8rem; opacity:0.7;">Solo founder.
+                                AI-orchestrated.</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">$0</div>
+                        <div class="stat-label">Funding<br><span style="font-size:0.8rem; opacity:0.7;">No investors =
+                                No pivot risk.</span></div>
+                    </div>
+                </div>
+                <div class="text-center" style="margin-top: 32px;">
+                    <a href="https://doi.org/10.5281/zenodo.17787619" target="_blank" rel="noopener"
+                        style="background:#222; padding:8px 16px; border-radius:4px; font-size:0.8rem; margin-right:16px; text-decoration:none; color:var(--text-secondary); border:1px solid #333;"><span
+                            style="color:var(--accent-color);">DOI</span> 10.5281/zenodo.17787619</a>
+                    <span style="color:var(--text-secondary); font-size:0.9rem;">3 peer-reviewed publications (Zenodo +
+                        aiXiv) · Red-Team Tested Dec 2025</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. What It Does (Pillars) -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">What Active Mirror Does</h2>
+                <div class="grid features-grid">
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">⟡</span>
+                        <h3>Persistent Identity</h3>
+                        <p>Your AI remembers who you are, what you're building, and how you think — across sessions,
+                            across
+                            platforms, across models. Portable across models.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">△</span>
+                        <h3>Truth-State Enforcement</h3>
+                        <p>Every claim is tagged as FACT, ESTIMATE, or UNKNOWN. Hallucination-Resistant via truth-state
+                            classification.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">◈</span>
+                        <h3>Vault-Backed Memory</h3>
+                        <p>Your knowledge lives in your vault — searchable, verifiable, yours. Data stays local with
+                            explicit read/write boundaries.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">⧉</span>
+                        <h3>Multi-Model Orchestration</h3>
+                        <p>Claude, Gemini, GPT, local models — route tasks to the right model. Model-Agnostic.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Simplified Architecture -->
+        <section id="how-it-works" class="section"
+            style="background: linear-gradient(180deg, #0d0d12 0%, #0a0a10 100%);">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 16px;">How It Works</h2>
+                <p class="text-center text-secondary" style="margin-bottom: 48px;">One identity kernel. Multiple models.
+                    Your hardware.</p>
+
+                <div style="max-width:600px; margin:0 auto; font-family:monospace; text-align:center;">
+                    <!-- Layer 1 -->
+                    <div
+                        style="border:1px solid rgba(255,255,255,0.1); padding:24px; margin-bottom:16px; border-radius:12px;">
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:8px;">YOUR MODELS</div>
+                        <div style="color:var(--text-secondary);">Claude · GPT · Ollama · Any</div>
+                        <div style="font-size:2rem; margin-top:8px;">↓</div>
+                    </div>
+                    <!-- Layer 2 -->
+                    <div
+                        style="border:1px solid var(--accent-color); background:rgba(168,85,247,0.05); padding:24px; margin-bottom:16px; border-radius:12px;">
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:8px; color:var(--accent-color);">
+                            ACTIVE MIRROR RUNTIME</div>
+                        <div style="color:var(--text-secondary);">Governance · Identity · Vault</div>
+                        <div style="font-size:2rem; margin-top:8px; color:var(--accent-color);">↓</div>
+                    </div>
+                    <!-- Layer 3 -->
+                    <div style="border:1px solid rgba(255,255,255,0.1); padding:24px; border-radius:12px;">
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:8px;">YOUR HARDWARE</div>
+                        <div style="color:var(--text-secondary);">Mac · Linux · Air-gapped</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Operational Modes (Boundary Box) -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">Operational Modes</h2>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:32px;">
+
+                    <!-- Local Mode -->
+                    <div
+                        style="border:1px solid var(--border-color); border-radius:12px; padding:32px; background:rgba(0,0,0,0.5);">
+                        <h3
+                            style="margin-bottom:24px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                            LOCAL MODE (Air-Gapped)</h3>
+                        <ul style="list-style:none; padding:0; line-height:2;">
+                            <li style="color:var(--text-primary);">✓ Zero outbound network calls</li>
+                            <li style="color:var(--text-primary);">✓ Models run on your hardware (Ollama)</li>
+                            <li style="color:var(--text-primary);">✓ Memory stored in local vault only</li>
+                            <li style="color:var(--text-primary);">✓ Full audit log on filesystem</li>
+                            <li style="color:var(--text-primary);">✓ Works offline</li>
+                            <li style="color:#ef4444;">✕ Cannot use cloud models (Claude, GPT)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Hybrid Mode -->
+                    <div
+                        style="border:1px solid var(--accent-color); border-radius:12px; padding:32px; background:rgba(168, 85, 247, 0.05);">
+                        <h3
+                            style="margin-bottom:24px; border-bottom:1px solid var(--accent-color); padding-bottom:12px; color:var(--accent-color);">
+                            HYBRID MODE (Governed)</h3>
+                        <ul style="list-style:none; padding:0; line-height:2;">
+                            <li style="color:var(--text-primary);">✓ Outbound calls ONLY to approved models</li>
+                            <li style="color:var(--text-primary);">✓ Identity and memory stay local</li>
+                            <li style="color:var(--text-primary);">✓ Governance layer runs locally</li>
+                            <li style="color:var(--text-primary);">✓ Full audit log of all requests</li>
+                            <li style="color:var(--text-primary);">✓ Works with Claude, GPT, Gemini</li>
+                            <li style="color:#eab308;">✕ Model providers see prompts (ToS applies)</li>
+                        </ul>
+                    </div>
+
+                </div>
+                <p class="text-center text-secondary" style="margin-top:32px;">You choose the trade-off. Both modes
+                    preserve local control of identity, memory, and governance.</p>
+            </div>
+        </section>
+
+        <!-- 11. Core Repositories (Start Order) -->
+        <section id="repos" class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 24px;">Core Repositories</h2>
+                <p class="text-center text-secondary" style="margin-bottom:48px;">Start with 1. Add layers as needed.
+                </p>
+
+                <div class="grid features-grid">
+                    <div class="card">
+                        <div style="font-size:3rem; color:var(--accent-color); margin-bottom:16px; font-weight:700;">1
+                        </div>
+                        <h3>Active Mirror Identity</h3>
+                        <p style="margin-bottom: 12px;">The identity kernel. Start here to create your sovereign AI
+                            identity. <strong>(Required)</strong></p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity"
+                            class="text-accent" target="_blank">Clone & Run →</a>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="font-size:3rem; color:var(--text-secondary); opacity:0.3; margin-bottom:16px; font-weight:700;">
+                            2</div>
+                        <h3>MirrorBrain</h3>
+                        <p style="margin-bottom: 12px;">WebUI for local AI with vault memory. The interface for your
+                            kernel. <strong>(Optional)</strong></p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/MirrorBrain" class="text-accent"
+                            target="_blank">Setup Guide →</a>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="font-size:3rem; color:var(--text-secondary); opacity:0.3; margin-bottom:16px; font-weight:700;">
+                            3</div>
+                        <h3>Active Mirror OS</h3>
+                        <p style="margin-bottom: 12px;">Runtime governance layer. Request gating and security.
+                            <strong>(Full Stack)</strong>
+                        </p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS" class="text-accent"
+                            target="_blank">View Runtime →</a>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="font-size:3rem; color:var(--text-secondary); opacity:0.3; margin-bottom:16px; font-weight:700;">
+                            4</div>
+                        <h3>AMI Gate</h3>
+                        <p style="margin-bottom: 12px;">MCP server for agent integration. Connect Agents to Identity.
+                            <strong>(Advanced)</strong>
+                        </p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/ami_gate" class="text-accent"
+                            target="_blank">MCP Server →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 12. For Individuals -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">For Individuals: Your Digital Twin</h2>
+                <div class="grid features-grid">
+                    <a href="https://id.activemirror.ai" class="card"
+                        style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
+                        <span class="card-icon" aria-hidden="true">🧠</span>
+                        <h3>Perfect Memory</h3>
+                        <p style="margin-bottom: auto;">Stop repeating yourself. Active Mirror remembers every
+                            conversation, project, and preference.</p>
+                        <div style="margin-top: 16px; color: var(--accent-color); font-size: 0.9rem;">Start building →</div>
+                    </a>
+                    <a href="/architecture/" class="card" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
+                        <span class="card-icon" aria-hidden="true">🛡️</span>
+                        <h3>Privacy by Architecture</h3>
+                        <p style="margin-bottom: auto;">Your medical data, financial ideas, and personal journals stay
+                            on your device.</p>
+                        <div style="margin-top: 16px; color: var(--accent-color); font-size: 0.9rem;">Learn why →</div>
+                    </a>
+                    <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/story/" class="card" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
+                        <span class="card-icon" aria-hidden="true">🎭</span>
+                        <h3>Portable Identity</h3>
+                        <p style="margin-bottom: auto;">Take your context with you. Switch from ChatGPT to Claude to
+                            Local Llama without losing who you are.</p>
+                        <div style="margin-top: 16px; color: var(--accent-color); font-size: 0.9rem;">See how →</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 13. For Enterprise -->
+        <section id="enterprise" class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">For Enterprise: Industry Solutions</h2>
+                <div class="grid features-grid grid-3-cols">
+
+                    <!-- Government -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🏛️</span>
+                        <h3>Government & Defense</h3>
+                        <p style="margin-bottom: auto;">Classified data stays classified. Air-gapped deployments.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Healthcare -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🏥</span>
+                        <h3>Healthcare</h3>
+                        <p style="margin-bottom: auto;">HIPAA-aligned deployment. Your data stays on your
+                            infrastructure.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Financial -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🏦</span>
+                        <h3>Financial Services</h3>
+                        <p style="margin-bottom: auto;">Audit-ready controls. Full decision logging.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Legal -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">⚖️</span>
+                        <h3>Legal</h3>
+                        <p style="margin-bottom: auto;">Attorney-client privilege preserved locally.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Manufacturing -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🏭</span>
+                        <h3>Manufacturing</h3>
+                        <p style="margin-bottom: auto;">Edge AI. Trade secrets stay on-site.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Enterprise GDPR -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🌍</span>
+                        <h3>Enterprise (GDPR)</h3>
+                        <p style="margin-bottom: auto;">European data stays in Europe. Residency control.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Solo Founders -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🚀</span>
+                        <h3>Solo Founders & Small Teams</h3>
+                        <p style="margin-bottom: auto;">One human, unlimited AI leverage. Automate everything except
+                            judgment.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                    <!-- Sustainability -->
+                    <div class="card solution-card" style="padding: 28px; text-decoration: none; color: inherit;">
+                        <span class="card-icon" aria-hidden="true">🌱</span>
+                        <h3>Sustainability-Conscious Orgs</h3>
+                        <p style="margin-bottom: auto;">AI that doesn't cost the earth. Local-first = lower carbon,
+                            lower cost.</p>
+                        <div
+                            style="margin-top: auto; padding-top: 16px; color: var(--accent-color); font-size: 0.9rem;">
+                            Coming soon</div>
+                    </div>
+
+                </div>
+                <!-- Enterprise Resources -->
+                <div class="text-center" style="margin-top:48px;">
+                    <h3 style="margin-bottom:16px;">Enterprise Resources</h3>
+                    <p class="text-secondary" style="margin-bottom:24px;">For security teams and procurement.</p>
+                    <span class="btn btn-secondary" style="opacity: 0.5; cursor: not-allowed;">Enterprise Pack (Coming
+                        Soon)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 14. Research & Publications -->
+        <section class="section" style="background-color: #0d0d12;">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">Research & Publications</h2>
+                <div class="grid features-grid">
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">⟡</span>
+                        <h3>SCD Protocol v3.1</h3>
+                        <p style="margin-bottom: 12px;">Sovereign Compact Directive — Governance for truth-state
+                            enforcement.</p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/SCD-Protocol" class="text-accent"
+                            target="_blank" rel="noopener">View on GitHub →</a>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">△</span>
+                        <h3>Governance and Boundary Conditions for Reflective AI Systems</h3>
+                        <p style="margin-bottom: 12px;">Structural enforcement beyond prompt alignment. How governance
+                            constraints can be architecturally enforced.</p>
+                        <a href="https://aixiv.science/abs/aixiv.251217.000002" class="text-accent" target="_blank"
+                            rel="noopener">View on aiXiv →</a>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">◈</span>
+                        <h3>Layered Governance for Large Language Model Systems</h3>
+                        <p style="margin-bottom: 12px;">A framework for hierarchical governance layers in LLM
+                            deployments — from inference to orchestration.</p>
+                        <a href="https://aixiv.science/abs/aixiv.251218.000003" class="text-accent" target="_blank"
+                            rel="noopener">View on aiXiv →</a>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">⧉</span>
+                        <h3>ActiveMirrorOS WhitePaper</h3>
+                        <p style="margin-bottom: 12px;">Wrapper-First AI Systems for Governed Intelligence.</p>
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol/ActiveMirrorOS-WhitePaper"
+                            class="text-accent" target="_blank" rel="noopener">Read WhitePaper →</a>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon" aria-hidden="true">◈</span>
+                        <h3>Latest Insights</h3>
+                        <p style="margin-bottom:12px;">Deep dives into local LLMs, red-teaming, and neurodivergent AI.
+                        </p>
+                        <span class="text-accent" style="opacity: 0.5;">Blog coming soon</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 15. FAQ -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center" style="margin-bottom: 40px;">Questions</h2>
+                <div class="grid faq-grid" style="gap: 32px;">
+                    <div class="faq-item" style="border-left: 2px solid var(--accent-color); padding-left: 20px;">
+                        <h3 style="margin-bottom: 8px; color: var(--text-primary);">Is this free?</h3>
+                        <p style="color: var(--text-secondary);">Yes. Open source, MIT licensed. Run it yourself,
+                            forever.</p>
+                    </div>
+                    <div class="faq-item" style="border-left: 2px solid var(--accent-color); padding-left: 20px;">
+                        <h3 style="margin-bottom: 8px; color: var(--text-primary);">Do I need to be technical?</h3>
+                        <p style="color: var(--text-secondary);">For now, yes. This is for builders. We are working on
+                            easier onboarding.</p>
+                    </div>
+                    <div class="faq-item" style="border-left: 2px solid var(--accent-color); padding-left: 20px;">
+                        <h3 style="margin-bottom: 8px; color: var(--text-primary);">How is this different from
+                            ChatGPT/Claude?</h3>
+                        <p style="color: var(--text-secondary);">They own your data and context. Active Mirror runs on
+                            your hardware. You own everything.</p>
+                    </div>
+                    <div class="faq-item" style="border-left: 2px solid var(--accent-color); padding-left: 20px;">
+                        <h3 style="margin-bottom: 8px; color: var(--text-primary);">What models does it work with?</h3>
+                        <p style="color: var(--text-secondary);">Claude, Gemini, GPT, Ollama, any MCP-compatible model.
+                            No lock-in.</p>
+                    </div>
+                    <div class="faq-item" style="border-left: 2px solid var(--accent-color); padding-left: 20px;">
+                        <h3 style="margin-bottom: 8px; color: var(--text-primary);">Who's behind this?</h3>
+                        <p style="color: var(--text-secondary);">Paul Desai, solo founder, N1 Intelligence, Goa, India.
+                            No VC, no team, no runway pressure.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 16. Final CTA -->
+        <section class="section">
+            <div class="container text-center">
+                <h2 style="margin-bottom: 24px;">Own Your Intelligence</h2>
+                <p class="text-secondary" style="margin-bottom: 48px;">Designed to remain usable as long as you control
+                    your hardware.</p>
+                <a href="https://id.activemirror.ai" class="btn btn-primary" aria-label="Launch Identity Generator"
+                    style="padding: 16px 40px; font-size: 1.1rem; background:var(--accent-color); color:black; font-weight:600;">Start
+                    Free →</a>
+            </div>
+        </section>
+
+        <!-- 17. Footer -->
+        <footer style="border-top: 1px solid rgba(255,255,255,0.05); position: relative; padding-top: 60px;">
+            <div
+                style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-color), transparent); opacity: 0.5;">
+            </div>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand" style="text-align: center;">
+                        <h4 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <img src="/assets/logo.png" alt="⟡" style="height: 20px; filter: invert(1); opacity: 0.8;">
+                            Active Mirror
+                        </h4>
+                        <p style="opacity: 0.6; font-size: 0.9rem;">Sovereign AI Infrastructure<br>Built in Goa, India
+                        </p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a>
+                        <a href="https://twitter.com/pauldesai123">Twitter</a>
+                        <a href="mailto:paul@activemirror.ai">Email</a>
+                        <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/"
+                            target="_blank">Docs</a>
+                    </div>
+                </div>
+                <div class="copyright"
+                    style="border-top: 1px solid rgba(255,255,255,0.03); margin-top: 40px; padding-top: 20px;">
+                    © 2025-2026 N1 Intelligence. Open source under MIT.
+                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 12px;">Last updated: December 2025
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // Mobile Menu Toggle
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+
+        // Scroll Reveal Animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section, .card, .stat-item').forEach(el => {
+            el.classList.add('fade-in-up');
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+
+</html>

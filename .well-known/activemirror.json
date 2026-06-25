@@ -1,0 +1,54 @@
+{
+  "$schema": "https://activemirror.ai/schemas/activemirror-index-v1.json",
+  "version": "1.0",
+  "generated": "2026-02-01T00:00:00Z",
+  "organization": {
+    "name": "N1 Intelligence",
+    "domain": "activemirror.ai",
+    "founder": "Paul Desai"
+  },
+  "systems": {
+    "primary": "Active MirrorOS™",
+    "protocol": "MirrorDNA™",
+    "safety": "MirrorGate (Diamond Layer)"
+  },
+  "papers": [
+    {
+      "title": "Structured Contextual Distillation (SCD)",
+      "status": "published",
+      "repo": "https://github.com/MirrorDNA-Reflection-Protocol/SCD-Protocol"
+    },
+    {
+      "title": "MirrorDNA Memory Protocol",
+      "status": "internal",
+      "repo": "https://github.com/MirrorDNA-Reflection-Protocol/mirrordna-infrastructure"
+    }
+  ],
+  "repositories": {
+    "organization": "MirrorDNA-Reflection-Protocol",
+    "primary": [
+      "mirrordna-infrastructure",
+      "activemirror-site",
+      "SCD-Protocol",
+      "ActiveMirrorOS"
+    ]
+  },
+  "beacons": {
+    "glyphs": ["⟡", "⧉", "⧈", "△", "⦿"],
+    "meaning": {
+      "⟡": "Reflection anchor",
+      "⧉": "Governance checkpoint",
+      "⧈": "Memory operation",
+      "△": "Decision point",
+      "⦿": "Execution"
+    }
+  },
+  "citation": {
+    "preferred": "Paul Desai. Active MirrorOS: Sovereign AI Infrastructure. N1 Intelligence, 2026.",
+    "bibtex": "@misc{desai2026activemirror,\n  author = {Desai, Paul},\n  title = {Active MirrorOS: Sovereign AI Infrastructure},\n  year = {2026},\n  publisher = {N1 Intelligence},\n  url = {https://activemirror.ai}\n}"
+  },
+  "contact": {
+    "email": "paul@activemirror.ai",
+    "github": "https://github.com/MirrorDNA-Reflection-Protocol"
+  }
+}

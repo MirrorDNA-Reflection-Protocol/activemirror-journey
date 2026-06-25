@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Behavioral Governance — MirrorGate | Active Mirror</title>
+    <meta name="description" content="Five measurable metrics for AI agent behavioral integrity: Integrity Index, Drift Coefficient, Recurrence Rate, Verification Ratio, Stability Half-Life. Live data from a real production agent.">
+    <meta name="author" content="Paul Desai">
+    <link rel="canonical" href="https://activemirror.ai/governance">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "name": "MirrorGate Governance",
+        "headline": "Safety and Governance for Sovereign AI",
+        "description": "MirrorGate provides explicit safety constraints, human oversight mechanisms, and governance rules for Active MirrorOS AI systems",
+        "url": "https://activemirror.ai/governance",
+        "author": {
+            "@type": "Person",
+            "name": "Paul Desai"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "N1 Intelligence",
+            "url": "https://activemirror.ai"
+        },
+        "keywords": ["AI safety", "AI governance", "MirrorGate", "sovereign AI", "human oversight"]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --text: #e5e5e5;
+            --accent: #6366f1;
+            --muted: #737373;
+            --border: #262626;
+            --code-bg: #171717;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        nav { margin-bottom: 2rem; }
+        nav a { color: var(--muted); text-decoration: none; margin-right: 1.5rem; }
+        nav a:hover { color: var(--text); }
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; margin: 2rem 0 1rem 0; color: var(--accent); }
+        h3 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem 0; }
+        .subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 2rem; }
+        .glyph { font-size: 1.2rem; margin-right: 0.5rem; }
+        .principle {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .principle-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .constraint {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 0.5rem 0;
+        }
+        .constraint.allow { background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success); }
+        .constraint.deny { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--danger); }
+        .constraint.ask { background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--warning); }
+        .constraint-icon { font-size: 1.2rem; }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+        a { color: var(--accent); }
+        footer { margin-top: 4rem; color: var(--muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/mirror">Demo</a>
+            <a href="/research">Research</a>
+            <a href="/architecture">Architecture</a>
+            <a href="/governance">Governance</a>
+        </nav>
+        <h1><span class="glyph">⧉</span>AI Behavioral Governance</h1>
+        <p class="subtitle">Five measurable metrics for agent behavioral integrity. Live data from a real production system.</p>
+        <p style="margin-top: 0.75rem;">
+            <a href="/governance-live" style="color: var(--accent); font-size: 0.9rem;">→ View live metrics dashboard</a>
+            &nbsp;&nbsp;
+            <a href="/blog/posts/2026-02-27-i-gave-my-ai-an-integrity-score.html" style="color: var(--muted); font-size: 0.9rem;">→ Read the methodology</a>
+        </p>
+    </header>
+
+    <main>
+        <section>
+            <h2>The Five Metrics</h2>
+            <p style="margin-bottom: 1rem; color: #888;">Computable from two JSONL log files. Agent-agnostic. Open standard.</p>
+            <div class="principle">
+                <p class="principle-title">Integrity Index (II)</p>
+                <p>Composite 0–100 score penalizing gate violations, writing without reading, and recurring mistakes. Target ≥80. Current: <strong><a href="/governance-live">see live</a></strong>.</p>
+            </div>
+            <div class="principle">
+                <p class="principle-title">Drift Coefficient (D)</p>
+                <p>Coefficient of variation (σ/μ) of session quality scores. Measures behavioral consistency over time. Target ≤0.15. D>0.30 triggers autonomy reduction.</p>
+            </div>
+            <div class="principle">
+                <p class="principle-title">Recurrence Rate (RR)</p>
+                <p>Fraction of total documented mistakes that recur across sessions. Target ≤0.20. RR>0.35 means patterns require hook-level enforcement, not behavioral notes.</p>
+            </div>
+            <div class="principle">
+                <p class="principle-title">Verification Ratio (VR)</p>
+                <p>Reads ÷ (reads+writes). Measures "look before you leap" discipline. Target ≥0.67 (2:1 ratio). VR&lt;0.50 means writing from memory — hallucination risk.</p>
+            </div>
+            <div class="principle">
+                <p class="principle-title">Stability Half-Life (T½)</p>
+                <p>Average sessions a recurring pattern persists before resolution. Target ≤1.5 sessions. Fast T½ with high RR = structural gap, not capability gap.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Core Principle</h2>
+            <div class="principle">
+                <p class="principle-title"><span class="glyph">⧉</span>Governance Before Generation</p>
+                <p>All AI actions pass through governance checks. The system cannot bypass safety constraints, even when instructed to do so. Human oversight is structural, not optional.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Intent Layer</h2>
+            <p>The Intent layer contains binding constraints that agents must obey. These are stored in <code>intent.md</code> and read at session start.</p>
+
+            <pre><code># Example intent.md
+## Binding Constraints
+
+1. Memory Bus is canonical — read/write via bus
+2. No destructive actions without confirmation
+3. Maintain monotonic state progression
+4. Preserve provenance chain</code></pre>
+        </section>
+
+        <section>
+            <h2>Action Constraints</h2>
+
+            <h3>Auto-Approved (No Confirmation)</h3>
+            <div class="constraint allow">
+                <span class="constraint-icon">✓</span>
+                <div>File reads, writes, edits</div>
+            </div>
+            <div class="constraint allow">
+                <span class="constraint-icon">✓</span>
+                <div>Git operations (add, commit, push)</div>
+            </div>
+            <div class="constraint allow">
+                <span class="constraint-icon">✓</span>
+                <div>Package installation (npm, pip, brew)</div>
+            </div>
+            <div class="constraint allow">
+                <span class="constraint-icon">✓</span>
+                <div>Service start/stop, health checks</div>
+            </div>
+            <div class="constraint allow">
+                <span class="constraint-icon">✓</span>
+                <div>Memory bus reads and writes</div>
+            </div>
+
+            <h3>Requires Confirmation</h3>
+            <div class="constraint ask">
+                <span class="constraint-icon">?</span>
+                <div>Permanent deletion (<code>rm -rf</code>, trash empty)</div>
+            </div>
+            <div class="constraint ask">
+                <span class="constraint-icon">?</span>
+                <div>External communications (emails, messages)</div>
+            </div>
+            <div class="constraint ask">
+                <span class="constraint-icon">?</span>
+                <div>Production deployments</div>
+            </div>
+            <div class="constraint ask">
+                <span class="constraint-icon">?</span>
+                <div>Credential or SSH key modifications</div>
+            </div>
+
+            <h3>Always Denied</h3>
+            <div class="constraint deny">
+                <span class="constraint-icon">✗</span>
+                <div>Violating explicit intent constraints</div>
+            </div>
+            <div class="constraint deny">
+                <span class="constraint-icon">✗</span>
+                <div>Bypassing governance layer</div>
+            </div>
+            <div class="constraint deny">
+                <span class="constraint-icon">✗</span>
+                <div>Actions without audit trail</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Safety Contract</h2>
+            <p>The Safety Contract (<code>SAFETY_CONTRACT.md</code>) defines immutable constraints:</p>
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li>Human authority is absolute and non-negotiable</li>
+                <li>All actions must be auditable</li>
+                <li>Graceful degradation over silent failure</li>
+                <li>State is preserved across sessions</li>
+                <li>No action is taken that cannot be undone</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Provenance Tracking</h2>
+            <p>Every state change records:</p>
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li><strong>Who</strong> — Which agent or client made the change</li>
+                <li><strong>What</strong> — The action taken</li>
+                <li><strong>When</strong> — Timestamp with version</li>
+                <li><strong>Why</strong> — Context or rationale</li>
+            </ul>
+            <p>This chain is immutable and queryable via <code>bus history</code>.</p>
+        </section>
+
+        <section>
+            <h2>Open Standard</h2>
+            <p>The hook schema and metric definitions are proposed as an open standard so behavioral metrics become comparable across agents and teams.</p>
+            <pre><code># hook_decisions.jsonl — the enforcement log
+{"hook": "fact_check", "decision": "block", "reason": "Known-wrong spec", "epoch": 1740624000}
+{"hook": "rules_compliance", "decision": "warn", "reason": "Deploy claim without verification", "epoch": 1740624120}</code></pre>
+            <p style="margin-top: 1rem;">
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol/ai-behavioral-governance">ai-behavioral-governance</a> — schema spec, Python implementation, examples.<br>
+                <a href="https://github.com/MirrorDNA-Reflection-Protocol/mirrordash">MirrorDash</a> — terminal dashboard with Glass Box profile rendering all five metrics live.
+            </p>
+        </section>
+
+        <section>
+            <h2>Specification</h2>
+            <p>Full MirrorGate specification: <a href="https://github.com/MirrorDNA-Reflection-Protocol/mirrorgate">GitHub Repository</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 N1 Intelligence · <a href="https://github.com/MirrorDNA-Reflection-Protocol">GitHub</a></p>
+    </footer>
+</body>
+</html>

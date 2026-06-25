@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⟡ Verify — Active Mirror Identity Verification</title>
+    <meta name="description" content="Verify official communications from Paul Desai and N1 Intelligence. GPG key, official channels, and authentication instructions.">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #fafafa;
+            --text-secondary: #888;
+            --accent: #00ff94;
+            --accent-glow: rgba(0, 255, 148, 0.15);
+            --border: #1f1f1f;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .glyph {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        section {
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .warning-box p {
+            color: var(--warning);
+            font-weight: 500;
+        }
+
+        .key-box {
+            background: rgba(0, 255, 148, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .key-box .label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .key-box .fingerprint {
+            color: var(--accent);
+            word-break: break-all;
+        }
+
+        .channels-list {
+            list-style: none;
+        }
+
+        .channels-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .channels-list li:last-child {
+            border-bottom: none;
+        }
+
+        .channel-name {
+            font-weight: 500;
+        }
+
+        .channel-handle {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .channel-handle:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-official {
+            background: rgba(0, 255, 148, 0.15);
+            color: var(--accent);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        .instructions ol {
+            margin-left: 1.25rem;
+        }
+
+        .instructions li {
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .instructions code {
+            background: rgba(0, 255, 148, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.85rem;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        .pending {
+            opacity: 0.6;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="glyph">⟡</div>
+            <h1>Identity Verification</h1>
+            <p class="subtitle">Verify official communications from Paul Desai & N1 Intelligence</p>
+        </header>
+
+        <div class="warning-box">
+            <p>⚠️ If a message claiming to be from Paul or Active Mirror is NOT cryptographically signed, treat it as potentially fraudulent.</p>
+        </div>
+
+        <section>
+            <h2>🔐 GPG Public Key</h2>
+            <div class="key-box">
+                <div class="label">Fingerprint</div>
+                <div class="fingerprint pending">[GPG KEY PENDING — Will be published once generated]</div>
+            </div>
+            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                Download: <a href="/paul_desai_public.asc" class="channel-handle pending">[Coming soon]</a>
+            </p>
+        </section>
+
+        <section>
+            <h2>✅ Official Channels</h2>
+            <ul class="channels-list">
+                <li>
+                    <span class="channel-name">Website</span>
+                    <a href="https://activemirror.ai" class="channel-handle">activemirror.ai</a>
+                </li>
+                <li>
+                    <span class="channel-name">GitHub</span>
+                    <a href="https://github.com/MirrorDNA-Reflection-Protocol" class="channel-handle" target="_blank">MirrorDNA-Reflection-Protocol</a>
+                </li>
+                <li>
+                    <span class="channel-name">Twitter/X (Personal)</span>
+                    <a href="https://twitter.com/pauldesai123" class="channel-handle" target="_blank">@pauldesai123</a>
+                </li>
+                <li>
+                    <span class="channel-name">Twitter/X (Product)</span>
+                    <a href="https://twitter.com/activemirrorai" class="channel-handle" target="_blank">@activemirrorai</a>
+                </li>
+                <li>
+                    <span class="channel-name">Email</span>
+                    <a href="mailto:paul@activemirror.ai" class="channel-handle">paul@activemirror.ai</a>
+                </li>
+                <li>
+                    <span class="channel-name">Research</span>
+                    <a href="https://doi.org/10.5281/zenodo.17787619" class="channel-handle" target="_blank">Zenodo DOI</a>
+                </li>
+                <li>
+                    <span class="channel-name">LinkedIn</span>
+                    <a href="https://linkedin.com/in/pauldesai" class="channel-handle" target="_blank">pauldesai</a>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔍 How to Verify</h2>
+            <div class="instructions">
+                <ol>
+                    <li>Download Paul's public key from this page or a keyserver</li>
+                    <li>Import the key: <code>gpg --import paul_desai_public.asc</code></li>
+                    <li>Verify signature: <code>gpg --verify message.sig message.txt</code></li>
+                    <li>Confirm the fingerprint matches the one shown above</li>
+                </ol>
+            </div>
+        </section>
+
+        <section>
+            <h2>🚫 NOT Official</h2>
+            <p style="color: var(--text-secondary);">The following are NOT controlled by Paul Desai or N1 Intelligence:</p>
+            <ul style="margin-top: 0.75rem; margin-left: 1.25rem; color: var(--danger);">
+                <li>activemirror.com (different owner)</li>
+                <li>Any crypto tokens or NFTs</li>
+                <li>Any Telegram groups claiming affiliation</li>
+                <li>Any Discord servers not linked from this page</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📋 Official Domains</h2>
+            <ul class="channels-list">
+                <li>
+                    <span class="channel-name">activemirror.ai</span>
+                    <span class="status-badge status-official">Verified</span>
+                </li>
+                <li>
+                    <span class="channel-name">id.activemirror.ai</span>
+                    <span class="status-badge status-official">Verified</span>
+                </li>
+                <li>
+                    <span class="channel-name">brief.activemirror.ai</span>
+                    <span class="status-badge status-official">Verified</span>
+                </li>
+                <li>
+                    <span class="channel-name">mirrordna.com</span>
+                    <span class="status-badge status-official">Verified</span>
+                </li>
+                <li>
+                    <span class="channel-name">n1intelligence.com</span>
+                    <span class="status-badge status-official">Verified</span>
+                </li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>⟡ Active Mirror — Reflection over Prediction</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+            </p>
+            <p style="margin-top: 1rem;">© 2026 N1 Intelligence (OPC) Pvt Ltd</p>
+        </footer>
+    </div>
+</body>
+</html>

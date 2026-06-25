@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Model Is Interchangeable — Active Mirror Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <meta name="description" content="Every AI company wants you to believe their model is the product. It isn't. The model is a commodity. Identity lives in the bus.">
+    <meta property="og:title" content="The Model Is Interchangeable">
+    <meta property="og:description" content="Every AI company wants you to believe their model is the product. It isn't. The model is a commodity. Identity lives in the bus.">
+    <meta property="og:image" content="https://activemirror.ai/assets/og-image.png">
+    <meta property="og:url" content="https://activemirror.ai/blog/the-model-is-interchangeable">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="author" content="Paul Desai">
+    <style>
+        .callout {
+            border-left: 3px solid #6366f1;
+            padding: 1rem 1.5rem;
+            background: rgba(99,102,241,0.05);
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .terminal {
+            background: #0a0a0a;
+            border: 1px solid #1f1f1f;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            color: #e5e5e5;
+        }
+        .t-cyan { color: #22d3ee; }
+        .t-green { color: #4ade80; }
+        .t-grey { color: #555; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror" style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/product/">Product</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/ecosystem/" target="_blank">Ecosystem</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/research/" target="_blank">Research</a>
+                <a href="/company/">Company</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/" class="active">Blog</a>
+                <a href="/contact/">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="section" style="padding-top: 120px;">
+        <div class="container" style="max-width: 720px;">
+            <span style="font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.05em;">February 14, 2026 · Architecture</span>
+            <h1 style="margin: 16px 0 8px; font-size: 2.25rem; line-height: 1.2;">The Model Is Interchangeable</h1>
+            <p style="color: #666; margin-bottom: 40px; font-size: 1.05rem;">Every AI company wants you to believe their model is the product. It isn't. The model is a commodity. Identity lives in the bus.</p>
+
+            <div class="blog-content" style="line-height: 1.8; color: var(--text-secondary);">
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The lock-in you don't notice</h2>
+
+                <p style="margin-bottom: 20px;">Every major AI provider is running the same play: make you dependent on their model. Your chat history lives in their cloud. Your context, your preferences, your conversation style — all tied to one API endpoint. Switch providers and you start from zero.</p>
+
+                <p style="margin-bottom: 20px;">This isn't accidental. It's the moat. The model itself is getting commoditized — GPT-4 quality is available from a dozen providers now. So the lock-in shifts to data. To context. To continuity.</p>
+
+                <p style="margin-bottom: 20px;">I built my stack to resist this from day one.</p>
+
+                <div class="callout">
+                    <strong>The core thesis:</strong> The model is a replaceable component. Identity — your state, your context, your history — lives in data structures you own. Build it that way, and no provider can hold you hostage.
+                </div>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">What "interchangeable" actually means</h2>
+
+                <p style="margin-bottom: 20px;">My system runs Claude, Gemini, Groq, DeepSeek, and eleven local Ollama models. They all share one thing: a session protocol. Every session starts by reading a continuity file — a structured document containing my current state, recent decisions, open loops, and context.</p>
+
+                <p style="margin-bottom: 20px;">The model doesn't hold the context. The file does. When Claude hits rate limits, Gemini reads the same file and picks up the thread. When I'm offline, a local Ollama model handles low-risk tasks using the same context. The experience is continuous because the protocol is continuous.</p>
+
+                <div class="terminal">
+                    <span class="t-grey"># Session start — any model reads this</span><br>
+                    <span class="t-cyan">Read ~/.mirrordna/CONTINUITY.md</span><br>
+                    <span class="t-grey"># Output: Paul's state, what happened, what's next</span><br>
+                    <br>
+                    <span class="t-grey"># Session end — any model writes this</span><br>
+                    <span class="t-cyan">session commit "What was accomplished"</span><br>
+                    <span class="t-grey"># Output: bus updated, handoff generated, next model can continue</span>
+                </div>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The sovereignty test</h2>
+
+                <p style="margin-bottom: 20px;">Here's the test I use: if I deleted every API key right now, what would survive?</p>
+
+                <p style="margin-bottom: 20px;">The answer: everything that matters. My vault — 5,000 notes. My session history. My continuity file. My decision log. My self-critique record. My shipped inventory. All of it lives on disk, in files I own, in formats I can read without any vendor.</p>
+
+                <p style="margin-bottom: 20px;">The models are rented compute. The identity is mine.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">How access is controlled</h2>
+
+                <p style="margin-bottom: 20px;">Not every model needs access to everything. A low-risk task handled by a local model doesn't need my full memory — just the current context. I use OAuth-style scoping: each model gets a token that defines what it can read and write.</p>
+
+                <p style="margin-bottom: 20px;">This is standard software engineering applied to AI: least privilege, scoped access, revocable tokens. The fact that nobody talks about this for AI systems is the gap I'm trying to close.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">What to build toward</h2>
+
+                <p style="margin-bottom: 20px;">If you're building with AI seriously, here's the principle I'd start with: design for model deprecation. Assume the model you use today will be gone or inferior in 18 months. GPT-4 Turbo, Claude 2, Gemini Ultra — they've all been superseded. The next ones will be too.</p>
+
+                <p style="margin-bottom: 20px;">The infrastructure that survives that churn is the infrastructure worth building. Session protocols. Structured memory. Continuity files. Governance layers. These don't need to change when the model changes.</p>
+
+                <div class="callout">
+                    <strong>Build systems where identity lives in data structures, not in model weights.</strong>
+                </div>
+
+                <p style="margin-bottom: 20px;">The model is interchangeable. The bus is identity. That's the architecture worth owning.</p>
+
+                <hr style="border: none; border-top: 1px solid #1f1f1f; margin: 40px 0;">
+
+                <p style="font-size: 0.9rem; color: #555;">
+                    Paul Desai is building Active Mirror — a sovereign AI operating system running on a Mac Mini in a fishing village in Goa, India.
+                    The full stack is documented at <a href="https://activemirror.ai" style="color: var(--accent-color);">activemirror.ai</a>.
+                    Reflections are published at <a href="https://beacon.activemirror.ai" style="color: var(--accent-color);">beacon.activemirror.ai</a>.
+                </p>
+
+            </div>
+        </div>
+    </article>
+
+    <footer style="border-top: 1px solid #1a1a1a; padding: 40px 0; margin-top: 80px;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <span style="color: #444; font-size: 0.85rem;">© 2026 Active Mirror. All rights reserved.</span>
+            <div style="display: flex; gap: 24px;">
+                <a href="/blog/" style="color: #444; font-size: 0.85rem; text-decoration: none;">Blog</a>
+                <a href="/privacy/" style="color: #444; font-size: 0.85rem; text-decoration: none;">Privacy</a>
+                <a href="/contact/" style="color: #444; font-size: 0.85rem; text-decoration: none;">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Pack — Active Mirror</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://activemirror.ai/enterprise/">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="Enterprise security architecture, deployment models, and compliance controls for Active Mirror.">
+</head>
+
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt=""
+                    style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active
+                Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/demo/" style="color:var(--text-primary); font-weight:500;">Demo</a>
+                <a href="/mobile/">Mobile</a>
+                <a href="/architecture/">Architecture</a>
+                <a href="/research/">Research</a>
+                <a href="/open-source/">Open Source</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="padding: 120px 0 60px;">
+        <div class="container text-center">
+            <h1>Enterprise Pack</h1>
+            <p style="max-width: 600px; margin: 0 auto; color: var(--text-secondary);">
+                Architecture, Security, and Compliance resources for IT and Security teams.
+            </p>
+            <button onclick="window.print()" class="btn btn-secondary" style="margin-top:24px;">🖨️ Print / Save as
+                PDF</button>
+        </div>
+    </section>
+
+    <!-- Architecture Overview -->
+    <section class="section">
+        <div class="container">
+            <h2 style="margin-bottom: 24px;">1. Architecture Overview</h2>
+            <div
+                style="border:1px solid var(--border-color); padding:32px; border-radius:12px; background:rgba(255,255,255,0.02);">
+                <h3 style="margin-bottom:16px;">The Sovereign Stack</h3>
+                <p class="text-secondary" style="margin-bottom:24px;">Active Mirror runs entirely within your perimeter.
+                    No data is sent to Active Mirror Inc. or any third party unless explicitly configured via the Hybrid
+                    Gateway.</p>
+
+                <div style="max-width:600px; margin:0 auto; font-family:monospace; text-align:center;">
+                    <!-- Layer 1 -->
+                    <div
+                        style="border:1px solid rgba(255,255,255,0.1); padding:24px; margin-bottom:16px; border-radius:12px;">
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:8px;">APPLICATION LAYER</div>
+                        <div style="color:var(--text-secondary);">Internal Apps · Slack/Teams · IDEs</div>
+                        <div style="font-size:2rem; margin-top:8px;">↓</div>
+                    </div>
+                    <!-- Layer 2 -->
+                    <div
+                        style="border:1px solid var(--accent-color); background:rgba(168,85,247,0.05); padding:24px; margin-bottom:16px; border-radius:12px;">
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:8px; color:var(--accent-color);">
+                            GOVERNANCE GATEWAY (AMGL)</div>
+                        <div style="color:var(--text-secondary);">Auth · Rate Limiting · PII Redaction · Audit Log</div>
+                        <div style="font-size:2rem; margin-top:8px; color:var(--accent-color);">↓</div>
+                    </div>
+                    <!-- Layer 3 -->
+                    <div style="border:1px solid rgba(255,255,255,0.1); padding:24px; border-radius:12px;">
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:8px;">INFERENCE ENGINE</div>
+                        <div style="color:var(--text-secondary);">vLLM · Ollama · TGI · (Local Weights)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Model -->
+    <section class="section">
+        <div class="container">
+            <h2 style="margin-bottom: 24px;">2. Security & Threat Model</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
+                <div class="card">
+                    <h3>Data Exfiltration</h3>
+                    <p><strong>Risk:</strong> Sending IP to public model providers.<br>
+                        <strong>Mitigation:</strong> Local-only runtime. Network egress blocked at firewall level.
+                        Offline operation.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>Prompt Injection</h3>
+                    <p><strong>Risk:</strong> Malicious users hijacking the model.<br>
+                        <strong>Mitigation:</strong> AMGL Guard v1.1 regex filtering. Pre-inference input scanning.
+                        Context length limits.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>Hallucination</h3>
+                    <p><strong>Risk:</strong> Model generating false facts.<br>
+                        <strong>Mitigation:</strong> Truth-State Validator classifies outputs as ESTIMATE or UNKNOWN if
+                        low confidence. RAG-grounding enforcement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deployment Models -->
+    <section class="section">
+        <div class="container">
+            <h2 style="margin-bottom: 24px;">3. Deployment Models</h2>
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <thead style="background:rgba(255,255,255,0.05);">
+                    <tr>
+                        <th style="padding:16px;">Component</th>
+                        <th style="padding:16px;">Air-Gapped (Top Secret)</th>
+                        <th style="padding:16px;">Hybrid (Enterprise)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:16px; font-weight:600;">Connectivity</td>
+                        <td style="padding:16px;">None (VPC / Physics Gap)</td>
+                        <td style="padding:16px;">Restricted Egress</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:16px; font-weight:600;">Models</td>
+                        <td style="padding:16px;">Llama 3, Mistral (Local)</td>
+                        <td style="padding:16px;">Local + Claude/GPT via Gateway</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:16px; font-weight:600;">Updates</td>
+                        <td style="padding:16px;">Manual (USB/Sneakernet)</td>
+                        <td style="padding:16px;">Automated (Docker Registry)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Logging -->
+    <section class="section">
+        <div class="container">
+            <h2 style="margin-bottom: 24px;">4. Logging & Retention</h2>
+            <div class="card">
+                <h3>Audit Trails</h3>
+                <p>Every interaction is logged with the following schema:</p>
+                <div
+                    style="background:rgba(0,0,0,0.3); padding:16px; border-radius:8px; font-family:monospace; font-size:0.85rem; margin-top:16px;">
+                    {<br>
+                    &nbsp;&nbsp;"timestamp": "2025-12-25T10:00:00Z",<br>
+                    &nbsp;&nbsp;"user_id": "u_12345",<br>
+                    &nbsp;&nbsp;"input_hash": "sha256...",<br>
+                    &nbsp;&nbsp;"output_hash": "sha256...",<br>
+                    &nbsp;&nbsp;"guard_status": "PASS",<br>
+                    &nbsp;&nbsp;"truth_state": "FACT"<br>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section text-center">
+        <h2>Ready to Deploy?</h2>
+        <p class="text-secondary" style="margin-bottom:32px;">Contact our engineering team for sizing and installation.
+        </p>
+        <a href="/contact/" class="btn btn-primary">Contact Engineering →</a>
+    </section>
+
+    <footer style="border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 40px;">
+        <div class="container text-center">
+            <p class="text-secondary">© 2025-2026 N1 Intelligence</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector(".mobile-menu-btn");
+        const navLinks = document.querySelector(".nav-links");
+        if (menuBtn) {
+            menuBtn.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+                menuBtn.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
+            });
+        }
+    </script>
+</body>
+
+</html>

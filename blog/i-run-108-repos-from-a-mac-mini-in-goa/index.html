@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Run 108 Repos from a Mac Mini in Goa — Active Mirror Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <meta name="description" content="108 GitHub repos. 49 ports listening. 91 LaunchAgents. 15 Ollama models. All running on a Mac Mini M4 with 24GB RAM in a fishing village in Goa. Here's how.">
+    <meta property="og:title" content="I Run 108 Repos from a Mac Mini in Goa">
+    <meta property="og:description" content="108 GitHub repos. 49 ports listening. 91 LaunchAgents. 15 Ollama models. All on a Mac Mini M4 with 24GB RAM in a fishing village in Goa.">
+    <meta property="og:image" content="https://activemirror.ai/assets/og-image.png">
+    <meta property="og:url" content="https://activemirror.ai/blog/i-run-108-repos-from-a-mac-mini-in-goa">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="author" content="Paul Desai">
+    <style>
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin: 1.5rem 0;
+        }
+        .stat-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+        }
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #6366f1;
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+        }
+        .terminal {
+            background: #0a0a0a;
+            border: 1px solid #1f1f1f;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            color: #e5e5e5;
+        }
+        .t-cyan { color: #22d3ee; }
+        .t-green { color: #4ade80; }
+        .t-yellow { color: #fbbf24; }
+        .t-grey { color: #555; }
+        .callout {
+            border-left: 3px solid #6366f1;
+            padding: 1rem 1.5rem;
+            background: rgba(99,102,241,0.05);
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="Active Mirror" style="height: 28px; vertical-align: middle; margin-right: 8px; filter: invert(1);">Active Mirror</a>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/product/">Product</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/ecosystem/" target="_blank">Ecosystem</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/research/" target="_blank">Research</a>
+                <a href="/company/">Company</a>
+                <a href="https://mirrordna-reflection-protocol.github.io/MirrorDNA-Docs/" target="_blank">Docs</a>
+                <a href="/blog/" class="active">Blog</a>
+                <a href="/contact/">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="section" style="padding-top: 120px;">
+        <div class="container" style="max-width: 720px;">
+            <span style="font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.05em;">March 2026 · Infrastructure</span>
+            <h1 style="margin: 16px 0 8px; font-size: 2.25rem; line-height: 1.2;">I Run 108 Repos from a Mac Mini in Goa</h1>
+            <p style="color: #666; margin-bottom: 40px; font-size: 1.05rem;">108 GitHub repos. 49 ports listening. 91 LaunchAgents. 15 local AI models. All running on a single Mac Mini M4 with 24GB RAM — in a 4,000-person fishing village with spotty electricity and wonky internet.</p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">108</span>
+                    <span class="stat-label">GitHub repos (54 public, 54 private)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">49</span>
+                    <span class="stat-label">Ports actively listening</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">91</span>
+                    <span class="stat-label">LaunchAgent services</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">15</span>
+                    <span class="stat-label">Local Ollama models</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">24GB</span>
+                    <span class="stat-label">RAM, Mac Mini M4</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">5K+</span>
+                    <span class="stat-label">Notes in knowledge vault</span>
+                </div>
+            </div>
+
+            <div class="blog-content" style="line-height: 1.8; color: var(--text-secondary);">
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">Why one machine</h2>
+
+                <p style="margin-bottom: 20px;">I moved to a small fishing village in Goa with a clear constraint: one machine, no office, no team. The Mac Mini M4 with 24GB unified memory became the entire production stack — not a dev environment, the actual production stack.</p>
+
+                <p style="margin-bottom: 20px;">No Kubernetes. No cloud VMs. No "scale to zero" serverless functions that introduce cold-start latency and vendor dependency. One box. Everything runs on it.</p>
+
+                <p style="margin-bottom: 20px;">The constraint forced decisions that turned out to be correct: lightweight services, process supervision instead of containers, local AI models instead of API calls for everything, a memory bus on the filesystem instead of a managed database.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">What's actually running</h2>
+
+                <p style="margin-bottom: 20px;">The 49 ports aren't all big services. Some are tiny — a 200-line Python FastAPI that does one thing. Others are heavier: the MirrorGate governance stack, the semantic cache router, the scam detection API. But they all run on the same box.</p>
+
+                <div class="terminal">
+                    <span class="t-grey"># A sample of what's listening:</span><br>
+                    <span class="t-cyan">:8100</span> MirrorBrain API (primary AI orchestrator)<br>
+                    <span class="t-cyan">:8181</span> OPA policy server (Rego v1 governance)<br>
+                    <span class="t-cyan">:8300</span> Beacon publishing pipeline<br>
+                    <span class="t-cyan">:8350</span> MirrorGate E+ Gateway (DBAC + HITL)<br>
+                    <span class="t-cyan">:8430</span> Semantic Cache Router (OPA + Ollama)<br>
+                    <span class="t-cyan">:8440</span> SkillRL mirrorcontrol v2<br>
+                    <span class="t-cyan">:8441</span> Kavach v0.4 core-api<br>
+                    <span class="t-cyan">:8765</span> OpenMemory (FAISS + SQLite)<br>
+                    <span class="t-cyan">:8790</span> Chetana scam detection (live, free)<br>
+                    <span class="t-grey">... 40 more</span>
+                </div>
+
+                <p style="margin-bottom: 20px;">The 91 LaunchAgents keep everything alive. Not systemd — LaunchAgents, the macOS native process supervisor. They restart services on crash, run scheduled jobs, feed the memory bus every 60 seconds, and watch for anomalies in service health.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">Local models for local work</h2>
+
+                <p style="margin-bottom: 20px;">Fifteen Ollama models live on disk. The smallest is 352MB (qwen2:0.5b for fast classification). The largest is 8.9GB (deepseek-coder-v2:16b for heavy code tasks). Total model storage: ~50GB.</p>
+
+                <p style="margin-bottom: 20px;">The routing logic is simple: if a task is low-risk and low-complexity, it goes to a local model. No API cost. No latency. No data leaving the machine. Claude handles the complex reasoning. Local models handle the volume.</p>
+
+                <p style="margin-bottom: 20px;">I also fine-tuned one model specifically for governance verification — mirrorgate:v1, a LoRA adapter on Qwen2.5-7B. It checks whether agent actions comply with standing policies before they execute. The fine-tune runs in 200 iterations on 288KB of training data.</p>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">The electricity and internet problem</h2>
+
+                <p style="margin-bottom: 20px;">Goa has power cuts. The internet is a 4G hotspot from a phone most days. This forced genuine resilience — not "we have fallbacks" resilience, but "the system has to keep running when the network disappears for 30 minutes" resilience.</p>
+
+                <p style="margin-bottom: 20px;">The local AI models mean core functionality survives a network outage. The filesystem-based memory bus means no database connection to lose. The LaunchAgents mean services restart automatically when power returns. None of this was clever design — it was necessity.</p>
+
+                <div class="callout">
+                    Constraints that seem like disadvantages are often the most honest teacher. The fishing village forced an architecture that's more resilient than what you'd build in an office with reliable infrastructure.
+                </div>
+
+                <h2 style="color: var(--text-primary); margin: 32px 0 16px; font-size: 1.5rem;">What this proves</h2>
+
+                <p style="margin-bottom: 20px;">The conventional wisdom is that serious AI infrastructure requires cloud scale — managed databases, distributed compute, Kubernetes orchestration, SRE teams. This stack is evidence that's false.</p>
+
+                <p style="margin-bottom: 20px;">108 repos. 49 services. 15 local models. Multi-agent orchestration with governance. Self-healing infrastructure. A scam detection product serving real users in India. A publishing pipeline synthesizing from a 5,000-note knowledge vault. All on one Mac Mini. In a village.</p>
+
+                <p style="margin-bottom: 20px;">The Mac Mini M4 with 24GB unified memory is genuinely capable of running a sovereign AI stack at this scale. The Apple Silicon memory architecture means models share memory efficiently with the rest of the system. It's not a compromise — it's the right hardware for this use case.</p>
+
+                <p style="margin-bottom: 20px;">You don't need a data center. You need good architecture and the discipline to keep it simple.</p>
+
+                <hr style="border: none; border-top: 1px solid #1f1f1f; margin: 40px 0;">
+
+                <p style="font-size: 0.9rem; color: #555;">
+                    Paul Desai is the founder of <a href="https://activemirror.ai" style="color: var(--accent-color);">Active Mirror</a> and <a href="https://activemirror.ai/products/chetana/">Chetana</a> — a free scam detection platform for India.
+                    Built solo in Goa. Running on one Mac Mini.
+                    Reflections at <a href="https://beacon.activemirror.ai" style="color: var(--accent-color);">beacon.activemirror.ai</a>.
+                </p>
+            </div>
+        </div>
+    </article>
+
+    <footer style="border-top: 1px solid #1a1a1a; padding: 40px 0; margin-top: 80px;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <span style="color: #444; font-size: 0.85rem;">© 2026 Active Mirror. All rights reserved.</span>
+            <div style="display: flex; gap: 24px;">
+                <a href="/blog/" style="color: #444; font-size: 0.85rem; text-decoration: none;">Blog</a>
+                <a href="/privacy/" style="color: #444; font-size: 0.85rem; text-decoration: none;">Privacy</a>
+                <a href="/contact/" style="color: #444; font-size: 0.85rem; text-decoration: none;">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
