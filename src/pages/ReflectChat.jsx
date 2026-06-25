@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getArchetype } from '../lib/mirror-state';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
@@ -75,6 +76,7 @@ function MirrorTurn({ data }) {
 }
 
 export default function ReflectChat() {
+    const [seed] = useState(() => getArchetype());
     const [turns, setTurns] = useState([{ who: 'mirror', intro: true }]);
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
@@ -91,11 +93,14 @@ export default function ReflectChat() {
 
         try {
             turnNum.current += 1;
+            const seededIntent = seed
+                ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}. User intent: ${intent}`
+                : intent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    intent,
+                    intent: seededIntent,
                     boundary: 'personal',
                     route: 'reflection',
                     turn: turnNum.current,
@@ -162,6 +167,11 @@ export default function ReflectChat() {
                             return (
                                 <div key={index} className="max-w-[44rem] text-[1.08rem] leading-7 tracking-[-0.01em]">
                                     Bring one real thing you are stuck on. Active Mirror will reflect the real question and give you one next move.
+                                    {seed && (
+                                        <div className="mt-4 inline-flex rounded-full border border-emerald-800/15 bg-emerald-800/[0.06] px-3 py-1 text-xs font-semibold text-emerald-800">
+                                            Using your local seed: {seed.archetypeName || seed.archetype}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         }

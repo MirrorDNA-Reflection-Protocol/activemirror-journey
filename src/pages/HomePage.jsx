@@ -81,7 +81,7 @@ export default function HomePage() {
 
                     <div className="mx-auto mt-8 flex w-full max-w-md flex-col gap-3">
                         <Link
-                            to="/mirror"
+                            to="/start"
                             className="group inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 py-4 text-lg font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01] hover:shadow-[0_0_42px_rgba(168,85,247,0.44)] active:scale-[0.99]"
                         >
                             Start Reflection
@@ -89,10 +89,10 @@ export default function HomePage() {
                         </Link>
 
                         <Link
-                            to="/start"
+                            to="/mirror"
                             className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-purple-500/20 bg-white/[0.06] px-6 py-4 text-base font-semibold text-white shadow-[0_0_18px_rgba(168,85,247,0.08)] transition hover:border-purple-500/35 hover:bg-purple-500/10"
                         >
-                            Create Mirror Seed
+                            Reflect now
                         </Link>
 
                         <Link

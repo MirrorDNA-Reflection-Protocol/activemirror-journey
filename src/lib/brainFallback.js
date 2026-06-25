@@ -1,4 +1,4 @@
-const FALLBACK_ARCHETYPES = {
+export const FALLBACK_ARCHETYPES = {
     architect: {
         name: 'The Architect',
         emoji: '🏗️',
