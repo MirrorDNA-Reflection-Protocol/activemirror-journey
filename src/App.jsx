@@ -75,9 +75,11 @@ function LazyRoute({ children }) {
 }
 
 export default function App() {
+    const basename = import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '');
+
     return (
         <ThemeProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={basename}>
                 <ScrollToTop />
                 <Suspense fallback={<div className="min-h-screen bg-black text-white" />}>
                 <Routes>
