@@ -4,6 +4,30 @@ import { getPrivacySessionId } from '../lib/privacy-events';
 
 const SOURCE_CHECK_ENDPOINT = 'https://gateway.activemirror.ai/v1/mirror/source-check';
 
+const VERDICT_COPY = {
+    supported: {
+        title: 'Source checked',
+        shell: 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-50',
+        icon: 'text-emerald-200',
+        muted: 'text-emerald-100/80',
+        link: 'text-emerald-100 hover:border-emerald-200/35 hover:bg-emerald-300/[0.10]',
+    },
+    mixed: {
+        title: 'Evidence mixed',
+        shell: 'border-amber-300/20 bg-amber-300/[0.08] text-amber-50',
+        icon: 'text-amber-200',
+        muted: 'text-amber-100/80',
+        link: 'text-amber-100 hover:border-amber-200/35 hover:bg-amber-300/[0.10]',
+    },
+    not_enough: {
+        title: 'Not enough evidence',
+        shell: 'border-zinc-300/15 bg-white/[0.055] text-zinc-100',
+        icon: 'text-zinc-300',
+        muted: 'text-zinc-400',
+        link: 'text-zinc-200 hover:border-zinc-200/30 hover:bg-white/[0.08]',
+    },
+};
+
 export function sourceCheckLabel(truthState) {
     return truthState?.label || 'Reflective, not source-checked.';
 }
@@ -48,15 +72,16 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
 
     if (result?.truth_state?.status === 'checked') {
         const sources = result.research?.sources || [];
+        const verdict = VERDICT_COPY[result.research?.verdict] || VERDICT_COPY.mixed;
         return (
-            <div className="max-w-[46rem] rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.08] px-4 py-3 text-sm leading-6 text-emerald-50">
+            <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
                 <div className="mb-2 flex items-center gap-2 font-semibold">
-                    <SearchCheck size={16} className="text-emerald-200" />
-                    Source checked
+                    <SearchCheck size={16} className={verdict.icon} />
+                    {verdict.title}
                 </div>
                 <div>{result.research?.answer}</div>
                 {result.research?.changes ? (
-                    <div className="mt-2 text-emerald-100/80">{result.research.changes}</div>
+                    <div className={`mt-2 ${verdict.muted}`}>{result.research.changes}</div>
                 ) : null}
                 {sources.length ? (
                     <div className="mt-3 grid gap-2">
@@ -66,7 +91,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                                 href={source.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold text-emerald-100 transition hover:border-emerald-200/35 hover:bg-emerald-300/[0.10]"
+                                className={`inline-flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold transition ${verdict.link}`}
                             >
                                 <span className="truncate">{source.title || source.url}</span>
                                 <ExternalLink size={12} className="shrink-0" />
