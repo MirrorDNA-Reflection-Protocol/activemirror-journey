@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, Brain, ChevronDown, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
+import ReflectiveSurface from '../components/ReflectiveSurface';
 import { getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -25,6 +26,17 @@ const SAMPLE_MIRROR = {
         context_used: 'Only the prompt on this page.',
         context_excluded: 'Private notes, identity context, and memory stay out unless approved.',
         memory_decision: 'Nothing is saved from this demo.',
+    },
+};
+
+const LOADING_MIRROR = {
+    reflection: 'Reading the stuck point once. Active Mirror is looking for the real question underneath it.',
+    question: 'What is the real question here?',
+    move: 'Hold the thread for a moment; the mirror is shaping one move.',
+    receipt: {
+        context_used: 'The sentence you just sent.',
+        context_excluded: 'Private context stays out unless approved.',
+        memory_decision: 'Nothing saved.',
     },
 };
 
@@ -66,6 +78,36 @@ function makeEcosystemResult(intent) {
             receipt: {
                 context_used: 'Your request to understand the Active Mirror ecosystem.',
                 context_excluded: 'No private user context was needed.',
+                memory_decision: 'Nothing saved.',
+            },
+        },
+    };
+}
+
+function makeBlockedResult(data = {}) {
+    if (data.error === 'rate_limited') {
+        return {
+            mirror: {
+                reflection: 'The mirror route is cooling down for a moment. Your page is still private, and nothing needs to be re-entered.',
+                question: 'Can you hold the same stuck point and try again in a minute?',
+                move: 'Wait for the short cooldown, then send the same sentence again.',
+                receipt: {
+                    context_used: 'Only the request limit state was used.',
+                    context_excluded: 'Your private context was not expanded or saved.',
+                    memory_decision: 'Nothing saved.',
+                },
+            },
+        };
+    }
+
+    return {
+        mirror: {
+            reflection: 'That looks like it may contain private or sensitive context, so Active Mirror held the turn back.',
+            question: 'Can you restate the stuck point without secrets or identifying details?',
+            move: 'Remove names, account details, and private facts, then try one sentence again.',
+            receipt: {
+                context_used: 'The current prompt only.',
+                context_excluded: 'Potentially sensitive details were not processed further.',
                 memory_decision: 'Nothing saved.',
             },
         },
@@ -117,15 +159,16 @@ function Visual({ visual }) {
     return null;
 }
 
-function MirrorResult({ result }) {
-    const mirror = result?.mirror || SAMPLE_MIRROR;
+function MirrorResult({ result, intent, onPrompt, disabled }) {
+    const isLoading = Boolean(disabled && intent && !result);
+    const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
 
     return (
         <div className="flex h-full min-h-0 flex-col rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_0_70px_rgba(124,58,237,0.14)] ring-1 ring-white/[0.04] backdrop-blur-2xl">
             <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3">
                 <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <Sparkles size={16} className="text-cyan-200" />
-                    Live mirror
+                    <Sparkles size={16} className={isLoading ? 'animate-pulse text-cyan-200' : 'text-cyan-200'} />
+                    {isLoading ? 'Reflecting' : 'Live mirror'}
                 </div>
                 <div className="rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-2.5 py-1 text-[11px] font-semibold text-emerald-200">
                     private first
@@ -148,7 +191,16 @@ function MirrorResult({ result }) {
                             <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                         </div>
                     </div>
-                    {result?.kind === 'ecosystem' ? <EcosystemPanel /> : <Visual visual={mirror.visual} />}
+                    {isLoading ? (
+                        <LoadingPanel />
+                    ) : result?.kind === 'ecosystem' ? (
+                        <EcosystemPanel />
+                    ) : (
+                        <>
+                            <Visual visual={mirror.visual} />
+                            <ReflectiveSurface result={result || { mirror }} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+                        </>
+                    )}
                     <details className="group rounded-3xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400">
                         <summary className="cursor-pointer list-none font-medium">
                             What stayed private
@@ -189,6 +241,22 @@ function EcosystemPanel() {
                         <div className="mt-1 text-xs leading-5 text-zinc-400">{item.text}</div>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+}
+
+function LoadingPanel() {
+    return (
+        <div className="rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-cyan-100">
+                <Sparkles size={16} className="animate-pulse text-cyan-200" />
+                Reflecting
+            </div>
+            <div className="grid gap-2">
+                <div className="h-3 w-3/4 animate-pulse rounded-full bg-white/10" />
+                <div className="h-3 w-1/2 animate-pulse rounded-full bg-white/10" />
+                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/10" />
             </div>
         </div>
     );
@@ -248,22 +316,7 @@ export default function HomePage() {
                 visualKind: data.mirror?.visual?.kind || 'none',
             });
 
-            setResult(
-                data.ok
-                    ? data
-                    : {
-                        mirror: {
-                            reflection: 'That looks like it may contain private or sensitive context, so Active Mirror held the turn back.',
-                            question: 'Can you restate the stuck point without secrets or identifying details?',
-                            move: 'Remove names, account details, and private facts, then try one sentence again.',
-                            receipt: {
-                                context_used: 'The current prompt only.',
-                                context_excluded: 'Potentially sensitive details were not processed further.',
-                                memory_decision: 'Nothing saved.',
-                            },
-                        },
-                    },
-            );
+            setResult(data.ok ? data : makeBlockedResult(data));
         } catch {
             trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
             setResult({
@@ -394,7 +447,15 @@ export default function HomePage() {
                             You asked: <span className="text-zinc-200">{lastIntent}</span>
                         </div>
                     ) : null}
-                    <MirrorResult result={result} />
+                    <MirrorResult
+                        result={result}
+                        intent={lastIntent}
+                        disabled={busy}
+                        onPrompt={(nextIntent) => {
+                            trackEvent('followup_clicked', { page: 'home', source: 'surface' });
+                            reflect(nextIntent, 'surface');
+                        }}
+                    />
                     <div className="flex flex-wrap gap-2 pb-1">
                         {followUps.map((item) => (
                             <button

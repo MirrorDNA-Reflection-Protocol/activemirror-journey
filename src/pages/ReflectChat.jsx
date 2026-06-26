@@ -29,6 +29,16 @@ function makeFollowUps(mirror = {}) {
     ].filter(Boolean);
 }
 
+function mirrorErrorMessage(error) {
+    if (error === 'rate_limited') {
+        return 'The mirror is cooling down for a moment. Nothing was saved. Try the same thought again shortly.';
+    }
+    if (error === 'boundary_violation') {
+        return 'I held that one back because it looked like it carried a secret. Nothing was sent.';
+    }
+    return 'I could not complete that turn. Try again in a moment.';
+}
+
 function Visual({ visual }) {
     if (!visual) return null;
 
@@ -200,7 +210,7 @@ export default function ReflectChat() {
                 ...current,
                 data.ok
                     ? { who: 'mirror', data }
-                    : { who: 'mirror', error: 'I held that one back because it looked like it carried a secret. Nothing was sent.' },
+                    : { who: 'mirror', error: mirrorErrorMessage(data.error) },
             ]);
         } catch {
             trackEvent('gateway_error', { page: 'mirror', source, route: 'reflection', status: 'network', turn: turnNum.current });
