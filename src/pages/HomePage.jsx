@@ -9,6 +9,8 @@ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 const pdfWorkerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
 let pdfJsModulePromise;
+let mammothModulePromise;
+let spreadsheetModulePromise;
 
 const STARTERS = [
     {
@@ -89,8 +91,11 @@ const ECOSYSTEM = [
 
 const TEXT_FILE_PATTERN = /\.(txt|md|markdown|csv|json|log)$/i;
 const IMAGE_FILE_PATTERN = /\.(avif|gif|jpe?g|png|webp)$/i;
+const DOCUMENT_FILE_PATTERN = /\.(docx)$/i;
+const SPREADSHEET_FILE_PATTERN = /\.(xlsx)$/i;
 const FILE_EXCERPT_LIMIT = 5200;
 const PDF_PAGE_LIMIT = 5;
+const SPREADSHEET_ROW_LIMIT = 30;
 
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
@@ -105,6 +110,22 @@ async function loadPdfJs() {
     }
 
     return pdfJsModulePromise;
+}
+
+async function loadMammoth() {
+    if (!mammothModulePromise) {
+        mammothModulePromise = import('mammoth/mammoth.browser').then((module) => module.default || module);
+    }
+
+    return mammothModulePromise;
+}
+
+async function loadSpreadsheetParser() {
+    if (!spreadsheetModulePromise) {
+        spreadsheetModulePromise = import('read-excel-file/browser').then((module) => module.readSheet || module.default);
+    }
+
+    return spreadsheetModulePromise;
 }
 
 function makeEcosystemResult(intent) {
@@ -202,6 +223,24 @@ function isImageFile(file) {
 
 function isPdfFile(file) {
     return file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+}
+
+function isDocumentFile(file) {
+    return file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        || DOCUMENT_FILE_PATTERN.test(file.name);
+}
+
+function isSpreadsheetFile(file) {
+    return file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        || SPREADSHEET_FILE_PATTERN.test(file.name);
+}
+
+function fileKindLabel(kind) {
+    if (kind === 'pdf') return 'PDF';
+    if (kind === 'document') return 'Word document';
+    if (kind === 'spreadsheet') return 'spreadsheet';
+    if (kind === 'text') return 'text';
+    return 'file';
 }
 
 function revokeFilePreviews(contexts = []) {
@@ -303,6 +342,87 @@ async function readPdfContext(file, index) {
     }
 }
 
+async function readDocumentContext(file, index) {
+    try {
+        const mammoth = await loadMammoth();
+        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
+        const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+        const text = (result.value || '').replace(/\s+\n/g, '\n').replace(/[ \t]+/g, ' ').trim();
+        const excerpt = text.slice(0, perFileLimit).trim();
+        const warningCount = result.messages?.length || 0;
+
+        return {
+            kind: 'document',
+            name: file.name,
+            type: file.type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            size: file.size,
+            readable: Boolean(excerpt),
+            excerpt,
+            totalChars: text.length,
+            includedChars: excerpt.length,
+            warningCount,
+            note: excerpt
+                ? `Word document text extracted locally${warningCount ? ` with ${warningCount} parser note${warningCount > 1 ? 's' : ''}` : ''}.`
+                : 'Word document opened locally, but no readable text was found.',
+        };
+    } catch {
+        return {
+            kind: 'document',
+            name: file.name,
+            type: file.type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            size: file.size,
+            readable: false,
+            note: 'Could not extract Word document text in this browser pass.',
+        };
+    }
+}
+
+async function readSpreadsheetContext(file, index) {
+    try {
+        const readSpreadsheet = await loadSpreadsheetParser();
+        const rows = await readSpreadsheet(file);
+        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
+        const lines = rows
+            .slice(0, SPREADSHEET_ROW_LIMIT)
+            .map((row) => row
+                .map((cell) => {
+                    if (cell == null) return '';
+                    if (cell instanceof Date) return cell.toISOString().slice(0, 10);
+                    return String(cell).replace(/\s+/g, ' ').trim();
+                })
+                .filter(Boolean)
+                .join(' | '))
+            .filter(Boolean);
+        const text = lines.join('\n').trim();
+        const excerpt = text.slice(0, perFileLimit).trim();
+
+        return {
+            kind: 'spreadsheet',
+            name: file.name,
+            type: file.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            size: file.size,
+            readable: Boolean(excerpt),
+            excerpt,
+            totalRows: rows.length,
+            includedRows: Math.min(rows.length, SPREADSHEET_ROW_LIMIT),
+            totalChars: text.length,
+            includedChars: excerpt.length,
+            note: excerpt
+                ? `Spreadsheet text extracted locally from ${Math.min(rows.length, SPREADSHEET_ROW_LIMIT)}/${rows.length} row${rows.length === 1 ? '' : 's'}.`
+                : 'Spreadsheet opened locally, but no readable rows were found.',
+        };
+    } catch {
+        return {
+            kind: 'spreadsheet',
+            name: file.name,
+            type: file.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            size: file.size,
+            readable: false,
+            note: 'Could not extract spreadsheet text in this browser pass.',
+        };
+    }
+}
+
 async function readFileContext(file, index) {
     if (isImageFile(file)) {
         return readImageContext(file);
@@ -310,6 +430,14 @@ async function readFileContext(file, index) {
 
     if (isPdfFile(file)) {
         return readPdfContext(file, index);
+    }
+
+    if (isDocumentFile(file)) {
+        return readDocumentContext(file, index);
+    }
+
+    if (isSpreadsheetFile(file)) {
+        return readSpreadsheetContext(file, index);
     }
 
     if (!isReadableTextFile(file)) {
@@ -354,8 +482,18 @@ function fileReadinessLabel(contexts = []) {
     const readable = contexts.filter((item) => item.readable && item.excerpt);
     const images = contexts.filter((item) => item.kind === 'image');
     const pdfs = contexts.filter((item) => item.kind === 'pdf');
+    const documents = contexts.filter((item) => item.kind === 'document');
+    const spreadsheets = contexts.filter((item) => item.kind === 'spreadsheet');
+    const officeFiles = [...documents, ...spreadsheets];
     if (readable.length && images.length) {
         return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
+    }
+    if (readable.length && officeFiles.length) {
+        const labels = [
+            documents.length ? `${documents.length} Word doc${documents.length > 1 ? 's' : ''}` : '',
+            spreadsheets.length ? `${spreadsheets.length} sheet${spreadsheets.length > 1 ? 's' : ''}` : '',
+        ].filter(Boolean).join(' and ');
+        return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${labels}.`;
     }
     if (readable.length && pdfs.length) return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''}.`;
     if (readable.length) return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} ready locally.`;
@@ -376,7 +514,7 @@ function makeFileIntent(files, contexts = []) {
     const images = contexts.filter((item) => item.kind === 'image');
     const metadataOnly = contexts.filter((item) => !item.readable && item.kind !== 'image');
     const excerpts = readable.map((item) => (
-        `--- ${item.name} local excerpt (${item.includedChars}/${item.totalChars} chars, approved for this turn only)\n${item.excerpt}`
+        `--- ${item.name} ${fileKindLabel(item.kind)} local excerpt (${item.includedChars}/${item.totalChars} chars, approved for this turn only)\n${item.excerpt}`
     )).join('\n\n');
     const imageNotes = images.map((item) => {
         const dimensions = item.width && item.height ? `${item.width} x ${item.height}` : 'dimensions unavailable';
@@ -428,7 +566,9 @@ function FilePreviewStrip({ contexts }) {
                     <div className="mt-0.5 truncate text-[11px] leading-4 text-zinc-500">
                         {item.width && item.height
                             ? `${item.width} x ${item.height} · local preview`
-                            : item.readable && item.excerpt
+                            : item.kind === 'spreadsheet' && item.readable
+                                ? `${item.includedRows}/${item.totalRows} rows ready`
+                                : item.readable && item.excerpt
                                 ? `${item.includedChars}/${item.totalChars} chars ready`
                                 : item.note}
                     </div>
@@ -879,7 +1019,7 @@ export default function HomePage() {
                                             {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop a file here'}
                                         </span>
                                         <span className="block truncate text-xs leading-5 text-zinc-500">
-                                            {files.length ? summarizeFiles(files) : 'PDF, notes, screenshot, sheet, or deck. Contents stay local.'}
+                                            {files.length ? summarizeFiles(files) : 'PDF, Word doc, sheet, screenshot, or notes. Contents stay local.'}
                                         </span>
                                         {files.length ? (
                                             <span className="block text-xs leading-5 text-zinc-500">
