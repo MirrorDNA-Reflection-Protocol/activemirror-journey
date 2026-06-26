@@ -1,44 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, Search, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
-import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
+import { getActiveMirrorDefault, getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
-const pdfWorkerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
-let pdfJsModulePromise;
-let mammothModulePromise;
-let spreadsheetModulePromise;
-let zipModulePromise;
-
-const STARTERS = [
-    {
-        label: 'Get my next move',
-        text: 'When you only know you are stuck.',
-        icon: ArrowRight,
-        intent: 'I have one thing in front of me. Reflect it and give me one useful next move.',
-    },
-    {
-        label: 'Turn notes into sendable',
-        text: 'Shape rough thoughts into an artifact.',
-        icon: FileText,
-        intent: 'I have messy notes and need to turn them into something I can send.',
-    },
-    {
-        label: 'Check my thinking',
-        text: 'Challenge the loop, not your confidence.',
-        icon: ShieldCheck,
-        intent: 'Challenge my thinking without being agreeable. What am I missing?',
-    },
-    {
-        label: 'Research this',
-        text: 'Make the question source-checkable.',
-        icon: Search,
-        intent: 'I need to research this carefully. Define the question, source route, and next check.',
-    },
-];
 
 const SAMPLE_MIRROR = {
     reflection: 'You may not need more ideas. You may need one small action that turns the loop into evidence.',
@@ -90,67 +58,8 @@ const ECOSYSTEM = [
     },
 ];
 
-const TEXT_FILE_PATTERN = /\.(txt|md|markdown|csv|json|log)$/i;
-const IMAGE_FILE_PATTERN = /\.(avif|gif|jpe?g|png|webp)$/i;
-const DOCUMENT_FILE_PATTERN = /\.(docx)$/i;
-const SPREADSHEET_FILE_PATTERN = /\.(xlsx)$/i;
-const PRESENTATION_FILE_PATTERN = /\.(pptx)$/i;
-const FILE_LIMIT = 3;
-const FILE_ACCEPT_TYPES = [
-    '.pdf',
-    '.docx',
-    '.xlsx',
-    '.pptx',
-    '.txt',
-    '.md',
-    '.markdown',
-    '.csv',
-    '.json',
-    '.log',
-    'image/*',
-].join(',');
-const FILE_EXCERPT_LIMIT = 5200;
-const PDF_PAGE_LIMIT = 5;
-const SPREADSHEET_ROW_LIMIT = 30;
-const PRESENTATION_SLIDE_LIMIT = 15;
-
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
-}
-
-async function loadPdfJs() {
-    if (!pdfJsModulePromise) {
-        pdfJsModulePromise = import('pdfjs-dist').then((module) => {
-            module.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
-            return module;
-        });
-    }
-
-    return pdfJsModulePromise;
-}
-
-async function loadMammoth() {
-    if (!mammothModulePromise) {
-        mammothModulePromise = import('mammoth/mammoth.browser').then((module) => module.default || module);
-    }
-
-    return mammothModulePromise;
-}
-
-async function loadSpreadsheetParser() {
-    if (!spreadsheetModulePromise) {
-        spreadsheetModulePromise = import('read-excel-file/browser').then((module) => module.readSheet || module.default);
-    }
-
-    return spreadsheetModulePromise;
-}
-
-async function loadZipParser() {
-    if (!zipModulePromise) {
-        zipModulePromise = import('jszip').then((module) => module.default || module);
-    }
-
-    return zipModulePromise;
 }
 
 function makeEcosystemResult(intent) {
@@ -210,544 +119,14 @@ function makeFollowUps(mirror = {}) {
             label: 'Make it smaller',
             intent: `Make this next move smaller and easier to start: ${mirror.move || 'the next move'}`,
         },
-        {
-            label: 'Show the ecosystem',
-            intent: 'Show me the Active Mirror ecosystem.',
-        },
     ].filter(Boolean);
 }
 
-function shouldUsePhoneEntry() {
-    if (typeof window === 'undefined') return false;
-    if (new URLSearchParams(window.location.search).has('desktop')) return false;
-    const coarse = window.matchMedia('(pointer: coarse)').matches;
-    return window.innerWidth <= 680 || (coarse && window.innerWidth < 760);
-}
-
-function formatBytes(bytes = 0) {
-    if (!bytes) return '0 KB';
-    const units = ['B', 'KB', 'MB', 'GB'];
-    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-    const value = bytes / 1024 ** index;
-    return `${value >= 10 || index === 0 ? value.toFixed(0) : value.toFixed(1)} ${units[index]}`;
-}
-
-function fileDisplayType(file) {
-    if (isPdfFile(file)) return 'PDF';
-    if (isDocumentFile(file)) return 'Word doc';
-    if (isSpreadsheetFile(file)) return 'sheet';
-    if (isPresentationFile(file)) return 'deck';
-    if (isImageFile(file)) return 'image';
-    if (isReadableTextFile(file)) return 'text';
-    return 'file';
-}
-
-function summarizeFiles(files, options = {}) {
-    return files
-        .map((file) => {
-            const type = options.technical ? file.type || 'unknown type' : fileDisplayType(file);
-            return `"${file.name}" (${type}, ${formatBytes(file.size)})`;
-        })
-        .join('; ');
-}
-
-function isReadableTextFile(file) {
-    return file.type.startsWith('text/') || TEXT_FILE_PATTERN.test(file.name);
-}
-
-function isImageFile(file) {
-    return file.type.startsWith('image/') || IMAGE_FILE_PATTERN.test(file.name);
-}
-
-function isPdfFile(file) {
-    return file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-}
-
-function isDocumentFile(file) {
-    return file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        || DOCUMENT_FILE_PATTERN.test(file.name);
-}
-
-function isSpreadsheetFile(file) {
-    return file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        || SPREADSHEET_FILE_PATTERN.test(file.name);
-}
-
-function isPresentationFile(file) {
-    return file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-        || PRESENTATION_FILE_PATTERN.test(file.name);
-}
-
-function fileKindLabel(kind) {
-    if (kind === 'pdf') return 'PDF';
-    if (kind === 'document') return 'Word document';
-    if (kind === 'spreadsheet') return 'spreadsheet';
-    if (kind === 'presentation') return 'PowerPoint deck';
-    if (kind === 'text') return 'text';
-    return 'file';
-}
-
-function countLabel(count, singular, plural = `${singular}s`) {
-    if (!count) return '';
-    return `${count} ${count === 1 ? singular : plural}`;
-}
-
-function cleanExtractedText(text = '') {
-    return text.replace(/\s+\n/g, '\n').replace(/[ \t]+/g, ' ').trim();
-}
-
-function sortOfficePaths(paths) {
-    return [...paths].sort((left, right) => {
-        const leftIndex = Number(left.match(/(\d+)(?=\.xml$)/)?.[1] || 0);
-        const rightIndex = Number(right.match(/(\d+)(?=\.xml$)/)?.[1] || 0);
-        return leftIndex - rightIndex || left.localeCompare(right);
-    });
-}
-
-function extractXmlText(xmlText) {
-    const document = new DOMParser().parseFromString(xmlText, 'application/xml');
-    if (document.querySelector('parsererror')) return '';
-
-    return Array.from(document.getElementsByTagNameNS('*', 't'))
-        .map((node) => node.textContent || '')
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function revokeFilePreviews(contexts = []) {
-    contexts.forEach((item) => {
-        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-    });
-}
-
-function readImageContext(file) {
-    const previewUrl = URL.createObjectURL(file);
-
-    return new Promise((resolve) => {
-        const image = new Image();
-
-        image.onload = () => {
-            resolve({
-                kind: 'image',
-                name: file.name,
-                type: file.type || 'image',
-                size: file.size,
-                readable: false,
-                previewUrl,
-                width: image.naturalWidth,
-                height: image.naturalHeight,
-                note: `Image preview read locally (${image.naturalWidth} x ${image.naturalHeight}). Raw pixels were not sent.`,
-            });
-        };
-
-        image.onerror = () => {
-            URL.revokeObjectURL(previewUrl);
-            resolve({
-                kind: 'image',
-                name: file.name,
-                type: file.type || 'image',
-                size: file.size,
-                readable: false,
-                note: 'Image metadata only. Preview could not be opened locally.',
-            });
-        };
-
-        image.src = previewUrl;
-    });
-}
-
-async function readPdfContext(file, index) {
-    let loadingTask;
-
-    try {
-        const { getDocument } = await loadPdfJs();
-        const data = new Uint8Array(await file.arrayBuffer());
-        loadingTask = getDocument({ data });
-        const pdf = await loadingTask.promise;
-        const maxPages = Math.min(pdf.numPages, PDF_PAGE_LIMIT);
-        const chunks = [];
-        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
-
-        for (let pageNumber = 1; pageNumber <= maxPages; pageNumber += 1) {
-            const page = await pdf.getPage(pageNumber);
-            const content = await page.getTextContent();
-            const text = content.items
-                .map((item) => ('str' in item ? item.str : ''))
-                .join(' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-
-            if (text) chunks.push(`Page ${pageNumber}: ${text}`);
-
-            if (chunks.join('\n').length >= perFileLimit) break;
-        }
-
-        const excerpt = chunks.join('\n').slice(0, perFileLimit).trim();
-
-        return {
-            kind: 'pdf',
-            name: file.name,
-            type: file.type || 'application/pdf',
-            size: file.size,
-            readable: Boolean(excerpt),
-            excerpt,
-            totalPages: pdf.numPages,
-            includedPages: maxPages,
-            totalChars: excerpt.length,
-            includedChars: excerpt.length,
-            note: excerpt
-                ? `PDF text extracted locally from ${maxPages}/${pdf.numPages} page${pdf.numPages > 1 ? 's' : ''}.`
-                : 'PDF opened locally, but no selectable text was found.',
-        };
-    } catch {
-        return {
-            kind: 'pdf',
-            name: file.name,
-            type: file.type || 'application/pdf',
-            size: file.size,
-            readable: false,
-            note: 'Could not extract PDF text in this browser pass.',
-        };
-    } finally {
-        loadingTask?.destroy?.();
-    }
-}
-
-async function readDocumentContext(file, index) {
-    try {
-        const mammoth = await loadMammoth();
-        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
-        const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
-        const text = cleanExtractedText(result.value || '');
-        const excerpt = text.slice(0, perFileLimit).trim();
-        const warningCount = result.messages?.length || 0;
-
-        return {
-            kind: 'document',
-            name: file.name,
-            type: file.type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            size: file.size,
-            readable: Boolean(excerpt),
-            excerpt,
-            totalChars: text.length,
-            includedChars: excerpt.length,
-            warningCount,
-            note: excerpt
-                ? `Word document text extracted locally${warningCount ? ` with ${warningCount} parser note${warningCount > 1 ? 's' : ''}` : ''}.`
-                : 'Word document opened locally, but no readable text was found.',
-        };
-    } catch {
-        return {
-            kind: 'document',
-            name: file.name,
-            type: file.type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            size: file.size,
-            readable: false,
-            note: 'Could not extract Word document text in this browser pass.',
-        };
-    }
-}
-
-async function readSpreadsheetContext(file, index) {
-    try {
-        const readSpreadsheet = await loadSpreadsheetParser();
-        const rows = await readSpreadsheet(file);
-        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
-        const lines = rows
-            .slice(0, SPREADSHEET_ROW_LIMIT)
-            .map((row) => row
-                .map((cell) => {
-                    if (cell == null) return '';
-                    if (cell instanceof Date) return cell.toISOString().slice(0, 10);
-                    return String(cell).replace(/\s+/g, ' ').trim();
-                })
-                .filter(Boolean)
-                .join(' | '))
-            .filter(Boolean);
-        const text = lines.join('\n').trim();
-        const excerpt = text.slice(0, perFileLimit).trim();
-
-        return {
-            kind: 'spreadsheet',
-            name: file.name,
-            type: file.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            size: file.size,
-            readable: Boolean(excerpt),
-            excerpt,
-            totalRows: rows.length,
-            includedRows: Math.min(rows.length, SPREADSHEET_ROW_LIMIT),
-            totalChars: text.length,
-            includedChars: excerpt.length,
-            note: excerpt
-                ? `Spreadsheet text extracted locally from ${Math.min(rows.length, SPREADSHEET_ROW_LIMIT)}/${rows.length} row${rows.length === 1 ? '' : 's'}.`
-                : 'Spreadsheet opened locally, but no readable rows were found.',
-        };
-    } catch {
-        return {
-            kind: 'spreadsheet',
-            name: file.name,
-            type: file.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            size: file.size,
-            readable: false,
-            note: 'Could not extract spreadsheet text in this browser pass.',
-        };
-    }
-}
-
-async function readPresentationContext(file, index) {
-    try {
-        const JSZip = await loadZipParser();
-        const archive = await JSZip.loadAsync(await file.arrayBuffer());
-        const slidePaths = sortOfficePaths(Object.keys(archive.files).filter((path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path)));
-        const includedSlides = slidePaths.slice(0, PRESENTATION_SLIDE_LIMIT);
-        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
-        const chunks = [];
-
-        for (const slidePath of includedSlides) {
-            const slideXml = await archive.file(slidePath)?.async('text');
-            const slideText = extractXmlText(slideXml || '');
-            if (slideText) {
-                const slideNumber = Number(slidePath.match(/slide(\d+)\.xml$/i)?.[1] || chunks.length + 1);
-                chunks.push(`Slide ${slideNumber}: ${slideText}`);
-            }
-
-            if (chunks.join('\n').length >= perFileLimit) break;
-        }
-
-        const text = cleanExtractedText(chunks.join('\n'));
-        const excerpt = text.slice(0, perFileLimit).trim();
-
-        return {
-            kind: 'presentation',
-            name: file.name,
-            type: file.type || 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            size: file.size,
-            readable: Boolean(excerpt),
-            excerpt,
-            totalSlides: slidePaths.length,
-            includedSlides: Math.min(slidePaths.length, PRESENTATION_SLIDE_LIMIT),
-            totalChars: text.length,
-            includedChars: excerpt.length,
-            note: excerpt
-                ? `Deck text extracted locally from ${Math.min(slidePaths.length, PRESENTATION_SLIDE_LIMIT)}/${slidePaths.length} slide${slidePaths.length === 1 ? '' : 's'}.`
-                : 'Deck opened locally, but no readable slide text was found.',
-        };
-    } catch {
-        return {
-            kind: 'presentation',
-            name: file.name,
-            type: file.type || 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            size: file.size,
-            readable: false,
-            note: 'Could not extract deck text in this browser pass.',
-        };
-    }
-}
-
-async function readFileContext(file, index) {
-    if (isImageFile(file)) {
-        return readImageContext(file);
-    }
-
-    if (isPdfFile(file)) {
-        return readPdfContext(file, index);
-    }
-
-    if (isDocumentFile(file)) {
-        return readDocumentContext(file, index);
-    }
-
-    if (isSpreadsheetFile(file)) {
-        return readSpreadsheetContext(file, index);
-    }
-
-    if (isPresentationFile(file)) {
-        return readPresentationContext(file, index);
-    }
-
-    if (!isReadableTextFile(file)) {
-        return {
-            kind: 'metadata',
-            name: file.name,
-            type: file.type || 'unknown',
-            size: file.size,
-            readable: false,
-            note: 'Metadata only.',
-        };
-    }
-
-    try {
-        const text = await file.text();
-        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
-        const excerpt = text.replace(/\s+\n/g, '\n').trim().slice(0, perFileLimit);
-        return {
-            kind: 'text',
-            name: file.name,
-            type: file.type || 'text',
-            size: file.size,
-            readable: true,
-            excerpt,
-            totalChars: text.length,
-            includedChars: excerpt.length,
-        };
-    } catch {
-        return {
-            kind: 'text',
-            name: file.name,
-            type: file.type || 'text',
-            size: file.size,
-            readable: false,
-            note: 'Could not read local text.',
-        };
-    }
-}
-
-function fileReadinessLabel(contexts = []) {
-    if (!contexts.length) return 'Metadata ready.';
-    const readable = contexts.filter((item) => item.readable && item.excerpt);
-    const images = contexts.filter((item) => item.kind === 'image');
-    const pdfs = contexts.filter((item) => item.kind === 'pdf');
-    const documents = contexts.filter((item) => item.kind === 'document');
-    const spreadsheets = contexts.filter((item) => item.kind === 'spreadsheet');
-    const presentations = contexts.filter((item) => item.kind === 'presentation');
-    const texts = contexts.filter((item) => item.kind === 'text');
-    const namedSources = [
-        countLabel(pdfs.length, 'PDF'),
-        countLabel(documents.length, 'Word doc'),
-        countLabel(spreadsheets.length, 'sheet'),
-        countLabel(presentations.length, 'deck'),
-        countLabel(texts.length, 'text file'),
-    ].filter(Boolean).join(' and ');
-    if (readable.length && images.length) {
-        const source = namedSources ? ` from ${namedSources}` : '';
-        return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''}${source} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
-    }
-    if (readable.length && namedSources) {
-        return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready from ${namedSources}.`;
-    }
-    if (readable.length) return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} ready locally.`;
-    if (images.length) return `${images.length} image preview${images.length > 1 ? 's' : ''} ready locally. Pixels stay here.`;
-    if (pdfs.length) return `${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''} opened locally. No selectable text found.`;
-    return 'Metadata only. Contents stay local.';
-}
-
-function fileSharingLabel(contexts = []) {
-    if (!contexts.length) return '';
-
-    const readable = contexts.filter((item) => item.readable && item.excerpt);
-    const localOnly = [];
-    if (contexts.some((item) => item.kind === 'image')) localOnly.push('image pixels');
-    if (contexts.some((item) => item.kind === 'presentation')) localOnly.push('deck media');
-    const metadataOnly = contexts.filter((item) => !item.readable && item.kind !== 'image');
-    if (metadataOnly.length) localOnly.push(`${metadataOnly.length} metadata-only file${metadataOnly.length > 1 ? 's' : ''}`);
-
-    const shareText = readable.length
-        ? `${readable.length} excerpt${readable.length > 1 ? 's' : ''} can be shared after you click.`
-        : 'No contents will be shared unless text is readable.';
-    const localText = localOnly.length ? ` ${localOnly.join(', ')} stay local.` : '';
-    return `${shareText}${localText}`;
-}
-
-function fileReflectLabel(contexts = []) {
-    if (contexts.some((item) => item.readable && item.excerpt)) return 'Reflect with text';
-    if (contexts.some((item) => item.kind === 'image')) return 'Reflect on image';
-    return 'Reflect on file';
-}
-
-function makeFileIntent(files, contexts = []) {
-    const summary = summarizeFiles(files, { technical: true });
-    const readable = contexts.filter((item) => item.readable && item.excerpt);
-    const images = contexts.filter((item) => item.kind === 'image');
-    const metadataOnly = contexts.filter((item) => !item.readable && item.kind !== 'image');
-    const excerpts = readable.map((item) => (
-        `--- ${item.name} ${fileKindLabel(item.kind)} local excerpt (${item.includedChars}/${item.totalChars} chars, approved for this turn only)\n${item.excerpt}`
-    )).join('\n\n');
-    const imageNotes = images.map((item) => {
-        const dimensions = item.width && item.height ? `${item.width} x ${item.height}` : 'dimensions unavailable';
-        return `${item.name}: image preview opened locally; ${dimensions}; raw pixels/base64 were not sent.`;
-    }).join(' ');
-    const metadataNotes = metadataOnly.map((item) => `${item.name}: ${item.note}`).join(' ');
-
-    return [
-        `I have local file context to work with: ${summary}.`,
-        readable.length
-            ? `The user clicked Reflect with text, approving these local text excerpts for this turn only:\n${excerpts}`
-            : 'No file contents are included. Use metadata only and do not assume the contents.',
-        imageNotes ? `Local image notes: ${imageNotes}` : '',
-        metadataNotes ? `Metadata-only notes: ${metadataNotes}` : '',
-        'Help me decide what to inspect, what to extract, what to leave private, and the next action to take.',
-    ].filter(Boolean).join('\n\n');
-}
-
-function summarizeVisibleAsk(intent, source, files = []) {
-    if (source === 'file_drop') {
-        return files.length
-            ? `You added ${files.length} file${files.length > 1 ? 's' : ''}: ${summarizeFiles(files)}`
-            : 'You added local file context.';
-    }
-
+function summarizeVisibleAsk(intent) {
     return intent.length > 220 ? `${intent.slice(0, 220).trim()}...` : intent;
 }
 
-function FilePreviewStrip({ contexts }) {
-    const visible = contexts.filter((item) => item.kind === 'image' || item.note || item.excerpt).slice(0, 3);
-    if (!visible.length) return null;
-
-    return (
-        <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {visible.map((item) => (
-                <div key={`${item.name}-${item.previewUrl || item.note || item.excerpt?.length}`} className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-2">
-                    {item.previewUrl ? (
-                        <img
-                            src={item.previewUrl}
-                            alt={`${item.name} local preview`}
-                            className="mb-2 aspect-[4/3] w-full rounded-xl border border-white/10 object-cover"
-                        />
-                    ) : (
-                        <div className="mb-2 grid aspect-[4/3] w-full place-items-center rounded-xl border border-white/10 bg-white/[0.035] text-zinc-500">
-                            <FileText size={18} />
-                        </div>
-                    )}
-                    <div className="truncate text-xs font-semibold text-zinc-200">{item.name}</div>
-                    <div className="mt-0.5 truncate text-[11px] leading-4 text-zinc-500">
-                        {item.width && item.height
-                            ? `${item.width} x ${item.height} · local preview`
-                            : item.kind === 'spreadsheet' && item.readable
-                                ? `${item.includedRows}/${item.totalRows} rows ready`
-                                : item.kind === 'presentation' && item.readable
-                                    ? `${item.includedSlides}/${item.totalSlides} slides ready`
-                                : item.readable && item.excerpt
-                                ? `${item.includedChars}/${item.totalChars} chars ready`
-                                : item.note}
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function makeSendableDraft(mirror = {}, options = {}) {
-    if (options.fileContext) {
-        return {
-            title: 'Sendable draft',
-            body: [
-                'Quick update:',
-                '',
-                'I reviewed the material and narrowed it to one safe next move.',
-                '',
-                'Next move: extract only the minimum useful point, remove private details, and send the clean version.',
-                '',
-                'Private context removed. Add only what the recipient needs.',
-            ].join('\n'),
-            checklist: [
-                'Remove anything private before sending.',
-                'Keep the ask to one sentence.',
-                'Send it, then watch what changes.',
-            ],
-        };
-    }
-
+function makeSendableDraft(mirror = {}) {
     const question = mirror.question || 'What is the useful next move?';
     const move = mirror.move || 'Take the smallest concrete next step.';
 
@@ -921,44 +300,97 @@ function SendableDraft({ draft }) {
     );
 }
 
+function LandingScreen({ onStart }) {
+    return (
+        <div className="relative min-h-dvh overflow-hidden bg-black text-white selection:bg-purple-500/30">
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.22),transparent_34%),radial-gradient(circle_at_bottom,_rgba(34,211,238,0.10),transparent_36%),#000]" />
+            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.024)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.016)_1px,transparent_1px)] bg-[size:46px_46px] opacity-20" />
+
+            <header className="relative z-10 border-b border-white/10 bg-black/50 px-4 py-4 backdrop-blur-xl">
+                <nav className="mx-auto flex max-w-3xl items-center justify-between gap-3 text-sm text-zinc-400">
+                    <Link to="/device" className="transition hover:text-white">Mobile</Link>
+                    <Link to="/product" className="transition hover:text-white">Architecture</Link>
+                    <Link to="/start" className="text-purple-200 transition hover:text-white">Ecosystem</Link>
+                    <Link to="/trust" className="transition hover:text-white">Trust</Link>
+                </nav>
+            </header>
+
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-3xl items-center px-4 py-7">
+                <section className="mx-auto w-full rounded-[2.25rem] border border-white/10 bg-white/[0.045] px-6 py-12 text-center shadow-[0_0_90px_rgba(168,85,247,0.14)] ring-1 ring-white/[0.05] backdrop-blur-2xl sm:px-10 sm:py-16">
+                    <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-3xl border border-white/10 bg-black/30 shadow-[0_0_40px_rgba(124,58,237,0.18)]">
+                        <MirrorLogo />
+                        <span className="mt-1 text-[10px] font-bold uppercase leading-none tracking-[0.08em] text-white">
+                            Active
+                            <span className="block">Mirror</span>
+                        </span>
+                    </div>
+
+                    <h1 className="mx-auto max-w-[9ch] text-[3.2rem] font-semibold leading-[0.95] tracking-[-0.06em] text-white sm:text-[4.9rem]">
+                        Intelligence
+                        <span className="block bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
+                            Reflected.
+                        </span>
+                    </h1>
+
+                    <p className="mx-auto mt-8 max-w-md text-xl leading-8 text-zinc-400 sm:text-2xl sm:leading-10">
+                        Bring one stuck thing. Get one honest next move.
+                    </p>
+                    <p className="mx-auto mt-3 max-w-sm text-base leading-7 text-zinc-500">
+                        Private by default. Nothing saved unless you choose.
+                    </p>
+
+                    <div className="mx-auto mt-10 grid max-w-sm gap-3">
+                        <button
+                            type="button"
+                            onClick={onStart}
+                            className="group inline-flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 text-lg font-semibold text-white shadow-[0_0_38px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
+                        >
+                            Start Reflection
+                            <ArrowRight size={23} className="transition group-hover:translate-x-1" />
+                        </button>
+                        <Link
+                            to="/start"
+                            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-6 text-base font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
+                        >
+                            Take BrainScan
+                        </Link>
+                    </div>
+                </section>
+            </main>
+        </div>
+    );
+}
+
 export default function HomePage() {
-    const navigate = useNavigate();
+    const inputRef = useRef(null);
     const [seed] = useState(() => getArchetype());
-    const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
+    const [activeDefault] = useState(() => getActiveMirrorDefault());
+    const [started, setStarted] = useState(false);
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
-    const [lastSource, setLastSource] = useState('');
-    const [files, setFiles] = useState([]);
-    const [fileContexts, setFileContexts] = useState([]);
-    const [fileReading, setFileReading] = useState(false);
-    const [fileNotice, setFileNotice] = useState('');
-    const [dragging, setDragging] = useState(false);
     const [sendableDraft, setSendableDraft] = useState(null);
-    const [defaultStatus, setDefaultStatus] = useState('');
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
     useEffect(() => {
-        if (shouldUsePhoneEntry()) {
-            navigate('/device', { replace: true });
-            return;
-        }
-
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
-    }, [navigate]);
+    }, []);
 
-    useEffect(() => () => revokeFilePreviews(fileContexts), [fileContexts]);
+    function startReflection() {
+        setStarted(true);
+        trackEvent('reflection_started', { page: 'home', source: 'landing' });
+        window.setTimeout(() => inputRef.current?.focus(), 50);
+    }
 
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
 
+        setStarted(true);
         setText('');
         setLastIntent(cleanIntent);
-        setLastSource(source);
         setSendableDraft(null);
-        setDefaultStatus('');
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
         if (isEcosystemAsk(cleanIntent)) {
@@ -1023,48 +455,10 @@ export default function HomePage() {
         reflect(text);
     }
 
-    async function addFiles(fileList) {
-        const incomingFiles = Array.from(fileList || []);
-        const nextFiles = incomingFiles.slice(0, FILE_LIMIT);
-        if (!nextFiles.length) return;
+    const showMirror = Boolean(result || busy || lastIntent);
 
-        revokeFilePreviews(fileContexts);
-        setFiles(nextFiles);
-        setFileContexts([]);
-        setFileNotice(incomingFiles.length > FILE_LIMIT ? `Using first ${FILE_LIMIT} files for this turn.` : '');
-        setFileReading(true);
-        trackEvent('file_added', {
-            page: 'home',
-            count: nextFiles.length,
-            incomingCount: incomingFiles.length,
-            usedCount: nextFiles.length,
-            totalBytes: nextFiles.reduce((total, file) => total + file.size, 0),
-            types: nextFiles.map((file) => file.type || 'unknown').slice(0, FILE_LIMIT).join(','),
-        });
-        try {
-            const contexts = await Promise.all(nextFiles.map((file, index) => readFileContext(file, index)));
-            setFileContexts(contexts);
-        } finally {
-            setFileReading(false);
-        }
-    }
-
-    function reflectOnFiles() {
-        if (!files.length || busy) return;
-        reflect(makeFileIntent(files, fileContexts), 'file_drop');
-    }
-
-    function rememberCurrentDefault() {
-        if (!result?.mirror) return;
-        const next = saveMirrorDefault({
-            question: result.mirror.question,
-            move: result.mirror.move,
-            source: 'homepage',
-        });
-        setActiveDefault(next);
-        setDefaultStatus('Default saved');
-        trackEvent('mirror_default_saved', { page: 'home', source: 'reflection' });
-        window.setTimeout(() => setDefaultStatus(''), 2200);
+    if (!started && !showMirror) {
+        return <LandingScreen onStart={startReflection} />;
     }
 
     return (
@@ -1095,7 +489,12 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto grid min-h-[calc(100dvh-57px)] max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(420px,1fr)] lg:items-stretch lg:px-6 lg:py-6">
+            <main className={`relative z-10 mx-auto grid min-h-[calc(100dvh-57px)] gap-5 px-4 py-5 lg:items-stretch lg:px-6 lg:py-6 ${
+                showMirror
+                    ? 'max-w-7xl lg:grid-cols-[minmax(0,0.82fr)_minmax(420px,1fr)]'
+                    : 'max-w-3xl'
+            }`}
+            >
                 <section className="flex min-h-[36rem] flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
                     <div>
                         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
@@ -1112,121 +511,15 @@ export default function HomePage() {
                             Bring one thing you are stuck on. Active Mirror reflects the real question, gives you one next move, and shows what stayed private.
                         </p>
 
-                        <div className="mt-7 grid gap-2 sm:grid-cols-2">
-                            {STARTERS.map((starter) => (
-                                <button
-                                    key={starter.label}
-                                    type="button"
-                                    onClick={() => {
-                                        trackEvent('starter_clicked', { page: 'home', source: 'starter', label: starter.label });
-                                        reflect(starter.intent, 'starter');
-                                    }}
-                                    disabled={busy}
-                                    className="group flex min-h-[5.5rem] items-start gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-cyan-100 transition group-hover:border-cyan-200/25">
-                                        <starter.icon size={17} />
-                                    </span>
-                                    <span className="min-w-0">
-                                        <span className="block text-sm font-semibold text-zinc-100">{starter.label}</span>
-                                        <span className="mt-1 block text-xs leading-5 text-zinc-500">{starter.text}</span>
-                                    </span>
-                                </button>
-                            ))}
+                        <div className="mt-7 rounded-3xl border border-purple-300/15 bg-purple-300/[0.06] px-4 py-4 text-sm leading-6 text-zinc-300">
+                            Type one honest sentence. The mirror will make the next surface from that.
                         </div>
                     </div>
 
                     <div className="mt-7">
-                        <div
-                            onDrop={(event) => {
-                                event.preventDefault();
-                                setDragging(false);
-                                addFiles(event.dataTransfer.files);
-                            }}
-                            onDragOver={(event) => {
-                                event.preventDefault();
-                                setDragging(true);
-                            }}
-                            onDragLeave={(event) => {
-                                if (event.currentTarget.contains(event.relatedTarget)) return;
-                                setDragging(false);
-                            }}
-                            className={`mb-3 rounded-3xl border border-dashed px-4 py-3 transition ${
-                                dragging
-                                    ? 'border-cyan-200/60 bg-cyan-300/[0.08]'
-                                    : 'border-white/10 bg-black/20 hover:border-cyan-200/30 hover:bg-cyan-300/[0.045]'
-                            }`}
-                        >
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                <label className="flex min-w-0 cursor-pointer items-center gap-3">
-                                    <input
-                                        type="file"
-                                        multiple
-                                        accept={FILE_ACCEPT_TYPES}
-                                        className="sr-only"
-                                        onChange={(event) => {
-                                            addFiles(event.target.files);
-                                            event.target.value = '';
-                                        }}
-                                    />
-                                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-cyan-100">
-                                        <UploadCloud size={18} />
-                                    </span>
-                                    <span className="min-w-0">
-                                        <span className="block text-sm font-semibold text-zinc-100">
-                                            {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop a file here'}
-                                        </span>
-                                        <span className="block truncate text-xs leading-5 text-zinc-500">
-                                            {files.length ? summarizeFiles(files) : 'PDF, Word doc, sheet, deck, image, or notes. Up to 3 files.'}
-                                        </span>
-                                        {fileNotice ? (
-                                            <span className="block text-xs leading-5 text-amber-200/80">
-                                                {fileNotice}
-                                            </span>
-                                        ) : null}
-                                        {files.length ? (
-                                            <span className="block text-xs leading-5 text-zinc-500">
-                                                {fileReading ? 'Reading local text...' : fileReadinessLabel(fileContexts)}
-                                            </span>
-                                        ) : null}
-                                        {files.length && !fileReading && fileContexts.length ? (
-                                            <span className="block text-xs leading-5 text-zinc-500">
-                                                {fileSharingLabel(fileContexts)}
-                                            </span>
-                                        ) : null}
-                                    </span>
-                                </label>
-                                <div className="flex shrink-0 items-center gap-2">
-                                    {files.length ? (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                revokeFilePreviews(fileContexts);
-                                                setFiles([]);
-                                                setFileContexts([]);
-                                                setFileReading(false);
-                                                setFileNotice('');
-                                            }}
-                                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:text-white"
-                                        >
-                                            Clear
-                                        </button>
-                                    ) : null}
-                                    <button
-                                        type="button"
-                                        onClick={reflectOnFiles}
-                                        disabled={busy || !files.length || fileReading}
-                                        className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-40"
-                                    >
-                                        {fileReading ? 'Reading...' : fileReflectLabel(fileContexts)}
-                                    </button>
-                                </div>
-                            </div>
-                            <FilePreviewStrip contexts={fileContexts} />
-                        </div>
-
                         <form onSubmit={submit} className="flex items-end gap-2">
                             <textarea
+                                ref={inputRef}
                                 rows={2}
                                 value={text}
                                 maxLength={1000}
@@ -1270,89 +563,54 @@ export default function HomePage() {
                     </div>
                 </section>
 
-                <section className="flex min-h-[36rem] flex-col gap-3 lg:min-h-0">
-                    {lastIntent ? (
-                        <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-zinc-400">
-                            You asked: <span className="text-zinc-200">{summarizeVisibleAsk(lastIntent, lastSource, files)}</span>
-                        </div>
-                    ) : null}
-                    <MirrorResult
-                        result={result}
-                        intent={lastIntent}
-                        disabled={busy}
-                        onPrompt={(nextIntent) => {
-                            trackEvent('followup_clicked', { page: 'home', source: 'surface' });
-                            reflect(nextIntent, 'surface');
-                        }}
-                    />
-                    <div className="flex flex-wrap gap-2 pb-1">
-                        {result?.mirror ? (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    trackEvent('sendable_created', { page: 'home', source: 'local_draft' });
-                                    setSendableDraft(makeSendableDraft(result.mirror, { fileContext: lastSource === 'file_drop' }));
-                                }}
-                                disabled={busy}
-                                className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                Make this sendable
-                            </button>
-                        ) : null}
-                        {followUps.map((item) => (
-                            <button
-                                key={item.label}
-                                type="button"
-                                onClick={() => {
-                                    trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
-                                    reflect(item.intent, 'follow_up');
-                                }}
-                                disabled={busy}
-                                className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
-                    <SendableDraft draft={sendableDraft} />
-                    {result ? (
-                        <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3">
-                            <div className="text-sm font-semibold text-white">Want it to fit you better?</div>
-                            <div className="mt-1 text-xs leading-5 text-zinc-500">
-                                Save this as a browser-local default, build a MirrorSeed, or keep using the full mirror.
+                {showMirror ? (
+                    <section className="flex min-h-[36rem] flex-col gap-3 lg:min-h-0">
+                        {lastIntent ? (
+                            <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-zinc-400">
+                                You asked: <span className="text-zinc-200">{summarizeVisibleAsk(lastIntent)}</span>
                             </div>
-                            <div className="mt-3 flex flex-wrap gap-2">
+                        ) : null}
+                        <MirrorResult
+                            result={result}
+                            intent={lastIntent}
+                            disabled={busy}
+                            onPrompt={(nextIntent) => {
+                                trackEvent('followup_clicked', { page: 'home', source: 'surface' });
+                                reflect(nextIntent, 'surface');
+                            }}
+                        />
+                        <div className="flex flex-wrap gap-2 pb-1">
+                            {result?.mirror ? (
                                 <button
                                     type="button"
-                                    onClick={rememberCurrentDefault}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12]"
+                                    onClick={() => {
+                                        trackEvent('sendable_created', { page: 'home', source: 'local_draft' });
+                                        setSendableDraft(makeSendableDraft(result.mirror));
+                                    }}
+                                    disabled={busy}
+                                    className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    <BookmarkPlus size={13} />
-                                    Use as default
+                                    Make this sendable
                                 </button>
-                                <Link
-                                    to="/start"
-                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'mirrorseed' })}
-                                    className="rounded-full bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-cyan-100"
+                            ) : null}
+                            {followUps.map((item) => (
+                                <button
+                                    key={item.label}
+                                    type="button"
+                                    onClick={() => {
+                                        trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
+                                        reflect(item.intent, 'follow_up');
+                                    }}
+                                    disabled={busy}
+                                    className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    Build MirrorSeed
-                                </Link>
-                                <Link
-                                    to="/mirror"
-                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'full_mirror' })}
-                                    className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
-                                >
-                                    Open full mirror
-                                </Link>
-                                {defaultStatus ? (
-                                    <span className="inline-flex items-center rounded-full px-2 py-2 text-xs font-semibold text-cyan-100">
-                                        {defaultStatus}
-                                    </span>
-                                ) : null}
-                            </div>
+                                    {item.label}
+                                </button>
+                            ))}
                         </div>
-                    ) : null}
-                </section>
+                        <SendableDraft draft={sendableDraft} />
+                    </section>
+                ) : null}
             </main>
 
             <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between lg:px-6">
@@ -1366,7 +624,7 @@ export default function HomePage() {
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
                         className="inline-flex items-center gap-1 transition hover:text-white"
                     >
-                        Build your MirrorSeed
+                        Take BrainScan
                         <ArrowRight size={12} />
                     </Link>
                 </div>
