@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUp, ChevronDown, ShieldCheck } from 'lucide-react';
 import { getArchetype } from '../lib/mirror-state';
+import { trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
@@ -136,6 +137,10 @@ export default function ReflectChat() {
     const latestFollowUps = latestMirror ? makeFollowUps(latestMirror) : [];
 
     useEffect(() => {
+        trackEvent('mirror_view', { page: 'mirror', surface: 'chat' });
+    }, []);
+
+    useEffect(() => {
         const main = mainRef.current;
         if (!main) return;
 
@@ -157,9 +162,10 @@ export default function ReflectChat() {
         });
     }, [turns, busy]);
 
-    async function ask(intent) {
+    async function ask(intent, source = 'typed') {
         setTurns((current) => [...current, { who: 'you', text: intent }]);
         setBusy(true);
+        trackEvent('mirror_submit', { page: 'mirror', source, route: 'reflection', status: 'started' });
 
         try {
             turnNum.current += 1;
@@ -177,6 +183,15 @@ export default function ReflectChat() {
                 }),
             });
             const data = await response.json();
+            trackEvent('mirror_result', {
+                page: 'mirror',
+                source,
+                route: data.route?.capability || 'reflection',
+                status: data.ok ? 'ok' : 'blocked',
+                fallback: Boolean(data.fallback),
+                visualKind: data.mirror?.visual?.kind || 'none',
+                turn: turnNum.current,
+            });
 
             setTurns((current) => [
                 ...current,
@@ -185,6 +200,7 @@ export default function ReflectChat() {
                     : { who: 'mirror', error: 'I held that one back because it looked like it carried a secret. Nothing was sent.' },
             ]);
         } catch {
+            trackEvent('gateway_error', { page: 'mirror', source, route: 'reflection', status: 'network', turn: turnNum.current });
             setTurns((current) => [
                 ...current,
                 { who: 'mirror', error: "Couldn't reach the mirror just now. Try again in a moment." },
@@ -194,9 +210,10 @@ export default function ReflectChat() {
         }
     }
 
-    function useStarter(intent) {
+    function useStarter(intent, source = 'starter') {
         if (busy) return;
-        ask(intent);
+        trackEvent(source === 'follow_up' ? 'followup_clicked' : 'starter_clicked', { page: 'mirror', source });
+        ask(intent, source);
     }
 
     function submit(event) {
@@ -204,7 +221,7 @@ export default function ReflectChat() {
         const intent = text.trim();
         if (intent.length < 12 || busy) return;
         setText('');
-        ask(intent);
+        ask(intent, 'typed');
     }
 
     return (
@@ -266,7 +283,7 @@ export default function ReflectChat() {
                                             <button
                                                 key={starter}
                                                 type="button"
-                                                onClick={() => useStarter(starter)}
+                                                onClick={() => useStarter(starter, 'starter')}
                                                 disabled={busy}
                                                 className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left text-sm leading-6 text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                                             >
@@ -294,18 +311,30 @@ export default function ReflectChat() {
 
             <footer className="relative z-10 border-t border-white/10 bg-black/70 px-3 py-3 backdrop-blur-xl">
                 {latestFollowUps.length > 0 && (
-                    <div className="mx-auto mb-3 flex max-w-[48rem] gap-2 overflow-x-auto pb-1">
+                    <div className="mx-auto mb-3 flex max-w-[48rem] flex-wrap gap-2 pb-1">
                         {latestFollowUps.map((item) => (
                             <button
                                 key={item.label}
                                 type="button"
-                                onClick={() => useStarter(item.intent)}
+                                onClick={() => useStarter(item.intent, 'follow_up')}
                                 disabled={busy}
-                                className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {item.label}
                             </button>
                         ))}
+                    </div>
+                )}
+                {latestMirror && (
+                    <div className="mx-auto mb-3 flex max-w-[48rem] flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-2 text-xs text-zinc-500">
+                        <span>This can become your local starting point.</span>
+                        <Link
+                            to="/start"
+                            onClick={() => trackEvent('cta_clicked', { page: 'mirror', target: 'mirrorseed' })}
+                            className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 font-semibold text-purple-100 transition hover:border-purple-300/40 hover:text-white"
+                        >
+                            Build MirrorSeed
+                        </Link>
                     </div>
                 )}
                 <form className="mx-auto flex max-w-[48rem] items-end gap-2" onSubmit={submit}>

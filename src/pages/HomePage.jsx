@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, Brain, ChevronDown, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
 import { getArchetype } from '../lib/mirror-state';
+import { trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
@@ -201,15 +202,21 @@ export default function HomePage() {
     const [lastIntent, setLastIntent] = useState('');
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
-    async function reflect(intent) {
+    useEffect(() => {
+        trackEvent('home_view', { page: 'home', surface: 'homepage' });
+    }, []);
+
+    async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
 
         setText('');
         setLastIntent(cleanIntent);
+        trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
         if (isEcosystemAsk(cleanIntent)) {
             setResult(makeEcosystemResult(cleanIntent));
+            trackEvent('ecosystem_result', { page: 'home', source, status: 'local' });
             return;
         }
 
@@ -229,6 +236,14 @@ export default function HomePage() {
                 }),
             });
             const data = await response.json();
+            trackEvent('mirror_result', {
+                page: 'home',
+                source,
+                route: data.route?.capability || 'reflection',
+                status: data.ok ? 'ok' : 'blocked',
+                fallback: Boolean(data.fallback),
+                visualKind: data.mirror?.visual?.kind || 'none',
+            });
 
             setResult(
                 data.ok
@@ -247,6 +262,7 @@ export default function HomePage() {
                     },
             );
         } catch {
+            trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
             setResult({
                 mirror: {
                     reflection: 'The mirror route is not reachable right now, but the page is still private by default.',
@@ -316,7 +332,10 @@ export default function HomePage() {
                                 <button
                                     key={starter}
                                     type="button"
-                                    onClick={() => reflect(starter)}
+                                    onClick={() => {
+                                        trackEvent('starter_clicked', { page: 'home', source: 'starter' });
+                                        reflect(starter, 'starter');
+                                    }}
                                     disabled={busy}
                                     className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left text-sm leading-6 text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                                 >
@@ -373,19 +392,46 @@ export default function HomePage() {
                         </div>
                     ) : null}
                     <MirrorResult result={result} />
-                    <div className="flex gap-2 overflow-x-auto pb-1">
+                    <div className="flex flex-wrap gap-2 pb-1">
                         {followUps.map((item) => (
                             <button
                                 key={item.label}
                                 type="button"
-                                onClick={() => reflect(item.intent)}
+                                onClick={() => {
+                                    trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
+                                    reflect(item.intent, 'follow_up');
+                                }}
                                 disabled={busy}
-                                className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {item.label}
                             </button>
                         ))}
                     </div>
+                    {result ? (
+                        <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3">
+                            <div className="text-sm font-semibold text-white">Want it to fit you better?</div>
+                            <div className="mt-1 text-xs leading-5 text-zinc-500">
+                                Build a local MirrorSeed, or keep using the full mirror.
+                            </div>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                <Link
+                                    to="/start"
+                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'mirrorseed' })}
+                                    className="rounded-full bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-cyan-100"
+                                >
+                                    Build MirrorSeed
+                                </Link>
+                                <Link
+                                    to="/mirror"
+                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'full_mirror' })}
+                                    className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
+                                >
+                                    Open full mirror
+                                </Link>
+                            </div>
+                        </div>
+                    ) : null}
                 </section>
             </main>
 
@@ -394,7 +440,11 @@ export default function HomePage() {
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
-                    <Link to="/start" className="inline-flex items-center gap-1 transition hover:text-white">
+                    <Link
+                        to="/start"
+                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
+                        className="inline-flex items-center gap-1 transition hover:text-white"
+                    >
                         Build your MirrorSeed
                         <ArrowRight size={12} />
                     </Link>
