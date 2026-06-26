@@ -218,9 +218,22 @@ function formatBytes(bytes = 0) {
     return `${value >= 10 || index === 0 ? value.toFixed(0) : value.toFixed(1)} ${units[index]}`;
 }
 
-function summarizeFiles(files) {
+function fileDisplayType(file) {
+    if (isPdfFile(file)) return 'PDF';
+    if (isDocumentFile(file)) return 'Word doc';
+    if (isSpreadsheetFile(file)) return 'sheet';
+    if (isPresentationFile(file)) return 'deck';
+    if (isImageFile(file)) return 'image';
+    if (isReadableTextFile(file)) return 'text';
+    return 'file';
+}
+
+function summarizeFiles(files, options = {}) {
     return files
-        .map((file) => `"${file.name}" (${file.type || 'unknown type'}, ${formatBytes(file.size)})`)
+        .map((file) => {
+            const type = options.technical ? file.type || 'unknown type' : fileDisplayType(file);
+            return `"${file.name}" (${type}, ${formatBytes(file.size)})`;
+        })
         .join('; ');
 }
 
@@ -580,15 +593,16 @@ function fileReadinessLabel(contexts = []) {
     const spreadsheets = contexts.filter((item) => item.kind === 'spreadsheet');
     const presentations = contexts.filter((item) => item.kind === 'presentation');
     const officeFiles = [...documents, ...spreadsheets, ...presentations];
+    const labels = [
+        documents.length ? `${documents.length} Word doc${documents.length > 1 ? 's' : ''}` : '',
+        spreadsheets.length ? `${spreadsheets.length} sheet${spreadsheets.length > 1 ? 's' : ''}` : '',
+        presentations.length ? `${presentations.length} deck${presentations.length > 1 ? 's' : ''}` : '',
+    ].filter(Boolean).join(' and ');
     if (readable.length && images.length) {
-        return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
+        const source = labels ? ` from ${labels}` : '';
+        return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''}${source} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
     }
     if (readable.length && officeFiles.length) {
-        const labels = [
-            documents.length ? `${documents.length} Word doc${documents.length > 1 ? 's' : ''}` : '',
-            spreadsheets.length ? `${spreadsheets.length} sheet${spreadsheets.length > 1 ? 's' : ''}` : '',
-            presentations.length ? `${presentations.length} deck${presentations.length > 1 ? 's' : ''}` : '',
-        ].filter(Boolean).join(' and ');
         return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${labels}.`;
     }
     if (readable.length && pdfs.length) return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''}.`;
@@ -598,6 +612,23 @@ function fileReadinessLabel(contexts = []) {
     return 'Metadata only. Contents stay local.';
 }
 
+function fileSharingLabel(contexts = []) {
+    if (!contexts.length) return '';
+
+    const readable = contexts.filter((item) => item.readable && item.excerpt);
+    const localOnly = [];
+    if (contexts.some((item) => item.kind === 'image')) localOnly.push('image pixels');
+    if (contexts.some((item) => item.kind === 'presentation')) localOnly.push('deck media');
+    const metadataOnly = contexts.filter((item) => !item.readable && item.kind !== 'image');
+    if (metadataOnly.length) localOnly.push(`${metadataOnly.length} metadata-only file${metadataOnly.length > 1 ? 's' : ''}`);
+
+    const shareText = readable.length
+        ? `${readable.length} excerpt${readable.length > 1 ? 's' : ''} can be shared after you click.`
+        : 'No contents will be shared unless text is readable.';
+    const localText = localOnly.length ? ` ${localOnly.join(', ')} stay local.` : '';
+    return `${shareText}${localText}`;
+}
+
 function fileReflectLabel(contexts = []) {
     if (contexts.some((item) => item.readable && item.excerpt)) return 'Reflect with text';
     if (contexts.some((item) => item.kind === 'image')) return 'Reflect on image';
@@ -605,7 +636,7 @@ function fileReflectLabel(contexts = []) {
 }
 
 function makeFileIntent(files, contexts = []) {
-    const summary = summarizeFiles(files);
+    const summary = summarizeFiles(files, { technical: true });
     const readable = contexts.filter((item) => item.readable && item.excerpt);
     const images = contexts.filter((item) => item.kind === 'image');
     const metadataOnly = contexts.filter((item) => !item.readable && item.kind !== 'image');
@@ -1122,6 +1153,11 @@ export default function HomePage() {
                                         {files.length ? (
                                             <span className="block text-xs leading-5 text-zinc-500">
                                                 {fileReading ? 'Reading local text...' : fileReadinessLabel(fileContexts)}
+                                            </span>
+                                        ) : null}
+                                        {files.length && !fileReading && fileContexts.length ? (
+                                            <span className="block text-xs leading-5 text-zinc-500">
+                                                {fileSharingLabel(fileContexts)}
                                             </span>
                                         ) : null}
                                     </span>
