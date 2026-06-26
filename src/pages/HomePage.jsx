@@ -86,6 +86,7 @@ const ECOSYSTEM = [
 ];
 
 const TEXT_FILE_PATTERN = /\.(txt|md|markdown|csv|json|log)$/i;
+const IMAGE_FILE_PATTERN = /\.(avif|gif|jpe?g|png|webp)$/i;
 const FILE_EXCERPT_LIMIT = 5200;
 
 function isEcosystemAsk(intent) {
@@ -181,13 +182,66 @@ function isReadableTextFile(file) {
     return file.type.startsWith('text/') || TEXT_FILE_PATTERN.test(file.name);
 }
 
+function isImageFile(file) {
+    return file.type.startsWith('image/') || IMAGE_FILE_PATTERN.test(file.name);
+}
+
+function revokeFilePreviews(contexts = []) {
+    contexts.forEach((item) => {
+        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    });
+}
+
+function readImageContext(file) {
+    const previewUrl = URL.createObjectURL(file);
+
+    return new Promise((resolve) => {
+        const image = new Image();
+
+        image.onload = () => {
+            resolve({
+                kind: 'image',
+                name: file.name,
+                type: file.type || 'image',
+                size: file.size,
+                readable: false,
+                previewUrl,
+                width: image.naturalWidth,
+                height: image.naturalHeight,
+                note: `Image preview read locally (${image.naturalWidth} x ${image.naturalHeight}). Raw pixels were not sent.`,
+            });
+        };
+
+        image.onerror = () => {
+            URL.revokeObjectURL(previewUrl);
+            resolve({
+                kind: 'image',
+                name: file.name,
+                type: file.type || 'image',
+                size: file.size,
+                readable: false,
+                note: 'Image metadata only. Preview could not be opened locally.',
+            });
+        };
+
+        image.src = previewUrl;
+    });
+}
+
 async function readFileContext(file, index) {
+    if (isImageFile(file)) {
+        return readImageContext(file);
+    }
+
     if (!isReadableTextFile(file)) {
         return {
+            kind: file.type === 'application/pdf' ? 'pdf' : 'metadata',
             name: file.name,
+            type: file.type || 'unknown',
+            size: file.size,
             readable: false,
             note: file.type === 'application/pdf'
-                ? 'PDF text was not extracted in this browser pass; use metadata and ask what to inspect.'
+                ? 'PDF metadata only in this pass. Ask what to inspect before extracting or sharing text.'
                 : 'Metadata only.',
         };
     }
@@ -197,7 +251,10 @@ async function readFileContext(file, index) {
         const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
         const excerpt = text.replace(/\s+\n/g, '\n').trim().slice(0, perFileLimit);
         return {
+            kind: 'text',
             name: file.name,
+            type: file.type || 'text',
+            size: file.size,
             readable: true,
             excerpt,
             totalChars: text.length,
@@ -205,7 +262,10 @@ async function readFileContext(file, index) {
         };
     } catch {
         return {
+            kind: 'text',
             name: file.name,
+            type: file.type || 'text',
+            size: file.size,
             readable: false,
             note: 'Could not read local text.',
         };
@@ -215,17 +275,35 @@ async function readFileContext(file, index) {
 function fileReadinessLabel(contexts = []) {
     if (!contexts.length) return 'Metadata ready.';
     const readable = contexts.filter((item) => item.readable && item.excerpt);
+    const images = contexts.filter((item) => item.kind === 'image');
+    const pdfs = contexts.filter((item) => item.kind === 'pdf');
+    if (readable.length && images.length) {
+        return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
+    }
     if (readable.length) return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} ready locally.`;
+    if (images.length) return `${images.length} image preview${images.length > 1 ? 's' : ''} ready locally. Pixels stay here.`;
+    if (pdfs.length) return `${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''} ready by name and size.`;
     return 'Metadata only. Contents stay local.';
+}
+
+function fileReflectLabel(contexts = []) {
+    if (contexts.some((item) => item.readable && item.excerpt)) return 'Reflect with text';
+    if (contexts.some((item) => item.kind === 'image')) return 'Reflect on image';
+    return 'Reflect on file';
 }
 
 function makeFileIntent(files, contexts = []) {
     const summary = summarizeFiles(files);
     const readable = contexts.filter((item) => item.readable && item.excerpt);
-    const metadataOnly = contexts.filter((item) => !item.readable);
+    const images = contexts.filter((item) => item.kind === 'image');
+    const metadataOnly = contexts.filter((item) => !item.readable && item.kind !== 'image');
     const excerpts = readable.map((item) => (
         `--- ${item.name} local excerpt (${item.includedChars}/${item.totalChars} chars, approved for this turn only)\n${item.excerpt}`
     )).join('\n\n');
+    const imageNotes = images.map((item) => {
+        const dimensions = item.width && item.height ? `${item.width} x ${item.height}` : 'dimensions unavailable';
+        return `${item.name}: image preview opened locally; ${dimensions}; raw pixels/base64 were not sent.`;
+    }).join(' ');
     const metadataNotes = metadataOnly.map((item) => `${item.name}: ${item.note}`).join(' ');
 
     return [
@@ -233,9 +311,53 @@ function makeFileIntent(files, contexts = []) {
         readable.length
             ? `The user clicked Reflect with text, approving these local text excerpts for this turn only:\n${excerpts}`
             : 'No file contents are included. Use metadata only and do not assume the contents.',
+        imageNotes ? `Local image notes: ${imageNotes}` : '',
         metadataNotes ? `Metadata-only notes: ${metadataNotes}` : '',
         'Help me decide what to inspect, what to extract, what to leave private, and the next action to take.',
     ].filter(Boolean).join('\n\n');
+}
+
+function summarizeVisibleAsk(intent, source, files = []) {
+    if (source === 'file_drop') {
+        return files.length
+            ? `You added ${files.length} file${files.length > 1 ? 's' : ''}: ${summarizeFiles(files)}`
+            : 'You added local file context.';
+    }
+
+    return intent.length > 220 ? `${intent.slice(0, 220).trim()}...` : intent;
+}
+
+function FilePreviewStrip({ contexts }) {
+    const visible = contexts.filter((item) => item.kind === 'image' || item.note || item.excerpt).slice(0, 3);
+    if (!visible.length) return null;
+
+    return (
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            {visible.map((item) => (
+                <div key={`${item.name}-${item.previewUrl || item.note || item.excerpt?.length}`} className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-2">
+                    {item.previewUrl ? (
+                        <img
+                            src={item.previewUrl}
+                            alt={`${item.name} local preview`}
+                            className="mb-2 aspect-[4/3] w-full rounded-xl border border-white/10 object-cover"
+                        />
+                    ) : (
+                        <div className="mb-2 grid aspect-[4/3] w-full place-items-center rounded-xl border border-white/10 bg-white/[0.035] text-zinc-500">
+                            <FileText size={18} />
+                        </div>
+                    )}
+                    <div className="truncate text-xs font-semibold text-zinc-200">{item.name}</div>
+                    <div className="mt-0.5 truncate text-[11px] leading-4 text-zinc-500">
+                        {item.width && item.height
+                            ? `${item.width} x ${item.height} · local preview`
+                            : item.readable && item.excerpt
+                                ? `${item.includedChars}/${item.totalChars} chars ready`
+                                : item.note}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 }
 
 function makeSendableDraft(mirror = {}, options = {}) {
@@ -458,6 +580,8 @@ export default function HomePage() {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
     }, [navigate]);
 
+    useEffect(() => () => revokeFilePreviews(fileContexts), [fileContexts]);
+
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
@@ -535,6 +659,7 @@ export default function HomePage() {
         const nextFiles = Array.from(fileList || []).slice(0, 3);
         if (!nextFiles.length) return;
 
+        revokeFilePreviews(fileContexts);
         setFiles(nextFiles);
         setFileContexts([]);
         setFileReading(true);
@@ -690,6 +815,7 @@ export default function HomePage() {
                                         <button
                                             type="button"
                                             onClick={() => {
+                                                revokeFilePreviews(fileContexts);
                                                 setFiles([]);
                                                 setFileContexts([]);
                                                 setFileReading(false);
@@ -705,10 +831,11 @@ export default function HomePage() {
                                         disabled={busy || !files.length || fileReading}
                                         className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-40"
                                     >
-                                        {fileReading ? 'Reading...' : fileContexts.some((item) => item.readable && item.excerpt) ? 'Reflect with text' : 'Reflect on file'}
+                                        {fileReading ? 'Reading...' : fileReflectLabel(fileContexts)}
                                     </button>
                                 </div>
                             </div>
+                            <FilePreviewStrip contexts={fileContexts} />
                         </div>
 
                         <form onSubmit={submit} className="flex items-end gap-2">
@@ -759,7 +886,7 @@ export default function HomePage() {
                 <section className="flex min-h-[36rem] flex-col gap-3 lg:min-h-0">
                     {lastIntent ? (
                         <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-zinc-400">
-                            You asked: <span className="text-zinc-200">{lastIntent}</span>
+                            You asked: <span className="text-zinc-200">{summarizeVisibleAsk(lastIntent, lastSource, files)}</span>
                         </div>
                     ) : null}
                     <MirrorResult
