@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, BookmarkPlus, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
+import MirrorFeedback from '../components/MirrorFeedback';
 import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -192,7 +193,7 @@ function phoneBlocked(error) {
     };
 }
 
-function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSendable = true }) {
+function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSendable = true, turn = 1 }) {
     return (
         <div className="space-y-3">
             <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-[0.98rem] leading-7 text-zinc-100">
@@ -222,24 +223,27 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
                 </div>
             </details>
             {showSendable ? (
-                <div className="flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        onClick={() => onSendable?.(mirror)}
-                        className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100"
-                    >
-                        <FileText size={13} />
-                        Make this sendable
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => onRemember?.(mirror)}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300"
-                    >
-                        <BookmarkPlus size={13} />
-                        {remembered ? 'Default saved' : 'Use as default'}
-                    </button>
-                </div>
+                <>
+                    <MirrorFeedback page="device" surface="phone_chat" turn={turn} className="max-w-none rounded-[1.35rem]" />
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            onClick={() => onSendable?.(mirror)}
+                            className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100"
+                        >
+                            <FileText size={13} />
+                            Make this sendable
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onRemember?.(mirror)}
+                            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300"
+                        >
+                            <BookmarkPlus size={13} />
+                            {remembered ? 'Default saved' : 'Use as default'}
+                        </button>
+                    </div>
+                </>
             ) : null}
         </div>
     );
@@ -463,6 +467,7 @@ export default function DeviceExperience() {
                                             onRemember={rememberPhoneDefault}
                                             remembered={rememberedKey === `${turn.mirror?.question || ''}|${turn.mirror?.move || ''}`}
                                             showSendable={index > 0}
+                                            turn={index}
                                         />
                                     </div>
                                 )}

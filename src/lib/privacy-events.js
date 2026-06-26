@@ -7,10 +7,13 @@ const MAX_BUFFERED_EVENTS = 30;
 const ALLOWED_EVENTS = new Set([
     'home_view',
     'mirror_view',
+    'reflection_started',
+    'device_phone_chat_view',
     'starter_clicked',
     'followup_clicked',
     'mirror_submit',
     'mirror_result',
+    'mirror_feedback',
     'gateway_error',
     'ecosystem_result',
     'cta_clicked',

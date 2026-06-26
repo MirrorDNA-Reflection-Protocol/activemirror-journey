@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowUp, BookmarkPlus, Check, ChevronDown, ShieldCheck } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
+import MirrorFeedback from '../components/MirrorFeedback';
 import { getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -93,7 +94,7 @@ function memoryKey(mirror = {}) {
     return `${mirror.question || ''}::${mirror.move || ''}`;
 }
 
-function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved }) {
+function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, turn }) {
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
 
@@ -117,6 +118,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved }) 
             </div>
             <Visual visual={mirror.visual} />
             <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+            <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} />
             <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -357,6 +359,7 @@ export default function ReflectChat() {
                                     onPrompt={(nextIntent) => useStarter(nextIntent, 'surface')}
                                     onSaveDefault={rememberMirror}
                                     saved={Boolean(savedDefaults[memoryKey(turn.data?.mirror)])}
+                                    turn={index}
                                 />
                             </div>
                         );

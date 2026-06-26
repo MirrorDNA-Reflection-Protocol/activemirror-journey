@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
+import MirrorFeedback from '../components/MirrorFeedback';
 import { getActiveMirrorDefault, getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -217,6 +218,7 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                         <>
                             <Visual visual={mirror.visual} />
                             <ReflectiveSurface result={result || { mirror }} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+                            <MirrorFeedback page="home" surface="homepage_result" turn={1} />
                         </>
                     )}
                     <details className="group rounded-3xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400">

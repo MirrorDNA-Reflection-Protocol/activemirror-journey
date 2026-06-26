@@ -10,6 +10,7 @@
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
         "preview": "vite preview",
         "guard:redaction": "bash scripts/redaction_guard.sh",
+        "eval:mirror": "node scripts/mirror-eval.mjs",
         "ops:snapshot": "bash scripts/control_plane_snapshot.sh",
         "ops:diff": "bash scripts/control_plane_diff.sh",
         "smoke:prod": "bash scripts/smoke_prod.sh",
