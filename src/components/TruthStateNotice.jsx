@@ -20,7 +20,8 @@ const VERDICT_COPY = {
         link: 'text-amber-100 hover:border-amber-200/35 hover:bg-amber-300/[0.10]',
     },
     not_enough: {
-        title: 'Not enough evidence',
+        title: 'Still needs proof',
+        helper: 'Found links, but not enough reliable evidence to trust the claim yet.',
         shell: 'border-zinc-300/15 bg-white/[0.055] text-zinc-100',
         icon: 'text-zinc-300',
         muted: 'text-zinc-400',
@@ -79,6 +80,9 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                     <SearchCheck size={16} className={verdict.icon} />
                     {verdict.title}
                 </div>
+                {verdict.helper ? (
+                    <div className={`mb-2 ${verdict.muted}`}>{verdict.helper}</div>
+                ) : null}
                 <div>{result.research?.answer}</div>
                 {result.research?.changes ? (
                     <div className={`mt-2 ${verdict.muted}`}>{result.research.changes}</div>
