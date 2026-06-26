@@ -11,6 +11,9 @@ experience.
   follow-up questions, and a path into MirrorSeed.
 - Do not expose provider or model names in consumer-facing UI.
 - Do not log prompt text, file names, private notes, receipts, or user content.
+- Frontend event tracking is session-local by default. Remote event sending must
+  stay off unless `VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true` is set and the
+  gateway `/v1/events` endpoint is deployed.
 
 ## Deployment Flow
 

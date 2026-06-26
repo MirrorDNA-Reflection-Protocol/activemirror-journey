@@ -1,4 +1,5 @@
 const EVENT_ENDPOINT = 'https://gateway.activemirror.ai/v1/events';
+const REMOTE_EVENTS_ENABLED = import.meta.env?.VITE_ACTIVE_MIRROR_REMOTE_EVENTS === 'true';
 const SESSION_KEY = 'active_mirror_event_session_v1';
 const BUFFER_KEY = 'active_mirror_event_buffer_v1';
 const MAX_BUFFERED_EVENTS = 30;
@@ -101,6 +102,8 @@ export function trackEvent(eventName, details = {}) {
     if (!payload) return;
 
     rememberLocally(payload);
+
+    if (!REMOTE_EVENTS_ENABLED) return;
 
     const body = JSON.stringify(payload);
     try {
