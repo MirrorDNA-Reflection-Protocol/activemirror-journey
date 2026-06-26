@@ -11,6 +11,7 @@ const pdfWorkerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url)
 let pdfJsModulePromise;
 let mammothModulePromise;
 let spreadsheetModulePromise;
+let zipModulePromise;
 
 const STARTERS = [
     {
@@ -93,9 +94,11 @@ const TEXT_FILE_PATTERN = /\.(txt|md|markdown|csv|json|log)$/i;
 const IMAGE_FILE_PATTERN = /\.(avif|gif|jpe?g|png|webp)$/i;
 const DOCUMENT_FILE_PATTERN = /\.(docx)$/i;
 const SPREADSHEET_FILE_PATTERN = /\.(xlsx)$/i;
+const PRESENTATION_FILE_PATTERN = /\.(pptx)$/i;
 const FILE_EXCERPT_LIMIT = 5200;
 const PDF_PAGE_LIMIT = 5;
 const SPREADSHEET_ROW_LIMIT = 30;
+const PRESENTATION_SLIDE_LIMIT = 15;
 
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
@@ -126,6 +129,14 @@ async function loadSpreadsheetParser() {
     }
 
     return spreadsheetModulePromise;
+}
+
+async function loadZipParser() {
+    if (!zipModulePromise) {
+        zipModulePromise = import('jszip').then((module) => module.default || module);
+    }
+
+    return zipModulePromise;
 }
 
 function makeEcosystemResult(intent) {
@@ -235,12 +246,41 @@ function isSpreadsheetFile(file) {
         || SPREADSHEET_FILE_PATTERN.test(file.name);
 }
 
+function isPresentationFile(file) {
+    return file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        || PRESENTATION_FILE_PATTERN.test(file.name);
+}
+
 function fileKindLabel(kind) {
     if (kind === 'pdf') return 'PDF';
     if (kind === 'document') return 'Word document';
     if (kind === 'spreadsheet') return 'spreadsheet';
+    if (kind === 'presentation') return 'PowerPoint deck';
     if (kind === 'text') return 'text';
     return 'file';
+}
+
+function cleanExtractedText(text = '') {
+    return text.replace(/\s+\n/g, '\n').replace(/[ \t]+/g, ' ').trim();
+}
+
+function sortOfficePaths(paths) {
+    return [...paths].sort((left, right) => {
+        const leftIndex = Number(left.match(/(\d+)(?=\.xml$)/)?.[1] || 0);
+        const rightIndex = Number(right.match(/(\d+)(?=\.xml$)/)?.[1] || 0);
+        return leftIndex - rightIndex || left.localeCompare(right);
+    });
+}
+
+function extractXmlText(xmlText) {
+    const document = new DOMParser().parseFromString(xmlText, 'application/xml');
+    if (document.querySelector('parsererror')) return '';
+
+    return Array.from(document.getElementsByTagNameNS('*', 't'))
+        .map((node) => node.textContent || '')
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 function revokeFilePreviews(contexts = []) {
@@ -347,7 +387,7 @@ async function readDocumentContext(file, index) {
         const mammoth = await loadMammoth();
         const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
         const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
-        const text = (result.value || '').replace(/\s+\n/g, '\n').replace(/[ \t]+/g, ' ').trim();
+        const text = cleanExtractedText(result.value || '');
         const excerpt = text.slice(0, perFileLimit).trim();
         const warningCount = result.messages?.length || 0;
 
@@ -423,6 +463,56 @@ async function readSpreadsheetContext(file, index) {
     }
 }
 
+async function readPresentationContext(file, index) {
+    try {
+        const JSZip = await loadZipParser();
+        const archive = await JSZip.loadAsync(await file.arrayBuffer());
+        const slidePaths = sortOfficePaths(Object.keys(archive.files).filter((path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path)));
+        const includedSlides = slidePaths.slice(0, PRESENTATION_SLIDE_LIMIT);
+        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
+        const chunks = [];
+
+        for (const slidePath of includedSlides) {
+            const slideXml = await archive.file(slidePath)?.async('text');
+            const slideText = extractXmlText(slideXml || '');
+            if (slideText) {
+                const slideNumber = Number(slidePath.match(/slide(\d+)\.xml$/i)?.[1] || chunks.length + 1);
+                chunks.push(`Slide ${slideNumber}: ${slideText}`);
+            }
+
+            if (chunks.join('\n').length >= perFileLimit) break;
+        }
+
+        const text = cleanExtractedText(chunks.join('\n'));
+        const excerpt = text.slice(0, perFileLimit).trim();
+
+        return {
+            kind: 'presentation',
+            name: file.name,
+            type: file.type || 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            size: file.size,
+            readable: Boolean(excerpt),
+            excerpt,
+            totalSlides: slidePaths.length,
+            includedSlides: Math.min(slidePaths.length, PRESENTATION_SLIDE_LIMIT),
+            totalChars: text.length,
+            includedChars: excerpt.length,
+            note: excerpt
+                ? `Deck text extracted locally from ${Math.min(slidePaths.length, PRESENTATION_SLIDE_LIMIT)}/${slidePaths.length} slide${slidePaths.length === 1 ? '' : 's'}.`
+                : 'Deck opened locally, but no readable slide text was found.',
+        };
+    } catch {
+        return {
+            kind: 'presentation',
+            name: file.name,
+            type: file.type || 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            size: file.size,
+            readable: false,
+            note: 'Could not extract deck text in this browser pass.',
+        };
+    }
+}
+
 async function readFileContext(file, index) {
     if (isImageFile(file)) {
         return readImageContext(file);
@@ -438,6 +528,10 @@ async function readFileContext(file, index) {
 
     if (isSpreadsheetFile(file)) {
         return readSpreadsheetContext(file, index);
+    }
+
+    if (isPresentationFile(file)) {
+        return readPresentationContext(file, index);
     }
 
     if (!isReadableTextFile(file)) {
@@ -484,7 +578,8 @@ function fileReadinessLabel(contexts = []) {
     const pdfs = contexts.filter((item) => item.kind === 'pdf');
     const documents = contexts.filter((item) => item.kind === 'document');
     const spreadsheets = contexts.filter((item) => item.kind === 'spreadsheet');
-    const officeFiles = [...documents, ...spreadsheets];
+    const presentations = contexts.filter((item) => item.kind === 'presentation');
+    const officeFiles = [...documents, ...spreadsheets, ...presentations];
     if (readable.length && images.length) {
         return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
     }
@@ -492,6 +587,7 @@ function fileReadinessLabel(contexts = []) {
         const labels = [
             documents.length ? `${documents.length} Word doc${documents.length > 1 ? 's' : ''}` : '',
             spreadsheets.length ? `${spreadsheets.length} sheet${spreadsheets.length > 1 ? 's' : ''}` : '',
+            presentations.length ? `${presentations.length} deck${presentations.length > 1 ? 's' : ''}` : '',
         ].filter(Boolean).join(' and ');
         return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${labels}.`;
     }
@@ -568,6 +664,8 @@ function FilePreviewStrip({ contexts }) {
                             ? `${item.width} x ${item.height} · local preview`
                             : item.kind === 'spreadsheet' && item.readable
                                 ? `${item.includedRows}/${item.totalRows} rows ready`
+                                : item.kind === 'presentation' && item.readable
+                                    ? `${item.includedSlides}/${item.totalSlides} slides ready`
                                 : item.readable && item.excerpt
                                 ? `${item.includedChars}/${item.totalChars} chars ready`
                                 : item.note}
@@ -1019,7 +1117,7 @@ export default function HomePage() {
                                             {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop a file here'}
                                         </span>
                                         <span className="block truncate text-xs leading-5 text-zinc-500">
-                                            {files.length ? summarizeFiles(files) : 'PDF, Word doc, sheet, screenshot, or notes. Contents stay local.'}
+                                            {files.length ? summarizeFiles(files) : 'PDF, Word doc, sheet, deck, screenshot, or notes. Contents stay local.'}
                                         </span>
                                         {files.length ? (
                                             <span className="block text-xs leading-5 text-zinc-500">
