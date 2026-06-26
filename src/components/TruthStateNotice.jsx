@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ExternalLink, Loader2, SearchCheck } from 'lucide-react';
+import { ChevronDown, ExternalLink, Loader2, SearchCheck } from 'lucide-react';
 import { getPrivacySessionId } from '../lib/privacy-events';
 
 const SOURCE_CHECK_ENDPOINT = 'https://gateway.activemirror.ai/v1/mirror/source-check';
@@ -86,21 +86,32 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 {sources.length ? (
                     <div className="mt-3 grid gap-2">
                         {sources.map((source) => (
-                            <a
+                            <details
                                 key={source.url}
-                                href={source.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className={`flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold transition ${verdict.link}`}
+                                className={`group rounded-xl border border-white/10 bg-black/20 text-xs font-semibold transition ${verdict.link}`}
                             >
-                                {source.quality_label ? (
-                                    <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-current opacity-80">
-                                        {source.quality_label}
-                                    </span>
-                                ) : null}
-                                <span className="min-w-0 flex-1 truncate">{source.title || source.url}</span>
-                                <ExternalLink size={12} className="shrink-0" />
-                            </a>
+                                <summary className="flex min-w-0 cursor-pointer list-none items-center gap-2 px-3 py-2">
+                                    {source.quality_label ? (
+                                        <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-current opacity-80">
+                                            {source.quality_label}
+                                        </span>
+                                    ) : null}
+                                    <span className="min-w-0 flex-1 truncate">{source.title || source.url}</span>
+                                    <ChevronDown size={13} className="shrink-0 opacity-70 transition group-open:rotate-180" />
+                                </summary>
+                                <div className="border-t border-white/10 px-3 py-3 text-xs font-normal leading-5 text-current/75">
+                                    <div>{source.quality_reason || 'This source was labeled from its domain and title.'}</div>
+                                    <a
+                                        href={source.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="mt-2 inline-flex items-center gap-1.5 font-semibold text-current underline decoration-current/30 underline-offset-4 transition hover:decoration-current"
+                                    >
+                                        Open source
+                                        <ExternalLink size={12} />
+                                    </a>
+                                </div>
+                            </details>
                         ))}
                     </div>
                 ) : null}
