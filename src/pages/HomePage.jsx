@@ -95,6 +95,20 @@ const IMAGE_FILE_PATTERN = /\.(avif|gif|jpe?g|png|webp)$/i;
 const DOCUMENT_FILE_PATTERN = /\.(docx)$/i;
 const SPREADSHEET_FILE_PATTERN = /\.(xlsx)$/i;
 const PRESENTATION_FILE_PATTERN = /\.(pptx)$/i;
+const FILE_LIMIT = 3;
+const FILE_ACCEPT_TYPES = [
+    '.pdf',
+    '.docx',
+    '.xlsx',
+    '.pptx',
+    '.txt',
+    '.md',
+    '.markdown',
+    '.csv',
+    '.json',
+    '.log',
+    'image/*',
+].join(',');
 const FILE_EXCERPT_LIMIT = 5200;
 const PDF_PAGE_LIMIT = 5;
 const SPREADSHEET_ROW_LIMIT = 30;
@@ -271,6 +285,11 @@ function fileKindLabel(kind) {
     if (kind === 'presentation') return 'PowerPoint deck';
     if (kind === 'text') return 'text';
     return 'file';
+}
+
+function countLabel(count, singular, plural = `${singular}s`) {
+    if (!count) return '';
+    return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function cleanExtractedText(text = '') {
@@ -592,20 +611,21 @@ function fileReadinessLabel(contexts = []) {
     const documents = contexts.filter((item) => item.kind === 'document');
     const spreadsheets = contexts.filter((item) => item.kind === 'spreadsheet');
     const presentations = contexts.filter((item) => item.kind === 'presentation');
-    const officeFiles = [...documents, ...spreadsheets, ...presentations];
-    const labels = [
-        documents.length ? `${documents.length} Word doc${documents.length > 1 ? 's' : ''}` : '',
-        spreadsheets.length ? `${spreadsheets.length} sheet${spreadsheets.length > 1 ? 's' : ''}` : '',
-        presentations.length ? `${presentations.length} deck${presentations.length > 1 ? 's' : ''}` : '',
+    const texts = contexts.filter((item) => item.kind === 'text');
+    const namedSources = [
+        countLabel(pdfs.length, 'PDF'),
+        countLabel(documents.length, 'Word doc'),
+        countLabel(spreadsheets.length, 'sheet'),
+        countLabel(presentations.length, 'deck'),
+        countLabel(texts.length, 'text file'),
     ].filter(Boolean).join(' and ');
     if (readable.length && images.length) {
-        const source = labels ? ` from ${labels}` : '';
+        const source = namedSources ? ` from ${namedSources}` : '';
         return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''}${source} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
     }
-    if (readable.length && officeFiles.length) {
-        return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${labels}.`;
+    if (readable.length && namedSources) {
+        return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready from ${namedSources}.`;
     }
-    if (readable.length && pdfs.length) return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''}.`;
     if (readable.length) return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} ready locally.`;
     if (images.length) return `${images.length} image preview${images.length > 1 ? 's' : ''} ready locally. Pixels stay here.`;
     if (pdfs.length) return `${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''} opened locally. No selectable text found.`;
@@ -913,6 +933,7 @@ export default function HomePage() {
     const [files, setFiles] = useState([]);
     const [fileContexts, setFileContexts] = useState([]);
     const [fileReading, setFileReading] = useState(false);
+    const [fileNotice, setFileNotice] = useState('');
     const [dragging, setDragging] = useState(false);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [defaultStatus, setDefaultStatus] = useState('');
@@ -1003,18 +1024,22 @@ export default function HomePage() {
     }
 
     async function addFiles(fileList) {
-        const nextFiles = Array.from(fileList || []).slice(0, 3);
+        const incomingFiles = Array.from(fileList || []);
+        const nextFiles = incomingFiles.slice(0, FILE_LIMIT);
         if (!nextFiles.length) return;
 
         revokeFilePreviews(fileContexts);
         setFiles(nextFiles);
         setFileContexts([]);
+        setFileNotice(incomingFiles.length > FILE_LIMIT ? `Using first ${FILE_LIMIT} files for this turn.` : '');
         setFileReading(true);
         trackEvent('file_added', {
             page: 'home',
             count: nextFiles.length,
+            incomingCount: incomingFiles.length,
+            usedCount: nextFiles.length,
             totalBytes: nextFiles.reduce((total, file) => total + file.size, 0),
-            types: nextFiles.map((file) => file.type || 'unknown').slice(0, 3).join(','),
+            types: nextFiles.map((file) => file.type || 'unknown').slice(0, FILE_LIMIT).join(','),
         });
         try {
             const contexts = await Promise.all(nextFiles.map((file, index) => readFileContext(file, index)));
@@ -1137,8 +1162,12 @@ export default function HomePage() {
                                     <input
                                         type="file"
                                         multiple
+                                        accept={FILE_ACCEPT_TYPES}
                                         className="sr-only"
-                                        onChange={(event) => addFiles(event.target.files)}
+                                        onChange={(event) => {
+                                            addFiles(event.target.files);
+                                            event.target.value = '';
+                                        }}
                                     />
                                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-cyan-100">
                                         <UploadCloud size={18} />
@@ -1148,8 +1177,13 @@ export default function HomePage() {
                                             {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop a file here'}
                                         </span>
                                         <span className="block truncate text-xs leading-5 text-zinc-500">
-                                            {files.length ? summarizeFiles(files) : 'PDF, Word doc, sheet, deck, screenshot, or notes. Contents stay local.'}
+                                            {files.length ? summarizeFiles(files) : 'PDF, Word doc, sheet, deck, image, or notes. Up to 3 files.'}
                                         </span>
+                                        {fileNotice ? (
+                                            <span className="block text-xs leading-5 text-amber-200/80">
+                                                {fileNotice}
+                                            </span>
+                                        ) : null}
                                         {files.length ? (
                                             <span className="block text-xs leading-5 text-zinc-500">
                                                 {fileReading ? 'Reading local text...' : fileReadinessLabel(fileContexts)}
@@ -1171,6 +1205,7 @@ export default function HomePage() {
                                                 setFiles([]);
                                                 setFileContexts([]);
                                                 setFileReading(false);
+                                                setFileNotice('');
                                             }}
                                             className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:text-white"
                                         >
