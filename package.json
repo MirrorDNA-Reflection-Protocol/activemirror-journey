@@ -7,6 +7,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
+        "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
         "preview": "vite preview",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "ops:snapshot": "bash scripts/control_plane_snapshot.sh",

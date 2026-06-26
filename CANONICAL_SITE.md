@@ -18,12 +18,14 @@ experience.
 ## Deployment Flow
 
 1. Edit and test here: `/Users/mirror-pro/repos/activemirror-journey`.
-2. Run `npm run build`.
-3. Copy the generated `dist/` bundle into
+2. Run `npm run build` for local/static verification.
+3. Run `npm run build:deploy` for the live production bundle; this enables
+   remote privacy events after the gateway `/v1/events` endpoint is deployed.
+4. Copy the generated `dist/` bundle into
    `/Users/mirror-pro/repos/active-mirror-site/public/app/`.
-4. In `/Users/mirror-pro/repos/active-mirror-site`, run
+5. In `/Users/mirror-pro/repos/active-mirror-site`, run
    `npm run build && npm run copy:audit`.
-5. Deploy/push from `/Users/mirror-pro/repos/active-mirror-site`.
+6. Deploy/push from `/Users/mirror-pro/repos/active-mirror-site`.
 
 ## Gateway Contract
 
