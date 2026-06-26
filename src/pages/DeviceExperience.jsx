@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
-import { getArchetype } from '../lib/mirror-state';
+import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, BookmarkPlus, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
+import DraftActions from '../components/DraftActions';
+import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -191,7 +192,7 @@ function phoneBlocked(error) {
     };
 }
 
-function PhoneMirrorTurn({ mirror, onSendable, showSendable = true }) {
+function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSendable = true }) {
     return (
         <div className="space-y-3">
             <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-[0.98rem] leading-7 text-zinc-100">
@@ -221,14 +222,24 @@ function PhoneMirrorTurn({ mirror, onSendable, showSendable = true }) {
                 </div>
             </details>
             {showSendable ? (
-                <button
-                    type="button"
-                    onClick={() => onSendable?.(mirror)}
-                    className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100"
-                >
-                    <FileText size={13} />
-                    Make this sendable
-                </button>
+                <div className="flex flex-wrap gap-2">
+                    <button
+                        type="button"
+                        onClick={() => onSendable?.(mirror)}
+                        className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100"
+                    >
+                        <FileText size={13} />
+                        Make this sendable
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onRemember?.(mirror)}
+                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300"
+                    >
+                        <BookmarkPlus size={13} />
+                        {remembered ? 'Default saved' : 'Use as default'}
+                    </button>
+                </div>
             ) : null}
         </div>
     );
@@ -242,6 +253,7 @@ function PhoneArtifactTurn({ artifact }) {
                 {artifact.title}
             </div>
             <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{artifact.body}</pre>
+            <DraftActions title={artifact.title} text={artifact.body} surface="device" />
             <div className="space-y-1">
                 {artifact.checks.map((item) => (
                     <div key={item} className="text-xs leading-5 text-zinc-400">{item}</div>
@@ -253,6 +265,8 @@ function PhoneArtifactTurn({ artifact }) {
 
 export default function DeviceExperience() {
     const [seed] = useState(() => getArchetype());
+    const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
+    const [rememberedKey, setRememberedKey] = useState('');
     const [device, setDevice] = useState(() => readDevice());
     const [selected, setSelected] = useState(() => readDevice().profile);
     const [phoneTurns, setPhoneTurns] = useState(() => loadPhoneTurns());
@@ -315,9 +329,12 @@ export default function DeviceExperience() {
 
         try {
             phoneTurnRef.current += 1;
-            const seededIntent = seed
-                ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}. User intent: ${cleanIntent}`
-                : cleanIntent;
+            const context = [
+                seed ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}.` : '',
+                activeDefault ? `User-approved default: real question "${activeDefault.question || 'not set'}"; preferred next move "${activeDefault.move || 'not set'}".` : '',
+                `User intent: ${cleanIntent}`,
+            ].filter(Boolean).join('\n');
+            const seededIntent = seed || activeDefault ? context : cleanIntent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
                 headers: {
@@ -376,6 +393,18 @@ export default function DeviceExperience() {
         trackEvent('sendable_created', { page: 'device', surface: 'phone_chat', source: 'local_draft' });
     }
 
+    function rememberPhoneDefault(mirror) {
+        const next = saveMirrorDefault({
+            question: mirror?.question,
+            move: mirror?.move,
+            source: 'phone',
+        });
+        setActiveDefault(next);
+        setRememberedKey(`${mirror?.question || ''}|${mirror?.move || ''}`);
+        trackEvent('mirror_default_saved', { page: 'device', surface: 'phone_chat', source: 'reflection' });
+        window.setTimeout(() => setRememberedKey(''), 2200);
+    }
+
     function clearPhoneThread() {
         setPhoneTurns(INITIAL_PHONE_TURNS);
         try {
@@ -428,7 +457,13 @@ export default function DeviceExperience() {
                                     </div>
                                 ) : (
                                     <div className="w-full max-w-md">
-                                        <PhoneMirrorTurn mirror={turn.mirror} onSendable={makePhoneSendable} showSendable={index > 0} />
+                                        <PhoneMirrorTurn
+                                            mirror={turn.mirror}
+                                            onSendable={makePhoneSendable}
+                                            onRemember={rememberPhoneDefault}
+                                            remembered={rememberedKey === `${turn.mirror?.question || ''}|${turn.mirror?.move || ''}`}
+                                            showSendable={index > 0}
+                                        />
                                     </div>
                                 )}
                             </div>

@@ -14,6 +14,13 @@ const ALLOWED_EVENTS = new Set([
     'gateway_error',
     'ecosystem_result',
     'cta_clicked',
+    'file_added',
+    'sendable_created',
+    'draft_copied',
+    'draft_downloaded',
+    'draft_shared',
+    'mirror_default_saved',
+    'phone_thread_cleared',
 ]);
 
 const ALLOWED_DETAIL_KEYS = new Set([
@@ -26,6 +33,10 @@ const ALLOWED_DETAIL_KEYS = new Set([
     'visualKind',
     'turn',
     'target',
+    'count',
+    'totalBytes',
+    'types',
+    'label',
 ]);
 
 function safeStorage(kind) {

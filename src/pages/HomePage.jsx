@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowUp, Brain, ChevronDown, FileText, Lock, Network, Search, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, Search, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
-import { getArchetype } from '../lib/mirror-state';
+import DraftActions from '../components/DraftActions';
+import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -237,7 +238,27 @@ function makeFileIntent(files, contexts = []) {
     ].filter(Boolean).join('\n\n');
 }
 
-function makeSendableDraft(mirror = {}) {
+function makeSendableDraft(mirror = {}, options = {}) {
+    if (options.fileContext) {
+        return {
+            title: 'Sendable draft',
+            body: [
+                'Quick update:',
+                '',
+                'I reviewed the material and narrowed it to one safe next move.',
+                '',
+                'Next move: extract only the minimum useful point, remove private details, and send the clean version.',
+                '',
+                'Private context removed. Add only what the recipient needs.',
+            ].join('\n'),
+            checklist: [
+                'Remove anything private before sending.',
+                'Keep the ask to one sentence.',
+                'Send it, then watch what changes.',
+            ],
+        };
+    }
+
     const question = mirror.question || 'What is the useful next move?';
     const move = mirror.move || 'Take the smallest concrete next step.';
 
@@ -401,6 +422,7 @@ function SendableDraft({ draft }) {
                 {draft.title}
             </div>
             <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{draft.body}</pre>
+            <DraftActions title={draft.title} text={draft.body} surface="home" />
             <div className="mt-3 grid gap-2">
                 {draft.checklist.map((item) => (
                     <div key={item} className="text-xs leading-5 text-zinc-400">{item}</div>
@@ -413,15 +435,18 @@ function SendableDraft({ draft }) {
 export default function HomePage() {
     const navigate = useNavigate();
     const [seed] = useState(() => getArchetype());
+    const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
+    const [lastSource, setLastSource] = useState('');
     const [files, setFiles] = useState([]);
     const [fileContexts, setFileContexts] = useState([]);
     const [fileReading, setFileReading] = useState(false);
     const [dragging, setDragging] = useState(false);
     const [sendableDraft, setSendableDraft] = useState(null);
+    const [defaultStatus, setDefaultStatus] = useState('');
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
     useEffect(() => {
@@ -439,7 +464,9 @@ export default function HomePage() {
 
         setText('');
         setLastIntent(cleanIntent);
+        setLastSource(source);
         setSendableDraft(null);
+        setDefaultStatus('');
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
         if (isEcosystemAsk(cleanIntent)) {
@@ -450,9 +477,12 @@ export default function HomePage() {
 
         setBusy(true);
         try {
-            const seededIntent = seed
-                ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}. User intent: ${cleanIntent}`
-                : cleanIntent;
+            const context = [
+                seed ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}.` : '',
+                activeDefault ? `User-approved default: real question "${activeDefault.question || 'not set'}"; preferred next move "${activeDefault.move || 'not set'}".` : '',
+                `User intent: ${cleanIntent}`,
+            ].filter(Boolean).join('\n');
+            const seededIntent = seed || activeDefault ? context : cleanIntent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
                 headers: {
@@ -525,6 +555,19 @@ export default function HomePage() {
     function reflectOnFiles() {
         if (!files.length || busy) return;
         reflect(makeFileIntent(files, fileContexts), 'file_drop');
+    }
+
+    function rememberCurrentDefault() {
+        if (!result?.mirror) return;
+        const next = saveMirrorDefault({
+            question: result.mirror.question,
+            move: result.mirror.move,
+            source: 'homepage',
+        });
+        setActiveDefault(next);
+        setDefaultStatus('Default saved');
+        trackEvent('mirror_default_saved', { page: 'home', source: 'reflection' });
+        window.setTimeout(() => setDefaultStatus(''), 2200);
     }
 
     return (
@@ -703,6 +746,12 @@ export default function HomePage() {
                                     Local seed available.
                                 </span>
                             ) : null}
+                            {activeDefault ? (
+                                <span className="inline-flex items-center gap-1.5">
+                                    <BookmarkPlus size={13} />
+                                    Using your default.
+                                </span>
+                            ) : null}
                         </div>
                     </div>
                 </section>
@@ -728,7 +777,7 @@ export default function HomePage() {
                                 type="button"
                                 onClick={() => {
                                     trackEvent('sendable_created', { page: 'home', source: 'local_draft' });
-                                    setSendableDraft(makeSendableDraft(result.mirror));
+                                    setSendableDraft(makeSendableDraft(result.mirror, { fileContext: lastSource === 'file_drop' }));
                                 }}
                                 disabled={busy}
                                 className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-50"
@@ -756,9 +805,17 @@ export default function HomePage() {
                         <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3">
                             <div className="text-sm font-semibold text-white">Want it to fit you better?</div>
                             <div className="mt-1 text-xs leading-5 text-zinc-500">
-                                Build a local MirrorSeed, or keep using the full mirror.
+                                Save this as a browser-local default, build a MirrorSeed, or keep using the full mirror.
                             </div>
                             <div className="mt-3 flex flex-wrap gap-2">
+                                <button
+                                    type="button"
+                                    onClick={rememberCurrentDefault}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12]"
+                                >
+                                    <BookmarkPlus size={13} />
+                                    Use as default
+                                </button>
                                 <Link
                                     to="/start"
                                     onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'mirrorseed' })}
@@ -773,6 +830,11 @@ export default function HomePage() {
                                 >
                                     Open full mirror
                                 </Link>
+                                {defaultStatus ? (
+                                    <span className="inline-flex items-center rounded-full px-2 py-2 text-xs font-semibold text-cyan-100">
+                                        {defaultStatus}
+                                    </span>
+                                ) : null}
                             </div>
                         </div>
                     ) : null}

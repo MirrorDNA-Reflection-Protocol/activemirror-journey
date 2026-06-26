@@ -33,6 +33,10 @@ const DEFAULT_STATE = {
     intakeComplete: false,
     intakeDraft: null,     // Partial form state (auto-save)
 
+    // Explicitly approved working defaults
+    activeDefault: null,    // { question, move, source, savedAt }
+    mirrorDefaults: [],     // Recent approved defaults, newest first
+
     // Timestamps
     brainScanCompletedAt: null,
     intakeCompletedAt: null,
@@ -188,6 +192,46 @@ export function hasIntake() {
 export function getMirrorMode() {
     const bp = _read().blueprint;
     return bp?.modeLabel || bp?.mode || null;
+}
+
+function cleanDefaultText(value, limit = 260) {
+    return String(value || '').replace(/\s+/g, ' ').trim().slice(0, limit);
+}
+
+/** Get the current approved browser-local default, if any. */
+export function getActiveMirrorDefault() {
+    return _read().activeDefault || null;
+}
+
+/** Save one approved reflection pattern as a browser-local default. */
+export function saveMirrorDefault({ question, move, source = 'reflection' } = {}) {
+    const item = {
+        question: cleanDefaultText(question),
+        move: cleanDefaultText(move),
+        source: cleanDefaultText(source, 48),
+        savedAt: new Date().toISOString(),
+    };
+
+    if (!item.question && !item.move) return getActiveMirrorDefault();
+
+    const current = _read();
+    const existing = Array.isArray(current.mirrorDefaults) ? current.mirrorDefaults : [];
+    const nextDefaults = [
+        item,
+        ...existing.filter((defaultItem) => (
+            defaultItem?.question !== item.question || defaultItem?.move !== item.move
+        )),
+    ].slice(0, 5);
+
+    return setState({
+        activeDefault: item,
+        mirrorDefaults: nextDefaults,
+    }).activeDefault;
+}
+
+/** Clear the active default without deleting BrainScan or intake state. */
+export function clearMirrorDefault() {
+    return setState({ activeDefault: null }).activeDefault;
 }
 
 /** Clear all state (for testing/reset). */
