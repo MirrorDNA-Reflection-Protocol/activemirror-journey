@@ -91,9 +91,14 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                                 href={source.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className={`inline-flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold transition ${verdict.link}`}
+                                className={`flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold transition ${verdict.link}`}
                             >
-                                <span className="truncate">{source.title || source.url}</span>
+                                {source.quality_label ? (
+                                    <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-current opacity-80">
+                                        {source.quality_label}
+                                    </span>
+                                ) : null}
+                                <span className="min-w-0 flex-1 truncate">{source.title || source.url}</span>
                                 <ExternalLink size={12} className="shrink-0" />
                             </a>
                         ))}
