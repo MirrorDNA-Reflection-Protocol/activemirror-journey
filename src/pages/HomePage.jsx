@@ -5,6 +5,7 @@ import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
 import ReflectionCardActions from '../components/ReflectionCardActions';
+import { NeedsSources, SourceCheckLine } from '../components/TruthStateNotice';
 import { getActiveMirrorDefault, getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -182,6 +183,7 @@ function Visual({ visual }) {
 function MirrorResult({ result, intent, onPrompt, disabled }) {
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
+    const truthState = result?.truth_state || mirror.truth_state;
 
     return (
         <div className="flex h-full min-h-0 flex-col rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_0_70px_rgba(124,58,237,0.14)] ring-1 ring-white/[0.04] backdrop-blur-2xl">
@@ -211,6 +213,7 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                             <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                         </div>
                     </div>
+                    <NeedsSources truthState={truthState} />
                     {isLoading ? (
                         <LoadingPanel />
                     ) : result?.kind === 'ecosystem' ? (
@@ -229,6 +232,7 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                             <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                         </summary>
                         <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
+                            <SourceCheckLine truthState={truthState} />
                             <div>
                                 <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
                                 <div className="mt-1 leading-6">{mirror.receipt?.context_used}</div>

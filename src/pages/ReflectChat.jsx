@@ -4,6 +4,7 @@ import { ArrowUp, BookmarkPlus, Check, ChevronDown, ShieldCheck } from 'lucide-r
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import MirrorFeedback from '../components/MirrorFeedback';
 import ReflectionCardActions from '../components/ReflectionCardActions';
+import { NeedsSources, SourceCheckLine } from '../components/TruthStateNotice';
 import { getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -98,6 +99,7 @@ function memoryKey(mirror = {}) {
 function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, turn }) {
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
+    const truthState = data.truth_state || mirror.truth_state;
 
     return (
         <div className="flex flex-col gap-3">
@@ -117,6 +119,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
+            <NeedsSources truthState={truthState} />
             <Visual visual={mirror.visual} />
             <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
             <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} />
@@ -144,6 +147,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                 </summary>
                 <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
+                    <SourceCheckLine truthState={truthState} />
                     <div>
                         <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
                         <div className="mt-1 leading-6">{mirror.receipt?.context_used || 'Only the sentence you typed.'}</div>
