@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Wifi } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
 import { getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -10,6 +10,24 @@ const PHONE_STARTERS = [
     'I am stuck. Give me one next move.',
     'Challenge my thinking.',
     'Turn this into something sendable.',
+];
+
+const PHONE_THREAD_KEY = 'activeMirror_phoneThread_v1';
+
+const INITIAL_PHONE_TURNS = [
+    {
+        who: 'mirror',
+        mirror: {
+            reflection: 'What is one thing you are stuck on?',
+            question: 'Say it in one sentence.',
+            move: 'Send the smallest honest version.',
+            receipt: {
+                context_used: 'Nothing yet.',
+                context_excluded: 'No private context has been sent.',
+                memory_decision: 'Nothing saved.',
+            },
+        },
+    },
 ];
 
 const PROFILES = {
@@ -113,6 +131,40 @@ function DeviceCard({ profile, active, onClick }) {
     );
 }
 
+function loadPhoneTurns() {
+    if (typeof window === 'undefined') return INITIAL_PHONE_TURNS;
+
+    try {
+        const raw = localStorage.getItem(PHONE_THREAD_KEY);
+        if (!raw) return INITIAL_PHONE_TURNS;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) && parsed.length ? parsed : INITIAL_PHONE_TURNS;
+    } catch {
+        return INITIAL_PHONE_TURNS;
+    }
+}
+
+function makeSendableArtifact(mirror = {}) {
+    const question = mirror.question || 'What is the useful next move?';
+    const move = mirror.move || 'Take the smallest concrete next step.';
+
+    return {
+        title: 'Sendable draft',
+        body: [
+            'Quick update:',
+            '',
+            `I narrowed this to: ${question}`,
+            '',
+            `Next move: ${move}`,
+        ].join('\n'),
+        checks: [
+            'Remove anything private before sending.',
+            'Keep the ask to one sentence.',
+            'Send it, then watch what changes.',
+        ],
+    };
+}
+
 function phoneBlocked(error) {
     if (error === 'rate_limited') {
         return {
@@ -139,7 +191,7 @@ function phoneBlocked(error) {
     };
 }
 
-function PhoneMirrorTurn({ mirror }) {
+function PhoneMirrorTurn({ mirror, onSendable, showSendable = true }) {
     return (
         <div className="space-y-3">
             <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-[0.98rem] leading-7 text-zinc-100">
@@ -168,6 +220,33 @@ function PhoneMirrorTurn({ mirror }) {
                     <div><span className="text-zinc-300">Memory:</span> {mirror.receipt?.memory_decision || 'Nothing saved.'}</div>
                 </div>
             </details>
+            {showSendable ? (
+                <button
+                    type="button"
+                    onClick={() => onSendable?.(mirror)}
+                    className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100"
+                >
+                    <FileText size={13} />
+                    Make this sendable
+                </button>
+            ) : null}
+        </div>
+    );
+}
+
+function PhoneArtifactTurn({ artifact }) {
+    return (
+        <div className="space-y-3 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-cyan-100">
+                <FileText size={15} />
+                {artifact.title}
+            </div>
+            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{artifact.body}</pre>
+            <div className="space-y-1">
+                {artifact.checks.map((item) => (
+                    <div key={item} className="text-xs leading-5 text-zinc-400">{item}</div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -176,21 +255,7 @@ export default function DeviceExperience() {
     const [seed] = useState(() => getArchetype());
     const [device, setDevice] = useState(() => readDevice());
     const [selected, setSelected] = useState(() => readDevice().profile);
-    const [phoneTurns, setPhoneTurns] = useState([
-        {
-            who: 'mirror',
-            mirror: {
-                reflection: 'What is one thing you are stuck on?',
-                question: 'Say it in one sentence.',
-                move: 'Send the smallest honest version.',
-                receipt: {
-                    context_used: 'Nothing yet.',
-                    context_excluded: 'No private context has been sent.',
-                    memory_decision: 'Nothing saved.',
-                },
-            },
-        },
-    ]);
+    const [phoneTurns, setPhoneTurns] = useState(() => loadPhoneTurns());
     const [phoneText, setPhoneText] = useState('');
     const [phoneBusy, setPhoneBusy] = useState(false);
     const phoneMainRef = useRef(null);
@@ -222,6 +287,15 @@ export default function DeviceExperience() {
         if (!isPhoneView) return;
         trackEvent('device_phone_chat_view', { page: 'device', surface: 'phone_chat' });
     }, [isPhoneView]);
+
+    useEffect(() => {
+        if (!isPhoneView) return;
+        try {
+            localStorage.setItem(PHONE_THREAD_KEY, JSON.stringify(phoneTurns.slice(-30)));
+        } catch {
+            // The chat still works if the browser refuses local storage.
+        }
+    }, [isPhoneView, phoneTurns]);
 
     useEffect(() => {
         if (!isPhoneView || !phoneMainRef.current) return;
@@ -291,6 +365,28 @@ export default function DeviceExperience() {
         }
     }
 
+    function makePhoneSendable(mirror) {
+        setPhoneTurns((current) => [
+            ...current,
+            {
+                who: 'mirror',
+                artifact: makeSendableArtifact(mirror),
+            },
+        ]);
+        trackEvent('sendable_created', { page: 'device', surface: 'phone_chat', source: 'local_draft' });
+    }
+
+    function clearPhoneThread() {
+        setPhoneTurns(INITIAL_PHONE_TURNS);
+        try {
+            localStorage.removeItem(PHONE_THREAD_KEY);
+        } catch {
+            // Nothing to clear if the browser blocks local storage.
+        }
+        phoneTurnRef.current = 0;
+        trackEvent('phone_thread_cleared', { page: 'device', surface: 'phone_chat' });
+    }
+
     if (isPhoneView) {
         return (
             <div className="min-h-dvh overflow-x-hidden bg-black text-white">
@@ -300,10 +396,22 @@ export default function DeviceExperience() {
                         <ArrowLeft size={16} />
                         Active Mirror
                     </Link>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
-                        <Lock size={12} />
-                        private
-                    </span>
+                    <div className="flex items-center gap-2">
+                        {phoneTurns.length > INITIAL_PHONE_TURNS.length ? (
+                            <button
+                                type="button"
+                                onClick={clearPhoneThread}
+                                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-zinc-400"
+                            >
+                                <Trash2 size={12} />
+                                Clear
+                            </button>
+                        ) : null}
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
+                            <Lock size={12} />
+                            private
+                        </span>
+                    </div>
                 </header>
 
                 <main ref={phoneMainRef} className="relative z-10 h-dvh overflow-y-auto px-3 pb-32 pt-16">
@@ -314,9 +422,13 @@ export default function DeviceExperience() {
                                     <div className="max-w-[82%] rounded-[1.25rem] bg-white px-4 py-3 text-sm leading-6 text-black">
                                         {turn.text}
                                     </div>
+                                ) : turn.artifact ? (
+                                    <div className="w-full max-w-md">
+                                        <PhoneArtifactTurn artifact={turn.artifact} />
+                                    </div>
                                 ) : (
                                     <div className="w-full max-w-md">
-                                        <PhoneMirrorTurn mirror={turn.mirror} />
+                                        <PhoneMirrorTurn mirror={turn.mirror} onSendable={makePhoneSendable} showSendable={index > 0} />
                                     </div>
                                 )}
                             </div>

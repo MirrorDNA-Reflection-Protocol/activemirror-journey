@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowUp, Brain, ChevronDown, FileText, Lock, Network, Search, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import { getArchetype } from '../lib/mirror-state';
@@ -84,6 +84,9 @@ const ECOSYSTEM = [
     },
 ];
 
+const TEXT_FILE_PATTERN = /\.(txt|md|markdown|csv|json|log)$/i;
+const FILE_EXCERPT_LIMIT = 5200;
+
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
 }
@@ -152,6 +155,13 @@ function makeFollowUps(mirror = {}) {
     ].filter(Boolean);
 }
 
+function shouldUsePhoneEntry() {
+    if (typeof window === 'undefined') return false;
+    if (new URLSearchParams(window.location.search).has('desktop')) return false;
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    return window.innerWidth <= 680 || (coarse && window.innerWidth < 760);
+}
+
 function formatBytes(bytes = 0) {
     if (!bytes) return '0 KB';
     const units = ['B', 'KB', 'MB', 'GB'];
@@ -166,9 +176,88 @@ function summarizeFiles(files) {
         .join('; ');
 }
 
-function makeFileIntent(files) {
+function isReadableTextFile(file) {
+    return file.type.startsWith('text/') || TEXT_FILE_PATTERN.test(file.name);
+}
+
+async function readFileContext(file, index) {
+    if (!isReadableTextFile(file)) {
+        return {
+            name: file.name,
+            readable: false,
+            note: file.type === 'application/pdf'
+                ? 'PDF text was not extracted in this browser pass; use metadata and ask what to inspect.'
+                : 'Metadata only.',
+        };
+    }
+
+    try {
+        const text = await file.text();
+        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
+        const excerpt = text.replace(/\s+\n/g, '\n').trim().slice(0, perFileLimit);
+        return {
+            name: file.name,
+            readable: true,
+            excerpt,
+            totalChars: text.length,
+            includedChars: excerpt.length,
+        };
+    } catch {
+        return {
+            name: file.name,
+            readable: false,
+            note: 'Could not read local text.',
+        };
+    }
+}
+
+function fileReadinessLabel(contexts = []) {
+    if (!contexts.length) return 'Metadata ready.';
+    const readable = contexts.filter((item) => item.readable && item.excerpt);
+    if (readable.length) return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} ready locally.`;
+    return 'Metadata only. Contents stay local.';
+}
+
+function makeFileIntent(files, contexts = []) {
     const summary = summarizeFiles(files);
-    return `I have local file context to work with: ${summary}. Do not assume the contents. Help me decide what to inspect, what to extract, what to leave private, and the next action to take.`;
+    const readable = contexts.filter((item) => item.readable && item.excerpt);
+    const metadataOnly = contexts.filter((item) => !item.readable);
+    const excerpts = readable.map((item) => (
+        `--- ${item.name} local excerpt (${item.includedChars}/${item.totalChars} chars, approved for this turn only)\n${item.excerpt}`
+    )).join('\n\n');
+    const metadataNotes = metadataOnly.map((item) => `${item.name}: ${item.note}`).join(' ');
+
+    return [
+        `I have local file context to work with: ${summary}.`,
+        readable.length
+            ? `The user clicked Reflect with text, approving these local text excerpts for this turn only:\n${excerpts}`
+            : 'No file contents are included. Use metadata only and do not assume the contents.',
+        metadataNotes ? `Metadata-only notes: ${metadataNotes}` : '',
+        'Help me decide what to inspect, what to extract, what to leave private, and the next action to take.',
+    ].filter(Boolean).join('\n\n');
+}
+
+function makeSendableDraft(mirror = {}) {
+    const question = mirror.question || 'What is the useful next move?';
+    const move = mirror.move || 'Take the smallest concrete next step.';
+
+    return {
+        title: 'Sendable draft',
+        body: [
+            'Quick update:',
+            '',
+            `I narrowed this to one question: ${question}`,
+            '',
+            `Next move: ${move}`,
+            '',
+            'Private context removed. Add only what the recipient needs.',
+        ].filter(Boolean).join('\n'),
+        checklist: [
+            'Remove anything private before sending.',
+            'Keep the ask to one sentence.',
+            'Send it, then watch what changes.',
+        ],
+    };
 }
 
 function MirrorLogo() {
@@ -302,19 +391,47 @@ function LoadingPanel() {
     );
 }
 
+function SendableDraft({ draft }) {
+    if (!draft) return null;
+
+    return (
+        <div className="rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-cyan-100">
+                <FileText size={16} />
+                {draft.title}
+            </div>
+            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{draft.body}</pre>
+            <div className="mt-3 grid gap-2">
+                {draft.checklist.map((item) => (
+                    <div key={item} className="text-xs leading-5 text-zinc-400">{item}</div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function HomePage() {
+    const navigate = useNavigate();
     const [seed] = useState(() => getArchetype());
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
     const [files, setFiles] = useState([]);
+    const [fileContexts, setFileContexts] = useState([]);
+    const [fileReading, setFileReading] = useState(false);
     const [dragging, setDragging] = useState(false);
+    const [sendableDraft, setSendableDraft] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
     useEffect(() => {
+        if (shouldUsePhoneEntry()) {
+            navigate('/device', { replace: true });
+            return;
+        }
+
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
-    }, []);
+    }, [navigate]);
 
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
@@ -322,6 +439,7 @@ export default function HomePage() {
 
         setText('');
         setLastIntent(cleanIntent);
+        setSendableDraft(null);
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
         if (isEcosystemAsk(cleanIntent)) {
@@ -383,22 +501,30 @@ export default function HomePage() {
         reflect(text);
     }
 
-    function addFiles(fileList) {
+    async function addFiles(fileList) {
         const nextFiles = Array.from(fileList || []).slice(0, 3);
         if (!nextFiles.length) return;
 
         setFiles(nextFiles);
+        setFileContexts([]);
+        setFileReading(true);
         trackEvent('file_added', {
             page: 'home',
             count: nextFiles.length,
             totalBytes: nextFiles.reduce((total, file) => total + file.size, 0),
             types: nextFiles.map((file) => file.type || 'unknown').slice(0, 3).join(','),
         });
+        try {
+            const contexts = await Promise.all(nextFiles.map((file, index) => readFileContext(file, index)));
+            setFileContexts(contexts);
+        } finally {
+            setFileReading(false);
+        }
     }
 
     function reflectOnFiles() {
         if (!files.length || busy) return;
-        reflect(makeFileIntent(files), 'file_drop');
+        reflect(makeFileIntent(files, fileContexts), 'file_drop');
     }
 
     return (
@@ -511,7 +637,7 @@ export default function HomePage() {
                                         </span>
                                         {files.length ? (
                                             <span className="block text-xs leading-5 text-zinc-500">
-                                                Contents stay local.
+                                                {fileReading ? 'Reading local text...' : fileReadinessLabel(fileContexts)}
                                             </span>
                                         ) : null}
                                     </span>
@@ -520,7 +646,11 @@ export default function HomePage() {
                                     {files.length ? (
                                         <button
                                             type="button"
-                                            onClick={() => setFiles([])}
+                                            onClick={() => {
+                                                setFiles([]);
+                                                setFileContexts([]);
+                                                setFileReading(false);
+                                            }}
                                             className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:text-white"
                                         >
                                             Clear
@@ -529,10 +659,10 @@ export default function HomePage() {
                                     <button
                                         type="button"
                                         onClick={reflectOnFiles}
-                                        disabled={busy || !files.length}
+                                        disabled={busy || !files.length || fileReading}
                                         className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-40"
                                     >
-                                        Reflect on file
+                                        {fileReading ? 'Reading...' : fileContexts.some((item) => item.readable && item.excerpt) ? 'Reflect with text' : 'Reflect on file'}
                                     </button>
                                 </div>
                             </div>
@@ -593,6 +723,19 @@ export default function HomePage() {
                         }}
                     />
                     <div className="flex flex-wrap gap-2 pb-1">
+                        {result?.mirror ? (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    trackEvent('sendable_created', { page: 'home', source: 'local_draft' });
+                                    setSendableDraft(makeSendableDraft(result.mirror));
+                                }}
+                                disabled={busy}
+                                className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Make this sendable
+                            </button>
+                        ) : null}
                         {followUps.map((item) => (
                             <button
                                 key={item.label}
@@ -608,6 +751,7 @@ export default function HomePage() {
                             </button>
                         ))}
                     </div>
+                    <SendableDraft draft={sendableDraft} />
                     {result ? (
                         <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3">
                             <div className="text-sm font-semibold text-white">Want it to fit you better?</div>
