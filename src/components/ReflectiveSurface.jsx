@@ -179,6 +179,9 @@ const accentStyles = {
 };
 
 export function chooseReflectiveSurface(intent = '') {
+    const fileSurface = SURFACES.find((surface) => surface.id === 'file_review' && surface.test.test(intent));
+    if (fileSurface) return fileSurface;
+
     return SURFACES.find((surface) => surface.test.test(intent)) || DEFAULT_SURFACE;
 }
 

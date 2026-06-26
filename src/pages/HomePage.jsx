@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, Brain, ChevronDown, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUp, Brain, ChevronDown, FileText, Lock, Network, Search, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import { getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
@@ -8,9 +8,30 @@ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const STARTERS = [
-    'I keep asking AI for help, but I still do not know what to do next.',
-    'I have a messy idea and need the real question underneath it.',
-    'I am stuck between two choices and keep going in circles.',
+    {
+        label: 'Get my next move',
+        text: 'When you only know you are stuck.',
+        icon: ArrowRight,
+        intent: 'I have one thing in front of me. Reflect it and give me one useful next move.',
+    },
+    {
+        label: 'Turn notes into sendable',
+        text: 'Shape rough thoughts into an artifact.',
+        icon: FileText,
+        intent: 'I have messy notes and need to turn them into something I can send.',
+    },
+    {
+        label: 'Check my thinking',
+        text: 'Challenge the loop, not your confidence.',
+        icon: ShieldCheck,
+        intent: 'Challenge my thinking without being agreeable. What am I missing?',
+    },
+    {
+        label: 'Research this',
+        text: 'Make the question source-checkable.',
+        icon: Search,
+        intent: 'I need to research this carefully. Define the question, source route, and next check.',
+    },
 ];
 
 const SAMPLE_MIRROR = {
@@ -129,6 +150,25 @@ function makeFollowUps(mirror = {}) {
             intent: 'Show me the Active Mirror ecosystem.',
         },
     ].filter(Boolean);
+}
+
+function formatBytes(bytes = 0) {
+    if (!bytes) return '0 KB';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    const value = bytes / 1024 ** index;
+    return `${value >= 10 || index === 0 ? value.toFixed(0) : value.toFixed(1)} ${units[index]}`;
+}
+
+function summarizeFiles(files) {
+    return files
+        .map((file) => `"${file.name}" (${file.type || 'unknown type'}, ${formatBytes(file.size)})`)
+        .join('; ');
+}
+
+function makeFileIntent(files) {
+    const summary = summarizeFiles(files);
+    return `I have local file context to work with: ${summary}. Do not assume the contents. Help me decide what to inspect, what to extract, what to leave private, and the next action to take.`;
 }
 
 function MirrorLogo() {
@@ -268,6 +308,8 @@ export default function HomePage() {
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
+    const [files, setFiles] = useState([]);
+    const [dragging, setDragging] = useState(false);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
     useEffect(() => {
@@ -341,6 +383,24 @@ export default function HomePage() {
         reflect(text);
     }
 
+    function addFiles(fileList) {
+        const nextFiles = Array.from(fileList || []).slice(0, 3);
+        if (!nextFiles.length) return;
+
+        setFiles(nextFiles);
+        trackEvent('file_added', {
+            page: 'home',
+            count: nextFiles.length,
+            totalBytes: nextFiles.reduce((total, file) => total + file.size, 0),
+            types: nextFiles.map((file) => file.type || 'unknown').slice(0, 3).join(','),
+        });
+    }
+
+    function reflectOnFiles() {
+        if (!files.length || busy) return;
+        reflect(makeFileIntent(files), 'file_drop');
+    }
+
     return (
         <div className="relative min-h-dvh overflow-hidden bg-black text-white selection:bg-purple-500/30">
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.20),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(34,211,238,0.13),transparent_32%),#000]" />
@@ -358,6 +418,9 @@ export default function HomePage() {
                     <div className="flex items-center gap-2">
                         <Link to="/start" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:text-white sm:inline-flex">
                             BrainScan
+                        </Link>
+                        <Link to="/device" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-cyan-300/30 hover:text-white sm:inline-flex">
+                            This device
                         </Link>
                         <Link to="/mirror" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
                             Full mirror
@@ -383,25 +446,98 @@ export default function HomePage() {
                             Bring one thing you are stuck on. Active Mirror reflects the real question, gives you one next move, and shows what stayed private.
                         </p>
 
-                        <div className="mt-7 grid gap-2">
+                        <div className="mt-7 grid gap-2 sm:grid-cols-2">
                             {STARTERS.map((starter) => (
                                 <button
-                                    key={starter}
+                                    key={starter.label}
                                     type="button"
                                     onClick={() => {
-                                        trackEvent('starter_clicked', { page: 'home', source: 'starter' });
-                                        reflect(starter, 'starter');
+                                        trackEvent('starter_clicked', { page: 'home', source: 'starter', label: starter.label });
+                                        reflect(starter.intent, 'starter');
                                     }}
                                     disabled={busy}
-                                    className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left text-sm leading-6 text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="group flex min-h-[5.5rem] items-start gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    {starter}
+                                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-cyan-100 transition group-hover:border-cyan-200/25">
+                                        <starter.icon size={17} />
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block text-sm font-semibold text-zinc-100">{starter.label}</span>
+                                        <span className="mt-1 block text-xs leading-5 text-zinc-500">{starter.text}</span>
+                                    </span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     <div className="mt-7">
+                        <div
+                            onDrop={(event) => {
+                                event.preventDefault();
+                                setDragging(false);
+                                addFiles(event.dataTransfer.files);
+                            }}
+                            onDragOver={(event) => {
+                                event.preventDefault();
+                                setDragging(true);
+                            }}
+                            onDragLeave={(event) => {
+                                if (event.currentTarget.contains(event.relatedTarget)) return;
+                                setDragging(false);
+                            }}
+                            className={`mb-3 rounded-3xl border border-dashed px-4 py-3 transition ${
+                                dragging
+                                    ? 'border-cyan-200/60 bg-cyan-300/[0.08]'
+                                    : 'border-white/10 bg-black/20 hover:border-cyan-200/30 hover:bg-cyan-300/[0.045]'
+                            }`}
+                        >
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <label className="flex min-w-0 cursor-pointer items-center gap-3">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        className="sr-only"
+                                        onChange={(event) => addFiles(event.target.files)}
+                                    />
+                                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-cyan-100">
+                                        <UploadCloud size={18} />
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block text-sm font-semibold text-zinc-100">
+                                            {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop a file here'}
+                                        </span>
+                                        <span className="block truncate text-xs leading-5 text-zinc-500">
+                                            {files.length ? summarizeFiles(files) : 'PDF, notes, screenshot, sheet, or deck. Contents stay local.'}
+                                        </span>
+                                        {files.length ? (
+                                            <span className="block text-xs leading-5 text-zinc-500">
+                                                Contents stay local.
+                                            </span>
+                                        ) : null}
+                                    </span>
+                                </label>
+                                <div className="flex shrink-0 items-center gap-2">
+                                    {files.length ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setFiles([])}
+                                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:text-white"
+                                        >
+                                            Clear
+                                        </button>
+                                    ) : null}
+                                    <button
+                                        type="button"
+                                        onClick={reflectOnFiles}
+                                        disabled={busy || !files.length}
+                                        className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        Reflect on file
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <form onSubmit={submit} className="flex items-end gap-2">
                             <textarea
                                 rows={2}
@@ -504,6 +640,7 @@ export default function HomePage() {
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
+                    <Link to="/device" className="transition hover:text-white">This device</Link>
                     <Link
                         to="/start"
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
