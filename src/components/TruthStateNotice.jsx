@@ -1,13 +1,98 @@
+import { useState } from 'react';
+import { ExternalLink, Loader2, SearchCheck } from 'lucide-react';
+import { getPrivacySessionId } from '../lib/privacy-events';
+
+const SOURCE_CHECK_ENDPOINT = 'https://gateway.activemirror.ai/v1/mirror/source-check';
+
 export function sourceCheckLabel(truthState) {
     return truthState?.label || 'Reflective, not source-checked.';
 }
 
-export function NeedsSources({ truthState }) {
+export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false }) {
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState('');
+    const [result, setResult] = useState(null);
+
     if (truthState?.status !== 'needs_checking') return null;
 
+    async function checkSources() {
+        if (busy || disabled) return;
+        setBusy(true);
+        setError('');
+
+        try {
+            const response = await fetch(SOURCE_CHECK_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Active-Mirror-Session': getPrivacySessionId(),
+                },
+                body: JSON.stringify({
+                    intent,
+                    question: mirror.question || intent,
+                    move: mirror.move || '',
+                    boundary: 'personal',
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || 'source_check_failed');
+            }
+            setResult(data);
+        } catch {
+            setError('Could not check sources just now.');
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    if (result?.truth_state?.status === 'checked') {
+        const sources = result.research?.sources || [];
+        return (
+            <div className="max-w-[46rem] rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.08] px-4 py-3 text-sm leading-6 text-emerald-50">
+                <div className="mb-2 flex items-center gap-2 font-semibold">
+                    <SearchCheck size={16} className="text-emerald-200" />
+                    Source checked
+                </div>
+                <div>{result.research?.answer}</div>
+                {result.research?.changes ? (
+                    <div className="mt-2 text-emerald-100/80">{result.research.changes}</div>
+                ) : null}
+                {sources.length ? (
+                    <div className="mt-3 grid gap-2">
+                        {sources.map((source) => (
+                            <a
+                                key={source.url}
+                                href={source.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold text-emerald-100 transition hover:border-emerald-200/35 hover:bg-emerald-300/[0.10]"
+                            >
+                                <span className="truncate">{source.title || source.url}</span>
+                                <ExternalLink size={12} className="shrink-0" />
+                            </a>
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-[46rem] rounded-2xl border border-amber-300/20 bg-amber-300/[0.08] px-4 py-3 text-sm font-medium leading-5 text-amber-100">
-            Needs sources before you rely on it.
+        <div className="max-w-[46rem] rounded-2xl border border-amber-300/20 bg-amber-300/[0.08] px-4 py-3 text-sm leading-5 text-amber-100">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="font-medium">Needs sources before you rely on it.</div>
+                <button
+                    type="button"
+                    onClick={checkSources}
+                    disabled={busy || disabled}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-amber-200/25 bg-black/20 px-3 py-2 text-xs font-semibold text-amber-50 transition hover:border-amber-200/45 hover:bg-amber-200/[0.10] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    {busy ? <Loader2 size={14} className="animate-spin" /> : <SearchCheck size={14} />}
+                    {busy ? 'Checking' : 'Check sources'}
+                </button>
+            </div>
+            {error ? <div className="mt-2 text-xs text-amber-100/70">{error}</div> : null}
         </div>
     );
 }

@@ -119,7 +119,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
-            <NeedsSources truthState={truthState} />
+            <NeedsSources truthState={truthState} intent={intent} mirror={mirror} disabled={disabled} />
             <Visual visual={mirror.visual} />
             <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
             <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} />

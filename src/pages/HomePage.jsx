@@ -213,7 +213,7 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                             <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                         </div>
                     </div>
-                    <NeedsSources truthState={truthState} />
+                    <NeedsSources truthState={truthState} intent={intent} mirror={mirror} disabled={disabled} />
                     {isLoading ? (
                         <LoadingPanel />
                     ) : result?.kind === 'ecosystem' ? (
