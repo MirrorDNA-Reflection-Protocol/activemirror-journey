@@ -43,7 +43,7 @@ function randomId() {
     return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function getSessionId() {
+export function getPrivacySessionId() {
     const storage = safeStorage('session');
     if (!storage) return randomId();
 
@@ -69,7 +69,7 @@ function makePayload(eventName, details = {}) {
 
     const payload = {
         event: eventName,
-        session: getSessionId().slice(0, 36),
+        session: getPrivacySessionId().slice(0, 36),
         ts: new Date().toISOString(),
     };
 

@@ -30,6 +30,8 @@ experience.
 ## Gateway Contract
 
 The app calls `https://gateway.activemirror.ai/v1/mirror/create`.
+Mirror requests include `X-Active-Mirror-Session`, a session-scoped random id
+used only for public gateway budget/rate protection.
 The gateway/kernel contract lives in:
 
 `/Users/mirror-pro/repos/active-mirror-site/worker/KERNEL.md`

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, Brain, ChevronDown, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
 import { getArchetype } from '../lib/mirror-state';
-import { trackEvent } from '../lib/privacy-events';
+import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
@@ -227,7 +227,10 @@ export default function HomePage() {
                 : cleanIntent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Active-Mirror-Session': getPrivacySessionId(),
+                },
                 body: JSON.stringify({
                     intent: seededIntent,
                     boundary: 'personal',
