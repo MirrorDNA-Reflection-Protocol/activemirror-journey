@@ -7,6 +7,8 @@ import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
+const pdfWorkerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
+let pdfJsModulePromise;
 
 const STARTERS = [
     {
@@ -88,9 +90,21 @@ const ECOSYSTEM = [
 const TEXT_FILE_PATTERN = /\.(txt|md|markdown|csv|json|log)$/i;
 const IMAGE_FILE_PATTERN = /\.(avif|gif|jpe?g|png|webp)$/i;
 const FILE_EXCERPT_LIMIT = 5200;
+const PDF_PAGE_LIMIT = 5;
 
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
+}
+
+async function loadPdfJs() {
+    if (!pdfJsModulePromise) {
+        pdfJsModulePromise = import('pdfjs-dist').then((module) => {
+            module.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
+            return module;
+        });
+    }
+
+    return pdfJsModulePromise;
 }
 
 function makeEcosystemResult(intent) {
@@ -186,6 +200,10 @@ function isImageFile(file) {
     return file.type.startsWith('image/') || IMAGE_FILE_PATTERN.test(file.name);
 }
 
+function isPdfFile(file) {
+    return file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+}
+
 function revokeFilePreviews(contexts = []) {
     contexts.forEach((item) => {
         if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
@@ -228,21 +246,80 @@ function readImageContext(file) {
     });
 }
 
+async function readPdfContext(file, index) {
+    let loadingTask;
+
+    try {
+        const { getDocument } = await loadPdfJs();
+        const data = new Uint8Array(await file.arrayBuffer());
+        loadingTask = getDocument({ data });
+        const pdf = await loadingTask.promise;
+        const maxPages = Math.min(pdf.numPages, PDF_PAGE_LIMIT);
+        const chunks = [];
+        const perFileLimit = Math.max(1200, Math.floor(FILE_EXCERPT_LIMIT / Math.max(1, index + 1)));
+
+        for (let pageNumber = 1; pageNumber <= maxPages; pageNumber += 1) {
+            const page = await pdf.getPage(pageNumber);
+            const content = await page.getTextContent();
+            const text = content.items
+                .map((item) => ('str' in item ? item.str : ''))
+                .join(' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            if (text) chunks.push(`Page ${pageNumber}: ${text}`);
+
+            if (chunks.join('\n').length >= perFileLimit) break;
+        }
+
+        const excerpt = chunks.join('\n').slice(0, perFileLimit).trim();
+
+        return {
+            kind: 'pdf',
+            name: file.name,
+            type: file.type || 'application/pdf',
+            size: file.size,
+            readable: Boolean(excerpt),
+            excerpt,
+            totalPages: pdf.numPages,
+            includedPages: maxPages,
+            totalChars: excerpt.length,
+            includedChars: excerpt.length,
+            note: excerpt
+                ? `PDF text extracted locally from ${maxPages}/${pdf.numPages} page${pdf.numPages > 1 ? 's' : ''}.`
+                : 'PDF opened locally, but no selectable text was found.',
+        };
+    } catch {
+        return {
+            kind: 'pdf',
+            name: file.name,
+            type: file.type || 'application/pdf',
+            size: file.size,
+            readable: false,
+            note: 'Could not extract PDF text in this browser pass.',
+        };
+    } finally {
+        loadingTask?.destroy?.();
+    }
+}
+
 async function readFileContext(file, index) {
     if (isImageFile(file)) {
         return readImageContext(file);
     }
 
+    if (isPdfFile(file)) {
+        return readPdfContext(file, index);
+    }
+
     if (!isReadableTextFile(file)) {
         return {
-            kind: file.type === 'application/pdf' ? 'pdf' : 'metadata',
+            kind: 'metadata',
             name: file.name,
             type: file.type || 'unknown',
             size: file.size,
             readable: false,
-            note: file.type === 'application/pdf'
-                ? 'PDF metadata only in this pass. Ask what to inspect before extracting or sharing text.'
-                : 'Metadata only.',
+            note: 'Metadata only.',
         };
     }
 
@@ -280,9 +357,10 @@ function fileReadinessLabel(contexts = []) {
     if (readable.length && images.length) {
         return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} and ${images.length} image preview${images.length > 1 ? 's' : ''} ready locally.`;
     }
+    if (readable.length && pdfs.length) return `${readable.length} local excerpt${readable.length > 1 ? 's' : ''} ready, including ${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''}.`;
     if (readable.length) return `${readable.length} text excerpt${readable.length > 1 ? 's' : ''} ready locally.`;
     if (images.length) return `${images.length} image preview${images.length > 1 ? 's' : ''} ready locally. Pixels stay here.`;
-    if (pdfs.length) return `${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''} ready by name and size.`;
+    if (pdfs.length) return `${pdfs.length} PDF${pdfs.length > 1 ? 's' : ''} opened locally. No selectable text found.`;
     return 'Metadata only. Contents stay local.';
 }
 

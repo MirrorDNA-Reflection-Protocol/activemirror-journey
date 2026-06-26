@@ -17,11 +17,13 @@
         "deploy": "gh-pages -d dist --dotfiles"
     },
     "dependencies": {
+        "@mlc-ai/web-llm": "^0.2.84",
         "@studio-freight/lenis": "^1.0.42",
         "clsx": "^2.1.1",
         "framer-motion": "^11.18.2",
         "html2canvas": "^1.4.1",
         "lucide-react": "^0.469.0",
+        "pdfjs-dist": "^6.0.227",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-router-dom": "^7.11.0",
