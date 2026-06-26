@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, BookmarkPlus, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
+import ReflectionCardActions from '../components/ReflectionCardActions';
 import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -225,6 +226,7 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
             {showSendable ? (
                 <>
                     <MirrorFeedback page="device" surface="phone_chat" turn={turn} className="max-w-none rounded-[1.35rem]" />
+                    <ReflectionCardActions mirror={mirror} surface="device" className="max-w-none rounded-[1.35rem]" />
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
@@ -486,19 +488,21 @@ export default function DeviceExperience() {
 
                 <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-black/80 px-3 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl">
                     <div className="mx-auto max-w-md">
-                        <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                            {PHONE_STARTERS.map((starter) => (
-                                <button
-                                    key={starter}
-                                    type="button"
-                                    onClick={() => askPhone(starter, 'starter')}
-                                    disabled={phoneBusy}
-                                    className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-300 disabled:opacity-50"
-                                >
-                                    {starter}
-                                </button>
-                            ))}
-                        </div>
+                        {phoneTurns.length <= INITIAL_PHONE_TURNS.length ? (
+                            <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                                {PHONE_STARTERS.map((starter) => (
+                                    <button
+                                        key={starter}
+                                        type="button"
+                                        onClick={() => askPhone(starter, 'starter')}
+                                        disabled={phoneBusy}
+                                        className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-300 disabled:opacity-50"
+                                    >
+                                        {starter}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : null}
                         <form
                             onSubmit={(event) => {
                                 event.preventDefault();

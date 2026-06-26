@@ -11,6 +11,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Start = lazy(() => import('./pages/Start'));
 const DeviceExperience = lazy(() => import('./pages/DeviceExperience'));
+const FeedbackDashboard = lazy(() => import('./pages/FeedbackDashboard'));
 
 const staleRoutes = [
     '/about',
@@ -61,6 +62,7 @@ export default function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/start" element={<Start />} />
                     <Route path="/device" element={<DeviceExperience />} />
+                    <Route path="/feedback" element={<FeedbackDashboard />} />
                     <Route path="/mirror" element={<ReflectChat />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />

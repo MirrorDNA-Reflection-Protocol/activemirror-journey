@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, 
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
+import ReflectionCardActions from '../components/ReflectionCardActions';
 import { getActiveMirrorDefault, getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -219,6 +220,7 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                             <Visual visual={mirror.visual} />
                             <ReflectiveSurface result={result || { mirror }} intent={intent} onPrompt={onPrompt} disabled={disabled} />
                             <MirrorFeedback page="home" surface="homepage_result" turn={1} />
+                            <ReflectionCardActions mirror={mirror} surface="home" />
                         </>
                     )}
                     <details className="group rounded-3xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400">
@@ -311,9 +313,8 @@ function LandingScreen({ onStart }) {
             <header className="relative z-10 border-b border-white/10 bg-black/50 px-4 py-4 backdrop-blur-xl">
                 <nav className="mx-auto flex max-w-3xl items-center justify-between gap-3 text-sm text-zinc-400">
                     <Link to="/device" className="transition hover:text-white">Mobile</Link>
-                    <Link to="/product" className="transition hover:text-white">Architecture</Link>
-                    <Link to="/start" className="text-purple-200 transition hover:text-white">Ecosystem</Link>
-                    <Link to="/trust" className="transition hover:text-white">Trust</Link>
+                    <Link to="/start" className="text-purple-200 transition hover:text-white">BrainScan</Link>
+                    <Link to="/mirror" className="transition hover:text-white">Open mirror</Link>
                 </nav>
             </header>
 
@@ -327,15 +328,15 @@ function LandingScreen({ onStart }) {
                         </span>
                     </div>
 
-                    <h1 className="mx-auto max-w-[9ch] text-[3.2rem] font-semibold leading-[0.95] tracking-[-0.06em] text-white sm:text-[4.9rem]">
-                        Intelligence
+                    <h1 className="mx-auto max-w-[10ch] text-[3.2rem] font-semibold leading-[0.95] tracking-[-0.06em] text-white sm:text-[4.9rem]">
+                        What do
                         <span className="block bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
-                            Reflected.
+                            you want?
                         </span>
                     </h1>
 
                     <p className="mx-auto mt-8 max-w-md text-xl leading-8 text-zinc-400 sm:text-2xl sm:leading-10">
-                        Bring one stuck thing. Get one honest next move.
+                        Bring one stuck thing. Active Mirror gives you one honest next move.
                     </p>
                     <p className="mx-auto mt-3 max-w-sm text-base leading-7 text-zinc-500">
                         Private by default. Nothing saved unless you choose.
@@ -347,7 +348,7 @@ function LandingScreen({ onStart }) {
                             onClick={onStart}
                             className="group inline-flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 text-lg font-semibold text-white shadow-[0_0_38px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
                         >
-                            Start Reflection
+                            Start reflection
                             <ArrowRight size={23} className="transition group-hover:translate-x-1" />
                         </button>
                         <Link
@@ -504,17 +505,17 @@ export default function HomePage() {
                             Private first
                         </div>
                         <h1 className="max-w-[11ch] text-[3rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.4rem]">
-                            Stop circling.
+                            What do you want?
                             <span className="block bg-gradient-to-r from-purple-200 via-white to-cyan-200 bg-clip-text text-transparent">
-                                Make one move.
+                                Get one move.
                             </span>
                         </h1>
                         <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
-                            Bring one thing you are stuck on. Active Mirror reflects the real question, gives you one next move, and shows what stayed private.
+                            Say the thing plainly. Active Mirror reflects the real question, gives you one next move, and keeps private context out unless you choose otherwise.
                         </p>
 
                         <div className="mt-7 rounded-3xl border border-purple-300/15 bg-purple-300/[0.06] px-4 py-4 text-sm leading-6 text-zinc-300">
-                            Type one honest sentence. The mirror will make the next surface from that.
+                            Our job is to help you get it without adding more noise.
                         </div>
                     </div>
 

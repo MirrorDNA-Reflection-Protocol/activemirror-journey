@@ -2,7 +2,7 @@ const EVENT_ENDPOINT = 'https://gateway.activemirror.ai/v1/events';
 const REMOTE_EVENTS_ENABLED = import.meta.env?.VITE_ACTIVE_MIRROR_REMOTE_EVENTS === 'true';
 const SESSION_KEY = 'active_mirror_event_session_v1';
 const BUFFER_KEY = 'active_mirror_event_buffer_v1';
-const MAX_BUFFERED_EVENTS = 30;
+const MAX_BUFFERED_EVENTS = 120;
 
 const ALLOWED_EVENTS = new Set([
     'home_view',
@@ -43,6 +43,8 @@ const ALLOWED_DETAIL_KEYS = new Set([
 ]);
 
 function safeStorage(kind) {
+    if (typeof window === 'undefined') return null;
+
     try {
         return kind === 'local' ? window.localStorage : window.sessionStorage;
     } catch {
@@ -107,6 +109,24 @@ function rememberLocally(payload) {
     } catch {
         storage.removeItem(BUFFER_KEY);
     }
+}
+
+export function getBufferedPrivacyEvents() {
+    const storage = safeStorage('session');
+    if (!storage) return [];
+
+    try {
+        const parsed = JSON.parse(storage.getItem(BUFFER_KEY) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+export function clearBufferedPrivacyEvents() {
+    const storage = safeStorage('session');
+    if (!storage) return;
+    storage.removeItem(BUFFER_KEY);
 }
 
 export function trackEvent(eventName, details = {}) {
