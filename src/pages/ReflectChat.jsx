@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowUp, ChevronDown, ShieldCheck } from 'lucide-react';
-import { getArchetype } from '../lib/mirror-state';
+import { Link, useLocation } from 'react-router-dom';
+import { ArrowUp, BookmarkPlus, Check, ChevronDown, ShieldCheck } from 'lucide-react';
+import ReflectiveSurface from '../components/ReflectiveSurface';
+import { getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -88,7 +89,11 @@ function Visual({ visual }) {
     return null;
 }
 
-function MirrorTurn({ data }) {
+function memoryKey(mirror = {}) {
+    return `${mirror.question || ''}::${mirror.move || ''}`;
+}
+
+function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved }) {
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
 
@@ -111,6 +116,24 @@ function MirrorTurn({ data }) {
                 </div>
             </div>
             <Visual visual={mirror.visual} />
+            <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+            <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <div className="text-sm font-semibold text-zinc-200">Remember this only if it helps.</div>
+                        <div className="mt-1 text-xs leading-5 text-zinc-500">Save the question and next move as your starting point. Nothing else is stored.</div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => onSaveDefault?.(mirror)}
+                        disabled={disabled || saved}
+                        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-2 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12] disabled:cursor-not-allowed disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
+                    >
+                        {saved ? <Check size={14} /> : <BookmarkPlus size={14} />}
+                        {saved ? 'Remembered' : 'Remember this'}
+                    </button>
+                </div>
+            </div>
             <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
                 <summary className="cursor-pointer list-none font-medium text-zinc-400">
                     Private by default · what stayed out
@@ -136,10 +159,13 @@ function MirrorTurn({ data }) {
 }
 
 export default function ReflectChat() {
+    const location = useLocation();
+    const startPrompt = typeof location.state?.startPrompt === 'string' ? location.state.startPrompt : '';
     const [seed] = useState(() => getArchetype());
     const [turns, setTurns] = useState([{ who: 'mirror', intro: true }]);
-    const [text, setText] = useState('');
+    const [text, setText] = useState(startPrompt);
     const [busy, setBusy] = useState(false);
+    const [savedDefaults, setSavedDefaults] = useState({});
     const turnNum = useRef(0);
     const mainRef = useRef(null);
     const latestTurnRef = useRef(null);
@@ -209,7 +235,7 @@ export default function ReflectChat() {
             setTurns((current) => [
                 ...current,
                 data.ok
-                    ? { who: 'mirror', data }
+                    ? { who: 'mirror', data, intent }
                     : { who: 'mirror', error: mirrorErrorMessage(data.error) },
             ]);
         } catch {
@@ -227,6 +253,16 @@ export default function ReflectChat() {
         if (busy) return;
         trackEvent(source === 'follow_up' ? 'followup_clicked' : 'starter_clicked', { page: 'mirror', source });
         ask(intent, source);
+    }
+
+    function rememberMirror(mirror = {}) {
+        saveMirrorDefault({
+            question: mirror.question,
+            move: mirror.move,
+            source: 'mirror',
+        });
+        setSavedDefaults((current) => ({ ...current, [memoryKey(mirror)]: true }));
+        trackEvent('mirror_default_saved', { page: 'mirror', source: 'explicit_approval' });
     }
 
     function submit(event) {
@@ -284,7 +320,7 @@ export default function ReflectChat() {
                                         Bring one real thing you are stuck on.
                                     </div>
                                     <div className="mt-3 text-base leading-7 text-zinc-400">
-                                        Active Mirror reflects the real question and gives you one move.
+                                        Active Mirror reflects the real question, makes one useful output, and lets you decide what gets remembered.
                                     </div>
                                     {seed && (
                                         <div className="mt-4 inline-flex rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1 text-xs font-semibold text-purple-200">
@@ -314,7 +350,14 @@ export default function ReflectChat() {
 
                         return (
                             <div key={index} ref={isLatest ? latestTurnRef : null} className="scroll-mt-6">
-                                <MirrorTurn data={turn.data} />
+                                <MirrorTurn
+                                    data={turn.data}
+                                    intent={turn.intent || ''}
+                                    disabled={busy}
+                                    onPrompt={(nextIntent) => useStarter(nextIntent, 'surface')}
+                                    onSaveDefault={rememberMirror}
+                                    saved={Boolean(savedDefaults[memoryKey(turn.data?.mirror)])}
+                                />
                             </div>
                         );
                     })}
@@ -338,15 +381,15 @@ export default function ReflectChat() {
                         ))}
                     </div>
                 )}
-                {latestMirror && (
+                {!seed && latestMirror && (
                     <div className="mx-auto mb-3 flex max-w-[48rem] flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-2 text-xs text-zinc-500">
-                        <span>This can become your local starting point.</span>
+                        <span>Want the mirror to adapt to you?</span>
                         <Link
                             to="/start"
-                            onClick={() => trackEvent('cta_clicked', { page: 'mirror', target: 'mirrorseed' })}
+                            onClick={() => trackEvent('cta_clicked', { page: 'mirror', target: 'brainscan' })}
                             className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 font-semibold text-purple-100 transition hover:border-purple-300/40 hover:text-white"
                         >
-                            Build MirrorSeed
+                            Take BrainScan
                         </Link>
                     </div>
                 )}

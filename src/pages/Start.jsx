@@ -108,7 +108,7 @@ export default function Start() {
                     Active Mirror
                 </Link>
                 <Link to="/mirror" className="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-zinc-300 transition hover:border-purple-400/40 hover:text-white">
-                    Skip
+                    Open mirror
                 </Link>
             </header>
 
@@ -116,17 +116,16 @@ export default function Start() {
                 {phase === 'choose' && (
                     <section className="grid w-full gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
                         <div>
-                            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-purple-300">Start with one thing</div>
-                            <h1 className="mt-4 max-w-xl text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
-                                Build your Mirror Seed.
+                            <h1 className="max-w-xl text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
+                                Take BrainScan.
                             </h1>
                             <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-400">
-                                Six questions. A private seed. Then the mirror reflects from your words and your thinking style.
+                                Six quick choices. The result stays in this browser and helps the mirror start closer to how you think.
                             </p>
                         </div>
 
                         <div className="rounded-[2rem] border border-purple-500/20 bg-zinc-950/70 p-4 shadow-[0_0_60px_rgba(168,85,247,0.12)] backdrop-blur-2xl sm:p-6">
-                            <div className="mb-4 text-sm font-semibold text-zinc-300">What are you bringing?</div>
+                            <div className="mb-4 text-sm font-semibold text-zinc-300">What are you bringing first?</div>
                             <div className="grid gap-3">
                                 {STARTS.map((item) => (
                                     <button
@@ -151,7 +150,6 @@ export default function Start() {
                     <section className="mx-auto w-full max-w-2xl rounded-[2rem] border border-purple-500/20 bg-zinc-950/75 p-5 shadow-[0_0_60px_rgba(168,85,247,0.12)] backdrop-blur-2xl sm:p-8">
                         <div className="mb-6 flex items-center justify-between gap-4">
                             <div>
-                                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-300">BrainScan</div>
                                 <div className="mt-2 text-sm text-zinc-500">Question {index + 1} of {QUESTIONS.length}</div>
                             </div>
                             <div className="h-2 w-28 overflow-hidden rounded-full bg-white/10">
@@ -184,18 +182,20 @@ export default function Start() {
                             <div className="flex justify-center">
                                 <MirrorSig archetype={result.archetype} seed={result.mirrorId} size={220} />
                             </div>
-                            <div className="mt-4 font-mono text-xs text-zinc-500">{result.mirrorId}</div>
+                            <div className="mt-4 text-sm font-semibold text-zinc-300">Saved in this browser</div>
                         </div>
 
                         <div>
                             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
                                 <Check size={14} />
-                                Stored locally
+                                Local only
                             </div>
                             <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
-                                {result.archetype_name}
+                                Your mirror is ready.
                             </h1>
-                            <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">{result.description}</p>
+                            <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">
+                                {result.archetype_name}: {result.description}
+                            </p>
 
                             <div className="mt-6 flex flex-wrap gap-2">
                                 {result.strengths.map((strength) => (
@@ -211,7 +211,7 @@ export default function Start() {
                                     onClick={() => navigate('/mirror', { state: { startPrompt: start.prompt } })}
                                     className="inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 py-4 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
                                 >
-                                    Reflect with this seed
+                                    Reflect with this
                                     <ArrowRight size={19} />
                                 </button>
                                 <button
