@@ -1,143 +1,212 @@
-import { ArrowLeft, ArrowRight, CheckCircle, FileCheck2, Lock, ShieldCheck, SlidersHorizontal, Sparkles, TerminalSquare, Workflow } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    CheckCircle2,
+    CircleDot,
+    FileCheck2,
+    Lock,
+    Play,
+    RotateCcw,
+    ShieldCheck,
+    TerminalSquare,
+    Workflow,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const outcomes = [
-    'One workflow reflected into a usable next move.',
-    'Source-sensitive claims marked before reliance.',
-    'Private context kept out unless explicitly needed.',
-    'Plain-language receipt for what was used, left out, and checked.',
-];
-
-const proofSteps = [
+const workflowRuns = [
     {
-        title: 'Bring one workflow',
-        text: 'A decision, research flow, approval path, or recurring task where AI output needs review before action.',
+        id: 'research',
+        label: 'Research brief',
+        request: 'Turn a source pile into a board-ready brief.',
+        output: 'Brief outline, missing-evidence list, approval-ready next move.',
+        risk: 'medium',
+        steps: [
+            ['intake', 'workflow received', 'Only the selected files and brief are in scope.', 'ok'],
+            ['boundary', 'private context held', 'Unneeded names and side notes stay out.', 'ok'],
+            ['route', 'research path selected', 'Source-heavy claims require citation status.', 'live'],
+            ['check', 'unsupported claims marked', 'Two claims need stronger evidence before use.', 'warn'],
+            ['receipt', 'proof pack ready', 'Used, excluded, checked, and open items recorded.', 'ok'],
+        ],
     },
     {
-        title: 'Run it through the mirror',
-        text: 'Active Mirror reflects the real question, narrows broad claims, and creates one usable next move.',
+        id: 'approval',
+        label: 'Approval memo',
+        request: 'Review an AI-generated memo before it goes to leadership.',
+        output: 'Risk notes, edits, approval state, and a clean decision trail.',
+        risk: 'high',
+        steps: [
+            ['intake', 'memo opened', 'The draft is readable, but not trusted yet.', 'ok'],
+            ['claim', 'figures inspected', 'Numbers without source records are held.', 'block'],
+            ['gate', 'approval required', 'External sharing is paused until a human approves.', 'warn'],
+            ['repair', 'safer version produced', 'Unsupported claims become questions or caveats.', 'live'],
+            ['receipt', 'approval trail saved', 'Reviewer, route, changes, and limits recorded.', 'ok'],
+        ],
     },
     {
-        title: 'Read the receipt',
-        text: 'You see what was used, what stayed out, what needed sources, and what should not be treated as proven.',
-    },
-];
-
-const variants = [
-    {
-        name: 'Glass Box',
-        for: 'AI transparency',
-        shows: 'tool calls, rule blocks, source checks, memory decisions',
-    },
-    {
-        name: 'Compliance',
-        for: 'regulated review',
-        shows: 'approvals, evidence gaps, receipt status, escalation paths',
-    },
-    {
-        name: 'Research',
-        for: 'source-heavy teams',
-        shows: 'claim state, source quality, contradictions, open questions',
-    },
-    {
-        name: 'Ops',
-        for: 'automation teams',
-        shows: 'runs, failures, queues, rollback points, human gates',
-    },
-    {
-        name: 'Team Room',
-        for: 'shared work',
-        shows: 'who touched what, pending decisions, next approvals',
+        id: 'ops',
+        label: 'Agent run',
+        request: 'Let an agent prepare work without letting it act alone.',
+        output: 'Tool calls, blocked actions, files touched, and handoff notes.',
+        risk: 'controlled',
+        steps: [
+            ['start', 'agent started', 'Read-only prep run begins inside the boundary.', 'live'],
+            ['tools', 'tools observed', 'Search, file read, and draft actions are logged.', 'ok'],
+            ['block', 'side effect blocked', 'No external send or destructive action without approval.', 'block'],
+            ['handoff', 'human checkpoint', 'The next action waits for review.', 'warn'],
+            ['receipt', 'run summarized', 'What happened, what changed, and what is next are visible.', 'ok'],
+        ],
     },
 ];
 
-const modules = [
+const controls = [
     {
-        name: 'MirrorDash',
-        text: 'A glass-box control room for routed AI work: gates, tools, files, memory decisions, risk, and active automation state.',
+        icon: Lock,
+        title: 'No silent sharing',
+        text: 'External sends, tool actions, and sensitive context require scoped approval.',
     },
     {
-        name: 'Execution capture',
-        text: 'Observable process capture for model routes, tool calls, file access, web calls, automation state, approvals, warnings, and blocks.',
+        icon: FileCheck2,
+        title: 'No hidden work',
+        text: 'Each serious output shows what was used, what stayed out, and what still needs evidence.',
     },
     {
-        name: 'MirrorProof',
-        text: 'A proof pack for serious outputs: what was asked, what was used, what stayed out, what was checked, and what still needs evidence.',
+        icon: ShieldCheck,
+        title: 'No model free-for-all',
+        text: 'Teams can route work through the right model while keeping the same approval rules.',
     },
     {
-        name: 'Signed Consent Gate',
-        text: 'Cryptographic approval before sensitive context, memory, external sharing, or high-risk actions move forward.',
-    },
-    {
-        name: 'Default Ledger',
-        text: 'Team-approved defaults for what can be used automatically, what needs approval, and what should never leave the boundary.',
-    },
-    {
-        name: 'Replay & recovery',
-        text: 'A timeline view for routed work so teams can inspect decisions, recover from drift, and compare what changed.',
-    },
-    {
-        name: 'Private deployment',
-        text: 'A browser-first or self-hosted proof environment for teams that need sensitive workflows contained.',
-    },
-    {
-        name: 'Mini control plane',
-        text: 'An always-on local control plane can hold queues, ledgers, watchdogs, and private dashboards without becoming the public site source.',
+        icon: Workflow,
+        title: 'No drift without a reset',
+        text: 'Repeated work can use defaults, but defaults stay editable and reversible.',
     },
 ];
 
-const tuiRows = [
-    ['BEHAVIORAL METRICS', 'Integrity 92/100 · Drift low · Recurrence 0.07', 'ok'],
-    ['GATE ACTIVITY', '2 held · 7 warned · 191 allowed · source-sensitive marked', 'warn'],
-    ['MODEL / TOOL ROUTE', 'Reflection → source plan → human approval', 'ok'],
-    ['SESSION ARC', 'read · reflect · check · approve · remember', 'live'],
-    ['VAULT ACCESS', 'private context excluded · no memory without approval', 'ok'],
-    ['RISK MONITOR', 'unsupported claims cannot become checked', 'block'],
+const views = [
+    ['MirrorDash', 'live work state, gates, files, tools, approvals'],
+    ['MirrorProof', 'receipt pack for serious outputs and claims'],
+    ['Consent Gate', 'approval before memory, sharing, or side effects'],
+    ['Private Runtime', 'browser-first, self-hosted, or managed deployment'],
 ];
 
-function EnterpriseConsole() {
+const statusStyles = {
+    ok: 'border-emerald-300/25 text-emerald-100 bg-emerald-300/[0.06]',
+    live: 'border-cyan-300/25 text-cyan-100 bg-cyan-300/[0.06]',
+    warn: 'border-amber-300/25 text-amber-100 bg-amber-300/[0.06]',
+    block: 'border-red-300/25 text-red-100 bg-red-300/[0.06]',
+};
+
+function useLiveRun(activeRun) {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        setIndex(0);
+    }, [activeRun.id]);
+
+    useEffect(() => {
+        const timer = window.setInterval(() => {
+            setIndex((current) => (current + 1) % activeRun.steps.length);
+        }, 1800);
+
+        return () => window.clearInterval(timer);
+    }, [activeRun]);
+
+    const visibleSteps = useMemo(() => {
+        return activeRun.steps.map((step, stepIndex) => ({
+            step,
+            active: stepIndex === index,
+            complete: stepIndex < index,
+        }));
+    }, [activeRun.steps, index]);
+
+    return { index, setIndex, visibleSteps };
+}
+
+function LiveConsole({ run }) {
+    const { index, setIndex, visibleSteps } = useLiveRun(run);
+    const active = run.steps[index];
+    const completed = Math.round(((index + 1) / run.steps.length) * 100);
+
     return (
-        <section className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[#050608]/90 p-4 shadow-[0_0_90px_rgba(34,211,238,0.12)] ring-1 ring-white/[0.04]">
-            <div className="mb-3 flex flex-col gap-2 border-b border-cyan-300/20 pb-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2">
-                    <span className="grid h-8 w-8 place-items-center rounded-xl border border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100">
-                        <TerminalSquare size={16} />
+        <section className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[#050608]/92 shadow-[0_0_90px_rgba(34,211,238,0.12)] ring-1 ring-white/[0.04]">
+            <div className="flex flex-col gap-3 border-b border-cyan-300/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 place-items-center rounded-2xl border border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100">
+                        <TerminalSquare size={18} />
                     </span>
                     <div>
-                        <div className="text-sm font-semibold text-cyan-100">MirrorDash Enterprise</div>
-                        <div className="text-[11px] text-zinc-500">control room profile · live work state</div>
+                        <div className="text-sm font-semibold text-cyan-100">MirrorDash</div>
+                        <div className="text-[11px] text-zinc-500">public demo replay · governed work state</div>
                     </div>
                 </div>
-                <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2.5 py-1 text-[11px] font-semibold text-emerald-200">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
-                    human approval on
-                </div>
+                <button
+                    type="button"
+                    onClick={() => setIndex(0)}
+                    className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold text-zinc-300 transition hover:border-cyan-300/35 hover:text-white"
+                >
+                    <RotateCcw size={13} />
+                    Restart
+                </button>
             </div>
 
-            <div className="grid gap-2 lg:grid-cols-[0.85fr_1.15fr]">
-                <div className="grid gap-2">
-                    {tuiRows.slice(0, 3).map((row) => (
-                        <ConsolePanel key={row[0]} row={row} />
-                    ))}
-                </div>
-                <div className="grid gap-2">
-                    <div className="rounded-2xl border border-cyan-300/20 bg-black/35 p-3">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Session arc</div>
-                        <div className="font-mono text-[11px] leading-5 text-zinc-300">
-                            RRXWRRRXRRRXWMMWWXXXXXXNNNNAAOXWRXRWX
+            <div className="grid gap-3 p-4 lg:grid-cols-[1fr_1.08fr]">
+                <div className="grid gap-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Current route</div>
+                        <div className="font-mono text-[12px] leading-6 text-zinc-300">
+                            {'request.read -> boundary.check -> route.choose -> proof.mark -> human.approve'}
                         </div>
-                        <div className="mt-2 grid grid-cols-5 gap-1 text-[10px] text-zinc-500">
-                            <span>read</span>
-                            <span>write</span>
-                            <span>check</span>
-                            <span>approve</span>
-                            <span>memory</span>
+                        <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                            <div
+                                className="h-full rounded-full bg-gradient-to-r from-emerald-300 via-cyan-300 to-violet-300 transition-all duration-500"
+                                style={{ width: `${completed}%` }}
+                            />
                         </div>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                        {tuiRows.slice(3).map((row) => (
-                            <ConsolePanel key={row[0]} row={row} />
-                        ))}
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <Metric label="Approval" value="Human on" tone="emerald" />
+                        <Metric label="Risk" value={run.risk} tone={run.risk === 'high' ? 'amber' : 'cyan'} />
+                        <Metric label="Memory" value="choice" tone="violet" />
+                        <Metric label="Sharing" value="gated" tone="emerald" />
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Active signal</div>
+                        <div className="flex items-start gap-3">
+                            <CircleDot className="mt-1 h-4 w-4 shrink-0 animate-pulse text-cyan-200" />
+                            <div>
+                                <div className="text-sm font-semibold text-white">{active[1]}</div>
+                                <p className="mt-1 text-sm leading-6 text-zinc-400">{active[2]}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Gate activity</div>
+                        <div className="font-mono text-[10px] text-zinc-500">turn-{String(index + 1).padStart(3, '0')}</div>
+                    </div>
+                    <div className="grid gap-2">
+                        {visibleSteps.map(({ step, active: isActive, complete }) => {
+                            const [key, title, body, status] = step;
+                            return (
+                                <div
+                                    key={key}
+                                    className={`rounded-xl border px-3 py-2 transition ${
+                                        isActive ? statusStyles[status] : complete ? 'border-emerald-300/15 bg-emerald-300/[0.035]' : 'border-white/10 bg-white/[0.025]'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between gap-3">
+                                        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-500">{key}</span>
+                                        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusStyles[status]}`}>{status}</span>
+                                    </div>
+                                    <div className="mt-1 text-sm font-semibold text-white">{title}</div>
+                                    <div className="mt-1 text-xs leading-5 text-zinc-500">{body}</div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -145,27 +214,29 @@ function EnterpriseConsole() {
     );
 }
 
-function ConsolePanel({ row }) {
-    const [title, body, state] = row;
-    const color = {
-        ok: 'border-emerald-300/25 text-emerald-100',
-        warn: 'border-amber-300/25 text-amber-100',
-        live: 'border-cyan-300/25 text-cyan-100',
-        block: 'border-red-300/25 text-red-100',
-    }[state] || 'border-white/10 text-zinc-100';
+function Metric({ label, value, tone }) {
+    const colors = {
+        emerald: 'border-emerald-300/15 bg-emerald-300/[0.06] text-emerald-100',
+        cyan: 'border-cyan-300/15 bg-cyan-300/[0.06] text-cyan-100',
+        violet: 'border-violet-300/15 bg-violet-300/[0.06] text-violet-100',
+        amber: 'border-amber-300/15 bg-amber-300/[0.06] text-amber-100',
+    };
 
     return (
-        <div className={`rounded-2xl border bg-black/35 p-3 ${color}`}>
-            <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">{title}</div>
-            <div className="font-mono text-[11px] leading-5 text-zinc-300">{body}</div>
+        <div className={`rounded-2xl border p-4 ${colors[tone] || colors.cyan}`}>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">{label}</div>
+            <div className="mt-2 text-xl font-semibold tracking-[-0.03em]">{value}</div>
         </div>
     );
 }
 
 export default function Enterprise() {
+    const [runId, setRunId] = useState(workflowRuns[0].id);
+    const activeRun = workflowRuns.find((run) => run.id === runId) || workflowRuns[0];
+
     return (
-        <div className="min-h-dvh overflow-hidden bg-black text-white selection:bg-purple-500/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.16),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(124,58,237,0.18),transparent_34%),#000]" />
+        <div className="min-h-dvh overflow-hidden bg-black text-white selection:bg-emerald-500/30">
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(124,58,237,0.16),transparent_34%),#000]" />
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.024)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.016)_1px,transparent_1px)] bg-[size:46px_46px] opacity-20" />
 
             <main className="relative z-10 mx-auto max-w-6xl px-5 py-8 sm:py-12">
@@ -174,22 +245,21 @@ export default function Enterprise() {
                         <ArrowLeft size={16} />
                         Back
                     </Link>
-                    <Link to="/mirror" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
-                        Open mirror
+                    <Link to="/" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
+                        Try Active Mirror
                     </Link>
                 </nav>
 
-                <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+                <section className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-8">
-                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
-                            <ShieldCheck size={14} />
-                            Governed reflection for real work
+                        <div className="mb-8 grid h-16 w-16 place-items-center rounded-[1.35rem] border border-emerald-200/20 bg-white/[0.045] shadow-[0_0_38px_rgba(16,185,129,0.14)]">
+                            <ShieldCheck className="h-8 w-8 text-emerald-100" />
                         </div>
-                        <h1 className="max-w-[11ch] text-[3.25rem] font-semibold leading-[0.94] tracking-[-0.06em] sm:text-[5rem]">
-                            Prove the work before it moves.
+                        <h1 className="max-w-[10ch] text-[3.05rem] font-semibold leading-[0.94] tracking-[-0.06em] sm:text-[4.9rem]">
+                            AI work your team can govern.
                         </h1>
                         <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-400">
-                            Active Mirror helps teams use AI without turning every output into a trust exercise. Bring one workflow. Get one next move, one receipt, and a clear view of what still needs proof.
+                            Bring one workflow. Active Mirror reflects it, gates the risk, shows what happened, and leaves a clean trail before the work moves.
                         </p>
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
@@ -209,110 +279,90 @@ export default function Enterprise() {
                     </div>
 
                     <div className="grid gap-4">
-                        <EnterpriseConsole />
-
-                        <section className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                            <div className="mb-4 flex items-center gap-3">
-                                <span className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-cyan-100">
-                                    <FileCheck2 size={18} />
-                                </span>
-                                <h2 className="text-xl font-semibold tracking-[-0.03em]">What you get</h2>
-                            </div>
-                            <div className="grid gap-3">
-                                {outcomes.map((item) => (
-                                    <div key={item} className="flex gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-zinc-300">
-                                        <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-emerald-200" />
-                                        <span>{item}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
-                        <section className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                            <div className="mb-4 flex items-center gap-3">
-                                <span className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-purple-100">
-                                    <Workflow size={18} />
-                                </span>
-                                <h2 className="text-xl font-semibold tracking-[-0.03em]">72-hour proof</h2>
-                            </div>
-                            <div className="grid gap-3">
-                                {proofSteps.map((step, index) => (
-                                    <div key={step.title} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-                                            <span>{String(index + 1).padStart(2, '0')}</span>
-                                            <span>{step.title}</span>
-                                        </div>
-                                        <p className="text-sm leading-6 text-zinc-400">{step.text}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    </div>
-                </section>
-
-                <section className="mt-6 grid gap-4 md:grid-cols-3">
-                    <div className="rounded-[1.5rem] border border-emerald-300/15 bg-emerald-300/[0.07] p-5">
-                        <Lock size={20} className="mb-4 text-emerald-100" />
-                        <h3 className="font-semibold tracking-[-0.02em]">Private first</h3>
-                        <p className="mt-2 text-sm leading-6 text-zinc-400">Use only what the workflow needs. Sensitive context stays out unless explicitly approved.</p>
-                    </div>
-                    <div className="rounded-[1.5rem] border border-cyan-300/15 bg-cyan-300/[0.06] p-5">
-                        <Sparkles size={20} className="mb-4 text-cyan-100" />
-                        <h3 className="font-semibold tracking-[-0.02em]">Reflection first</h3>
-                        <p className="mt-2 text-sm leading-6 text-zinc-400">The system challenges vague claims, narrows the work, and keeps the next move concrete.</p>
-                    </div>
-                    <div className="rounded-[1.5rem] border border-purple-300/15 bg-purple-300/[0.07] p-5">
-                        <FileCheck2 size={20} className="mb-4 text-purple-100" />
-                        <h3 className="font-semibold tracking-[-0.02em]">Receipts by default</h3>
-                        <p className="mt-2 text-sm leading-6 text-zinc-400">Every serious turn can show what was used, what was excluded, and what still needs proof.</p>
+                        <LiveConsole run={activeRun} />
                     </div>
                 </section>
 
                 <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
                     <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.07] px-3 py-1 text-xs font-semibold text-cyan-200">
-                                <SlidersHorizontal size={14} />
-                                Choose the control room
-                            </div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">One mirror, different enterprise views.</h2>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Pick one workflow.</h2>
+                            <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
+                                The public console is a replay. A private deployment can connect the same view to your real routes, tools, files, approvals, and receipts.
+                            </p>
                         </div>
-                        <p className="max-w-md text-sm leading-6 text-zinc-400">
-                            The same governed workflow can show a different surface for compliance, research, operations, or leadership.
+                        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.07] px-3 py-1.5 text-xs font-semibold text-cyan-200">
+                            <Play size={14} />
+                            Live demo
+                        </div>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-3">
+                        {workflowRuns.map((run) => (
+                            <button
+                                key={run.id}
+                                type="button"
+                                onClick={() => setRunId(run.id)}
+                                className={`rounded-2xl border p-4 text-left transition ${
+                                    run.id === runId
+                                        ? 'border-emerald-300/30 bg-emerald-300/[0.08] shadow-[0_0_30px_rgba(16,185,129,0.10)]'
+                                        : 'border-white/10 bg-black/25 hover:border-cyan-300/25 hover:bg-white/[0.045]'
+                                }`}
+                            >
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="text-sm font-semibold text-white">{run.label}</div>
+                                    {run.id === runId ? <CheckCircle2 className="h-4 w-4 text-emerald-200" /> : null}
+                                </div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{run.request}</p>
+                                <div className="mt-4 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs leading-5 text-zinc-500">
+                                    {run.output}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mt-6 grid gap-4 md:grid-cols-4">
+                    {controls.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <div key={item.title} className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.035]">
+                                <Icon size={20} className="mb-4 text-cyan-100" />
+                                <h3 className="font-semibold tracking-[-0.02em]">{item.title}</h3>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{item.text}</p>
+                            </div>
+                        );
+                    })}
+                </section>
+
+                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
+                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">Boring where it matters.</h2>
+                        <p className="mt-3 text-sm leading-6 text-zinc-400">
+                            The user experience can feel simple. The enterprise layer should be predictable: permissioned, logged, reversible, and quiet under pressure.
                         </p>
                     </div>
-                    <div className="grid gap-3 md:grid-cols-5">
-                        {variants.map((variant) => (
-                            <div key={variant.name} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-white">{variant.name}</div>
-                                <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200/65">{variant.for}</div>
-                                <p className="mt-3 text-xs leading-5 text-zinc-400">{variant.shows}</p>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        {views.map(([title, text]) => (
+                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="text-sm font-semibold text-white">{title}</div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
-                    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-purple-300/15 bg-purple-300/[0.07] px-3 py-1 text-xs font-semibold text-purple-200">
-                                <ShieldCheck size={14} />
-                                Enterprise modules
-                            </div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Use only the parts your workflow needs.</h2>
-                        </div>
-                        <p className="max-w-md text-sm leading-6 text-zinc-400">
-                            Start with one proof sprint, then add gates and dashboards where the work actually needs them.
-                        </p>
-                    </div>
-                    <div className="grid gap-3 md:grid-cols-4">
-                        {modules.map((module) => (
-                            <div key={module.name} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-white">{module.name}</div>
-                                <p className="mt-2 text-sm leading-6 text-zinc-400">{module.text}</p>
-                            </div>
-                        ))}
-                    </div>
+                <section className="mt-6 rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.07] p-6 text-center ring-1 ring-white/[0.04] sm:p-8">
+                    <h2 className="text-3xl font-semibold tracking-[-0.05em]">Bring one workflow.</h2>
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-zinc-300">
+                        We will show the governed version: the useful output, the approval path, and the receipt that proves what happened.
+                    </p>
+                    <a
+                        href="mailto:paul@activemirror.ai?subject=Active%20Mirror%2072-hour%20proof%20sprint"
+                        className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:scale-[1.01]"
+                    >
+                        Start the proof sprint
+                        <ArrowRight size={17} />
+                    </a>
                 </section>
             </main>
         </div>
