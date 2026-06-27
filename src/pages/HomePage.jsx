@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Telescope, Trash2, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
+import MirrorFeedback from '../components/MirrorFeedback';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
@@ -310,6 +311,11 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
                 onPrompt={onPrompt}
                 onSourceChecked={onSourceChecked}
             />
+            {result && !disabled ? (
+                <div className="sm:pl-12">
+                    <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} />
+                </div>
+            ) : null}
         </div>
     );
 }

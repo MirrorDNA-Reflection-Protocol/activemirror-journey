@@ -146,7 +146,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     Make an output
                 </button>
             )}
-            <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} />
+            <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} />
             <ReflectionCardActions mirror={mirror} surface="mirror" />
             <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
