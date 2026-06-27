@@ -13,6 +13,7 @@ const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const STARTERS = [
     'I keep asking AI for help, but I still do not know what to do next.',
+    'My thoughts are moving fast and I need one next move.',
     'I have a messy idea and need the real question underneath it.',
     'I am stuck between two choices and keep going in circles.',
 ];

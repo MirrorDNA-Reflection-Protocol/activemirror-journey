@@ -38,8 +38,8 @@ const SAMPLE_MIRROR = {
 
 const STARTERS = [
     'I feel stuck.',
+    'My thoughts are moving fast.',
     'I need a decision.',
-    'Turn this into something useful.',
 ];
 
 const LOADING_MIRROR = {
