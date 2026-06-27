@@ -10,8 +10,10 @@ function read(path) {
   }
 }
 
-if (existsSync("CNAME")) {
-  failures.push("Product source repo must not contain CNAME. Live domain belongs to active-mirror-site deploy repo.");
+for (const cnamePath of ["CNAME", "public/CNAME"]) {
+  if (existsSync(cnamePath)) {
+    failures.push(`Product source repo must not contain ${cnamePath}. Live domain belongs to active-mirror-site deploy repo.`);
+  }
 }
 
 const deployWorkflow = read(".github/workflows/deploy.yml");

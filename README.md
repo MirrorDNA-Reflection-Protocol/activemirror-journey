@@ -45,7 +45,7 @@ should route into this app's `/app/id/` deployment.
 ## Deployment Note
 
 This repo is the product source and does not deploy directly. It should not
-contain a `CNAME` file or a GitHub Pages publish action.
+contain a root `CNAME`, `public/CNAME`, or a GitHub Pages publish action.
 
 The live public deployment path is:
 
