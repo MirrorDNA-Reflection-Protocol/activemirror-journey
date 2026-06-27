@@ -203,6 +203,12 @@ export function getActiveMirrorDefault() {
     return _read().activeDefault || null;
 }
 
+/** Get recent approved browser-local defaults, newest first. */
+export function getMirrorDefaults() {
+    const defaults = _read().mirrorDefaults;
+    return Array.isArray(defaults) ? defaults : [];
+}
+
 /** Save one approved reflection pattern as a browser-local default. */
 export function saveMirrorDefault({ question, move, source = 'reflection' } = {}) {
     const item = {

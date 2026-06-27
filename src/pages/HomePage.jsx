@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, Minimize2, PenLine, Sparkles, Telescope } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import { NeedsSources } from '../components/TruthStateNotice';
-import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
+import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
+import { getActiveMirrorDefault, getArchetype, getMirrorDefaults, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -89,6 +90,27 @@ function makeBlockedResult(data = {}) {
                 memory_decision: 'Nothing saved.',
             },
         },
+    };
+}
+
+function makeLocalPrivacyResult(sense = {}) {
+    return {
+        mirror: {
+            reflection: 'That looks like it contains a secret, so I held it on this page instead of sending it out.',
+            question: 'Can you replace the private detail with a placeholder?',
+            move: 'Rewrite the same stuck point with names, keys, passwords, and account details removed.',
+            receipt: {
+                context_used: 'Only the local browser privacy check.',
+                context_excluded: 'The sensitive-looking text was not sent to the model route.',
+                memory_decision: 'Nothing saved.',
+            },
+            visual: {
+                kind: 'reframe',
+                left: 'Send the whole thing',
+                right: 'Send only the shape of the problem',
+            },
+        },
+        local_sense: sense,
     };
 }
 
@@ -309,18 +331,40 @@ function SendableDraft({ draft }) {
     );
 }
 
+function LocalSenseLine({ sense }) {
+    const cue = sense?.cues?.[0];
+    if (!sense?.hasText || !cue) return null;
+
+    const tone = cue.tone === 'block'
+        ? 'border-rose-300/20 bg-rose-300/[0.07] text-rose-100'
+        : cue.tone === 'caution'
+            ? 'border-amber-300/20 bg-amber-300/[0.07] text-amber-100'
+            : cue.tone === 'good'
+                ? 'border-emerald-300/20 bg-emerald-300/[0.07] text-emerald-100'
+                : 'border-violet-300/20 bg-violet-300/[0.07] text-violet-100';
+
+    return (
+        <div className={`inline-flex max-w-full items-center rounded-full border px-3 py-1.5 text-xs leading-5 ${tone}`}>
+            <span className="truncate">{cue.label}</span>
+        </div>
+    );
+}
+
 export default function HomePage() {
     const inputRef = useRef(null);
     const [seed] = useState(() => getArchetype());
-    const [activeDefault] = useState(() => getActiveMirrorDefault());
+    const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
+    const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
+    const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [rememberedKey, setRememberedKey] = useState('');
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
+    const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
 
     useEffect(() => {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
@@ -330,10 +374,20 @@ export default function HomePage() {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
 
-        setText('');
+        const sense = assessLocalMirrorSense(cleanIntent, { activeDefault, mirrorDefaults, seed });
         setLastIntent(cleanIntent);
+        setLastSense(sense);
         setSendableDraft(null);
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
+
+        if (sense.blocked) {
+            setText('');
+            setResult(makeLocalPrivacyResult(sense));
+            trackEvent('local_privacy_hold', { page: 'home', source, status: 'blocked' });
+            return;
+        }
+
+        setText('');
 
         if (isEcosystemAsk(cleanIntent)) {
             setResult(makeEcosystemResult(cleanIntent));
@@ -343,12 +397,9 @@ export default function HomePage() {
 
         setBusy(true);
         try {
-            const context = [
-                seed ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}.` : '',
-                activeDefault ? `User-approved default: real question "${activeDefault.question || 'not set'}"; preferred next move "${activeDefault.move || 'not set'}".` : '',
-                `User intent: ${cleanIntent}`,
-            ].filter(Boolean).join('\n');
-            const seededIntent = seed || activeDefault ? context : cleanIntent;
+            const seededIntent = seed || sense.approvedDefault || sense.drift
+                ? buildLocalSenseContext(sense, cleanIntent)
+                : cleanIntent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
                 headers: {
@@ -393,11 +444,13 @@ export default function HomePage() {
     }
 
     function rememberMirror(mirror = {}) {
-        saveMirrorDefault({
+        const saved = saveMirrorDefault({
             question: mirror.question,
             move: mirror.move,
             source: 'home',
         });
+        setActiveDefault(saved);
+        setMirrorDefaults(getMirrorDefaults());
         setRememberedKey(mirrorMemoryKey(mirror));
         trackEvent('mirror_default_saved', { page: 'home', source: 'explicit_approval' });
     }
@@ -476,6 +529,7 @@ export default function HomePage() {
                                     }
                                 }}
                                 className="max-h-36 min-h-[4.5rem] flex-1 resize-none rounded-3xl border border-white/10 bg-black/35 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45"
+                                style={{ overflowWrap: 'anywhere' }}
                             />
                             <button
                                 type="submit"
@@ -491,6 +545,7 @@ export default function HomePage() {
                                 <Lock size={13} />
                                 No memory unless you choose it.
                             </span>
+                            <LocalSenseLine sense={typingSense} />
                         </div>
                     </div>
                 </section>
@@ -509,6 +564,9 @@ export default function HomePage() {
                                 reflect(nextIntent, 'surface');
                             }}
                         />
+                        <div className="sm:pl-12">
+                            <LocalSenseLine sense={lastSense} />
+                        </div>
                         {!busy && result ? <div className="flex flex-wrap gap-2 pb-1 sm:pl-12">
                             {followUps.map((item) => {
                                 const Icon = item.icon;
