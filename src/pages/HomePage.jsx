@@ -95,19 +95,19 @@ function makeBlockedResult(data = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.question && {
-            label: 'Ask me',
+            label: 'Go deeper',
             icon: Telescope,
             action: 'reflect',
             intent: `Go one layer deeper on this question without giving me a long answer: ${mirror.question}`,
         },
         {
-            label: 'Make it smaller',
+            label: 'Smaller',
             icon: Minimize2,
             action: 'reflect',
             intent: `Make this next move smaller and easier to start: ${mirror.move || 'the next move'}`,
         },
         {
-            label: 'Make a draft',
+            label: 'Draft it',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -169,30 +169,35 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked }) {
     }
 
     return (
-        <div className="overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#111114]/82 shadow-[0_0_70px_rgba(124,58,237,0.12)] backdrop-blur-2xl">
-            <div className="px-4 py-4 sm:px-5 sm:py-5">
-                <div className="grid gap-3">
-                    <div className="relative overflow-hidden rounded-[1.55rem] bg-[radial-gradient(circle_at_10%_0%,rgba(168,85,247,0.18),transparent_36%),linear-gradient(135deg,rgba(255,255,255,0.085),rgba(255,255,255,0.022))] p-5 sm:p-6">
-                        <ReflectionGlow mirror={mirror} />
-                        <div className="mt-5 text-[1.08rem] leading-7 text-zinc-100 sm:text-[1.18rem]">
-                            {mirror.reflection}
+        <div className="grid gap-3">
+            <div className="flex items-start gap-3">
+                <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] sm:grid">
+                    <MirrorLogo />
+                </div>
+                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#111114]/82 p-4 shadow-[0_0_70px_rgba(124,58,237,0.12)] backdrop-blur-2xl sm:p-5">
+                    <ReflectionGlow mirror={mirror} />
+                    <p className="mt-5 text-[1.05rem] leading-7 text-zinc-100 sm:text-[1.16rem]">
+                        {mirror.reflection}
+                    </p>
+                    <div className="mt-5 rounded-[1.35rem] border border-violet-200/20 bg-violet-200/[0.075] px-4 py-4 text-white shadow-[0_0_34px_rgba(168,85,247,0.10)]">
+                        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-violet-100/70">
+                            Try this next
                         </div>
-                        <p className="mt-5 text-base font-semibold leading-7 text-white sm:text-lg">{mirror.question}</p>
-                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/24 px-4 py-3 text-sm font-semibold leading-6 text-zinc-100">
-                            {mirror.move}
-                        </div>
+                        <div className="text-base font-semibold leading-7 sm:text-lg">{mirror.move}</div>
                     </div>
-                    <NeedsSources
-                        truthState={truthState}
-                        intent={intent}
-                        mirror={mirror}
-                        disabled={disabled}
-                        onPrompt={onPrompt}
-                        onSourceChecked={onSourceChecked}
-                    />
-                    {isLoading ? <LoadingPanel /> : null}
+                    <p className="mt-5 text-sm leading-6 text-zinc-400 sm:text-[0.95rem]">
+                        {mirror.question}
+                    </p>
                 </div>
             </div>
+            <NeedsSources
+                truthState={truthState}
+                intent={intent}
+                mirror={mirror}
+                disabled={disabled}
+                onPrompt={onPrompt}
+                onSourceChecked={onSourceChecked}
+            />
         </div>
     );
 }
@@ -300,9 +305,9 @@ export default function HomePage() {
             trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
             setResult({
                 mirror: {
-                    reflection: 'The mirror route is not reachable right now, but the page is still private by default.',
+                    reflection: 'I cannot reach the mirror right now. Your text was not saved as memory.',
                     question: 'What is the one sentence version of the thing you are stuck on?',
-                    move: 'Try again in a moment, or open the full mirror workspace.',
+                    move: 'Try again in a moment with the same sentence.',
                     receipt: {
                         context_used: 'No hosted model response was returned.',
                         context_excluded: 'Nothing was saved or promoted.',
@@ -402,7 +407,7 @@ export default function HomePage() {
                         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
-                                Nothing saved from this page.
+                                No memory unless you choose it.
                             </span>
                         </div>
                     </div>
@@ -420,8 +425,8 @@ export default function HomePage() {
                                 reflect(nextIntent, 'surface');
                             }}
                         />
-                        {!busy && result ? <div className="grid gap-2 pb-1 sm:grid-cols-3">
-                            {followUps.map((item, index) => {
+                        {!busy && result ? <div className="flex flex-wrap gap-2 pb-1 sm:pl-12">
+                            {followUps.map((item) => {
                                 const Icon = item.icon;
                                 return (
                                     <button
@@ -436,14 +441,10 @@ export default function HomePage() {
                                             reflect(item.intent, 'follow_up');
                                         }}
                                         disabled={busy}
-                                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.048] px-4 py-3 text-left text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                                        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                                     >
-                                        <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/60 to-transparent opacity-0 transition group-hover:opacity-100" />
-                                        <span className="flex items-center gap-2">
-                                            <span className="text-[10px] font-black text-violet-200/70">0{index + 1}</span>
-                                            <Icon size={16} className="text-purple-200" />
-                                            {item.label}
-                                        </span>
+                                        <Icon size={16} className="text-purple-200" />
+                                        {item.label}
                                     </button>
                                 );
                             })}
