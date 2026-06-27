@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Minimize2, Network, PenLine, ShieldCheck, Sparkles, Telescope } from 'lucide-react';
-import ReflectiveSurface from '../components/ReflectiveSurface';
+import { ArrowRight, ArrowUp, FileText, Lock, Minimize2, PenLine, ShieldCheck, Sparkles, Telescope } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
-import MirrorFeedback from '../components/MirrorFeedback';
-import ReflectionCardActions from '../components/ReflectionCardActions';
-import { NeedsSources, SourceCheckLine } from '../components/TruthStateNotice';
+import { NeedsSources } from '../components/TruthStateNotice';
 import { getActiveMirrorDefault, getArchetype } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -28,9 +25,9 @@ const SAMPLE_MIRROR = {
 };
 
 const STARTERS = [
-    'I need a clearer next move.',
-    'I need honest pushback.',
-    'Turn this into something I can send.',
+    'Unstick me.',
+    'Challenge my thinking.',
+    'Make something I can send.',
 ];
 
 const LOADING_MIRROR = {
@@ -44,29 +41,6 @@ const LOADING_MIRROR = {
     },
 };
 
-const ECOSYSTEM = [
-    {
-        title: 'BrainScan',
-        text: 'A short intake that creates a local MirrorSeed so the mirror starts with your thinking style, not a blank personality.',
-    },
-    {
-        title: 'MirrorSeed',
-        text: 'A browser-held starting point. It helps continuity without turning every private detail into memory.',
-    },
-    {
-        title: 'Receipts',
-        text: 'Plain-language proof of what was used, what stayed out, and why the next move was suggested.',
-    },
-    {
-        title: 'Vault',
-        text: 'Continuity only grows when you accept it. Rough work can stay temporary.',
-    },
-    {
-        title: 'Tools',
-        text: 'Files, web, images, documents, and research can be added later through approval gates.',
-    },
-];
-
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
 }
@@ -76,9 +50,9 @@ function makeEcosystemResult(intent) {
         kind: 'ecosystem',
         intent,
         mirror: {
-            reflection: 'Active Mirror starts as a private reflection surface, then adds memory, files, research, and tools only when they help the work.',
-            question: 'Do you want to move one thing now, or understand the system before you use it?',
-            move: 'Start with one real stuck point. The ecosystem becomes useful after the first reflection.',
+            reflection: 'Active Mirror is for the moment when regular AI gives you more words but you still do not know what to do.',
+            question: 'What is the one thing you want help moving right now?',
+            move: 'Type the real stuck point in one sentence. Keep names, secrets, and private details out for now.',
             receipt: {
                 context_used: 'Your request to understand the Active Mirror ecosystem.',
                 context_excluded: 'No private user context was needed.',
@@ -123,23 +97,19 @@ function makeFollowUps(mirror = {}) {
         mirror.question && {
             label: 'Go deeper',
             icon: Telescope,
-            intent: `Reflect one layer deeper on this question without giving me a long answer: ${mirror.question}`,
+            intent: `Go one layer deeper on this question without giving me a long answer: ${mirror.question}`,
         },
         {
-            label: 'Make it smaller',
+            label: 'Shrink it',
             icon: Minimize2,
             intent: `Make this next move smaller and easier to start: ${mirror.move || 'the next move'}`,
         },
         {
-            label: 'Draft the message',
+            label: 'Write it',
             icon: PenLine,
             intent: `Turn this into a short message I could send: ${mirror.move || mirror.question || 'the next move'}`,
         },
     ].filter(Boolean);
-}
-
-function summarizeVisibleAsk(intent) {
-    return intent.length > 220 ? `${intent.slice(0, 220).trim()}...` : intent;
 }
 
 function makeSendableDraft(mirror = {}) {
@@ -174,25 +144,6 @@ function MirrorLogo() {
     );
 }
 
-function Visual({ visual }) {
-    if (!visual) return null;
-
-    if (visual.kind === 'reframe') {
-        return (
-            <div className="rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.06] p-4">
-                <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Reframe</div>
-                <div className="grid gap-3 text-sm sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-                    <div className="text-zinc-500 line-through decoration-zinc-600">{visual.left}</div>
-                    <div className="text-cyan-200">→</div>
-                    <div className="font-semibold leading-6 text-white">{visual.right}</div>
-                </div>
-            </div>
-        );
-    }
-
-    return null;
-}
-
 function ReflectionGlow({ mirror }) {
     const text = `${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const urgent = /\b(overwhelmed|stuck|panic|confused|scared|afraid|urgent|pressure|spiral|loop)\b/.test(text);
@@ -205,38 +156,23 @@ function ReflectionGlow({ mirror }) {
     );
 }
 
-function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourceChecked }) {
+function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked }) {
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const truthState = result?.truth_state || mirror.truth_state;
 
     return (
-        <div className="flex h-full min-h-0 flex-col rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_0_70px_rgba(124,58,237,0.14)] ring-1 ring-white/[0.04] backdrop-blur-2xl">
-            <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3">
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <Sparkles size={16} className={isLoading ? 'animate-pulse text-violet-200' : 'text-violet-200'} />
-                    {isLoading ? 'Reflecting' : 'Live mirror'}
-                </div>
-                <div className="rounded-full border border-white/10 bg-white/[0.055] px-2.5 py-1 text-[11px] font-semibold text-zinc-300">
-                    private first
-                </div>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-auto px-4 py-4">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] bg-[#111116]/86 shadow-[0_0_70px_rgba(124,58,237,0.14)] ring-1 ring-white/[0.055] backdrop-blur-2xl">
+            <div className="min-h-0 flex-1 overflow-auto px-4 py-4 sm:px-5 sm:py-5">
                 <div className="grid gap-3">
-                    <ReflectionGlow mirror={mirror} />
-                    <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-4 text-[1.02rem] leading-7 text-zinc-100">
-                        {mirror.reflection}
-                    </div>
-                    <div className="rounded-3xl border border-violet-200/20 bg-violet-200/[0.07] px-4 py-4">
-                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-200/75">The real question</div>
-                        <div className="text-base font-semibold leading-6 text-white">{mirror.question}</div>
-                    </div>
-                    <div className="flex gap-3 rounded-3xl border border-white/10 bg-white/[0.055] px-4 py-4">
-                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-violet-200" />
-                        <div>
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-200/75">One thing</div>
-                            <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
+                    <div className="relative overflow-hidden rounded-[1.8rem] bg-[radial-gradient(circle_at_10%_0%,rgba(168,85,247,0.22),transparent_38%),radial-gradient(circle_at_90%_100%,rgba(34,211,238,0.11),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.095),rgba(255,255,255,0.026))] p-5 sm:p-6">
+                        <ReflectionGlow mirror={mirror} />
+                        <div className="mt-5 text-[1.12rem] leading-7 text-zinc-100 sm:text-[1.22rem]">
+                            {mirror.reflection}
+                        </div>
+                        <p className="mt-5 text-lg font-semibold leading-7 text-white">{mirror.question}</p>
+                        <div className="mt-5 rounded-[1.35rem] bg-white/[0.075] px-4 py-3 text-sm font-semibold leading-6 text-zinc-100">
+                            {mirror.move}
                         </div>
                     </div>
                     <NeedsSources
@@ -248,62 +184,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourc
                         onSourceChecked={onSourceChecked}
                     />
                     {isLoading ? <LoadingPanel /> : null}
-                    {!isLoading && result?.kind === 'ecosystem' ? <EcosystemPanel /> : null}
-                    {!isLoading && result?.kind !== 'ecosystem' ? (
-                        <details className="group rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-3 text-sm text-zinc-400">
-                            <summary className="cursor-pointer list-none font-medium text-cyan-100">
-                                Show more
-                                <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
-                            </summary>
-                            <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
-                                <Visual visual={mirror.visual} />
-                                <ReflectiveSurface result={result || { mirror }} intent={intent} onPrompt={onPrompt} disabled={disabled} />
-                                <MirrorFeedback page="home" surface="homepage_result" turn={1} />
-                                <ReflectionCardActions mirror={mirror} surface="home" />
-                            </div>
-                        </details>
-                    ) : null}
-                    <details className="group rounded-3xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400">
-                        <summary className="cursor-pointer list-none font-medium">
-                            What stayed private
-                            <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
-                        </summary>
-                        <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
-                            <SourceCheckLine truthState={truthState} sourceCheck={sourceCheck} onClearSourceCheck={onSourceChecked ? () => onSourceChecked(null) : undefined} />
-                            <div>
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
-                                <div className="mt-1 leading-6">{mirror.receipt?.context_used}</div>
-                            </div>
-                            <div>
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Left out</div>
-                                <div className="mt-1 leading-6">{mirror.receipt?.context_excluded}</div>
-                            </div>
-                            <div>
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Memory</div>
-                                <div className="mt-1 leading-6">{mirror.receipt?.memory_decision}</div>
-                            </div>
-                        </div>
-                    </details>
                 </div>
-            </div>
-        </div>
-    );
-}
-
-function EcosystemPanel() {
-    return (
-        <div className="rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.055] p-4">
-            <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/75">
-                <Network size={14} />
-                Ecosystem
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-                {ECOSYSTEM.map((item) => (
-                    <div key={item.title} className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                        <div className="text-sm font-semibold text-white">{item.title}</div>
-                        <div className="mt-1 text-xs leading-5 text-zinc-400">{item.text}</div>
-                    </div>
-                ))}
             </div>
         </div>
     );
@@ -354,7 +235,7 @@ export default function HomePage() {
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
     const [sendableDraft, setSendableDraft] = useState(null);
-    const [lastSourceCheck, setLastSourceCheck] = useState(null);
+    const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
     useEffect(() => {
@@ -445,49 +326,48 @@ export default function HomePage() {
                         <MirrorLogo />
                         <div>
                             <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
-                            <div className="hidden text-xs text-zinc-500 sm:block">one thing in, one move out</div>
+                            <div className="hidden text-xs text-zinc-500 sm:block">a clearer next step</div>
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <Link to="/start" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:text-white sm:inline-flex">
-                            BrainScan
-                        </Link>
                         <Link to="/enterprise" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white sm:inline-flex">
-                            Enterprise
+                            For teams
                         </Link>
                     </div>
                 </div>
             </header>
 
             <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-3xl flex-col gap-4 px-4 py-5 lg:py-6">
-                <section className="flex flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
-                    <div>
-                        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-3 py-1.5 text-xs font-semibold text-zinc-300">
+                <section className={`flex flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl ${showMirror ? 'p-3 sm:p-4' : 'p-5 sm:p-7'}`}>
+                    {!showMirror ? (
+                        <div>
+                            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-3 py-1.5 text-xs font-semibold text-zinc-300">
                             <ShieldCheck size={14} />
-                            Private first
-                        </div>
-                        <h1 className="text-[2.7rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4rem]">
-                            What are you stuck on?
-                        </h1>
-                        <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
-                            Say the thing. Get the next move.
-                        </p>
+                            Private
+                            </div>
+                            <h1 className="text-[2.7rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4rem]">
+                                What are you stuck on?
+                            </h1>
+                            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
+                                Say the thing. Get the next move.
+                            </p>
 
-                        <div className="mt-4 flex flex-wrap gap-2">
-                            {STARTERS.map((starter) => (
-                                <button
-                                    key={starter}
-                                    type="button"
-                                    onClick={() => setText(starter)}
-                                    className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
-                                >
-                                    {starter}
-                                </button>
-                            ))}
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                {STARTERS.map((starter) => (
+                                    <button
+                                        key={starter}
+                                        type="button"
+                                        onClick={() => setText(starter)}
+                                        className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
+                                    >
+                                        {starter}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    ) : null}
 
-                    <div className="mt-7">
+                    <div className={showMirror ? '' : 'mt-7'}>
                         <form onSubmit={submit} className="flex items-end gap-2">
                             <textarea
                                 ref={inputRef}
@@ -518,34 +398,16 @@ export default function HomePage() {
                                 <Lock size={13} />
                                 Nothing is saved from this page.
                             </span>
-                            {seed ? (
-                                <span className="inline-flex items-center gap-1.5">
-                                    <Brain size={13} />
-                                    Local seed available.
-                                </span>
-                            ) : null}
-                            {activeDefault ? (
-                                <span className="inline-flex items-center gap-1.5">
-                                    <BookmarkPlus size={13} />
-                                    Using your default.
-                                </span>
-                            ) : null}
                         </div>
                     </div>
                 </section>
 
                 {showMirror ? (
                     <section className="flex flex-col gap-3">
-                        {lastIntent ? (
-                            <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-zinc-400">
-                                You asked: <span className="text-zinc-200">{summarizeVisibleAsk(lastIntent)}</span>
-                            </div>
-                        ) : null}
                         <MirrorResult
                             result={result}
                             intent={lastIntent}
                             disabled={busy}
-                            sourceCheck={lastSourceCheck}
                             onSourceChecked={setLastSourceCheck}
                             onPrompt={(nextIntent) => {
                                 trackEvent('followup_clicked', { page: 'home', source: 'surface' });
@@ -553,7 +415,7 @@ export default function HomePage() {
                             }}
                         />
                         <div className="grid gap-2 pb-1 sm:grid-cols-3">
-                            {followUps.map((item) => {
+                            {followUps.map((item, index) => {
                                 const Icon = item.icon;
                                 return (
                                     <button
@@ -564,10 +426,14 @@ export default function HomePage() {
                                             reflect(item.intent, 'follow_up');
                                         }}
                                         disabled={busy}
-                                        className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-left text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:bg-violet-200/[0.075] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-left text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.075] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                                     >
-                                        <Icon size={16} className="text-purple-200" />
-                                        {item.label}
+                                        <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/60 to-transparent opacity-0 transition group-hover:opacity-100" />
+                                        <span className="flex items-center gap-2">
+                                            <span className="text-[10px] font-black text-violet-200/70">0{index + 1}</span>
+                                            <Icon size={16} className="text-purple-200" />
+                                            {item.label}
+                                        </span>
                                     </button>
                                 );
                             })}
@@ -578,7 +444,7 @@ export default function HomePage() {
             </main>
 
             <div className="relative z-10 mx-auto flex max-w-3xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-                <div>One thing at a time. Nothing saved unless you choose.</div>
+                <div>Nothing saved unless you choose.</div>
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
@@ -587,7 +453,7 @@ export default function HomePage() {
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
                         className="inline-flex items-center gap-1 transition hover:text-white"
                     >
-                        Take BrainScan
+                        Make it yours
                         <ArrowRight size={12} />
                     </Link>
                 </div>
