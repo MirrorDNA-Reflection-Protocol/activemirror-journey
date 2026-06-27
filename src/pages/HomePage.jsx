@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, FileText, Lock, Minimize2, PenLine, Sparkles, Telescope } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, Minimize2, PenLine, Sparkles, Telescope } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import { NeedsSources } from '../components/TruthStateNotice';
-import { getActiveMirrorDefault, getArchetype } from '../lib/mirror-state';
+import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -95,19 +95,19 @@ function makeBlockedResult(data = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.question && {
-            label: 'Go deeper',
+            label: 'Ask sharper',
             icon: Telescope,
             action: 'reflect',
             intent: `Go one layer deeper on this question without giving me a long answer: ${mirror.question}`,
         },
         {
-            label: 'Smaller',
+            label: 'Make it easier',
             icon: Minimize2,
             action: 'reflect',
             intent: `Make this next move smaller and easier to start: ${mirror.move || 'the next move'}`,
         },
         {
-            label: 'Draft it',
+            label: 'Make a draft',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -159,7 +159,83 @@ function ReflectionGlow({ mirror }) {
     );
 }
 
-function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked }) {
+function mirrorMemoryKey(mirror = {}) {
+    return `${mirror.question || ''}::${mirror.move || ''}`;
+}
+
+function MicroVisual({ visual }) {
+    if (!visual) return null;
+
+    if (visual.kind === 'reframe') {
+        return (
+            <div className="mt-3 grid gap-2 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] p-3 text-sm sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                <div className="text-zinc-500 line-through decoration-zinc-600">{visual.left}</div>
+                <div className="hidden text-cyan-200 sm:block">to</div>
+                <div className="font-semibold text-cyan-100">{visual.right}</div>
+            </div>
+        );
+    }
+
+    if (visual.kind === 'axes') {
+        return (
+            <div className="mt-3 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] p-3">
+                <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-violet-300 via-cyan-200 to-emerald-200" />
+                <div className="flex justify-between gap-4 text-sm font-semibold">
+                    <span className="text-zinc-300">{visual.left}</span>
+                    <span className="text-right text-cyan-100">{visual.right}</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (visual.kind === 'spectrum') {
+        return (
+            <div className="mt-3 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] p-3">
+                <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-purple-300 to-cyan-200" />
+                <div className="flex justify-between gap-4 text-sm font-semibold">
+                    <span>{visual.left}</span>
+                    <span className="text-right text-cyan-100">{visual.right}</span>
+                </div>
+            </div>
+        );
+    }
+
+    return null;
+}
+
+function NextMoveSurface({ mirror, onRemember, remembered }) {
+    return (
+        <div className="mt-5 rounded-[1.55rem] border border-white/10 bg-black/24 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem]">
+                <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.075] px-4 py-4">
+                    <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-200/75">
+                        <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                        Next move
+                    </div>
+                    <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
+                </div>
+                <div className="flex flex-col justify-between rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
+                    <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Keep it?</div>
+                        <div className="mt-2 text-sm leading-6 text-zinc-400">Save only this question and move.</div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => onRemember?.(mirror)}
+                        disabled={remembered}
+                        className="mt-4 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-3 text-sm font-semibold text-violet-100 transition hover:border-violet-300/40 hover:bg-violet-300/[0.12] disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
+                    >
+                        {remembered ? <Check size={16} /> : <BookmarkPlus size={16} />}
+                        {remembered ? 'Remembered' : 'Remember'}
+                    </button>
+                </div>
+            </div>
+            <MicroVisual visual={mirror.visual} />
+        </div>
+    );
+}
+
+function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onRemember, remembered }) {
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const truthState = result?.truth_state || mirror.truth_state;
@@ -179,15 +255,10 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked }) {
                     <p className="mt-5 text-[1.05rem] leading-7 text-zinc-100 sm:text-[1.16rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-5 rounded-[1.35rem] border border-violet-200/20 bg-violet-200/[0.075] px-4 py-4 text-white shadow-[0_0_34px_rgba(168,85,247,0.10)]">
-                        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-violet-100/70">
-                            Try this next
-                        </div>
-                        <div className="text-base font-semibold leading-7 sm:text-lg">{mirror.move}</div>
-                    </div>
-                    <p className="mt-5 text-sm leading-6 text-zinc-400 sm:text-[0.95rem]">
+                    <p className="mt-5 rounded-[1.35rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
                         {mirror.question}
                     </p>
+                    <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
                 </div>
             </div>
             <NeedsSources
@@ -247,6 +318,7 @@ export default function HomePage() {
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
     const [sendableDraft, setSendableDraft] = useState(null);
+    const [rememberedKey, setRememberedKey] = useState('');
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
@@ -318,6 +390,16 @@ export default function HomePage() {
         } finally {
             setBusy(false);
         }
+    }
+
+    function rememberMirror(mirror = {}) {
+        saveMirrorDefault({
+            question: mirror.question,
+            move: mirror.move,
+            source: 'home',
+        });
+        setRememberedKey(mirrorMemoryKey(mirror));
+        trackEvent('mirror_default_saved', { page: 'home', source: 'explicit_approval' });
     }
 
     function submit(event) {
@@ -420,6 +502,8 @@ export default function HomePage() {
                             intent={lastIntent}
                             disabled={busy}
                             onSourceChecked={setLastSourceCheck}
+                            onRemember={rememberMirror}
+                            remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
                             onPrompt={(nextIntent) => {
                                 trackEvent('followup_clicked', { page: 'home', source: 'surface' });
                                 reflect(nextIntent, 'surface');
