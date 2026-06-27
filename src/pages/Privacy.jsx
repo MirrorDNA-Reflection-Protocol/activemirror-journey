@@ -25,6 +25,11 @@ const sections = [
         body: 'MirrorSeed, approved defaults, phone-thread continuity, and local feedback counts are stored in your browser when you choose to use those features. You can clear them from the app or browser storage.',
     },
     {
+        icon: Mail,
+        title: 'Proof sprint requests',
+        body: 'The enterprise request form creates a metadata-only receipt from your work email domain, selected workflow, timeline, source, consent, and request id. Workflow details stay out until scoped intake.',
+    },
+    {
         icon: Globe2,
         title: 'Model and source routes',
         body: 'Reflection and source-check requests may be routed through cloud model or search providers. Source checks happen only when you ask for current or external facts, or when the product marks a claim as needing sources.',

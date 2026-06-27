@@ -69,6 +69,8 @@ export default function App() {
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/legal" element={<Navigate to="/privacy" replace />} />
+                    <Route path="/id" element={<Navigate to="/start" replace />} />
+                    <Route path="/mirrorseed" element={<Navigate to="/start" replace />} />
                     <Route path="/scan" element={<Navigate to="/start" replace />} />
                     <Route path="/brainscan" element={<Navigate to="/start" replace />} />
                     <Route path="/reflect" element={<Navigate to="/mirror" replace />} />

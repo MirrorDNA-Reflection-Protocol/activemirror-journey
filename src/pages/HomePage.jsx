@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, Minimize2, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Telescope, Trash2, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Telescope, Trash2, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
@@ -35,9 +35,9 @@ const SAMPLE_MIRROR = {
 };
 
 const STARTERS = [
-    "I'm delaying.",
-    'I need to decide.',
-    'Help me write it.',
+    'I feel stuck.',
+    'I need a decision.',
+    'Turn this into something useful.',
 ];
 
 const LOADING_MIRROR = {
@@ -125,17 +125,17 @@ function makeLocalPrivacyResult(sense = {}) {
 
 function makeFollowUps(mirror = {}) {
     return [
+        mirror.move && {
+            label: 'Help me start this',
+            icon: ArrowRight,
+            action: 'reflect',
+            intent: `Help me start this without adding more options: ${mirror.move}`,
+        },
         mirror.question && {
             label: 'Ask sharper',
             icon: Telescope,
             action: 'reflect',
             intent: `Go one layer deeper on this question without giving me a long answer: ${mirror.question}`,
-        },
-        {
-            label: 'Make it easier',
-            icon: Minimize2,
-            action: 'reflect',
-            intent: `Make this next move smaller and easier to start: ${mirror.move || 'the next move'}`,
         },
         {
             label: 'Make a draft',
@@ -256,8 +256,8 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
                 </div>
                 <div className="flex flex-col justify-between rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
                     <div>
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Keep it?</div>
-                        <div className="mt-2 text-sm leading-6 text-zinc-400">Save only this question and move.</div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Optional</div>
+                        <div className="mt-2 text-sm leading-6 text-zinc-400">Save only this question and move if it helps.</div>
                     </div>
                     <button
                         type="button"
@@ -266,7 +266,7 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
                         className="mt-4 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-3 text-sm font-semibold text-violet-100 transition hover:border-violet-300/40 hover:bg-violet-300/[0.12] disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
                     >
                         {remembered ? <Check size={16} /> : <BookmarkPlus size={16} />}
-                        {remembered ? 'Remembered' : 'Remember'}
+                        {remembered ? 'Saved' : 'Save this'}
                     </button>
                 </div>
             </div>
@@ -760,7 +760,7 @@ export default function HomePage() {
                                 What do you want?
                             </h1>
                             <p className="mt-5 max-w-lg text-base leading-7 text-zinc-400 sm:text-lg">
-                                Bring one real thing. Active Mirror gives you the next move.
+                                Type one real thing. Get one reflected answer and one move you can try.
                             </p>
 
                             <div className="mt-4 flex flex-wrap gap-2">
@@ -768,7 +768,8 @@ export default function HomePage() {
                                     <button
                                         key={starter}
                                         type="button"
-                                        onClick={() => setText(starter)}
+                                        onClick={() => reflect(starter, 'starter')}
+                                        disabled={busy}
                                         className="rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:bg-white/[0.05] hover:text-white"
                                     >
                                         {starter}
@@ -785,7 +786,7 @@ export default function HomePage() {
                                 rows={showMirror ? 1 : 2}
                                 value={text}
                                 maxLength={1000}
-                                placeholder="What's one thing?"
+                                placeholder="One thing you want help moving..."
                                 onChange={(event) => setText(event.target.value)}
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter' && !event.shiftKey) {
@@ -870,16 +871,16 @@ export default function HomePage() {
             </main>
 
             <div className="relative z-10 mx-auto flex max-w-3xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-                <div>Private by default.</div>
+                <div>Not saved unless you choose it.</div>
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
                     <Link
-                        to="/start"
+                        to="/id"
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
                         className="inline-flex items-center gap-1 transition hover:text-white"
                     >
-                        Personalize
+                        MirrorSeed
                         <ArrowRight size={12} />
                     </Link>
                 </div>

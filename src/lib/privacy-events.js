@@ -23,6 +23,8 @@ const ALLOWED_EVENTS = new Set([
     'draft_downloaded',
     'draft_shared',
     'mirror_default_saved',
+    'proof_sprint_started',
+    'proof_sprint_result',
     'phone_thread_cleared',
 ]);
 
@@ -40,6 +42,8 @@ const ALLOWED_DETAIL_KEYS = new Set([
     'totalBytes',
     'types',
     'label',
+    'workflow',
+    'timeline',
 ]);
 
 function safeStorage(kind) {

@@ -6,15 +6,19 @@ import {
     CircleDot,
     FileCheck2,
     Lock,
+    Mail,
     Play,
     RotateCcw,
+    Send,
     ShieldCheck,
     TerminalSquare,
     Workflow,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const ENTERPRISE_STREAM_URL = 'https://gateway.activemirror.ai/v1/mirror/enterprise-stream';
+const PROOF_SPRINT_URL = 'https://gateway.activemirror.ai/v1/mirror/proof-sprint';
 
 const workflowRuns = [
     {
@@ -89,6 +93,12 @@ const views = [
     ['MirrorProof', 'receipt pack for serious outputs and claims'],
     ['Consent Gate', 'approval before memory, sharing, or side effects'],
     ['Private Runtime', 'browser-first, self-hosted, or managed deployment'],
+];
+
+const timelineOptions = [
+    ['72h', '72 hours'],
+    ['this_week', 'This week'],
+    ['exploring', 'Exploring'],
 ];
 
 const statusStyles = {
@@ -382,6 +392,172 @@ function Metric({ label, value, tone }) {
     );
 }
 
+function proofSprintFallbackHref({ workflow, timeline, receiptId }) {
+    const workflowLabel = workflowRuns.find((run) => run.id === workflow)?.label || 'Not sure';
+    const timelineLabel = timelineOptions.find(([value]) => value === timeline)?.[1] || timeline;
+    const subject = encodeURIComponent('Active Mirror proof sprint');
+    const body = encodeURIComponent([
+        'I want to start an Active Mirror proof sprint.',
+        '',
+        `Workflow: ${workflowLabel}`,
+        `Timeline: ${timelineLabel}`,
+        receiptId ? `Request receipt: ${receiptId}` : '',
+        '',
+        'I will share workflow details after scoped intake.',
+    ].filter(Boolean).join('\n'));
+    return `mailto:paul@activemirror.ai?subject=${subject}&body=${body}`;
+}
+
+function ProofSprintRequest({ activeRun, source = 'final' }) {
+    const [replyTo, setReplyTo] = useState('');
+    const [timeline, setTimeline] = useState('72h');
+    const [consent, setConsent] = useState(false);
+    const [website, setWebsite] = useState('');
+    const [status, setStatus] = useState('idle');
+    const [message, setMessage] = useState('');
+    const [receipt, setReceipt] = useState(null);
+    const [fallbackHref, setFallbackHref] = useState('');
+
+    async function submit(event) {
+        event.preventDefault();
+        const workflow = activeRun?.id || 'unsure';
+
+        if (!replyTo.trim() || !consent) {
+            setStatus('error');
+            setMessage('Add a work email and consent first.');
+            return;
+        }
+
+        setStatus('submitting');
+        setMessage('');
+        setReceipt(null);
+        trackEvent('proof_sprint_started', { page: 'enterprise', source, workflow, timeline });
+
+        try {
+            const response = await fetch(PROOF_SPRINT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Active-Mirror-Session': getPrivacySessionId(),
+                },
+                body: JSON.stringify({
+                    reply_to: replyTo,
+                    workflow,
+                    timeline,
+                    source,
+                    consent,
+                    website,
+                }),
+            });
+            const data = await response.json();
+
+            if (!response.ok || data.ok !== true) {
+                throw new Error(data.error || 'request_failed');
+            }
+
+            const href = proofSprintFallbackHref({ workflow, timeline, receiptId: data.receipt_id });
+            setReceipt(data);
+            setFallbackHref(href);
+            setStatus('ready');
+            setMessage('Request receipt created.');
+            trackEvent('proof_sprint_result', { page: 'enterprise', source, workflow, timeline, status: 'ok' });
+        } catch (error) {
+            const href = proofSprintFallbackHref({ workflow, timeline });
+            setFallbackHref(href);
+            setStatus(error.message === 'rate_limited' ? 'cooldown' : 'error');
+            setMessage(error.message === 'rate_limited' ? 'The request route is cooling down. Use the email fallback.' : 'Could not create a receipt. Use the email fallback.');
+            trackEvent('proof_sprint_result', { page: 'enterprise', source, workflow, timeline, status: 'fallback' });
+        }
+    }
+
+    return (
+        <form id="proof-sprint" onSubmit={submit} className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.07] p-5 text-left ring-1 ring-white/[0.04] sm:p-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-black/25 px-3 py-1 text-xs font-semibold text-emerald-100">
+                        <Mail size={14} />
+                        Scoped request
+                    </div>
+                    <h2 className="text-3xl font-semibold tracking-[-0.05em]">Start a proof sprint.</h2>
+                    <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-300">
+                        Create a request receipt first. Keep workflow details out until intake.
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
+                    Selected: <span className="font-semibold text-white">{activeRun?.label || 'Not sure'}</span>
+                </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-[1fr_13rem]">
+                <label className="grid gap-2 text-sm font-semibold text-zinc-200">
+                    Work email
+                    <input
+                        type="email"
+                        value={replyTo}
+                        onChange={(event) => setReplyTo(event.target.value)}
+                        placeholder="you@company.com"
+                        autoComplete="email"
+                        className="min-h-12 rounded-2xl border border-white/10 bg-black/35 px-4 text-base text-white outline-none transition placeholder:text-zinc-600 focus:border-emerald-300/45"
+                    />
+                </label>
+                <label className="grid gap-2 text-sm font-semibold text-zinc-200">
+                    Timeline
+                    <select
+                        value={timeline}
+                        onChange={(event) => setTimeline(event.target.value)}
+                        className="min-h-12 rounded-2xl border border-white/10 bg-black/35 px-4 text-base text-white outline-none transition focus:border-emerald-300/45"
+                    >
+                        {timelineOptions.map(([value, label]) => (
+                            <option key={value} value={value}>{label}</option>
+                        ))}
+                    </select>
+                </label>
+                <label className="hidden" aria-hidden="true">
+                    Website
+                    <input value={website} onChange={(event) => setWebsite(event.target.value)} tabIndex={-1} autoComplete="off" />
+                </label>
+            </div>
+
+            <label className="mt-4 flex items-start gap-3 text-sm leading-6 text-zinc-300">
+                <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(event) => setConsent(event.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-white/20 bg-black"
+                />
+                I consent to be contacted about this proof sprint. I will share workflow details only after scoped intake.
+            </label>
+
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <button
+                    type="submit"
+                    disabled={status === 'submitting'}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+                >
+                    {status === 'submitting' ? 'Creating...' : 'Create request receipt'}
+                    <Send size={16} />
+                </button>
+                {fallbackHref ? (
+                    <a
+                        href={fallbackHref}
+                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-100 transition hover:border-emerald-300/35 hover:text-white"
+                    >
+                        Open email
+                        <ArrowRight size={16} />
+                    </a>
+                ) : null}
+            </div>
+
+            {message ? (
+                <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm leading-6 ${status === 'ready' ? 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-100' : 'border-amber-300/20 bg-amber-300/[0.08] text-amber-100'}`}>
+                    {message}
+                    {receipt?.receipt_id ? <span className="ml-2 font-mono text-xs text-zinc-300">Receipt {receipt.receipt_id}</span> : null}
+                </div>
+            ) : null}
+        </form>
+    );
+}
+
 export default function Enterprise() {
     const [runId, setRunId] = useState(workflowRuns[0].id);
     const activeRun = workflowRuns.find((run) => run.id === runId) || workflowRuns[0];
@@ -415,7 +591,7 @@ export default function Enterprise() {
                         </p>
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
-                                href="mailto:paul@activemirror.ai?subject=Active%20Mirror%20enterprise%20proof"
+                                href="#proof-sprint"
                                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 text-sm font-semibold text-black shadow-[0_0_34px_rgba(16,185,129,0.24)] transition hover:scale-[1.01]"
                             >
                                 Start a proof sprint
@@ -503,18 +679,8 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.07] p-6 text-center ring-1 ring-white/[0.04] sm:p-8">
-                    <h2 className="text-3xl font-semibold tracking-[-0.05em]">Bring one workflow.</h2>
-                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-zinc-300">
-                        We will show the governed version: the useful output, the approval path, and the receipt that proves what happened.
-                    </p>
-                    <a
-                        href="mailto:paul@activemirror.ai?subject=Active%20Mirror%2072-hour%20proof%20sprint"
-                        className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:scale-[1.01]"
-                    >
-                        Start the proof sprint
-                        <ArrowRight size={17} />
-                    </a>
+                <section className="mt-6">
+                    <ProofSprintRequest activeRun={activeRun} source="final" />
                 </section>
             </main>
         </div>

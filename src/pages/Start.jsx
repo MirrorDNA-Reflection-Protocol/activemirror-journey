@@ -123,6 +123,9 @@ export default function Start() {
                             <h1 className="max-w-xl text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
                                 Take BrainScan.
                             </h1>
+                            <div className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-purple-200/80">
+                                BrainScan / MirrorSeed / Reflection
+                            </div>
                             <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-400">
                                 Six quick choices. The result stays in this browser and helps the mirror start closer to how you think.
                             </p>
@@ -195,7 +198,7 @@ export default function Start() {
                                 Local only
                             </div>
                             <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
-                                Your mirror is ready.
+                                MirrorSeed ready.
                             </h1>
                             <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">
                                 {result.archetype_name}: {result.description}
@@ -215,7 +218,7 @@ export default function Start() {
                                     onClick={() => navigate('/mirror', { state: { startPrompt: start.prompt } })}
                                     className="inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 py-4 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
                                 >
-                                    Reflect with this
+                                    Start reflection
                                     <ArrowRight size={19} />
                                 </button>
                                 <button

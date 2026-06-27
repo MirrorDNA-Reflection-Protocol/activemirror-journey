@@ -96,10 +96,16 @@ function memoryKey(mirror = {}) {
     return `${mirror.question || ''}::${mirror.move || ''}`;
 }
 
+function shouldOpenSurface(intent = '', mirror = {}) {
+    return /\b(output|draft|write|file|pdf|doc|deck|sheet|excel|research|source|image|video|visual|canvas|artifact)\b/i
+        .test(`${intent} ${mirror.move || ''} ${mirror.question || ''}`);
+}
+
 function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, turn, sourceCheck, onSourceChecked }) {
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
     const truthState = data.truth_state || mirror.truth_state;
+    const [showSurface, setShowSurface] = useState(() => shouldOpenSurface(intent, mirror));
 
     return (
         <div className="flex flex-col gap-3">
@@ -128,7 +134,17 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                 onSourceChecked={onSourceChecked}
             />
             <Visual visual={mirror.visual} />
-            <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+            {showSurface ? (
+                <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+            ) : (
+                <button
+                    type="button"
+                    onClick={() => setShowSurface(true)}
+                    className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/[0.045] px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:border-cyan-300/30 hover:text-white"
+                >
+                    Make an output
+                </button>
+            )}
             <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} />
             <ReflectionCardActions mirror={mirror} surface="mirror" />
             <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
