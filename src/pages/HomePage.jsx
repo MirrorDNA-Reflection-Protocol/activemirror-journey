@@ -47,15 +47,15 @@ function isEcosystemAsk(intent) {
 
 function makeEcosystemResult(intent) {
     return {
-        kind: 'ecosystem',
+        kind: 'help',
         intent,
         mirror: {
-            reflection: 'Active Mirror is for the moment when regular AI gives you more words but you still do not know what to do.',
+            reflection: 'Active Mirror is for the moment when regular AI gives you more words but you still do not know what to do. Start with one real thing; it will help you find the next move.',
             question: 'What is the one thing you want help moving right now?',
-            move: 'Type the real stuck point in one sentence. Keep names, secrets, and private details out for now.',
+            move: 'Type the stuck point in one sentence. Leave out names, secrets, and private details until they are actually needed.',
             receipt: {
-                context_used: 'Your request to understand the Active Mirror ecosystem.',
-                context_excluded: 'No private user context was needed.',
+                context_used: 'Your question about how Active Mirror helps.',
+                context_excluded: 'No private details were needed.',
                 memory_decision: 'Nothing saved.',
             },
         },
@@ -463,7 +463,7 @@ export default function HomePage() {
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
                         className="inline-flex items-center gap-1 transition hover:text-white"
                     >
-                        Make it yours
+                        Personalize
                         <ArrowRight size={12} />
                     </Link>
                 </div>
