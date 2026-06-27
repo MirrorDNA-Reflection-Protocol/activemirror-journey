@@ -8,8 +8,33 @@ const FEEDBACK_OPTIONS = [
     { id: 'no', label: 'No' },
 ];
 
-export default function MirrorFeedback({ page = 'mirror', surface = 'reflection', turn = 1, result = {}, className = '' }) {
+function repairOptions(result = {}) {
+    const mirror = result.mirror || {};
+    const move = mirror.move || 'the next move';
+    const question = mirror.question || 'the real question';
+
+    return [
+        {
+            id: 'smaller',
+            label: 'Make it smaller',
+            intent: `Make this easier to start. Keep one tiny next move only: ${move}`,
+        },
+        {
+            id: 'sharper',
+            label: 'Sharper question',
+            intent: `Make this question sharper and more honest: ${question}`,
+        },
+        {
+            id: 'different',
+            label: 'Different angle',
+            intent: 'Try a different reflection. Keep it short, concrete, and useful.',
+        },
+    ];
+}
+
+export default function MirrorFeedback({ page = 'mirror', surface = 'reflection', turn = 1, result = {}, onRepair, className = '' }) {
     const [selected, setSelected] = useState('');
+    const showRepair = selected === 'almost' || selected === 'no';
 
     function choose(option) {
         setSelected(option.id);
@@ -25,6 +50,17 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
             fallback: Boolean(metadata?.fallback || result.fallback),
             visualKind: metadata?.visualKind || result.mirror?.visual?.kind || 'none',
         });
+    }
+
+    function repair(option) {
+        trackEvent('followup_clicked', {
+            page,
+            surface,
+            source: 'feedback_repair',
+            label: option.id,
+            turn,
+        });
+        onRepair?.(option.intent, option);
     }
 
     return (
@@ -56,6 +92,20 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
                     })}
                 </div>
             </div>
+            {showRepair ? (
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
+                    {repairOptions(result).map((option) => (
+                        <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => repair(option)}
+                            className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12] hover:text-white"
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+            ) : null}
         </div>
     );
 }

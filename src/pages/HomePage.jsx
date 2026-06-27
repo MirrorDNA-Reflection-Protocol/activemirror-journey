@@ -313,7 +313,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
             />
             {result && !disabled ? (
                 <div className="sm:pl-12">
-                    <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} />
+                    <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
                 </div>
             ) : null}
         </div>
@@ -829,9 +829,9 @@ export default function HomePage() {
                             onSourceChecked={setLastSourceCheck}
                             onRemember={rememberMirror}
                             remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
-                            onPrompt={(nextIntent) => {
-                                trackEvent('followup_clicked', { page: 'home', source: 'surface' });
-                                reflect(nextIntent, 'surface');
+                            onPrompt={(nextIntent, source = 'surface') => {
+                                trackEvent('followup_clicked', { page: 'home', source });
+                                reflect(nextIntent, source);
                             }}
                         />
                         <div className="sm:pl-12">

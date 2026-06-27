@@ -147,7 +147,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     Make an output
                 </button>
             )}
-            <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} />
+            <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
             <ReflectionCardActions mirror={mirror} surface="mirror" />
             <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -388,7 +388,7 @@ export default function ReflectChat() {
                                     data={turn.data}
                                     intent={turn.intent || ''}
                                     disabled={busy}
-                                    onPrompt={(nextIntent) => useStarter(nextIntent, 'surface')}
+                                    onPrompt={(nextIntent, source = 'surface') => useStarter(nextIntent, source)}
                                     onSaveDefault={rememberMirror}
                                     saved={Boolean(savedDefaults[memoryKey(turn.data?.mirror)])}
                                     turn={index}
