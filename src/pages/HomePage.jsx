@@ -380,10 +380,23 @@ function MemoryDrawer({
 }) {
     const [editingKey, setEditingKey] = useState('');
     const [draft, setDraft] = useState({ question: '', move: '' });
+    const [mode, setMode] = useState('list');
+    const [cardIndex, setCardIndex] = useState(0);
+    const [cardFlipped, setCardFlipped] = useState(false);
 
     if (!open) return null;
 
+    const activeCardIndex = items.length ? Math.min(cardIndex, items.length - 1) : 0;
+    const activeCard = items[activeCardIndex] || null;
+
+    function changeCard(delta) {
+        if (!items.length) return;
+        setCardIndex((current) => (current + delta + items.length) % items.length);
+        setCardFlipped(false);
+    }
+
     function startEdit(item) {
+        setMode('list');
         setEditingKey(memoryItemKey(item));
         setDraft({
             question: item.question || '',
@@ -410,6 +423,15 @@ function MemoryDrawer({
                     <div>
                         <div className="text-lg font-semibold tracking-[-0.03em] text-white">Memory</div>
                         <div className="mt-1 text-sm leading-6 text-zinc-400">Saved on this browser. Edit or remove anything.</div>
+                        {items.length ? (
+                            <button
+                                type="button"
+                                onClick={() => setMode((current) => current === 'cards' ? 'list' : 'cards')}
+                                className="mt-3 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/35"
+                            >
+                                {mode === 'cards' ? 'Show list' : 'Show cards'}
+                            </button>
+                        ) : null}
                     </div>
                     <button
                         type="button"
@@ -425,6 +447,56 @@ function MemoryDrawer({
                     {!items.length ? (
                         <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
                             Nothing saved yet. When a reflection is useful, choose Remember.
+                        </div>
+                    ) : mode === 'cards' && activeCard ? (
+                        <div className="grid gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setCardFlipped((value) => !value)}
+                                className="min-h-[17rem] rounded-[1.75rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(167,139,250,0.14),transparent_55%),rgba(255,255,255,0.04)] p-5 text-left shadow-[0_0_50px_rgba(124,58,237,0.12)] transition hover:border-violet-200/30"
+                            >
+                                <div className="mb-5 flex items-center justify-between gap-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                                    <span>Card {activeCardIndex + 1} of {items.length}</span>
+                                    <span>{cardFlipped ? 'Next move' : 'Pattern'}</span>
+                                </div>
+                                <div className="flex min-h-40 items-center">
+                                    <p className={`text-2xl font-semibold leading-tight tracking-[-0.04em] ${cardFlipped ? 'text-emerald-50' : 'text-white'} sm:text-3xl`}>
+                                        {cardFlipped
+                                            ? activeCard.move || 'No move saved yet.'
+                                            : activeCard.question || 'No question saved yet.'}
+                                    </p>
+                                </div>
+                                <div className="mt-5 text-sm text-zinc-500">
+                                    {cardFlipped ? 'Tap to see the pattern again.' : 'Tap to reveal the move.'}
+                                </div>
+                            </button>
+
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => changeCard(-1)}
+                                    className="min-h-11 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        onUse?.(activeCard);
+                                        setCardFlipped(true);
+                                    }}
+                                    className="min-h-11 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 text-sm font-semibold text-emerald-100 transition hover:border-emerald-300/35"
+                                >
+                                    Use
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => changeCard(1)}
+                                    className="min-h-11 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <div className="grid gap-3">
