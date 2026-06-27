@@ -47,6 +47,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState(null);
+    const [narrowed, setNarrowed] = useState(false);
 
     if (truthState?.status !== 'needs_checking') return null;
 
@@ -101,12 +102,20 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 {canNarrowClaim ? (
                     <button
                         type="button"
-                        onClick={() => onPrompt(makeNarrowClaimPrompt(intent, mirror, result.research))}
+                        onClick={() => {
+                            setNarrowed(true);
+                            onPrompt(makeNarrowClaimPrompt(intent, mirror, result.research));
+                        }}
                         disabled={disabled}
                         className="mt-3 inline-flex items-center justify-center rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold text-current transition hover:border-white/25 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Narrow the claim
                     </button>
+                ) : null}
+                {narrowed ? (
+                    <div className={`mt-2 text-xs leading-5 ${verdict.muted}`}>
+                        Smaller claims are easier to check, easier to act on, and harder for AI to bluff.
+                    </div>
                 ) : null}
                 {sources.length ? (
                     <div className="mt-3 grid gap-2">
