@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, ArrowRight, ArrowUp, BookmarkPlus, Brain, CheckCircle2, ChevronDown, Cpu, FileText, Lock, Network, Search, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
@@ -26,6 +26,12 @@ const SAMPLE_MIRROR = {
         memory_decision: 'Nothing is saved from this demo.',
     },
 };
+
+const STARTERS = [
+    'I need a clearer next move.',
+    'I need honest pushback.',
+    'Turn this into something I can send.',
+];
 
 const LOADING_MIRROR = {
     reflection: 'Reading the stuck point once. Active Mirror is looking for the real question underneath it.',
@@ -59,20 +65,6 @@ const ECOSYSTEM = [
         title: 'Tools',
         text: 'Files, web, images, documents, and research can be added later through approval gates.',
     },
-];
-
-const COMMAND_MODULES = [
-    { label: 'Intent', value: 'one thing', tone: 'cyan', note: 'keeps the ask narrow' },
-    { label: 'Boundary', value: 'private', tone: 'emerald', note: 'sharing needs approval' },
-    { label: 'Mirror', value: 'question', tone: 'purple', note: 'reflects before acting' },
-    { label: 'Move', value: 'next step', tone: 'amber', note: 'one action, not a lecture' },
-];
-
-const FLOW_ROWS = [
-    ['input', 'You bring one real thing'],
-    ['reflect', 'Finds the real question'],
-    ['shape', 'Turns it into a next move'],
-    ['receipt', 'Shows what was used and left out'],
 ];
 
 function isEcosystemAsk(intent) {
@@ -175,94 +167,6 @@ function MirrorLogo() {
     );
 }
 
-function toneClass(tone) {
-    return {
-        cyan: 'border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100',
-        emerald: 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-100',
-        purple: 'border-purple-300/25 bg-purple-300/[0.08] text-purple-100',
-        amber: 'border-amber-300/25 bg-amber-300/[0.08] text-amber-100',
-    }[tone] || 'border-white/10 bg-white/[0.05] text-zinc-100';
-}
-
-function CommandCenterPreview({ compact = false, activeIntent = '' }) {
-    return (
-        <aside className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#050608]/85 p-4 shadow-[0_0_80px_rgba(34,211,238,0.12)] ring-1 ring-cyan-200/10 backdrop-blur-2xl">
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.07)_1px,transparent_1px)] bg-[size:28px_28px] opacity-35" />
-            <div className="relative">
-                <div className="mb-4 flex items-center justify-between gap-3 border-b border-cyan-200/15 pb-3">
-                    <div className="flex items-center gap-2">
-                        <span className="grid h-8 w-8 place-items-center rounded-xl border border-cyan-200/20 bg-cyan-300/[0.08] text-cyan-100">
-                            <Activity size={16} />
-                        </span>
-                        <div>
-                            <div className="text-sm font-semibold text-white">Mirror Console</div>
-                            <div className="text-[11px] text-zinc-500">live reflection surface</div>
-                        </div>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2.5 py-1 text-[11px] font-semibold text-emerald-200">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
-                        private
-                    </div>
-                </div>
-
-                <div className="grid gap-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-                    {COMMAND_MODULES.map((item) => (
-                        <div key={item.label} className={`rounded-2xl border p-3 ${toneClass(item.tone)}`}>
-                            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] opacity-65">{item.label}</div>
-                            <div className="mt-2 text-base font-semibold tracking-[-0.02em] text-white">{item.value}</div>
-                            <div className="mt-1 text-[11px] leading-4 opacity-70">{item.note}</div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-3 grid gap-3 lg:grid-cols-[1.05fr_0.95fr]">
-                    <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
-                        <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200/75">
-                            <Cpu size={13} />
-                            Reflection path
-                        </div>
-                        <div className="grid gap-2">
-                            {FLOW_ROWS.map(([key, text], index) => (
-                                <div key={key} className="grid grid-cols-[1.7rem_1fr] items-center gap-2 text-xs text-zinc-300">
-                                    <span className="grid h-6 w-6 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-semibold text-cyan-100">
-                                        {index + 1}
-                                    </span>
-                                    <span>{text}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
-                        <div className="mb-2 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-purple-200/75">
-                                <Zap size={13} />
-                                Current turn
-                            </div>
-                            <span className="text-[11px] text-zinc-600">local</span>
-                        </div>
-                        <div className="rounded-xl border border-purple-300/15 bg-purple-300/[0.06] p-3 text-sm leading-6 text-zinc-200">
-                            {activeIntent ? summarizeVisibleAsk(activeIntent) : 'Start with one real thing.'}
-                        </div>
-                        {!compact ? (
-                            <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-zinc-400">
-                                <div className="rounded-xl border border-emerald-300/15 bg-emerald-300/[0.06] p-2">
-                                    <CheckCircle2 size={13} className="mb-1 text-emerald-200" />
-                                    No memory without approval
-                                </div>
-                                <div className="rounded-xl border border-cyan-300/15 bg-cyan-300/[0.06] p-2">
-                                    <Search size={13} className="mb-1 text-cyan-200" />
-                                    Sources when facts matter
-                                </div>
-                            </div>
-                        ) : null}
-                    </div>
-                </div>
-            </div>
-        </aside>
-    );
-}
-
 function Visual({ visual }) {
     if (!visual) return null;
 
@@ -280,6 +184,18 @@ function Visual({ visual }) {
     }
 
     return null;
+}
+
+function ReflectionGlow({ mirror }) {
+    const text = `${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
+    const urgent = /\b(overwhelmed|stuck|panic|confused|scared|afraid|urgent|pressure|spiral|loop)\b/.test(text);
+    const decisive = /\b(decide|choice|ship|send|test|move|start|today)\b/.test(text);
+    const tone = urgent ? 'from-amber-300/20 via-purple-300/12 to-cyan-300/10' : decisive ? 'from-emerald-300/18 via-cyan-300/12 to-purple-300/10' : 'from-purple-300/18 via-cyan-300/10 to-white/5';
+    const label = urgent ? 'steady' : decisive ? 'clear' : 'open';
+
+    return (
+        <div className={`h-2 rounded-full bg-gradient-to-r ${tone}`} aria-label={`Reflection tone: ${label}`} />
+    );
 }
 
 function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourceChecked }) {
@@ -301,6 +217,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourc
 
             <div className="min-h-0 flex-1 overflow-auto px-4 py-4">
                 <div className="grid gap-3">
+                    <ReflectionGlow mirror={mirror} />
                     <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-4 text-[1.02rem] leading-7 text-zinc-100">
                         {mirror.reflection}
                     </div>
@@ -323,18 +240,22 @@ function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourc
                         onPrompt={onPrompt}
                         onSourceChecked={onSourceChecked}
                     />
-                    {isLoading ? (
-                        <LoadingPanel />
-                    ) : result?.kind === 'ecosystem' ? (
-                        <EcosystemPanel />
-                    ) : (
-                        <>
-                            <Visual visual={mirror.visual} />
-                            <ReflectiveSurface result={result || { mirror }} intent={intent} onPrompt={onPrompt} disabled={disabled} />
-                            <MirrorFeedback page="home" surface="homepage_result" turn={1} />
-                            <ReflectionCardActions mirror={mirror} surface="home" />
-                        </>
-                    )}
+                    {isLoading ? <LoadingPanel /> : null}
+                    {!isLoading && result?.kind === 'ecosystem' ? <EcosystemPanel /> : null}
+                    {!isLoading && result?.kind !== 'ecosystem' ? (
+                        <details className="group rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-3 text-sm text-zinc-400">
+                            <summary className="cursor-pointer list-none font-medium text-cyan-100">
+                                Show more
+                                <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
+                            </summary>
+                            <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
+                                <Visual visual={mirror.visual} />
+                                <ReflectiveSurface result={result || { mirror }} intent={intent} onPrompt={onPrompt} disabled={disabled} />
+                                <MirrorFeedback page="home" surface="homepage_result" turn={1} />
+                                <ReflectionCardActions mirror={mirror} surface="home" />
+                            </div>
+                        </details>
+                    ) : null}
                     <details className="group rounded-3xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400">
                         <summary className="cursor-pointer list-none font-medium">
                             What stayed private
@@ -417,79 +338,10 @@ function SendableDraft({ draft }) {
     );
 }
 
-function LandingScreen({ onStart }) {
-    return (
-        <div className="relative min-h-dvh overflow-hidden bg-black text-white selection:bg-purple-500/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.22),transparent_34%),radial-gradient(circle_at_bottom,_rgba(34,211,238,0.10),transparent_36%),#000]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.024)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.016)_1px,transparent_1px)] bg-[size:46px_46px] opacity-20" />
-
-            <header className="relative z-10 border-b border-white/10 bg-black/50 px-4 py-4 backdrop-blur-xl">
-                <nav className="mx-auto flex max-w-3xl items-center justify-between gap-3 text-sm text-zinc-400">
-                    <Link to="/device" className="transition hover:text-white">Mobile</Link>
-                    <Link to="/start" className="text-purple-200 transition hover:text-white">BrainScan</Link>
-                    <Link to="/mirror" className="transition hover:text-white">Open mirror</Link>
-                    <Link to="/enterprise" className="transition hover:text-white">Enterprise</Link>
-                </nav>
-            </header>
-
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-6xl items-center px-4 py-7">
-                <section className="mx-auto grid w-full gap-4 lg:max-w-6xl lg:grid-cols-[0.88fr_1.12fr] lg:items-stretch">
-                    <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.045] px-6 py-9 text-left shadow-[0_0_90px_rgba(168,85,247,0.14)] ring-1 ring-white/[0.05] backdrop-blur-2xl sm:px-8 sm:py-11">
-                        <div className="mb-8 inline-flex items-center gap-3">
-                            <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-black/30 shadow-[0_0_40px_rgba(124,58,237,0.18)]">
-                                <MirrorLogo />
-                            </div>
-                            <div>
-                                <div className="text-sm font-semibold text-white">Active Mirror</div>
-                                <div className="text-xs text-zinc-500">private reflection</div>
-                            </div>
-                        </div>
-
-                        <h1 className="max-w-[9ch] text-[3.25rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.6rem]">
-                            What do
-                            <span className="block bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
-                                you want?
-                            </span>
-                        </h1>
-
-                        <p className="mt-7 max-w-md text-xl leading-8 text-zinc-400 sm:text-2xl sm:leading-10">
-                            Bring one stuck thing. Get one honest next move.
-                        </p>
-                        <p className="mt-3 max-w-sm text-base leading-7 text-zinc-500">
-                            Private by default. Nothing saved unless you choose.
-                        </p>
-
-                        <div className="mt-9 grid max-w-sm gap-3">
-                            <button
-                                type="button"
-                                onClick={onStart}
-                                className="group inline-flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 text-lg font-semibold text-white shadow-[0_0_38px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
-                            >
-                                Start reflection
-                                <ArrowRight size={23} className="transition group-hover:translate-x-1" />
-                            </button>
-                            <Link
-                                to="/start"
-                                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-6 text-base font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
-                            >
-                                Take BrainScan
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="hidden md:block">
-                        <CommandCenterPreview />
-                    </div>
-                </section>
-            </main>
-        </div>
-    );
-}
-
 export default function HomePage() {
     const inputRef = useRef(null);
     const [seed] = useState(() => getArchetype());
     const [activeDefault] = useState(() => getActiveMirrorDefault());
-    const [started, setStarted] = useState(false);
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
@@ -502,17 +354,10 @@ export default function HomePage() {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
     }, []);
 
-    function startReflection() {
-        setStarted(true);
-        trackEvent('reflection_started', { page: 'home', source: 'landing' });
-        window.setTimeout(() => inputRef.current?.focus(), 50);
-    }
-
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
 
-        setStarted(true);
         setText('');
         setLastIntent(cleanIntent);
         setSendableDraft(null);
@@ -582,17 +427,13 @@ export default function HomePage() {
 
     const showMirror = Boolean(result || busy || lastIntent);
 
-    if (!started && !showMirror) {
-        return <LandingScreen onStart={startReflection} />;
-    }
-
     return (
         <div className="relative min-h-dvh overflow-hidden bg-black text-white selection:bg-purple-500/30">
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.20),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(34,211,238,0.13),transparent_32%),#000]" />
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.026)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:46px_46px] opacity-25" />
 
             <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
-                <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+                <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
                         <div>
@@ -604,47 +445,38 @@ export default function HomePage() {
                         <Link to="/start" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:text-white sm:inline-flex">
                             BrainScan
                         </Link>
-                        <Link to="/device" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-cyan-300/30 hover:text-white sm:inline-flex">
-                            This device
-                        </Link>
                         <Link to="/enterprise" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white sm:inline-flex">
                             Enterprise
-                        </Link>
-                        <Link to="/mirror" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
-                            Full mirror
                         </Link>
                     </div>
                 </div>
             </header>
 
-            <main className={`relative z-10 mx-auto grid min-h-[calc(100dvh-57px)] gap-5 px-4 py-5 lg:items-stretch lg:px-6 lg:py-6 ${
-                showMirror
-                    ? 'max-w-7xl xl:grid-cols-[minmax(320px,0.72fr)_minmax(420px,1fr)]'
-                    : 'max-w-3xl'
-            }`}
-            >
-                <section className="flex min-h-[34rem] flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-3xl flex-col gap-4 px-4 py-5 lg:py-6">
+                <section className="flex flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
                     <div>
                         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
                             <ShieldCheck size={14} />
                             Private first
                         </div>
-                        <h1 className="max-w-[11ch] text-[2.9rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.1rem]">
-                            What do you want?
-                            <span className="block bg-gradient-to-r from-purple-200 via-white to-cyan-200 bg-clip-text text-transparent">
-                                Get one move.
-                            </span>
+                        <h1 className="text-[2.7rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4rem]">
+                            What are you stuck on?
                         </h1>
                         <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
-                            Say the thing plainly. Active Mirror reflects the real question, gives you one next move, and keeps private context out unless you choose otherwise.
+                            Say the thing. Get the next move.
                         </p>
 
-                        <div className="mt-7 rounded-3xl border border-purple-300/15 bg-purple-300/[0.06] px-4 py-4 text-sm leading-6 text-zinc-300">
-                            Our job is to help you get it without adding more noise.
-                        </div>
-
-                        <div className="mt-5 hidden md:block">
-                            <CommandCenterPreview compact activeIntent={lastIntent} />
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {STARTERS.map((starter) => (
+                                <button
+                                    key={starter}
+                                    type="button"
+                                    onClick={() => setText(starter)}
+                                    className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 transition hover:border-purple-300/30 hover:text-white"
+                                >
+                                    {starter}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
@@ -655,7 +487,7 @@ export default function HomePage() {
                                 rows={2}
                                 value={text}
                                 maxLength={1000}
-                                placeholder="What's one thing you're stuck on?"
+                                placeholder="Tell me one thing you're stuck on."
                                 onChange={(event) => setText(event.target.value)}
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter' && !event.shiftKey) {
@@ -696,7 +528,7 @@ export default function HomePage() {
                 </section>
 
                 {showMirror ? (
-                    <section className="flex min-h-[36rem] flex-col gap-3 lg:min-h-0">
+                    <section className="flex flex-col gap-3">
                         {lastIntent ? (
                             <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-zinc-400">
                                 You asked: <span className="text-zinc-200">{summarizeVisibleAsk(lastIntent)}</span>
@@ -747,12 +579,11 @@ export default function HomePage() {
                 ) : null}
             </main>
 
-            <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between lg:px-6">
-                <div>Reflection first. Ecosystem when useful.</div>
+            <div className="relative z-10 mx-auto flex max-w-3xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+                <div>One thing at a time. Nothing saved unless you choose.</div>
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
-                    <Link to="/device" className="transition hover:text-white">This device</Link>
                     <Link
                         to="/start"
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}

@@ -84,7 +84,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 }),
             });
             const data = await response.json();
-            if (!response.ok || !data.ok) {
+            if (!response.ok && !data.research?.verification_plan) {
                 throw new Error(data.error || 'source_check_failed');
             }
             setResult(data);
@@ -96,15 +96,16 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
         }
     }
 
-    if (result?.truth_state?.status === 'checked') {
+    if (result?.truth_state?.status === 'checked' || result?.research?.verification_plan) {
         const sources = result.research?.sources || [];
         const verdict = VERDICT_COPY[result.research?.verdict] || VERDICT_COPY.mixed;
         const canNarrowClaim = typeof onPrompt === 'function' && result.research?.verdict !== 'supported';
+        const plan = result.research?.verification_plan;
         return (
             <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
                 <div className="mb-2 flex items-center gap-2 font-semibold">
                     <SearchCheck size={16} className={verdict.icon} />
-                    {verdict.title}
+                    {plan ? 'Verification plan' : verdict.title}
                 </div>
                 {verdict.helper ? (
                     <div className={`mb-2 ${verdict.muted}`}>{verdict.helper}</div>
@@ -112,6 +113,46 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 <div>{result.research?.answer}</div>
                 {result.research?.changes ? (
                     <div className={`mt-2 ${verdict.muted}`}>{result.research.changes}</div>
+                ) : null}
+                {plan ? (
+                    <div className="mt-3 grid gap-3">
+                        {plan.queries?.length ? (
+                            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                                <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+                                    Try these searches
+                                </div>
+                                <div className="grid gap-2">
+                                    {plan.queries.map((query) => (
+                                        <div key={query} className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-xs leading-5 text-zinc-200">
+                                            {query}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+                        <div className="grid gap-2 sm:grid-cols-2">
+                            {plan.prefer?.length ? (
+                                <div className="rounded-xl border border-emerald-300/15 bg-emerald-300/[0.06] p-3">
+                                    <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-200/75">
+                                        Prefer
+                                    </div>
+                                    <ul className="grid gap-1 text-xs leading-5 text-emerald-50/85">
+                                        {plan.prefer.map((item) => <li key={item}>{item}</li>)}
+                                    </ul>
+                                </div>
+                            ) : null}
+                            {plan.avoid?.length ? (
+                                <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.06] p-3">
+                                    <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-200/75">
+                                        Avoid
+                                    </div>
+                                    <ul className="grid gap-1 text-xs leading-5 text-amber-50/85">
+                                        {plan.avoid.map((item) => <li key={item}>{item}</li>)}
+                                    </ul>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
                 ) : null}
                 {canNarrowClaim ? (
                     <button
@@ -189,26 +230,38 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
 export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck }) {
     const sources = sourceCheck?.research?.sources || [];
     const firstSource = sources[0];
+    const plan = sourceCheck?.research?.verification_plan;
 
     return (
         <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Checked</div>
             <div className="mt-1 leading-6">{sourceCheckLabel(truthState)}</div>
-            {sourceCheck?.truth_state?.status === 'checked' ? (
+            {sourceCheck?.truth_state?.status === 'checked' || plan ? (
                 <details className="group mt-3 rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-2">
                     <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-300">
-                        Last source check
+                        {plan ? 'Last verification plan' : 'Last source check'}
                         <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                     </summary>
                     <div className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-zinc-500">
                         <div className="font-semibold text-zinc-300">
-                            {sourceCheck.research?.verdict === 'supported'
+                            {plan
+                                ? 'Needs sources'
+                                : sourceCheck.research?.verdict === 'supported'
                                 ? 'Source checked'
                                 : sourceCheck.research?.verdict === 'mixed'
                                     ? 'Evidence mixed'
                                     : 'Still needs proof'}
                         </div>
                         <div className="mt-1">{sourceCheck.research?.answer}</div>
+                        {plan?.queries?.length ? (
+                            <div className="mt-3 grid gap-2">
+                                {plan.queries.slice(0, 3).map((query) => (
+                                    <div key={query} className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-zinc-400">
+                                        {query}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : null}
                         {firstSource ? (
                             <a
                                 href={firstSource.url}
