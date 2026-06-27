@@ -24,6 +24,11 @@ Use those only as references or migration sources.
 
 `/Users/mirror-pro/repos/active-mirror-site` still contains live deployment and Worker/gateway history. Product UI changes should be built and verified here first, then intentionally packaged into the live/deploy repo if needed.
 
+When packaging for live deploy, copy only `dist/index.html`, `dist/404.html`,
+and `dist/assets/` into `/Users/mirror-pro/repos/active-mirror-site/public/app`.
+Do not broad-copy route directories from `public/`; they can shadow React app
+routes and show stale pages.
+
 ## Product Rule
 
 The first screen should look and feel like the March-gold Active Mirror surface:

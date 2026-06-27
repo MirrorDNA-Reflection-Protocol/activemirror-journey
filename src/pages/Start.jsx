@@ -107,9 +107,13 @@ export default function Start() {
                 <Link to="/" className="text-sm font-semibold text-zinc-300 transition hover:text-white">
                     Active Mirror
                 </Link>
-                <Link to="/mirror" className="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-zinc-300 transition hover:border-purple-400/40 hover:text-white">
-                    Open mirror
-                </Link>
+                <div className="flex items-center gap-3 text-xs">
+                    <Link to="/privacy" className="hidden text-zinc-500 transition hover:text-white sm:inline">Privacy</Link>
+                    <Link to="/terms" className="hidden text-zinc-500 transition hover:text-white sm:inline">Terms</Link>
+                    <Link to="/mirror" className="rounded-full border border-white/10 px-4 py-2 font-semibold text-zinc-300 transition hover:border-purple-400/40 hover:text-white">
+                        Open mirror
+                    </Link>
+                </div>
             </header>
 
             <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-78px)] w-full max-w-5xl items-center px-4 pb-10">

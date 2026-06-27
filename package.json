@@ -16,7 +16,7 @@
         "ops:diff": "bash scripts/control_plane_diff.sh",
         "smoke:prod": "bash scripts/smoke_prod.sh",
         "proxy": "cd safety_proxy && python3 safety_proxy.py",
-        "deploy": "gh-pages -d dist --dotfiles"
+        "deploy": "echo \"Direct deploy is disabled. Build here, then copy the /app bundle through /Users/mirror-pro/repos/active-mirror-site.\" && exit 1"
     },
     "dependencies": {
         "@mlc-ai/web-llm": "^0.2.84",

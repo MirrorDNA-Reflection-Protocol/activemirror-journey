@@ -1,7 +1,7 @@
-import { ArrowLeft, Ban, CheckCircle, FileText, Scale, Shield, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, Ban, CheckCircle, FileText, Fingerprint, Scale, Shield, TriangleAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const lastUpdated = 'June 26, 2026';
+const lastUpdated = 'June 27, 2026';
 
 const prohibited = [
     'Do not paste passwords, API keys, private URLs, payment data, or other secrets.',
@@ -39,7 +39,7 @@ export default function Terms() {
                         <li>Review the output before acting on it.</li>
                         <li>Keep secrets and sensitive details out.</li>
                         <li>Memory and defaults are your choice.</li>
-                        <li>Abuse, scraping, and bypass attempts are not allowed.</li>
+                        <li>Abuse, scraping, bypass attempts, and automated overload are not allowed.</li>
                     </ul>
                 </section>
 
@@ -50,7 +50,7 @@ export default function Terms() {
                             <h2 className="text-xl font-semibold tracking-[-0.03em]">Agreement</h2>
                         </div>
                         <p className="text-sm leading-7 text-zinc-400">
-                            By using Active Mirror, you agree to these terms. The service is operated by N1 Intelligence (OPC) Pvt Ltd. If you do not agree, do not use the service.
+                            By using Active Mirror, you agree to these terms and the privacy notice. The service is operated by N1 Intelligence (OPC) Pvt Ltd. If you do not agree, do not use the service.
                         </p>
                     </div>
 
@@ -60,7 +60,7 @@ export default function Terms() {
                             <h2 className="text-xl font-semibold tracking-[-0.03em]">Your content</h2>
                         </div>
                         <p className="text-sm leading-7 text-zinc-400">
-                            You keep ownership of what you submit. You give us permission to process your input only to provide the reflection, protect the service, and operate the product as described in the privacy policy.
+                            You keep ownership of what you submit. You give us permission to process your input only to provide and improve the service, protect the product, enforce these terms, and operate Active Mirror as described in the privacy notice.
                         </p>
                     </div>
 
@@ -70,7 +70,17 @@ export default function Terms() {
                             <h2 className="text-xl font-semibold tracking-[-0.03em]">AI output</h2>
                         </div>
                         <p className="text-sm leading-7 text-zinc-300">
-                            AI output can be incomplete, wrong, biased, or inappropriate. Active Mirror is designed to make reasoning clearer, but you remain responsible for decisions and actions you take.
+                            AI output can be incomplete, wrong, biased, outdated, or inappropriate. Active Mirror is designed to make reasoning clearer, but you remain responsible for decisions and actions you take.
+                        </p>
+                    </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
+                        <div className="mb-3 flex items-center gap-3">
+                            <Fingerprint size={20} className="text-cyan-100" />
+                            <h2 className="text-xl font-semibold tracking-[-0.03em]">Not professional or emergency advice</h2>
+                        </div>
+                        <p className="text-sm leading-7 text-zinc-400">
+                            Active Mirror is not a doctor, lawyer, financial adviser, therapist, crisis service, or emergency service. For urgent safety, health, legal, financial, or mental-health concerns, contact a qualified professional or local emergency support.
                         </p>
                     </div>
 
@@ -97,9 +107,23 @@ export default function Terms() {
                     </div>
 
                     <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
+                        <h2 className="text-xl font-semibold tracking-[-0.03em]">Intellectual property</h2>
+                        <p className="mt-3 text-sm leading-7 text-zinc-400">
+                            Active Mirror, MirrorDNA, Trust by Design, associated marks, product language, designs, and software are owned by N1 Intelligence (OPC) Pvt Ltd or its licensors. These terms do not give you rights to copy the brand, source, or commercial product materials.
+                        </p>
+                    </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
                         <h2 className="text-xl font-semibold tracking-[-0.03em]">Liability</h2>
                         <p className="mt-3 text-sm leading-7 text-zinc-400">
-                            The service is provided as is, without warranties. To the maximum extent permitted by law, we are not liable for indirect, incidental, consequential, or special damages arising from use of the service.
+                            The service is provided as-is, without warranties. To the maximum extent permitted by law, we are not liable for indirect, incidental, consequential, special, or punitive damages arising from use of the service.
+                        </p>
+                    </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
+                        <h2 className="text-xl font-semibold tracking-[-0.03em]">Age and eligibility</h2>
+                        <p className="mt-3 text-sm leading-7 text-zinc-400">
+                            You must be old enough to use online services in your jurisdiction. Do not use Active Mirror if you are barred from doing so under applicable law.
                         </p>
                     </div>
 
@@ -109,7 +133,18 @@ export default function Terms() {
                             Questions about these terms: <a href="mailto:paul@activemirror.ai" className="text-cyan-200 hover:underline">paul@activemirror.ai</a>.
                         </p>
                     </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
+                        <h2 className="text-xl font-semibold tracking-[-0.03em]">Privacy</h2>
+                        <p className="mt-3 text-sm leading-7 text-zinc-400">
+                            Read the <Link to="/privacy" className="text-cyan-200 hover:underline">Active Mirror privacy notice</Link> for what is sent, what stays local, and how telemetry is limited.
+                        </p>
+                    </div>
                 </section>
+
+                <p className="mt-8 text-xs leading-6 text-zinc-600">
+                    These public terms are a practical operating baseline, not legal advice. They should be reviewed before paid launch, enterprise contracting, or jurisdiction-specific campaigns.
+                </p>
             </main>
         </div>
     );

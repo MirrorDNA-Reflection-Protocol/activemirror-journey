@@ -443,7 +443,11 @@ export default function ReflectChat() {
                         <ArrowUp size={19} />
                     </button>
                 </form>
-                <div className="mx-auto mt-2 max-w-[48rem] text-center text-xs text-zinc-500">One sentence is enough. Nothing is saved.</div>
+                <div className="mx-auto mt-2 flex max-w-[48rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-xs text-zinc-500">
+                    <span>One sentence is enough. Nothing is saved.</span>
+                    <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
+                    <Link to="/terms" className="transition hover:text-white">Terms</Link>
+                </div>
             </footer>
         </div>
     );

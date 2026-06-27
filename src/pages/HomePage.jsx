@@ -454,7 +454,7 @@ export default function HomePage() {
                 ) : null}
             </main>
 
-            <div className="relative z-10 mx-auto hidden max-w-3xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative z-10 mx-auto flex max-w-3xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
                 <div>Private by default.</div>
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>

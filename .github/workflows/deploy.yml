@@ -1,11 +1,11 @@
-name: Deploy Sovereign Site
+name: Build Active Mirror product source
 on:
   push:
     branches: ["main"]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,11 +18,4 @@ jobs:
       - name: Install
         run: npm ci
       - name: Build
-        run: npm run build
-        env:
-          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist
-          branch: gh-pages
+        run: npm run build:deploy

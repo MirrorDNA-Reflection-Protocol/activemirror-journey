@@ -37,7 +37,7 @@ const bannedConsumerTerms = [
 ];
 
 const requiredTerms = [
-    { pattern: /What are you stuck on\?/i, label: 'front-door question' },
+    { pattern: /What do you want\?|What's one thing\?/i, label: 'front-door question' },
     { pattern: /Get the next move|one honest next move|one useful output|one move/i, label: 'outcome-first promise' },
     { pattern: /Nothing saved|nothing is saved|Memory is your choice/i, label: 'privacy choice promise' },
 ];

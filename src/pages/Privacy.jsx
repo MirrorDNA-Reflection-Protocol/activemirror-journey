@@ -1,7 +1,7 @@
-import { ArrowLeft, Database, EyeOff, Lock, Mail, Shield, Trash2 } from 'lucide-react';
+import { ArrowLeft, Cookie, Database, EyeOff, Globe2, Lock, Mail, Shield, Trash2, UserCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const lastUpdated = 'June 26, 2026';
+const lastUpdated = 'June 27, 2026';
 
 const sections = [
     {
@@ -11,18 +11,33 @@ const sections = [
     },
     {
         icon: Database,
-        title: 'What may leave your browser',
-        body: 'When you send a reflection request, the sentence you submit and a small boundary setting are sent to the Active Mirror gateway so a governed response can be generated. We do not ask for passwords, account numbers, private keys, or other secrets.',
+        title: 'What you send',
+        body: 'When you press send, the sentence you submit, the selected boundary, and a short session id are sent to the Active Mirror gateway so a governed response can be generated.',
     },
     {
         icon: EyeOff,
-        title: 'What we do not collect',
-        body: 'Feedback events contain metadata only, such as page, surface, label, status, and route. They do not include your prompt, reflection text, files, private notes, or MirrorSeed.',
+        title: 'What telemetry excludes',
+        body: 'Product events are allowlisted metadata only, such as page, button label, route, status, and count. They do not include your prompt, reflection text, files, private notes, or MirrorSeed.',
     },
     {
         icon: Lock,
         title: 'What stays local',
         body: 'MirrorSeed, approved defaults, phone-thread continuity, and local feedback counts are stored in your browser when you choose to use those features. You can clear them from the app or browser storage.',
+    },
+    {
+        icon: Globe2,
+        title: 'Model and source routes',
+        body: 'Reflection and source-check requests may be routed through cloud model or search providers. Source checks happen only when you ask for current or external facts, or when the product marks a claim as needing sources.',
+    },
+    {
+        icon: Cookie,
+        title: 'Cookies and local storage',
+        body: 'The public app uses browser storage for session continuity and local preferences. We do not use ad-tracking cookies in the current public experience.',
+    },
+    {
+        icon: UserCheck,
+        title: 'Your rights',
+        body: 'You can ask us to access, correct, or delete information you intentionally gave us outside the local app. Regional privacy rights may apply depending on where you live.',
     },
 ];
 
@@ -51,8 +66,8 @@ export default function Privacy() {
                         <li>Only send what you want reflected.</li>
                         <li>Do not paste secrets or highly sensitive personal details.</li>
                         <li>Memory is your choice; local defaults stay in your browser.</li>
-                        <li>Feedback events are counts and labels, not prompt content.</li>
-                        <li>We do not sell your data or train models on your conversations.</li>
+                        <li>Telemetry is counts, labels, route, and status; not prompt content.</li>
+                        <li>We do not sell your personal data or train our own models on your conversations.</li>
                     </ul>
                 </section>
 
@@ -71,11 +86,21 @@ export default function Privacy() {
                 </div>
 
                 <section className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
-                    <h2 className="text-xl font-semibold tracking-[-0.03em]">Processing and retention</h2>
+                    <h2 className="text-xl font-semibold tracking-[-0.03em]">Processing, providers, and retention</h2>
                     <div className="mt-4 grid gap-3 text-sm leading-7 text-zinc-400">
-                        <p>Reflection requests are processed transiently by the gateway and model route. We do not store full prompts or generated reflections as product analytics.</p>
-                        <p>Infrastructure providers may keep limited operational logs for security, abuse prevention, debugging, and service reliability. We keep our own product events prompt-free by design.</p>
-                        <p>Rate limiting uses session and network metadata to prevent abuse. The public feedback dashboard reads only your current browser session.</p>
+                        <p>Reflection requests are processed by the gateway and the selected model route. We do not store full prompts or generated reflections as product analytics.</p>
+                        <p>Cloud model, search, hosting, and infrastructure providers may process request content and limited operational data to deliver, secure, debug, and protect the service.</p>
+                        <p>Rate limiting uses session and network metadata to prevent abuse and control cost. The public feedback dashboard reads only your current browser session.</p>
+                        <p>Contact messages and proof-sprint requests are kept as long as needed to respond, manage the relationship, and maintain ordinary business records.</p>
+                    </div>
+                </section>
+
+                <section className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
+                    <h2 className="text-xl font-semibold tracking-[-0.03em]">Security limits</h2>
+                    <div className="mt-4 grid gap-3 text-sm leading-7 text-zinc-400">
+                        <p>The gateway blocks common API keys, tokens, credentials, and private-key patterns before model routing, but no automated filter is perfect.</p>
+                        <p>Do not paste passwords, API keys, private URLs, payment data, health records, legal case details, or anything you would not want processed by an AI provider.</p>
+                        <p>No internet service can guarantee absolute security. We use practical safeguards, narrow telemetry, rate limits, and provider-side secret storage to reduce risk.</p>
                     </div>
                 </section>
 
@@ -86,6 +111,17 @@ export default function Privacy() {
                         <p className="flex gap-3"><Mail className="mt-1 h-4 w-4 shrink-0 text-zinc-500" />Email <a href="mailto:paul@activemirror.ai" className="text-cyan-200 hover:underline">paul@activemirror.ai</a> for privacy questions or deletion requests for information you intentionally gave us outside the app.</p>
                     </div>
                 </section>
+
+                <section className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
+                    <h2 className="text-xl font-semibold tracking-[-0.03em]">Terms</h2>
+                    <p className="mt-3 text-sm leading-7 text-zinc-400">
+                        The privacy notice works with the <Link to="/terms" className="text-cyan-200 hover:underline">Active Mirror terms</Link>, including the AI-output limits and acceptable-use rules.
+                    </p>
+                </section>
+
+                <p className="mt-8 text-xs leading-6 text-zinc-600">
+                    This notice is a practical product privacy statement, not legal advice. It may be updated as Active Mirror adds accounts, paid plans, enterprise deployments, or new provider routes.
+                </p>
             </main>
         </div>
     );
