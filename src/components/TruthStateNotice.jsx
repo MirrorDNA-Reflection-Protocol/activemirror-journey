@@ -33,7 +33,17 @@ export function sourceCheckLabel(truthState) {
     return truthState?.label || 'Reflective, not source-checked.';
 }
 
-export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false }) {
+function makeNarrowClaimPrompt(intent, mirror = {}, research = {}) {
+    return [
+        'Narrow this into one specific claim we can check before using it.',
+        `Original ask: ${intent || 'the current ask'}`,
+        `Current question: ${mirror.question || intent || 'What needs to be checked?'}`,
+        research.answer ? `Source result: ${research.answer}` : '',
+        'Give me the safest next move.',
+    ].filter(Boolean).join('\n');
+}
+
+export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt }) {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState(null);
@@ -74,6 +84,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     if (result?.truth_state?.status === 'checked') {
         const sources = result.research?.sources || [];
         const verdict = VERDICT_COPY[result.research?.verdict] || VERDICT_COPY.mixed;
+        const canNarrowClaim = typeof onPrompt === 'function' && result.research?.verdict !== 'supported';
         return (
             <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
                 <div className="mb-2 flex items-center gap-2 font-semibold">
@@ -86,6 +97,16 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 <div>{result.research?.answer}</div>
                 {result.research?.changes ? (
                     <div className={`mt-2 ${verdict.muted}`}>{result.research.changes}</div>
+                ) : null}
+                {canNarrowClaim ? (
+                    <button
+                        type="button"
+                        onClick={() => onPrompt(makeNarrowClaimPrompt(intent, mirror, result.research))}
+                        disabled={disabled}
+                        className="mt-3 inline-flex items-center justify-center rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold text-current transition hover:border-white/25 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Narrow the claim
+                    </button>
                 ) : null}
                 {sources.length ? (
                     <div className="mt-3 grid gap-2">
