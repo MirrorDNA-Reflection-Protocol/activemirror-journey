@@ -41,7 +41,7 @@ const PROFILES = {
         copy: 'Use it for quick capture, one next move, and private continuity later. Keep the screen focused.',
         primary: 'Start quick mirror',
         primaryTo: '/mirror',
-        secondary: 'Build MirrorSeed',
+        secondary: 'Make it yours',
         secondaryTo: '/start',
         strengths: [
             { icon: Camera, title: 'Capture first', text: 'Use a sentence, screenshot, or file name as the start point.' },
@@ -56,7 +56,7 @@ const PROFILES = {
         copy: 'Use it for notes, reviewing options, and moving between reflection and the thing you are making.',
         primary: 'Open full mirror',
         primaryTo: '/mirror',
-        secondary: 'Start with a seed',
+        secondary: 'Quick setup',
         secondaryTo: '/start',
         strengths: [
             { icon: FileText, title: 'Review mode', text: 'Read the mirror next to the work without crowding the page.' },
@@ -336,7 +336,7 @@ export default function DeviceExperience() {
         try {
             phoneTurnRef.current += 1;
             const context = [
-                seed ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}.` : '',
+                seed ? `User profile: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}.` : '',
                 activeDefault ? `User-approved default: real question "${activeDefault.question || 'not set'}"; preferred next move "${activeDefault.move || 'not set'}".` : '',
                 `User intent: ${cleanIntent}`,
             ].filter(Boolean).join('\n');

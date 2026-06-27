@@ -38,7 +38,7 @@ const SAMPLE_MIRROR = {
 
 const STARTERS = [
     'I feel stuck.',
-    'My thoughts are moving fast.',
+    'I need honest feedback.',
     'I need a decision.',
 ];
 
@@ -356,6 +356,36 @@ function SendableDraft({ draft }) {
     );
 }
 
+function OwnedMirrorNudge({ seed }) {
+    if (seed) {
+        return (
+            <div className="rounded-[1.7rem] border border-emerald-300/15 bg-emerald-300/[0.065] px-4 py-4 shadow-[0_0_34px_rgba(52,211,153,0.08)]">
+                <div className="text-sm font-semibold text-emerald-100">Active Mirror knows your style here.</div>
+                <div className="mt-1 text-sm leading-6 text-zinc-400">
+                    Saved on this browser. You can edit or clear what it knows about you anytime.
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="rounded-[1.7rem] border border-violet-300/15 bg-violet-300/[0.065] px-4 py-4 shadow-[0_0_34px_rgba(168,85,247,0.08)]">
+            <div className="text-sm font-semibold text-violet-100">Make Active Mirror yours.</div>
+            <div className="mt-1 text-sm leading-6 text-zinc-400">
+                One minute of setup. Better questions, faster next moves, and a private profile you keep.
+            </div>
+            <Link
+                to="/id"
+                onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'make_this_yours' })}
+                className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.10] px-4 text-sm font-semibold text-violet-100 transition hover:border-violet-300/40 hover:bg-violet-300/[0.14]"
+            >
+                Make it yours
+                <ArrowRight size={15} />
+            </Link>
+        </div>
+    );
+}
+
 function LocalSenseLine({ sense }) {
     const cue = sense?.cues?.[0];
     if (!sense?.hasText || !cue) return null;
@@ -453,7 +483,7 @@ function MemoryDrawer({
                 <div className="overflow-y-auto px-4 py-4">
                     {!items.length ? (
                         <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
-                            Nothing saved yet. When a reflection is useful, choose Remember.
+                            Nothing saved yet. When an answer is useful, choose Remember.
                         </div>
                     ) : mode === 'cards' && activeCard ? (
                         <div className="grid gap-3">
@@ -734,7 +764,7 @@ export default function HomePage() {
                         <MirrorLogo />
                         <div>
                             <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
-                            <div className="hidden text-xs text-zinc-500 sm:block">one clearer move</div>
+                            <div className="hidden text-xs text-zinc-500 sm:block">move faster, stay honest</div>
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
@@ -756,7 +786,7 @@ export default function HomePage() {
                                 What do you want?
                             </h1>
                             <p className="mt-5 max-w-lg text-base leading-7 text-zinc-400 sm:text-lg">
-                                Type one real thing. Get one reflected answer and one move you can try.
+                                Get unstuck faster. Active Mirror asks the question most AI skips, then gives you one honest next move without fake agreement.
                             </p>
 
                             <div className="mt-4 flex flex-wrap gap-2">
@@ -782,7 +812,7 @@ export default function HomePage() {
                                 rows={showMirror ? 1 : 2}
                                 value={text}
                                 maxLength={1000}
-                                placeholder="One thing you want help moving..."
+                                placeholder="Tell Active Mirror what you want help with..."
                                 onChange={(event) => setText(event.target.value)}
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter' && !event.shiftKey) {
@@ -797,7 +827,7 @@ export default function HomePage() {
                                 type="submit"
                                 disabled={busy || text.trim().length < 4}
                                 className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.24)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
-                                aria-label="Reflect"
+                                aria-label="Get my next move"
                             >
                                 {busy ? <Sparkles size={18} className="animate-pulse" /> : <ArrowUp size={19} />}
                             </button>
@@ -862,6 +892,11 @@ export default function HomePage() {
                             })}
                         </div> : null}
                         <SendableDraft draft={sendableDraft} />
+                        {!busy && result ? (
+                            <div className="sm:pl-12">
+                                <OwnedMirrorNudge seed={seed} />
+                            </div>
+                        ) : null}
                     </section>
                 ) : null}
             </main>
@@ -876,7 +911,7 @@ export default function HomePage() {
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
                         className="inline-flex items-center gap-1 transition hover:text-white"
                     >
-                        MirrorSeed
+                        Make it yours
                         <ArrowRight size={12} />
                     </Link>
                 </div>

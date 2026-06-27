@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, RotateCcw } from 'lucide-react';
+import { ArrowRight, Check, Download, RotateCcw } from 'lucide-react';
 import MirrorSig from '../components/MirrorSig';
 import { evaluateFallbackAnswers, FALLBACK_ARCHETYPES, FALLBACK_QUESTIONS } from '../lib/brainFallback';
 import { saveBrainScan } from '../lib/mirror-state';
@@ -33,6 +33,27 @@ function makeMirrorId(archetype, answers) {
         hash |= 0;
     }
     return `mirror-${Math.abs(hash).toString(36)}`;
+}
+
+function downloadProfile(result) {
+    if (!result || typeof window === 'undefined') return;
+
+    const profile = {
+        product: 'Active Mirror',
+        type: 'local-profile',
+        createdAt: new Date().toISOString(),
+        name: result.archetype_name,
+        description: result.description,
+        strengths: result.strengths || [],
+        mirrorId: result.mirrorId,
+    };
+    const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'active-mirror-profile.json';
+    link.click();
+    URL.revokeObjectURL(url);
 }
 
 export default function Start() {
@@ -111,7 +132,7 @@ export default function Start() {
                     <Link to="/privacy" className="hidden text-zinc-500 transition hover:text-white sm:inline">Privacy</Link>
                     <Link to="/terms" className="hidden text-zinc-500 transition hover:text-white sm:inline">Terms</Link>
                     <Link to="/mirror" className="rounded-full border border-white/10 px-4 py-2 font-semibold text-zinc-300 transition hover:border-purple-400/40 hover:text-white">
-                        Open mirror
+                        Open chat
                     </Link>
                 </div>
             </header>
@@ -121,18 +142,18 @@ export default function Start() {
                     <section className="grid w-full gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
                         <div>
                             <h1 className="max-w-xl text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
-                                Take BrainScan.
+                                Make Active Mirror yours.
                             </h1>
                             <div className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-purple-200/80">
-                                BrainScan / MirrorSeed / Reflection
+                                Quick setup
                             </div>
                             <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-400">
-                                Six quick choices. The result stays in this browser and helps the mirror start closer to how you think.
+                                A better AI session starts when the AI knows how to work with you. Six quick choices, saved on this browser.
                             </p>
                         </div>
 
                         <div className="rounded-[2rem] border border-purple-500/20 bg-zinc-950/70 p-4 shadow-[0_0_60px_rgba(168,85,247,0.12)] backdrop-blur-2xl sm:p-6">
-                            <div className="mb-4 text-sm font-semibold text-zinc-300">What are you bringing first?</div>
+                            <div className="mb-4 text-sm font-semibold text-zinc-300">What do you want help with first?</div>
                             <div className="grid gap-3">
                                 {STARTS.map((item) => (
                                     <button
@@ -198,10 +219,10 @@ export default function Start() {
                                 Local only
                             </div>
                             <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-[-0.05em] sm:text-7xl">
-                                MirrorSeed ready.
+                                Active Mirror is ready for you.
                             </h1>
                             <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">
-                                {result.archetype_name}: {result.description}
+                                It will start with your style: {result.description}
                             </p>
 
                             <div className="mt-6 flex flex-wrap gap-2">
@@ -218,8 +239,16 @@ export default function Start() {
                                     onClick={() => navigate('/mirror', { state: { startPrompt: start.prompt } })}
                                     className="inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 py-4 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
                                 >
-                                    Start reflection
+                                    Try it now
                                     <ArrowRight size={19} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => downloadProfile(result)}
+                                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 py-4 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
+                                >
+                                    <Download size={17} />
+                                    Download my profile
                                 </button>
                                 <button
                                     type="button"

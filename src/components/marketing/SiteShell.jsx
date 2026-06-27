@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const navItems = [
-    { label: 'BrainScan', href: '/start' },
+    { label: 'Make it yours', href: '/start' },
     { label: 'Mirror', href: '/mirror' },
     { label: 'Chetana', href: '/chetana' },
     { label: 'For teams', href: '/platform' },
@@ -73,7 +73,7 @@ export default function SiteShell({ children }) {
                                 to="/start"
                                 className="inline-flex items-center gap-2 rounded-full bg-[#132033] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1d2d48]"
                             >
-                                Start BrainScan
+                                Make it yours
                                 <ArrowRight size={15} />
                             </Link>
                         </div>
@@ -115,7 +115,7 @@ export default function SiteShell({ children }) {
                     <div>
                         <div className="text-sm font-semibold text-[#152033]">Start here</div>
                         <div className="mt-4 space-y-3 text-sm text-[#5b6776]">
-                            <div><Link to="/start" className="transition-colors hover:text-[#0d1522]">BrainScan</Link></div>
+                            <div><Link to="/start" className="transition-colors hover:text-[#0d1522]">Make it yours</Link></div>
                             <div><Link to="/mirror" className="transition-colors hover:text-[#0d1522]">Mirror</Link></div>
                             <div><Link to="/chetana" className="transition-colors hover:text-[#0d1522]">Chetana</Link></div>
                         </div>

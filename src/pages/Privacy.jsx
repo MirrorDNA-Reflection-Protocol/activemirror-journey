@@ -17,12 +17,12 @@ const sections = [
     {
         icon: EyeOff,
         title: 'What telemetry excludes',
-        body: 'Product events are allowlisted metadata only, such as page, button label, route, status, and count. They do not include your prompt, reflection text, files, private notes, or MirrorSeed.',
+        body: 'Product events are allowlisted metadata only, such as page, button label, route, status, and count. They do not include your prompt, reflection text, files, private notes, or local profile.',
     },
     {
         icon: Lock,
         title: 'What stays local',
-        body: 'MirrorSeed, approved defaults, phone-thread continuity, and local feedback counts are stored in your browser when you choose to use those features. You can clear them from the app or browser storage.',
+        body: 'Your local profile, approved defaults, phone-thread continuity, and local feedback counts are stored in your browser when you choose to use those features. You can clear them from the app or browser storage.',
     },
     {
         icon: Mail,
@@ -112,7 +112,7 @@ export default function Privacy() {
                 <section className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
                     <h2 className="text-xl font-semibold tracking-[-0.03em]">Your choices</h2>
                     <div className="mt-4 grid gap-3 text-sm leading-7 text-zinc-400">
-                        <p className="flex gap-3"><Trash2 className="mt-1 h-4 w-4 shrink-0 text-zinc-500" />Clear local browser storage to remove local MirrorSeed, defaults, phone thread, and feedback counts.</p>
+                        <p className="flex gap-3"><Trash2 className="mt-1 h-4 w-4 shrink-0 text-zinc-500" />Clear local browser storage to remove your local profile, defaults, phone thread, and feedback counts.</p>
                         <p className="flex gap-3"><Mail className="mt-1 h-4 w-4 shrink-0 text-zinc-500" />Email <a href="mailto:paul@activemirror.ai" className="text-cyan-200 hover:underline">paul@activemirror.ai</a> for privacy questions or deletion requests for information you intentionally gave us outside the app.</p>
                     </div>
                 </section>

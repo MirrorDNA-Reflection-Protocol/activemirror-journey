@@ -108,7 +108,7 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         drift: broadByLength || broadByPattern,
         approvedDefault,
         seedSummary: seed
-            ? `${seed.archetypeName || seed.archetype || 'MirrorSeed'}${seed.strengths?.length ? `: ${seed.strengths.slice(0, 2).join(', ')}` : ''}`
+            ? `${seed.archetypeName || seed.archetype || 'saved profile'}${seed.strengths?.length ? `: ${seed.strengths.slice(0, 2).join(', ')}` : ''}`
             : '',
         cues,
     };
@@ -117,7 +117,7 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
 export function buildLocalSenseContext(sense, userIntent) {
     const lines = [];
     if (sense?.seedSummary) {
-        lines.push(`User-approved MirrorSeed summary: ${sense.seedSummary}.`);
+        lines.push(`User-approved local profile summary: ${sense.seedSummary}.`);
     }
     if (sense?.approvedDefault) {
         lines.push(`User-approved working pattern: question "${sense.approvedDefault.question || 'not set'}"; next move "${sense.approvedDefault.move || 'not set'}".`);

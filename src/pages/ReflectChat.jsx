@@ -13,7 +13,7 @@ const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const STARTERS = [
     'I keep asking AI for help, but I still do not know what to do next.',
-    'My thoughts are moving fast and I need one next move.',
+    'I need honest feedback, not reassurance.',
     'I have a messy idea and need the real question underneath it.',
     'I am stuck between two choices and keep going in circles.',
 ];
@@ -240,7 +240,7 @@ export default function ReflectChat() {
         try {
             turnNum.current += 1;
             const seededIntent = seed
-                ? `MirrorSeed: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}. User intent: ${intent}`
+                ? `User profile: ${seed.archetypeName || seed.archetype}. Strengths: ${(seed.strengths || []).join(', ') || 'unknown'}. User intent: ${intent}`
                 : intent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
@@ -320,11 +320,11 @@ export default function ReflectChat() {
                     </svg>
                     <div>
                         <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
-                        <div className="hidden text-xs text-zinc-500 sm:block">one thing in, one move out</div>
+                        <div className="hidden text-xs text-zinc-500 sm:block">one honest next move</div>
                     </div>
                 </Link>
                 <Link to="/start" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:text-white">
-                    BrainScan
+                    Make it yours
                 </Link>
             </header>
 
@@ -351,14 +351,14 @@ export default function ReflectChat() {
                                         Private first
                                     </div>
                                     <div className="text-2xl font-semibold leading-tight tracking-[-0.04em] sm:text-3xl">
-                                        Bring one real thing you are stuck on.
+                                        What do you want help with?
                                     </div>
                                     <div className="mt-3 text-base leading-7 text-zinc-400">
-                                        Active Mirror reflects the real question, makes one useful output, and lets you decide what gets remembered.
+                                        Active Mirror asks the sharper question, gives you one useful move, and lets you choose what it remembers.
                                     </div>
                                     {seed && (
                                         <div className="mt-4 inline-flex rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1 text-xs font-semibold text-purple-200">
-                                            Using your local seed: {seed.archetypeName || seed.archetype}
+                                            Using your saved setup
                                         </div>
                                     )}
                                     <div className="mt-6 grid gap-2">
@@ -427,13 +427,13 @@ export default function ReflectChat() {
                 )}
                 {!seed && latestMirror && (
                     <div className="mx-auto mb-3 flex max-w-[48rem] flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-2 text-xs text-zinc-500">
-                        <span>Want the mirror to adapt to you?</span>
+                        <span>Want better answers over time?</span>
                         <Link
                             to="/start"
-                            onClick={() => trackEvent('cta_clicked', { page: 'mirror', target: 'brainscan' })}
+                            onClick={() => trackEvent('cta_clicked', { page: 'mirror', target: 'profile_setup' })}
                             className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 font-semibold text-purple-100 transition hover:border-purple-300/40 hover:text-white"
                         >
-                            Take BrainScan
+                            Make it yours
                         </Link>
                     </div>
                 )}
@@ -442,7 +442,7 @@ export default function ReflectChat() {
                         rows={1}
                         value={text}
                         maxLength={1000}
-                        placeholder="What's one thing you're stuck on?"
+                        placeholder="What do you want help with?"
                         onChange={(event) => setText(event.target.value)}
                         onKeyDown={(event) => {
                             if (event.key === 'Enter' && !event.shiftKey) {
