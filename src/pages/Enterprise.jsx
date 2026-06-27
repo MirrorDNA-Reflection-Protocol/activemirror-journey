@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const ENTERPRISE_STREAM_URL = 'https://gateway.activemirror.ai/v1/mirror/enterprise-stream';
+
 const workflowRuns = [
     {
         id: 'research',
@@ -96,20 +98,154 @@ const statusStyles = {
     block: 'border-red-300/25 text-red-100 bg-red-300/[0.06]',
 };
 
-function useLiveRun(activeRun) {
-    const [index, setIndex] = useState(0);
+function defaultMetrics(run) {
+    return [
+        { label: 'Approval', value: 'Human on', tone: 'emerald' },
+        { label: 'Risk', value: run.risk, tone: run.risk === 'high' ? 'amber' : 'cyan' },
+        { label: 'Memory', value: 'choice', tone: 'violet' },
+        { label: 'Sharing', value: 'gated', tone: 'emerald' },
+    ];
+}
+
+function stepTupleFromPayload(payload, fallback) {
+    if (!payload?.step) return fallback;
+    return [
+        payload.step.key,
+        payload.step.title,
+        payload.step.body,
+        payload.step.status,
+    ];
+}
+
+function useEnterpriseRun(activeRun) {
+    const [restartKey, setRestartKey] = useState(0);
+    const [state, setState] = useState({
+        index: 0,
+        source: 'connecting',
+        connected: false,
+        error: false,
+        payload: null,
+    });
 
     useEffect(() => {
-        setIndex(0);
+        setState({
+            index: 0,
+            source: 'connecting',
+            connected: false,
+            error: false,
+            payload: null,
+        });
     }, [activeRun.id]);
 
     useEffect(() => {
-        const timer = window.setInterval(() => {
-            setIndex((current) => (current + 1) % activeRun.steps.length);
-        }, 1800);
+        let cancelled = false;
+        let eventSource = null;
+        let localTimer = null;
+        let restartTimer = null;
 
-        return () => window.clearInterval(timer);
-    }, [activeRun]);
+        function closeStream() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+        }
+
+        function stopLocal() {
+            if (localTimer) {
+                window.clearInterval(localTimer);
+                localTimer = null;
+            }
+        }
+
+        function startLocalReplay() {
+            closeStream();
+            if (localTimer || cancelled) return;
+            setState((current) => ({
+                ...current,
+                source: 'local',
+                connected: false,
+                error: true,
+                payload: null,
+            }));
+            localTimer = window.setInterval(() => {
+                setState((current) => ({
+                    ...current,
+                    index: (current.index + 1) % activeRun.steps.length,
+                    source: 'local',
+                    connected: false,
+                    payload: null,
+                }));
+            }, 1800);
+        }
+
+        function openStream() {
+            stopLocal();
+            closeStream();
+
+            if (typeof window === 'undefined' || !('EventSource' in window)) {
+                startLocalReplay();
+                return;
+            }
+
+            setState((current) => ({
+                ...current,
+                source: current.payload ? 'gateway' : 'connecting',
+                connected: Boolean(current.payload),
+                error: false,
+            }));
+
+            eventSource = new EventSource(`${ENTERPRISE_STREAM_URL}?run=${encodeURIComponent(activeRun.id)}`);
+
+            eventSource.addEventListener('mirror.event', (event) => {
+                if (cancelled) return;
+                try {
+                    const payload = JSON.parse(event.data);
+                    setState({
+                        index: Number.isFinite(payload.index) ? payload.index : 0,
+                        source: 'gateway',
+                        connected: true,
+                        error: false,
+                        payload,
+                    });
+                } catch {
+                    startLocalReplay();
+                }
+            });
+
+            eventSource.addEventListener('mirror.done', () => {
+                closeStream();
+                if (!cancelled) {
+                    restartTimer = window.setTimeout(openStream, 1400);
+                }
+            });
+
+            eventSource.onerror = () => {
+                if (!cancelled) startLocalReplay();
+            };
+        }
+
+        openStream();
+
+        return () => {
+            cancelled = true;
+            closeStream();
+            stopLocal();
+            if (restartTimer) window.clearTimeout(restartTimer);
+        };
+    }, [activeRun.id, activeRun.steps.length, restartKey]);
+
+    const index = Math.min(state.index, activeRun.steps.length - 1);
+
+    function restart() {
+        setState({
+            index: 0,
+            source: 'connecting',
+            connected: false,
+            error: false,
+            payload: null,
+        });
+        setRestartKey((current) => current + 1);
+    }
 
     const visibleSteps = useMemo(() => {
         return activeRun.steps.map((step, stepIndex) => ({
@@ -119,13 +255,25 @@ function useLiveRun(activeRun) {
         }));
     }, [activeRun.steps, index]);
 
-    return { index, setIndex, visibleSteps };
+    return {
+        index,
+        restart,
+        visibleSteps,
+        payload: state.payload,
+        streamSource: state.source,
+        streamConnected: state.connected,
+        streamError: state.error,
+    };
 }
 
 function LiveConsole({ run }) {
-    const { index, setIndex, visibleSteps } = useLiveRun(run);
-    const active = run.steps[index];
-    const completed = Math.round(((index + 1) / run.steps.length) * 100);
+    const { index, restart, visibleSteps, payload, streamSource, streamConnected, streamError } = useEnterpriseRun(run);
+    const active = stepTupleFromPayload(payload, run.steps[index]);
+    const metrics = payload?.metrics || defaultMetrics(run);
+    const completed = payload?.progress || Math.round(((index + 1) / run.steps.length) * 100);
+    const route = payload?.route || 'request.read -> boundary.check -> route.choose -> proof.mark -> human.approve';
+    const streamLabel = streamConnected ? 'gateway stream · public demo' : streamSource === 'local' ? 'local replay · public demo' : 'connecting · public demo';
+    const streamPill = streamConnected ? 'stream on' : streamError ? 'local fallback' : 'connecting';
 
     return (
         <section className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[#050608]/92 shadow-[0_0_90px_rgba(34,211,238,0.12)] ring-1 ring-white/[0.04]">
@@ -136,17 +284,22 @@ function LiveConsole({ run }) {
                     </span>
                     <div>
                         <div className="text-sm font-semibold text-cyan-100">MirrorDash</div>
-                        <div className="text-[11px] text-zinc-500">public demo replay · governed work state</div>
+                        <div className="text-[11px] text-zinc-500">{streamLabel}</div>
                     </div>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setIndex(0)}
-                    className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold text-zinc-300 transition hover:border-cyan-300/35 hover:text-white"
-                >
-                    <RotateCcw size={13} />
-                    Restart
-                </button>
+                <div className="flex items-center gap-2">
+                    <span className={`inline-flex w-fit items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${streamConnected ? 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-200' : 'border-white/10 bg-white/[0.04] text-zinc-400'}`}>
+                        {streamPill}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={restart}
+                        className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold text-zinc-300 transition hover:border-cyan-300/35 hover:text-white"
+                    >
+                        <RotateCcw size={13} />
+                        Restart
+                    </button>
+                </div>
             </div>
 
             <div className="grid gap-3 p-4 lg:grid-cols-[1fr_1.08fr]">
@@ -154,7 +307,7 @@ function LiveConsole({ run }) {
                     <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
                         <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Current route</div>
                         <div className="font-mono text-[12px] leading-6 text-zinc-300">
-                            {'request.read -> boundary.check -> route.choose -> proof.mark -> human.approve'}
+                            {route}
                         </div>
                         <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
                             <div
@@ -165,10 +318,9 @@ function LiveConsole({ run }) {
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                        <Metric label="Approval" value="Human on" tone="emerald" />
-                        <Metric label="Risk" value={run.risk} tone={run.risk === 'high' ? 'amber' : 'cyan'} />
-                        <Metric label="Memory" value="choice" tone="violet" />
-                        <Metric label="Sharing" value="gated" tone="emerald" />
+                        {metrics.map((metric) => (
+                            <Metric key={metric.label} label={metric.label} value={metric.value} tone={metric.tone} />
+                        ))}
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
