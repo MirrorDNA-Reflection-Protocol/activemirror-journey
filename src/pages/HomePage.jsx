@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
+import { Activity, ArrowRight, ArrowUp, BookmarkPlus, Brain, CheckCircle2, ChevronDown, Cpu, FileText, Lock, Network, Search, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
@@ -59,6 +59,20 @@ const ECOSYSTEM = [
         title: 'Tools',
         text: 'Files, web, images, documents, and research can be added later through approval gates.',
     },
+];
+
+const COMMAND_MODULES = [
+    { label: 'Intent', value: 'one thing', tone: 'cyan', note: 'keeps the ask narrow' },
+    { label: 'Boundary', value: 'private', tone: 'emerald', note: 'sharing needs approval' },
+    { label: 'Mirror', value: 'question', tone: 'purple', note: 'reflects before acting' },
+    { label: 'Move', value: 'next step', tone: 'amber', note: 'one action, not a lecture' },
+];
+
+const FLOW_ROWS = [
+    ['input', 'You bring one real thing'],
+    ['reflect', 'Finds the real question'],
+    ['shape', 'Turns it into a next move'],
+    ['receipt', 'Shows what was used and left out'],
 ];
 
 function isEcosystemAsk(intent) {
@@ -158,6 +172,94 @@ function MirrorLogo() {
             <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="#a78bfa" strokeWidth="1.6" />
             <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="#22d3ee" strokeWidth="1.6" />
         </svg>
+    );
+}
+
+function toneClass(tone) {
+    return {
+        cyan: 'border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100',
+        emerald: 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-100',
+        purple: 'border-purple-300/25 bg-purple-300/[0.08] text-purple-100',
+        amber: 'border-amber-300/25 bg-amber-300/[0.08] text-amber-100',
+    }[tone] || 'border-white/10 bg-white/[0.05] text-zinc-100';
+}
+
+function CommandCenterPreview({ compact = false, activeIntent = '' }) {
+    return (
+        <aside className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#050608]/85 p-4 shadow-[0_0_80px_rgba(34,211,238,0.12)] ring-1 ring-cyan-200/10 backdrop-blur-2xl">
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.07)_1px,transparent_1px)] bg-[size:28px_28px] opacity-35" />
+            <div className="relative">
+                <div className="mb-4 flex items-center justify-between gap-3 border-b border-cyan-200/15 pb-3">
+                    <div className="flex items-center gap-2">
+                        <span className="grid h-8 w-8 place-items-center rounded-xl border border-cyan-200/20 bg-cyan-300/[0.08] text-cyan-100">
+                            <Activity size={16} />
+                        </span>
+                        <div>
+                            <div className="text-sm font-semibold text-white">Mirror Console</div>
+                            <div className="text-[11px] text-zinc-500">live reflection surface</div>
+                        </div>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2.5 py-1 text-[11px] font-semibold text-emerald-200">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                        private
+                    </div>
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+                    {COMMAND_MODULES.map((item) => (
+                        <div key={item.label} className={`rounded-2xl border p-3 ${toneClass(item.tone)}`}>
+                            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] opacity-65">{item.label}</div>
+                            <div className="mt-2 text-base font-semibold tracking-[-0.02em] text-white">{item.value}</div>
+                            <div className="mt-1 text-[11px] leading-4 opacity-70">{item.note}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-3 grid gap-3 lg:grid-cols-[1.05fr_0.95fr]">
+                    <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
+                        <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200/75">
+                            <Cpu size={13} />
+                            Reflection path
+                        </div>
+                        <div className="grid gap-2">
+                            {FLOW_ROWS.map(([key, text], index) => (
+                                <div key={key} className="grid grid-cols-[1.7rem_1fr] items-center gap-2 text-xs text-zinc-300">
+                                    <span className="grid h-6 w-6 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-semibold text-cyan-100">
+                                        {index + 1}
+                                    </span>
+                                    <span>{text}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
+                        <div className="mb-2 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-purple-200/75">
+                                <Zap size={13} />
+                                Current turn
+                            </div>
+                            <span className="text-[11px] text-zinc-600">local</span>
+                        </div>
+                        <div className="rounded-xl border border-purple-300/15 bg-purple-300/[0.06] p-3 text-sm leading-6 text-zinc-200">
+                            {activeIntent ? summarizeVisibleAsk(activeIntent) : 'Start with one real thing.'}
+                        </div>
+                        {!compact ? (
+                            <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-zinc-400">
+                                <div className="rounded-xl border border-emerald-300/15 bg-emerald-300/[0.06] p-2">
+                                    <CheckCircle2 size={13} className="mb-1 text-emerald-200" />
+                                    No memory without approval
+                                </div>
+                                <div className="rounded-xl border border-cyan-300/15 bg-cyan-300/[0.06] p-2">
+                                    <Search size={13} className="mb-1 text-cyan-200" />
+                                    Sources when facts matter
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            </div>
+        </aside>
     );
 }
 
@@ -330,45 +432,52 @@ function LandingScreen({ onStart }) {
                 </nav>
             </header>
 
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-3xl items-center px-4 py-7">
-                <section className="mx-auto w-full rounded-[2.25rem] border border-white/10 bg-white/[0.045] px-6 py-12 text-center shadow-[0_0_90px_rgba(168,85,247,0.14)] ring-1 ring-white/[0.05] backdrop-blur-2xl sm:px-10 sm:py-16">
-                    <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-3xl border border-white/10 bg-black/30 shadow-[0_0_40px_rgba(124,58,237,0.18)]">
-                        <MirrorLogo />
-                        <span className="mt-1 text-[10px] font-bold uppercase leading-none tracking-[0.08em] text-white">
-                            Active
-                            <span className="block">Mirror</span>
-                        </span>
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-6xl items-center px-4 py-7">
+                <section className="mx-auto grid w-full gap-4 lg:max-w-6xl lg:grid-cols-[0.88fr_1.12fr] lg:items-stretch">
+                    <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.045] px-6 py-9 text-left shadow-[0_0_90px_rgba(168,85,247,0.14)] ring-1 ring-white/[0.05] backdrop-blur-2xl sm:px-8 sm:py-11">
+                        <div className="mb-8 inline-flex items-center gap-3">
+                            <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-black/30 shadow-[0_0_40px_rgba(124,58,237,0.18)]">
+                                <MirrorLogo />
+                            </div>
+                            <div>
+                                <div className="text-sm font-semibold text-white">Active Mirror</div>
+                                <div className="text-xs text-zinc-500">private reflection</div>
+                            </div>
+                        </div>
+
+                        <h1 className="max-w-[9ch] text-[3.25rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.6rem]">
+                            What do
+                            <span className="block bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
+                                you want?
+                            </span>
+                        </h1>
+
+                        <p className="mt-7 max-w-md text-xl leading-8 text-zinc-400 sm:text-2xl sm:leading-10">
+                            Bring one stuck thing. Get one honest next move.
+                        </p>
+                        <p className="mt-3 max-w-sm text-base leading-7 text-zinc-500">
+                            Private by default. Nothing saved unless you choose.
+                        </p>
+
+                        <div className="mt-9 grid max-w-sm gap-3">
+                            <button
+                                type="button"
+                                onClick={onStart}
+                                className="group inline-flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 text-lg font-semibold text-white shadow-[0_0_38px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
+                            >
+                                Start reflection
+                                <ArrowRight size={23} className="transition group-hover:translate-x-1" />
+                            </button>
+                            <Link
+                                to="/start"
+                                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-6 text-base font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
+                            >
+                                Take BrainScan
+                            </Link>
+                        </div>
                     </div>
-
-                    <h1 className="mx-auto max-w-[10ch] text-[3.2rem] font-semibold leading-[0.95] tracking-[-0.06em] text-white sm:text-[4.9rem]">
-                        What do
-                        <span className="block bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
-                            you want?
-                        </span>
-                    </h1>
-
-                    <p className="mx-auto mt-8 max-w-md text-xl leading-8 text-zinc-400 sm:text-2xl sm:leading-10">
-                        Bring one stuck thing. Active Mirror gives you one honest next move.
-                    </p>
-                    <p className="mx-auto mt-3 max-w-sm text-base leading-7 text-zinc-500">
-                        Private by default. Nothing saved unless you choose.
-                    </p>
-
-                    <div className="mx-auto mt-10 grid max-w-sm gap-3">
-                        <button
-                            type="button"
-                            onClick={onStart}
-                            className="group inline-flex min-h-16 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-6 text-lg font-semibold text-white shadow-[0_0_38px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
-                        >
-                            Start reflection
-                            <ArrowRight size={23} className="transition group-hover:translate-x-1" />
-                        </button>
-                        <Link
-                            to="/start"
-                            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-6 text-base font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
-                        >
-                            Take BrainScan
-                        </Link>
+                    <div className="hidden md:block">
+                        <CommandCenterPreview />
                     </div>
                 </section>
             </main>
@@ -510,17 +619,17 @@ export default function HomePage() {
 
             <main className={`relative z-10 mx-auto grid min-h-[calc(100dvh-57px)] gap-5 px-4 py-5 lg:items-stretch lg:px-6 lg:py-6 ${
                 showMirror
-                    ? 'max-w-7xl lg:grid-cols-[minmax(0,0.82fr)_minmax(420px,1fr)]'
+                    ? 'max-w-7xl xl:grid-cols-[minmax(320px,0.72fr)_minmax(420px,1fr)]'
                     : 'max-w-3xl'
             }`}
             >
-                <section className="flex min-h-[36rem] flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
+                <section className="flex min-h-[34rem] flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
                     <div>
                         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
                             <ShieldCheck size={14} />
                             Private first
                         </div>
-                        <h1 className="max-w-[11ch] text-[3rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.4rem]">
+                        <h1 className="max-w-[11ch] text-[2.9rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.1rem]">
                             What do you want?
                             <span className="block bg-gradient-to-r from-purple-200 via-white to-cyan-200 bg-clip-text text-transparent">
                                 Get one move.
@@ -532,6 +641,10 @@ export default function HomePage() {
 
                         <div className="mt-7 rounded-3xl border border-purple-300/15 bg-purple-300/[0.06] px-4 py-4 text-sm leading-6 text-zinc-300">
                             Our job is to help you get it without adding more noise.
+                        </div>
+
+                        <div className="mt-5 hidden md:block">
+                            <CommandCenterPreview compact activeIntent={lastIntent} />
                         </div>
                     </div>
 
