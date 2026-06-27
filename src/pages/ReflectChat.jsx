@@ -5,6 +5,7 @@ import ReflectiveSurface from '../components/ReflectiveSurface';
 import MirrorFeedback from '../components/MirrorFeedback';
 import ReflectionCardActions from '../components/ReflectionCardActions';
 import { NeedsSources, SourceCheckLine } from '../components/TruthStateNotice';
+import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -274,7 +275,7 @@ export default function ReflectChat() {
             trackEvent('gateway_error', { page: 'mirror', source, route: 'reflection', status: 'network', turn: turnNum.current });
             setTurns((current) => [
                 ...current,
-                { who: 'mirror', error: "Couldn't reach the mirror just now. Try again in a moment." },
+                { who: 'mirror', data: makeOfflineMirrorResult(intent), intent },
             ]);
         } finally {
             setBusy(false);

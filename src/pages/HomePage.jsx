@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, PenLine, Penc
 import DraftActions from '../components/DraftActions';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
+import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import {
     clearMirrorDefault,
     deleteMirrorDefault,
@@ -665,18 +666,7 @@ export default function HomePage() {
             setResult(data.ok ? data : makeBlockedResult(data));
         } catch {
             trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
-            setResult({
-                mirror: {
-                    reflection: 'I cannot reach the mirror right now. Your text was not saved as memory.',
-                    question: 'What is the one sentence version of the thing you are stuck on?',
-                    move: 'Try again in a moment with the same sentence.',
-                    receipt: {
-                        context_used: 'No hosted model response was returned.',
-                        context_excluded: 'Nothing was saved or promoted.',
-                        memory_decision: 'Nothing saved.',
-                    },
-                },
-            });
+            setResult(makeOfflineMirrorResult(cleanIntent));
         } finally {
             setBusy(false);
         }
