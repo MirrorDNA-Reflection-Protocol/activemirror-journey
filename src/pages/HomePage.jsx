@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Network, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Brain, ChevronDown, FileText, Lock, Minimize2, Network, PenLine, ShieldCheck, Sparkles, Telescope } from 'lucide-react';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
@@ -121,12 +121,19 @@ function makeBlockedResult(data = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.question && {
-            label: 'Help me answer this',
-            intent: `Help me answer this real question: ${mirror.question}`,
+            label: 'Go deeper',
+            icon: Telescope,
+            intent: `Reflect one layer deeper on this question without giving me a long answer: ${mirror.question}`,
         },
         {
             label: 'Make it smaller',
+            icon: Minimize2,
             intent: `Make this next move smaller and easier to start: ${mirror.move || 'the next move'}`,
+        },
+        {
+            label: 'Draft the message',
+            icon: PenLine,
+            intent: `Turn this into a short message I could send: ${mirror.move || mirror.question || 'the next move'}`,
         },
     ].filter(Boolean);
 }
@@ -545,34 +552,25 @@ export default function HomePage() {
                                 reflect(nextIntent, 'surface');
                             }}
                         />
-                        <div className="flex flex-wrap gap-2 pb-1">
-                            {result?.mirror ? (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        trackEvent('sendable_created', { page: 'home', source: 'local_draft' });
-                                        setSendableDraft(makeSendableDraft(result.mirror));
-                                    }}
-                                    disabled={busy}
-                                    className="rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12] disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    Make this sendable
-                                </button>
-                            ) : null}
-                            {followUps.map((item) => (
-                                <button
-                                    key={item.label}
-                                    type="button"
-                                    onClick={() => {
-                                        trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
-                                        reflect(item.intent, 'follow_up');
-                                    }}
-                                    disabled={busy}
-                                    className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    {item.label}
-                                </button>
-                            ))}
+                        <div className="grid gap-2 pb-1 sm:grid-cols-3">
+                            {followUps.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <button
+                                        key={item.label}
+                                        type="button"
+                                        onClick={() => {
+                                            trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
+                                            reflect(item.intent, 'follow_up');
+                                        }}
+                                        disabled={busy}
+                                        className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-left text-sm font-semibold text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        <Icon size={16} className="text-purple-200" />
+                                        {item.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                         <SendableDraft draft={sendableDraft} />
                     </section>
