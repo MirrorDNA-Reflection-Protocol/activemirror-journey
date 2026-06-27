@@ -44,4 +44,14 @@ should route into this app's `/app/id/` deployment.
 
 ## Deployment Note
 
-This repo is the product source. The currently live public deployment path may still pass through `active-mirror-site` and GitHub Pages/Cloudflare. Confirm the deploy source before publishing.
+This repo is the product source and does not deploy directly. It should not
+contain a `CNAME` file or a GitHub Pages publish action.
+
+The live public deployment path is:
+
+```text
+/Users/mirror-pro/repos/activemirror-journey
+  -> npm run build:deploy
+  -> /Users/mirror-pro/repos/active-mirror-site/public/app
+  -> active-mirror-site GitHub Pages + gateway.activemirror.ai
+```

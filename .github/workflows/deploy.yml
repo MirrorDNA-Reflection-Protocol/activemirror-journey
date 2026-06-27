@@ -17,5 +17,7 @@ jobs:
           cache: 'npm'
       - name: Install
         run: npm ci
+      - name: Canonical source guard
+        run: npm run guard:canonical
       - name: Build
         run: npm run build:deploy

@@ -9,6 +9,7 @@
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
         "preview": "vite preview",
+        "guard:canonical": "node scripts/canonical_source_guard.mjs",
         "guard:front-door": "node scripts/front_door_guard.mjs",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "eval:mirror": "node scripts/mirror-eval.mjs",
