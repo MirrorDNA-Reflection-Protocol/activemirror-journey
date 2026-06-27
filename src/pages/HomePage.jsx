@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, Minimize2, PenLine, Sparkles, Telescope } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, Minimize2, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Telescope, Trash2, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
-import { getActiveMirrorDefault, getArchetype, getMirrorDefaults, saveMirrorDefault } from '../lib/mirror-state';
+import {
+    clearMirrorDefault,
+    deleteMirrorDefault,
+    getActiveMirrorDefault,
+    getArchetype,
+    getMirrorDefaults,
+    saveMirrorDefault,
+    updateMirrorDefault,
+    useMirrorDefault,
+} from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -185,6 +194,15 @@ function mirrorMemoryKey(mirror = {}) {
     return `${mirror.question || ''}::${mirror.move || ''}`;
 }
 
+function memoryItemKey(item = {}) {
+    return item.savedAt || mirrorMemoryKey(item);
+}
+
+function isActiveMemory(item = {}, activeDefault = null) {
+    if (!activeDefault) return false;
+    return memoryItemKey(item) === memoryItemKey(activeDefault) || mirrorMemoryKey(item) === mirrorMemoryKey(activeDefault);
+}
+
 function MicroVisual({ visual }) {
     if (!visual) return null;
 
@@ -350,6 +368,154 @@ function LocalSenseLine({ sense }) {
     );
 }
 
+function MemoryDrawer({
+    open,
+    items,
+    activeDefault,
+    onClose,
+    onUse,
+    onPause,
+    onDelete,
+    onEdit,
+}) {
+    const [editingKey, setEditingKey] = useState('');
+    const [draft, setDraft] = useState({ question: '', move: '' });
+
+    if (!open) return null;
+
+    function startEdit(item) {
+        setEditingKey(memoryItemKey(item));
+        setDraft({
+            question: item.question || '',
+            move: item.move || '',
+        });
+    }
+
+    function saveEdit(item) {
+        onEdit?.(memoryItemKey(item), draft);
+        setEditingKey('');
+        setDraft({ question: '', move: '' });
+    }
+
+    return (
+        <div className="fixed inset-0 z-30 bg-black/65 px-3 py-4 backdrop-blur-md sm:px-6" role="dialog" aria-modal="true" aria-label="Memory">
+            <button
+                type="button"
+                className="absolute inset-0 cursor-default"
+                aria-label="Close memory"
+                onClick={onClose}
+            />
+            <div className="relative mx-auto flex max-h-[88dvh] max-w-3xl flex-col overflow-hidden rounded-[2rem] border border-white/12 bg-[#0d0d11]/95 shadow-[0_0_80px_rgba(124,58,237,0.2)] ring-1 ring-white/[0.04]">
+                <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+                    <div>
+                        <div className="text-lg font-semibold tracking-[-0.03em] text-white">Memory</div>
+                        <div className="mt-1 text-sm leading-6 text-zinc-400">Saved on this browser. Edit or remove anything.</div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                        aria-label="Close memory"
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
+
+                <div className="overflow-y-auto px-4 py-4">
+                    {!items.length ? (
+                        <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
+                            Nothing saved yet. When a reflection is useful, choose Remember.
+                        </div>
+                    ) : (
+                        <div className="grid gap-3">
+                            {items.map((item) => {
+                                const key = memoryItemKey(item);
+                                const editing = editingKey === key;
+                                const active = isActiveMemory(item, activeDefault);
+
+                                return (
+                                    <div key={key} className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] p-3">
+                                        <div className="mb-3 flex items-center justify-between gap-3">
+                                            <div className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${active ? 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-100' : 'border-white/10 bg-black/20 text-zinc-500'}`}>
+                                                {active ? 'Using now' : 'Saved'}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => active ? onPause?.() : onUse?.(item)}
+                                                    className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:border-emerald-300/30 hover:text-white"
+                                                >
+                                                    {active ? 'Pause' : 'Use'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => editing ? setEditingKey('') : startEdit(item)}
+                                                    className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                                    aria-label={editing ? 'Cancel edit' : 'Edit memory'}
+                                                >
+                                                    {editing ? <X size={15} /> : <Pencil size={15} />}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onDelete?.(key)}
+                                                    className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                    aria-label="Delete memory"
+                                                >
+                                                    <Trash2 size={15} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {editing ? (
+                                            <div className="grid gap-2">
+                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                                                    Question
+                                                    <textarea
+                                                        rows={2}
+                                                        value={draft.question}
+                                                        onChange={(event) => setDraft((current) => ({ ...current, question: event.target.value }))}
+                                                        className="resize-none rounded-2xl border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-violet-200/35"
+                                                    />
+                                                </label>
+                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                                                    Move
+                                                    <textarea
+                                                        rows={2}
+                                                        value={draft.move}
+                                                        onChange={(event) => setDraft((current) => ({ ...current, move: event.target.value }))}
+                                                        className="resize-none rounded-2xl border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-violet-200/35"
+                                                    />
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => saveEdit(item)}
+                                                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 text-sm font-semibold text-emerald-100 transition hover:border-emerald-300/35"
+                                                >
+                                                    <Save size={15} />
+                                                    Save
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="grid gap-3">
+                                                <div className="rounded-2xl border border-white/10 bg-black/18 px-3 py-3 text-sm leading-6 text-zinc-300">
+                                                    {item.question || 'No question saved.'}
+                                                </div>
+                                                <div className="rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-3 text-sm font-semibold leading-6 text-emerald-50">
+                                                    {item.move || 'No move saved.'}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function HomePage() {
     const inputRef = useRef(null);
     const [seed] = useState(() => getArchetype());
@@ -362,6 +528,7 @@ export default function HomePage() {
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [rememberedKey, setRememberedKey] = useState('');
+    const [memoryOpen, setMemoryOpen] = useState(false);
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
@@ -455,6 +622,32 @@ export default function HomePage() {
         trackEvent('mirror_default_saved', { page: 'home', source: 'explicit_approval' });
     }
 
+    function refreshMemoryState(nextState) {
+        setActiveDefault(nextState?.activeDefault ?? getActiveMirrorDefault());
+        setMirrorDefaults(nextState?.mirrorDefaults ?? getMirrorDefaults());
+    }
+
+    function useSavedMemory(item) {
+        setActiveDefault(useMirrorDefault(item));
+        trackEvent('mirror_default_used', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function pauseMemory() {
+        clearMirrorDefault();
+        refreshMemoryState();
+        trackEvent('mirror_default_paused', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function editMemory(key, updates) {
+        refreshMemoryState(updateMirrorDefault(key, updates));
+        trackEvent('mirror_default_edited', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function removeMemory(key) {
+        refreshMemoryState(deleteMirrorDefault(key));
+        trackEvent('mirror_default_deleted', { page: 'home', source: 'memory_drawer' });
+    }
+
     function submit(event) {
         event.preventDefault();
         reflect(text);
@@ -545,6 +738,14 @@ export default function HomePage() {
                                 <Lock size={13} />
                                 No memory unless you choose it.
                             </span>
+                            <button
+                                type="button"
+                                onClick={() => setMemoryOpen(true)}
+                                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
+                            >
+                                <SlidersHorizontal size={13} />
+                                Memory{mirrorDefaults.length ? ` ${mirrorDefaults.length}` : ''}
+                            </button>
                             <LocalSenseLine sense={typingSense} />
                         </div>
                     </div>
@@ -611,6 +812,16 @@ export default function HomePage() {
                     </Link>
                 </div>
             </div>
+            <MemoryDrawer
+                open={memoryOpen}
+                items={mirrorDefaults}
+                activeDefault={activeDefault}
+                onClose={() => setMemoryOpen(false)}
+                onUse={useSavedMemory}
+                onPause={pauseMemory}
+                onDelete={removeMemory}
+                onEdit={editMemory}
+            />
         </div>
     );
 }

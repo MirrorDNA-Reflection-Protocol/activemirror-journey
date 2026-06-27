@@ -198,6 +198,20 @@ function cleanDefaultText(value, limit = 260) {
     return String(value || '').replace(/\s+/g, ' ').trim().slice(0, limit);
 }
 
+function defaultMatches(item, key) {
+    return Boolean(key)
+        && (item?.savedAt === key || `${item?.question || ''}::${item?.move || ''}` === key);
+}
+
+function normalizeMirrorDefault({ question, move, source = 'reflection', savedAt } = {}) {
+    return {
+        question: cleanDefaultText(question),
+        move: cleanDefaultText(move),
+        source: cleanDefaultText(source, 48),
+        savedAt: savedAt || new Date().toISOString(),
+    };
+}
+
 /** Get the current approved browser-local default, if any. */
 export function getActiveMirrorDefault() {
     return _read().activeDefault || null;
@@ -211,12 +225,7 @@ export function getMirrorDefaults() {
 
 /** Save one approved reflection pattern as a browser-local default. */
 export function saveMirrorDefault({ question, move, source = 'reflection' } = {}) {
-    const item = {
-        question: cleanDefaultText(question),
-        move: cleanDefaultText(move),
-        source: cleanDefaultText(source, 48),
-        savedAt: new Date().toISOString(),
-    };
+    const item = normalizeMirrorDefault({ question, move, source });
 
     if (!item.question && !item.move) return getActiveMirrorDefault();
 
@@ -233,6 +242,54 @@ export function saveMirrorDefault({ question, move, source = 'reflection' } = {}
         activeDefault: item,
         mirrorDefaults: nextDefaults,
     }).activeDefault;
+}
+
+/** Make an existing approved default active again. */
+export function useMirrorDefault(defaultItem) {
+    const item = normalizeMirrorDefault(defaultItem);
+    if (!item.question && !item.move) return clearMirrorDefault();
+    return setState({ activeDefault: item }).activeDefault;
+}
+
+/** Edit an approved browser-local default by savedAt or question/move key. */
+export function updateMirrorDefault(key, updates = {}) {
+    const current = _read();
+    const existing = Array.isArray(current.mirrorDefaults) ? current.mirrorDefaults : [];
+    let updatedItem = null;
+    const nextDefaults = existing.map((item) => {
+        if (!defaultMatches(item, key)) return item;
+        updatedItem = normalizeMirrorDefault({
+            ...item,
+            ...updates,
+            source: item.source || updates.source || 'home',
+            savedAt: item.savedAt || key,
+        });
+        return updatedItem;
+    }).filter((item) => item.question || item.move);
+
+    if (!updatedItem) return current;
+
+    const activeDefault = defaultMatches(current.activeDefault, key)
+        ? updatedItem
+        : current.activeDefault;
+
+    return setState({
+        activeDefault,
+        mirrorDefaults: nextDefaults.slice(0, 5),
+    });
+}
+
+/** Delete an approved browser-local default by savedAt or question/move key. */
+export function deleteMirrorDefault(key) {
+    const current = _read();
+    const existing = Array.isArray(current.mirrorDefaults) ? current.mirrorDefaults : [];
+    const nextDefaults = existing.filter((item) => !defaultMatches(item, key));
+    const activeDefault = defaultMatches(current.activeDefault, key) ? null : current.activeDefault;
+
+    return setState({
+        activeDefault,
+        mirrorDefaults: nextDefaults,
+    });
 }
 
 /** Clear the active default without deleting BrainScan or intake state. */
