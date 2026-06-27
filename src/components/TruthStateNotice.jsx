@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ExternalLink, Loader2, SearchCheck } from 'lucide-react';
 import { getPrivacySessionId } from '../lib/privacy-events';
 
@@ -48,6 +48,19 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     const [error, setError] = useState('');
     const [result, setResult] = useState(null);
     const [narrowed, setNarrowed] = useState(false);
+    const sourceKey = useMemo(
+        () => [truthState?.status || 'none', intent, mirror.question || '', mirror.move || ''].join('::'),
+        [truthState?.status, intent, mirror.question, mirror.move],
+    );
+    const settledKey = useRef(sourceKey);
+
+    useEffect(() => {
+        if (disabled || sourceKey === settledKey.current) return;
+        settledKey.current = sourceKey;
+        setResult(null);
+        setError('');
+        setNarrowed(false);
+    }, [disabled, sourceKey]);
 
     if (truthState?.status !== 'needs_checking') return null;
 
