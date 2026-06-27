@@ -186,7 +186,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     );
 }
 
-export function SourceCheckLine({ truthState, sourceCheck }) {
+export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck }) {
     const sources = sourceCheck?.research?.sources || [];
     const firstSource = sources[0];
 
@@ -219,6 +219,15 @@ export function SourceCheckLine({ truthState, sourceCheck }) {
                                 <span className="truncate">{firstSource.quality_label || 'Source'} - {firstSource.title || firstSource.url}</span>
                                 <ExternalLink size={12} className="shrink-0" />
                             </a>
+                        ) : null}
+                        {typeof onClearSourceCheck === 'function' ? (
+                            <button
+                                type="button"
+                                onClick={onClearSourceCheck}
+                                className="mt-3 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[11px] font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
+                            >
+                                Clear check
+                            </button>
                         ) : null}
                     </div>
                 </details>

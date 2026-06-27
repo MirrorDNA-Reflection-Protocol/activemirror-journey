@@ -239,7 +239,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourc
                             <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                         </summary>
                         <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
-                            <SourceCheckLine truthState={truthState} sourceCheck={sourceCheck} />
+                            <SourceCheckLine truthState={truthState} sourceCheck={sourceCheck} onClearSourceCheck={onSourceChecked ? () => onSourceChecked(null) : undefined} />
                             <div>
                                 <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
                                 <div className="mt-1 leading-6">{mirror.receipt?.context_used}</div>
@@ -326,6 +326,7 @@ function LandingScreen({ onStart }) {
                     <Link to="/device" className="transition hover:text-white">Mobile</Link>
                     <Link to="/start" className="text-purple-200 transition hover:text-white">BrainScan</Link>
                     <Link to="/mirror" className="transition hover:text-white">Open mirror</Link>
+                    <Link to="/enterprise" className="transition hover:text-white">Enterprise</Link>
                 </nav>
             </header>
 
@@ -496,6 +497,9 @@ export default function HomePage() {
                         </Link>
                         <Link to="/device" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-cyan-300/30 hover:text-white sm:inline-flex">
                             This device
+                        </Link>
+                        <Link to="/enterprise" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white sm:inline-flex">
+                            Enterprise
                         </Link>
                         <Link to="/mirror" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
                             Full mirror
