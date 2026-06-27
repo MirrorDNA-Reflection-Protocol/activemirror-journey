@@ -43,7 +43,7 @@ function makeNarrowClaimPrompt(intent, mirror = {}, research = {}) {
     ].filter(Boolean).join('\n');
 }
 
-export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt }) {
+export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt, onSourceChecked }) {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState(null);
@@ -88,6 +88,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 throw new Error(data.error || 'source_check_failed');
             }
             setResult(data);
+            onSourceChecked?.(data);
         } catch {
             setError('Could not check sources just now.');
         } finally {
@@ -185,11 +186,43 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     );
 }
 
-export function SourceCheckLine({ truthState }) {
+export function SourceCheckLine({ truthState, sourceCheck }) {
+    const sources = sourceCheck?.research?.sources || [];
+    const firstSource = sources[0];
+
     return (
         <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Checked</div>
             <div className="mt-1 leading-6">{sourceCheckLabel(truthState)}</div>
+            {sourceCheck?.truth_state?.status === 'checked' ? (
+                <details className="group mt-3 rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-2">
+                    <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-300">
+                        Last source check
+                        <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
+                    </summary>
+                    <div className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-zinc-500">
+                        <div className="font-semibold text-zinc-300">
+                            {sourceCheck.research?.verdict === 'supported'
+                                ? 'Source checked'
+                                : sourceCheck.research?.verdict === 'mixed'
+                                    ? 'Evidence mixed'
+                                    : 'Still needs proof'}
+                        </div>
+                        <div className="mt-1">{sourceCheck.research?.answer}</div>
+                        {firstSource ? (
+                            <a
+                                href={firstSource.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="mt-2 inline-flex max-w-full items-center gap-1.5 font-semibold text-zinc-300 underline decoration-zinc-500/40 underline-offset-4 transition hover:text-white hover:decoration-white"
+                            >
+                                <span className="truncate">{firstSource.quality_label || 'Source'} - {firstSource.title || firstSource.url}</span>
+                                <ExternalLink size={12} className="shrink-0" />
+                            </a>
+                        ) : null}
+                    </div>
+                </details>
+            ) : null}
         </div>
     );
 }

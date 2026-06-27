@@ -180,7 +180,7 @@ function Visual({ visual }) {
     return null;
 }
 
-function MirrorResult({ result, intent, onPrompt, disabled }) {
+function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourceChecked }) {
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const truthState = result?.truth_state || mirror.truth_state;
@@ -213,7 +213,14 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                             <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                         </div>
                     </div>
-                    <NeedsSources truthState={truthState} intent={intent} mirror={mirror} disabled={disabled} onPrompt={onPrompt} />
+                    <NeedsSources
+                        truthState={truthState}
+                        intent={intent}
+                        mirror={mirror}
+                        disabled={disabled}
+                        onPrompt={onPrompt}
+                        onSourceChecked={onSourceChecked}
+                    />
                     {isLoading ? (
                         <LoadingPanel />
                     ) : result?.kind === 'ecosystem' ? (
@@ -232,7 +239,7 @@ function MirrorResult({ result, intent, onPrompt, disabled }) {
                             <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                         </summary>
                         <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
-                            <SourceCheckLine truthState={truthState} />
+                            <SourceCheckLine truthState={truthState} sourceCheck={sourceCheck} />
                             <div>
                                 <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
                                 <div className="mt-1 leading-6">{mirror.receipt?.context_used}</div>
@@ -378,6 +385,7 @@ export default function HomePage() {
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
     const [sendableDraft, setSendableDraft] = useState(null);
+    const [lastSourceCheck, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
 
     useEffect(() => {
@@ -581,6 +589,8 @@ export default function HomePage() {
                             result={result}
                             intent={lastIntent}
                             disabled={busy}
+                            sourceCheck={lastSourceCheck}
+                            onSourceChecked={setLastSourceCheck}
                             onPrompt={(nextIntent) => {
                                 trackEvent('followup_clicked', { page: 'home', source: 'surface' });
                                 reflect(nextIntent, 'surface');
