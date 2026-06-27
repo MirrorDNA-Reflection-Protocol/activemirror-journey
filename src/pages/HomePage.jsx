@@ -197,7 +197,7 @@ function ReflectionGlow({ mirror }) {
     const text = `${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const urgent = /\b(overwhelmed|stuck|panic|confused|scared|afraid|urgent|pressure|spiral|loop)\b/.test(text);
     const decisive = /\b(decide|choice|ship|send|test|move|start|today)\b/.test(text);
-    const tone = urgent ? 'from-amber-300/20 via-purple-300/12 to-cyan-300/10' : decisive ? 'from-emerald-300/18 via-cyan-300/12 to-purple-300/10' : 'from-purple-300/18 via-cyan-300/10 to-white/5';
+    const tone = urgent ? 'from-amber-200/24 via-violet-300/12 to-white/5' : decisive ? 'from-violet-200/20 via-fuchsia-200/10 to-white/5' : 'from-violet-300/18 via-white/8 to-white/5';
     const label = urgent ? 'steady' : decisive ? 'clear' : 'open';
 
     return (
@@ -214,10 +214,10 @@ function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourc
         <div className="flex h-full min-h-0 flex-col rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_0_70px_rgba(124,58,237,0.14)] ring-1 ring-white/[0.04] backdrop-blur-2xl">
             <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3">
                 <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <Sparkles size={16} className={isLoading ? 'animate-pulse text-cyan-200' : 'text-cyan-200'} />
+                    <Sparkles size={16} className={isLoading ? 'animate-pulse text-violet-200' : 'text-violet-200'} />
                     {isLoading ? 'Reflecting' : 'Live mirror'}
                 </div>
-                <div className="rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-2.5 py-1 text-[11px] font-semibold text-emerald-200">
+                <div className="rounded-full border border-white/10 bg-white/[0.055] px-2.5 py-1 text-[11px] font-semibold text-zinc-300">
                     private first
                 </div>
             </div>
@@ -228,14 +228,14 @@ function MirrorResult({ result, intent, onPrompt, disabled, sourceCheck, onSourc
                     <div className="rounded-3xl border border-white/10 bg-black/25 px-4 py-4 text-[1.02rem] leading-7 text-zinc-100">
                         {mirror.reflection}
                     </div>
-                    <div className="rounded-3xl border border-purple-300/20 bg-purple-300/[0.08] px-4 py-4">
-                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">The real question</div>
+                    <div className="rounded-3xl border border-violet-200/20 bg-violet-200/[0.07] px-4 py-4">
+                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-200/75">The real question</div>
                         <div className="text-base font-semibold leading-6 text-white">{mirror.question}</div>
                     </div>
-                    <div className="flex gap-3 rounded-3xl border border-emerald-300/15 bg-emerald-300/[0.08] px-4 py-4">
-                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-300" />
+                    <div className="flex gap-3 rounded-3xl border border-white/10 bg-white/[0.055] px-4 py-4">
+                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-violet-200" />
                         <div>
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">One thing</div>
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-200/75">One thing</div>
                             <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                         </div>
                     </div>
@@ -436,7 +436,7 @@ export default function HomePage() {
 
     return (
         <div className="relative min-h-dvh overflow-hidden bg-black text-white selection:bg-purple-500/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.20),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(34,211,238,0.13),transparent_32%),#000]" />
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(244,114,182,0.08),transparent_30%),#000]" />
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.026)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:46px_46px] opacity-25" />
 
             <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
@@ -462,7 +462,7 @@ export default function HomePage() {
             <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-3xl flex-col gap-4 px-4 py-5 lg:py-6">
                 <section className="flex flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
                     <div>
-                        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
+                        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-3 py-1.5 text-xs font-semibold text-zinc-300">
                             <ShieldCheck size={14} />
                             Private first
                         </div>
@@ -479,7 +479,7 @@ export default function HomePage() {
                                     key={starter}
                                     type="button"
                                     onClick={() => setText(starter)}
-                                    className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 transition hover:border-purple-300/30 hover:text-white"
+                                    className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
                                 >
                                     {starter}
                                 </button>
@@ -502,12 +502,12 @@ export default function HomePage() {
                                         submit(event);
                                     }
                                 }}
-                                className="max-h-36 min-h-[4.5rem] flex-1 resize-none rounded-3xl border border-white/10 bg-black/35 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-300/45"
+                                className="max-h-36 min-h-[4.5rem] flex-1 resize-none rounded-3xl border border-white/10 bg-black/35 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45"
                             />
                             <button
                                 type="submit"
                                 disabled={busy || text.trim().length < 4}
-                                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.28)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.24)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
                                 aria-label="Reflect"
                             >
                                 {busy ? <Sparkles size={18} className="animate-pulse" /> : <ArrowUp size={19} />}
@@ -564,7 +564,7 @@ export default function HomePage() {
                                             reflect(item.intent, 'follow_up');
                                         }}
                                         disabled={busy}
-                                        className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-left text-sm font-semibold text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-left text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:bg-violet-200/[0.075] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         <Icon size={16} className="text-purple-200" />
                                         {item.label}
