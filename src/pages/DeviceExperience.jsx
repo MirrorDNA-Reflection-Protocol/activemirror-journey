@@ -372,7 +372,7 @@ export default function DeviceExperience() {
                 {
                     who: 'mirror',
                     mirror: {
-                        reflection: 'I could not reach the mirror route just now.',
+                        reflection: 'I could not reach the live answer just now.',
                         question: 'Can you keep the thought here and try again?',
                         move: 'Send the same sentence in a moment.',
                         receipt: {

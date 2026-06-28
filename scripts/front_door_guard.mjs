@@ -34,12 +34,26 @@ const bannedConsumerTerms = [
     { pattern: /\bGemini\b/i, label: 'provider name: Gemini' },
     { pattern: /\bOpenAI\b/i, label: 'provider name: OpenAI' },
     { pattern: /\bGPT[-\w.]*\b/i, label: 'model name: GPT' },
+    { pattern: /\bmodel route\b/i, label: 'internal routing language: model route' },
+    { pattern: /\bmirror route\b/i, label: 'internal routing language: mirror route' },
+    { pattern: /\bmodel routing\b/i, label: 'internal routing language: model routing' },
+    { pattern: /\bModel and source routes\b/i, label: 'internal routing language: model and source routes' },
+    { pattern: /\bsource routes\b/i, label: 'internal routing language: source routes' },
+    { pattern: /\bprovider routes\b/i, label: 'internal routing language: provider routes' },
+    { pattern: /\banswer provider\b/i, label: 'internal routing language: answer provider' },
+    { pattern: /\bAI provider\b/i, label: 'internal/vendor language: AI provider' },
+    { pattern: /\bcloud model\b/i, label: 'internal/vendor language: cloud model' },
+    { pattern: /\bsearch providers\b/i, label: 'internal/vendor language: search providers' },
 ];
 
 const requiredTerms = [
     { pattern: /What do you want\?|What's one thing\?/i, label: 'front-door question' },
     { pattern: /Get the next move|one honest next move|one useful output|one move/i, label: 'outcome-first promise' },
+    { pattern: /Type one thing you are stuck on/i, label: 'plain first-use helper' },
     { pattern: /Nothing saved|nothing is saved|Memory is your choice/i, label: 'privacy choice promise' },
+    { pattern: /Make it smaller/i, label: 'first-use follow-up: make smaller' },
+    { pattern: /Be more honest/i, label: 'first-use follow-up: be honest' },
+    { pattern: /Turn into draft/i, label: 'first-use follow-up: draft' },
 ];
 
 function read(file) {

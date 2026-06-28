@@ -1,38 +1,74 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowUp, BookmarkPlus, Check, ChevronDown, ShieldCheck } from 'lucide-react';
+import { ArrowUp, BookmarkPlus, Check, ChevronDown, Copy, FileText, ShieldCheck } from 'lucide-react';
+import DraftActions from '../components/DraftActions';
 import ReflectiveSurface from '../components/ReflectiveSurface';
 import MirrorFeedback from '../components/MirrorFeedback';
-import ReflectionCardActions from '../components/ReflectionCardActions';
 import { NeedsSources, SourceCheckLine } from '../components/TruthStateNotice';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
+import { copyText } from '../lib/sendable-actions';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const STARTERS = [
-    'I feel stuck.',
-    'I need honest feedback.',
-    'I have a messy idea.',
-    'I need to decide.',
+    "I'm avoiding a decision.",
+    'My idea feels messy.',
+    'I need the next step.',
 ];
 
 function makeFollowUps(mirror = {}) {
     return [
-        mirror.question && {
-            label: 'Answer this',
-            intent: `Help me answer this real question: ${mirror.question}`,
-        },
-        {
-            label: 'Go deeper',
-            intent: 'Reflect what I may not be admitting to myself yet.',
-        },
         mirror.move && {
             label: 'Make it smaller',
-            intent: `Make this next move smaller and easier to start: ${mirror.move}`,
+            action: 'reflect',
+            intent: `Make this smaller and easier to start. Keep one tiny next move only: ${mirror.move}`,
+        },
+        mirror.question && {
+            label: 'Be more honest',
+            action: 'reflect',
+            intent: `Be more honest about what I may be avoiding here. Keep it short: ${mirror.question}`,
+        },
+        {
+            label: 'Turn into draft',
+            action: 'draft',
+            intent: 'Create a sendable draft from this reflection.',
         },
     ].filter(Boolean);
+}
+
+function makeSendableDraft(mirror = {}) {
+    const question = mirror.question || 'What is the useful next move?';
+    const move = mirror.move || 'Take the smallest concrete next step.';
+
+    return {
+        title: 'Sendable draft',
+        body: [
+            'Quick update:',
+            '',
+            `I narrowed this to one question: ${question}`,
+            '',
+            `Next move: ${move}`,
+            '',
+            'Private context removed. Add only what the recipient needs.',
+        ].join('\n'),
+    };
+}
+
+function SendableDraft({ draft }) {
+    if (!draft) return null;
+
+    return (
+        <div className="max-w-[46rem] rounded-[1.5rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_38px_rgba(34,211,238,0.08)]">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-cyan-100">
+                <FileText size={16} />
+                {draft.title}
+            </div>
+            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{draft.body}</pre>
+            <DraftActions title={draft.title} text={draft.body} surface="mirror" />
+        </div>
+    );
 }
 
 function mirrorErrorMessage(error) {
@@ -108,6 +144,14 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
     const truthState = data.truth_state || mirror.truth_state;
     const [showSurface, setShowSurface] = useState(() => shouldOpenSurface(intent, mirror));
+    const [copied, setCopied] = useState(false);
+
+    async function copyMove() {
+        await copyText(mirror.move || '');
+        setCopied(true);
+        trackEvent('draft_copied', { page: 'mirror', source: 'next_move' });
+        window.setTimeout(() => setCopied(false), 1600);
+    }
 
     return (
         <div className="flex flex-col gap-3">
@@ -116,14 +160,24 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
             </div>
             {mirror.question && (
                 <div className="max-w-[46rem] rounded-[1.5rem] border border-purple-300/20 bg-purple-300/[0.08] px-5 py-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
-                    <div className="mb-1 text-xs font-semibold text-purple-100/75">Question underneath</div>
+                    <div className="mb-1 text-xs font-semibold text-purple-100/75">The real question</div>
                     <div className="text-base font-semibold leading-6 tracking-[-0.01em] text-white">{mirror.question}</div>
                 </div>
             )}
             <div className="flex max-w-[46rem] gap-3 rounded-[1.5rem] border border-emerald-300/15 bg-emerald-300/[0.08] px-5 py-4">
                 <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-300" />
-                <div>
-                    <div className="text-xs font-semibold text-emerald-100/75">Try this next</div>
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="text-xs font-semibold text-emerald-100/75">Try this next</div>
+                        <button
+                            type="button"
+                            onClick={copyMove}
+                            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/15 bg-black/18 px-2.5 py-1 text-[11px] font-semibold text-emerald-100 transition hover:border-emerald-200/35 hover:bg-emerald-200/[0.08]"
+                        >
+                            {copied ? <Check size={12} /> : <Copy size={12} />}
+                            {copied ? 'Copied' : 'Copy'}
+                        </button>
+                    </div>
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
@@ -144,11 +198,10 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     onClick={() => setShowSurface(true)}
                     className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/[0.045] px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:border-cyan-300/30 hover:text-white"
                 >
-                    Make something from this
+                    Open a small canvas
                 </button>
             )}
             <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
-            <ReflectionCardActions mirror={mirror} surface="mirror" />
             <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -168,7 +221,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
             </div>
             <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
                 <summary className="cursor-pointer list-none font-medium text-zinc-400">
-                    Private by default
+                    What was used
                     <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                 </summary>
                 <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
@@ -200,6 +253,7 @@ export default function ReflectChat() {
     const [busy, setBusy] = useState(false);
     const [savedDefaults, setSavedDefaults] = useState({});
     const [sourceChecks, setSourceChecks] = useState({});
+    const [sendableDraft, setSendableDraft] = useState(null);
     const turnNum = useRef(0);
     const mainRef = useRef(null);
     const latestTurnRef = useRef(null);
@@ -233,6 +287,7 @@ export default function ReflectChat() {
     }, [turns, busy]);
 
     async function ask(intent, source = 'typed') {
+        setSendableDraft(null);
         setTurns((current) => [...current, { who: 'you', text: intent }]);
         setBusy(true);
         trackEvent('mirror_submit', { page: 'mirror', source, route: 'reflection', status: 'started' });
@@ -354,7 +409,7 @@ export default function ReflectChat() {
                                         What do you want help with?
                                     </div>
                                     <div className="mt-3 text-base leading-7 text-zinc-400">
-                                        Say one real thing. I will help you find the question underneath it and one move to try.
+                                        Type one thing you are stuck on. Get one honest next move.
                                     </div>
                                     {seed && (
                                         <div className="mt-4 inline-flex rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1 text-xs font-semibold text-purple-200">
@@ -405,6 +460,7 @@ export default function ReflectChat() {
                             </div>
                         );
                     })}
+                    <SendableDraft draft={sendableDraft} />
                     {busy && <div className="text-zinc-500">reflecting...</div>}
                 </div>
             </main>
@@ -416,7 +472,14 @@ export default function ReflectChat() {
                             <button
                                 key={item.label}
                                 type="button"
-                                onClick={() => useStarter(item.intent, 'follow_up')}
+                                onClick={() => {
+                                    if (item.action === 'draft') {
+                                        setSendableDraft(makeSendableDraft(latestMirror));
+                                        trackEvent('followup_clicked', { page: 'mirror', source: 'draft' });
+                                        return;
+                                    }
+                                    useStarter(item.intent, 'follow_up');
+                                }}
                                 disabled={busy}
                                 className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                             >
@@ -442,7 +505,7 @@ export default function ReflectChat() {
                         rows={1}
                         value={text}
                         maxLength={1000}
-                        placeholder="What do you want help with?"
+                        placeholder="Type one real thing..."
                         onChange={(event) => setText(event.target.value)}
                         onKeyDown={(event) => {
                             if (event.key === 'Enter' && !event.shiftKey) {

@@ -91,7 +91,7 @@ export function makeOfflineMirrorResult(intent = '', reason = 'network') {
                 context_excluded: 'Private notes, files, identity context, and memory stayed out.',
                 memory_decision: 'Nothing saved unless you choose it.',
                 route: reason === 'network'
-                    ? 'Local fallback because the model route was unreachable.'
+                    ? 'Local fallback because the live answer was unreachable.'
                     : 'Local fallback.',
             },
         },

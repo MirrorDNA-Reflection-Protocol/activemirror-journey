@@ -21,13 +21,13 @@ function repairOptions(result = {}) {
         },
         {
             id: 'sharper',
-            label: 'Sharper question',
-            intent: `Make this question sharper and more honest: ${question}`,
+            label: 'Be more honest',
+            intent: `Be more honest about what I may be avoiding here. Keep it short: ${question}`,
         },
         {
             id: 'different',
-            label: 'Different angle',
-            intent: 'Try a different reflection. Keep it short, concrete, and useful.',
+            label: 'Turn into draft',
+            intent: 'Turn this into a short usable draft with one ask.',
         },
     ];
 }
@@ -67,7 +67,7 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
         <div className={`max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-black/20 px-4 py-3 ${className}`}>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <div className="text-xs font-semibold text-zinc-300">Was this useful?</div>
+                    <div className="text-xs font-semibold text-zinc-300">Did this help?</div>
                     {selected ? <div className="mt-1 text-[11px] text-zinc-500">Thanks. No message text was saved.</div> : null}
                 </div>
                 <div className="flex flex-wrap gap-2">

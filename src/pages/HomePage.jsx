@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Telescope, Trash2, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, Copy, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
 import { NeedsSources } from '../components/TruthStateNotice';
@@ -17,6 +17,7 @@ import {
     useMirrorDefault,
 } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
+import { copyText } from '../lib/sendable-actions';
 import privateChatGlow from '../assets/home/active-mirror-private-chat-glow.jpg';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
@@ -38,9 +39,9 @@ const SAMPLE_MIRROR = {
 };
 
 const STARTERS = [
-    'I feel stuck',
-    'I need honest feedback',
-    'I need a decision',
+    "I'm avoiding a decision",
+    'My idea feels messy',
+    'I need the next step',
 ];
 
 const LOADING_MIRROR = {
@@ -79,7 +80,7 @@ function makeBlockedResult(data = {}) {
     if (data.error === 'rate_limited') {
         return {
             mirror: {
-                reflection: 'The mirror route is cooling down for a moment. Your page is still private, and nothing needs to be re-entered.',
+                reflection: 'The answer is cooling down for a moment. Your page is still private, and nothing needs to be re-entered.',
                 question: 'Can you hold the same stuck point and try again in a minute?',
                 move: 'Wait for the short cooldown, then send the same sentence again.',
                 receipt: {
@@ -113,7 +114,7 @@ function makeLocalPrivacyResult(sense = {}) {
             move: 'Rewrite the same stuck point with names, keys, passwords, and account details removed.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
-                context_excluded: 'The sensitive-looking text was not sent to the model route.',
+                context_excluded: 'The sensitive-looking text was not sent out.',
                 memory_decision: 'Nothing saved.',
             },
             visual: {
@@ -129,19 +130,19 @@ function makeLocalPrivacyResult(sense = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.move && {
-            label: 'Start this',
+            label: 'Make it smaller',
             icon: ArrowRight,
             action: 'reflect',
-            intent: `Help me start this without adding more options: ${mirror.move}`,
+            intent: `Make this smaller and easier to start. Keep one tiny next move only: ${mirror.move}`,
         },
         mirror.question && {
-            label: 'Ask sharper',
-            icon: Telescope,
+            label: 'Be more honest',
+            icon: Sparkles,
             action: 'reflect',
-            intent: `Go one layer deeper on this question without giving me a long answer: ${mirror.question}`,
+            intent: `Be more honest about what I may be avoiding here. Keep it short: ${mirror.question}`,
         },
         {
-            label: 'Make a draft',
+            label: 'Turn into draft',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -247,19 +248,38 @@ function MicroVisual({ visual }) {
 }
 
 function NextMoveSurface({ mirror, onRemember, remembered }) {
+    const [copied, setCopied] = useState(false);
+
+    async function copyMove() {
+        await copyText(mirror.move || '');
+        setCopied(true);
+        trackEvent('draft_copied', { page: 'home', source: 'next_move' });
+        window.setTimeout(() => setCopied(false), 1600);
+    }
+
     return (
         <div className="mt-5 rounded-[1.55rem] border border-white/10 bg-black/24 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem]">
                 <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.075] px-4 py-4">
-                    <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-emerald-100/80">
-                        <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                        Try this next
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 text-[12px] font-semibold text-emerald-100/80">
+                            <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                            Try this next
+                        </div>
+                        <button
+                            type="button"
+                            onClick={copyMove}
+                            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/15 bg-black/18 px-2.5 py-1 text-[11px] font-semibold text-emerald-100 transition hover:border-emerald-200/35 hover:bg-emerald-200/[0.08]"
+                        >
+                            {copied ? <Check size={12} /> : <Copy size={12} />}
+                            {copied ? 'Copied' : 'Copy'}
+                        </button>
                     </div>
                     <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
                 </div>
                 <div className="flex flex-col justify-between rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
                     <div>
-                        <div className="text-sm font-semibold text-zinc-300">Keep it?</div>
+                        <div className="text-sm font-semibold text-zinc-300">Keep this?</div>
                         <div className="mt-2 text-sm leading-6 text-zinc-400">Save only the useful question and move.</div>
                     </div>
                     <button
@@ -299,7 +319,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
                         {mirror.reflection}
                     </p>
                     <p className="mt-5 rounded-[1.35rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
-                        <span className="mb-1 block text-xs font-semibold text-violet-100/75">Question underneath</span>
+                        <span className="mb-1 block text-xs font-semibold text-violet-100/75">The real question</span>
                         {mirror.question}
                     </p>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
@@ -372,7 +392,7 @@ function OwnedMirrorNudge({ seed }) {
 
     return (
         <div className="rounded-[1.7rem] border border-violet-300/15 bg-violet-300/[0.065] px-4 py-4 shadow-[0_0_34px_rgba(168,85,247,0.08)]">
-            <div className="text-sm font-semibold text-violet-100">Make Active Mirror yours.</div>
+            <div className="text-sm font-semibold text-violet-100">Save your preferences.</div>
             <div className="mt-1 text-sm leading-6 text-zinc-400">
                 One minute of setup. Better questions, faster next moves, and a private profile you keep.
             </div>
@@ -771,9 +791,11 @@ export default function HomePage() {
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <Link to="/enterprise" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white sm:inline-flex">
-                            For teams
-                        </Link>
+                        {showMirror ? (
+                            <Link to="/enterprise" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white sm:inline-flex">
+                                For teams
+                            </Link>
+                        ) : null}
                     </div>
                 </div>
             </header>
@@ -802,11 +824,11 @@ export default function HomePage() {
                             <div className="mb-7 grid h-20 w-20 place-items-center rounded-[1.6rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)]">
                                 <MirrorLogo />
                             </div>
-                            <h1 className="max-w-2xl text-[3.35rem] font-semibold leading-[0.9] tracking-[-0.06em] text-white sm:text-[5.5rem]">
+                            <h1 className="max-w-2xl overflow-visible break-words text-[2.75rem] font-semibold leading-[0.95] tracking-normal text-white sm:text-[5.1rem]">
                                 What do you want?
                             </h1>
                             <p className="mt-6 max-w-[34rem] text-base leading-7 text-zinc-400 sm:text-xl sm:leading-8">
-                                Say one real thing. Get the question underneath it and a move you can actually use.
+                                Type one thing you are stuck on. Get one honest next move.
                             </p>
 
                             <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -832,7 +854,7 @@ export default function HomePage() {
                                 rows={showMirror ? 1 : 2}
                                 value={text}
                                 maxLength={1000}
-                                placeholder="What do you want help moving?"
+                                placeholder="Type one real thing..."
                                 onChange={(event) => setText(event.target.value)}
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter' && !event.shiftKey) {
@@ -867,16 +889,18 @@ export default function HomePage() {
                         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
-                                No memory unless you choose it.
+                                Nothing saved unless you choose.
                             </span>
-                            <button
-                                type="button"
-                                onClick={() => setMemoryOpen(true)}
-                                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
-                            >
-                                <SlidersHorizontal size={13} />
-                                Memory{mirrorDefaults.length ? ` ${mirrorDefaults.length}` : ''}
-                            </button>
+                            {(showMirror || mirrorDefaults.length > 0) ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setMemoryOpen(true)}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
+                                >
+                                    <SlidersHorizontal size={13} />
+                                    Saved notes{mirrorDefaults.length ? ` ${mirrorDefaults.length}` : ''}
+                                </button>
+                            ) : null}
                             <LocalSenseLine sense={typingSense} />
                         </div>
                     </div>
@@ -924,11 +948,6 @@ export default function HomePage() {
                             })}
                         </div> : null}
                         <SendableDraft draft={sendableDraft} />
-                        {!busy && result ? (
-                            <div className="sm:pl-12">
-                                <OwnedMirrorNudge seed={seed} />
-                            </div>
-                        ) : null}
                     </section>
                 ) : null}
             </main>
