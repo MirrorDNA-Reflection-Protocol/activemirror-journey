@@ -1,5 +1,6 @@
 node_modules/
 dist
+outputs/
 .env
 api/.env
 ops/control-plane-snapshots/
