@@ -17,11 +17,12 @@ import {
     useMirrorDefault,
 } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
+import privateChatGlow from '../assets/home/active-mirror-private-chat-glow.jpg';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const SAMPLE_MIRROR = {
-    reflection: 'You may not need more ideas. You may need one small action that turns the loop into evidence.',
+    reflection: 'You may not need more ideas. You may need one small action that turns the loop into a visible change.',
     question: 'What is the next choice you are avoiding because it would make the work real?',
     move: 'Write the smallest version of the decision in one sentence, then test it once today.',
     visual: {
@@ -37,9 +38,9 @@ const SAMPLE_MIRROR = {
 };
 
 const STARTERS = [
-    'I feel stuck.',
-    'I need honest feedback.',
-    'I need a decision.',
+    'I feel stuck',
+    'I need honest feedback',
+    'I need a decision',
 ];
 
 const LOADING_MIRROR = {
@@ -128,7 +129,7 @@ function makeLocalPrivacyResult(sense = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.move && {
-            label: 'Help me start this',
+            label: 'Start this',
             icon: ArrowRight,
             action: 'reflect',
             intent: `Help me start this without adding more options: ${mirror.move}`,
@@ -250,16 +251,16 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
         <div className="mt-5 rounded-[1.55rem] border border-white/10 bg-black/24 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem]">
                 <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.075] px-4 py-4">
-                    <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-200/75">
+                    <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-emerald-100/80">
                         <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                        Next move
+                        Try this next
                     </div>
                     <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
                 </div>
                 <div className="flex flex-col justify-between rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
                     <div>
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Optional</div>
-                        <div className="mt-2 text-sm leading-6 text-zinc-400">Save only this question and move if it helps.</div>
+                        <div className="text-sm font-semibold text-zinc-300">Keep it?</div>
+                        <div className="mt-2 text-sm leading-6 text-zinc-400">Save only the useful question and move.</div>
                     </div>
                     <button
                         type="button"
@@ -298,6 +299,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
                         {mirror.reflection}
                     </p>
                     <p className="mt-5 rounded-[1.35rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
+                        <span className="mb-1 block text-xs font-semibold text-violet-100/75">Question underneath</span>
                         {mirror.question}
                     </p>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
@@ -752,6 +754,7 @@ export default function HomePage() {
     }
 
     const showMirror = Boolean(result || busy || lastIntent);
+    const canSubmit = text.trim().length >= 4;
 
     return (
         <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-purple-500/30">
@@ -759,12 +762,12 @@ export default function HomePage() {
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:52px_52px] opacity-20" />
 
             <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
-                <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
+                <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
                         <div>
                             <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
-                            <div className="hidden text-xs text-zinc-500 sm:block">move faster, stay honest</div>
+                            <div className="hidden text-xs text-zinc-500 sm:block">one honest next move</div>
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
@@ -775,28 +778,45 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] max-w-3xl flex-col gap-4 px-4 py-5 lg:py-6">
-                <section className={`flex flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-[0_0_60px_rgba(168,85,247,0.09)] ring-1 ring-white/[0.035] backdrop-blur-2xl ${showMirror ? 'p-3 sm:p-4' : 'p-5 sm:p-7'}`}>
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-5xl flex-col justify-center gap-4 px-4 py-5 lg:py-8">
+                <section className={`relative flex flex-col justify-between overflow-hidden rounded-[2.45rem] border border-white/10 bg-white/[0.045] shadow-[0_0_90px_rgba(168,85,247,0.13)] ring-1 ring-white/[0.04] backdrop-blur-2xl ${showMirror ? 'mx-auto w-full max-w-3xl p-3 sm:p-4' : 'min-h-[min(650px,calc(100dvh-8rem))] p-5 sm:p-8 lg:p-10'}`}>
                     {!showMirror ? (
-                        <div>
-                            <div className="mb-6 grid h-16 w-16 place-items-center rounded-[1.35rem] border border-violet-200/20 bg-white/[0.045] shadow-[0_0_38px_rgba(168,85,247,0.16)]">
+                        <div
+                            className="pointer-events-none absolute inset-0 opacity-38"
+                            aria-hidden="true"
+                        >
+                            <img
+                                src={privateChatGlow}
+                                alt=""
+                                className="h-full w-full object-cover"
+                                loading="eager"
+                            />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(5,5,7,0.22),rgba(5,5,7,0.86)_62%,#050507_100%)]" />
+                        </div>
+                    ) : null}
+                    <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
+                    <div className="pointer-events-none absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-violet-500/12 blur-3xl" />
+                    <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-[72%] -translate-x-1/2 rounded-[100%] bg-cyan-300/8 blur-3xl" />
+                    {!showMirror ? (
+                        <div className="relative z-10 mx-auto flex w-full max-w-[44rem] flex-1 flex-col items-center justify-center text-center">
+                            <div className="mb-7 grid h-20 w-20 place-items-center rounded-[1.6rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)]">
                                 <MirrorLogo />
                             </div>
-                            <h1 className="max-w-2xl text-[3rem] font-semibold leading-[0.92] tracking-[-0.06em] text-white sm:text-[4.9rem]">
+                            <h1 className="max-w-2xl text-[3.35rem] font-semibold leading-[0.9] tracking-[-0.06em] text-white sm:text-[5.5rem]">
                                 What do you want?
                             </h1>
-                            <p className="mt-5 max-w-lg text-base leading-7 text-zinc-400 sm:text-lg">
-                                Get unstuck faster. Active Mirror asks the question most AI skips, then gives you one honest next move without fake agreement.
+                            <p className="mt-6 max-w-[34rem] text-base leading-7 text-zinc-400 sm:text-xl sm:leading-8">
+                                Say one real thing. Get the question underneath it and a move you can actually use.
                             </p>
 
-                            <div className="mt-4 flex flex-wrap gap-2">
+                            <div className="mt-6 flex flex-wrap justify-center gap-2">
                                 {STARTERS.map((starter) => (
                                     <button
                                         key={starter}
                                         type="button"
                                         onClick={() => reflect(starter, 'starter')}
                                         disabled={busy}
-                                        className="rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:bg-white/[0.05] hover:text-white"
+                                        className="rounded-full border border-white/10 bg-black/25 px-4 py-2 text-sm text-zinc-300 transition hover:border-violet-200/35 hover:bg-white/[0.06] hover:text-white"
                                     >
                                         {starter}
                                     </button>
@@ -805,14 +825,14 @@ export default function HomePage() {
                         </div>
                     ) : null}
 
-                    <div className={showMirror ? '' : 'mt-7'}>
-                        <form onSubmit={submit} className="flex items-end gap-2">
+                    <div className={showMirror ? 'relative z-10' : 'relative z-10 mx-auto mt-8 w-full max-w-[44rem]'}>
+                        <form onSubmit={submit} className={showMirror ? 'flex items-end gap-2' : 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]'}>
                             <textarea
                                 ref={inputRef}
                                 rows={showMirror ? 1 : 2}
                                 value={text}
                                 maxLength={1000}
-                                placeholder="Tell Active Mirror what you want help with..."
+                                placeholder="What do you want help moving?"
                                 onChange={(event) => setText(event.target.value)}
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter' && !event.shiftKey) {
@@ -820,16 +840,28 @@ export default function HomePage() {
                                         submit(event);
                                     }
                                 }}
-                                className="max-h-36 min-h-[4.5rem] flex-1 resize-none rounded-3xl border border-white/10 bg-black/35 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45"
+                                className={`${showMirror ? 'min-h-[4.5rem]' : 'min-h-[5.6rem]'} max-h-36 flex-1 resize-none rounded-3xl border border-white/10 bg-black/40 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45`}
                                 style={{ overflowWrap: 'anywhere' }}
                             />
                             <button
                                 type="submit"
-                                disabled={busy || text.trim().length < 4}
-                                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.24)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                                disabled={busy || (showMirror && !canSubmit)}
+                                onClick={() => {
+                                    if (!canSubmit && !busy) inputRef.current?.focus();
+                                }}
+                                className={`${showMirror ? 'grid h-12 w-12 place-items-center rounded-2xl' : 'inline-flex min-h-14 items-center justify-center gap-2 rounded-3xl px-5 text-sm font-bold sm:min-h-[5.6rem] sm:px-7'} shrink-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_28px_rgba(168,85,247,0.30)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
                                 aria-label="Get my next move"
                             >
-                                {busy ? <Sparkles size={18} className="animate-pulse" /> : <ArrowUp size={19} />}
+                                {busy ? (
+                                    <Sparkles size={18} className="animate-pulse" />
+                                ) : showMirror ? (
+                                    <ArrowUp size={19} />
+                                ) : (
+                                    <>
+                                        <span>Start Reflection</span>
+                                        <ArrowUp size={17} />
+                                    </>
+                                )}
                             </button>
                         </form>
                         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">

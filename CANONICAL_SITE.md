@@ -19,6 +19,11 @@ experience.
 
 1. Edit and test here: `/Users/mirror-pro/repos/activemirror-journey`.
 2. Run `npm run build` for local/static verification.
+   - `prebuild` runs canonical-source, front-door, redaction, and
+     Active Mirror truth gates.
+   - The truth gate writes `outputs/active-mirror-truth-gate.json` and must
+     be read as scoped verification: checked source files plus explicitly
+     skipped surfaces.
 3. Run `npm run build:deploy` for the live production bundle; this enables
    remote privacy events after the gateway `/v1/events` endpoint is deployed.
 4. Copy the generated `dist/` bundle into

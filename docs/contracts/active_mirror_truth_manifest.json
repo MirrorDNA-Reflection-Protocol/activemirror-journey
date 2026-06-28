@@ -1,0 +1,162 @@
+{
+  "schema_version": "active_mirror.truth_manifest.v1",
+  "policy": {
+    "public_success_claim_requires_source": true,
+    "verified_word_requires_scoped_manifest": true,
+    "volunteer_bad_news": true
+  },
+  "checked_surface_globs": [
+    "index.html",
+    "src/App.jsx",
+    "src/pages/HomePage.jsx",
+    "src/pages/ReflectChat.jsx",
+    "src/pages/Start.jsx",
+    "src/pages/DeviceExperience.jsx",
+    "src/pages/Enterprise.jsx",
+    "src/pages/FeedbackDashboard.jsx",
+    "src/pages/Privacy.jsx",
+    "src/pages/Terms.jsx",
+    "src/components/ReflectionCardActions.jsx",
+    "src/components/ReflectiveSurface.jsx",
+    "src/components/TruthStateNotice.jsx",
+    "src/components/MirrorFeedback.jsx",
+    "src/lib/first-turn-fallback.js",
+    "src/lib/local-mirror-sense.js",
+    "src/lib/mirror-state.js",
+    "src/lib/privacy-events.js"
+  ],
+  "skipped_surface_globs": [
+    {
+      "glob": "dist/**",
+      "reason": "Generated build output; canonical product source is checked before build."
+    },
+    {
+      "glob": "node_modules/**",
+      "reason": "Vendored dependencies are not Active Mirror presentation claims."
+    },
+    {
+      "glob": "outputs/**",
+      "reason": "Generated local receipts and QA artifacts, not source presentation copy."
+    },
+    {
+      "glob": "public/**",
+      "reason": "Legacy/static reference pages are not certified by this product-source gate."
+    },
+    {
+      "glob": "src/pages/**/*.backup.jsx",
+      "reason": "Backup/reference pages are not active React routes."
+    },
+    {
+      "glob": "src/pages/**/*.stable.jsx",
+      "reason": "Reference snapshots are not active React routes."
+    },
+    {
+      "glob": "safety_proxy/**",
+      "reason": "Local proxy and tests are not public presentation surfaces."
+    }
+  ],
+  "claim_bindings": [
+    {
+      "claim_id": "active_routes_scope",
+      "pattern": "\\b(?:route|routes|stale route|redirect|BrowserRouter|Navigate|/mirror|/start|/privacy|/terms|/enterprise|/feedback|/device)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/App.jsx",
+        "CANONICAL_SITE.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "claim_id": "gateway_reflection_route",
+      "pattern": "\\b(?:gateway|model route|source-check|generated response|reflection request|mirror route|request route|route is cooling down)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/HomePage.jsx",
+        "src/pages/ReflectChat.jsx",
+        "src/pages/Enterprise.jsx",
+        "src/lib/first-turn-fallback.js",
+        "CANONICAL_SITE.md"
+      ]
+    },
+    {
+      "claim_id": "privacy_and_telemetry_limits",
+      "pattern": "\\b(?:privacy|private|private context|prompt content|telemetry|local profile|browser storage|local storage|session id|nothing yet|nothing saved|nothing was saved|nothing is saved|nothing else is stored|nothing becomes memory unless accepted|nothing saved unless you choose it|not sent|not processed|not log|do not store|do not sell|do not use ad-tracking cookies|train our own models|memory is your choice|local only|local-only|stays local|kept out|left out|excluded|minimum context|approved defaults)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/Privacy.jsx",
+        "src/pages/Terms.jsx",
+        "src/pages/HomePage.jsx",
+        "src/pages/ReflectChat.jsx",
+        "src/pages/DeviceExperience.jsx",
+        "src/lib/privacy-events.js",
+        "src/lib/mirror-state.js"
+      ]
+    },
+    {
+      "claim_id": "boundary_and_secret_handling",
+      "pattern": "\\b(?:secret|secrets|sensitive|boundary|boundaries|blocked|held back|API keys|credentials|private-key|safety|security|rate limit|abuse|bypass|overload|provider-side secret storage|common API keys|tokens)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/Privacy.jsx",
+        "src/pages/Terms.jsx",
+        "src/pages/ReflectChat.jsx",
+        "src/pages/HomePage.jsx",
+        "src/pages/DeviceExperience.jsx",
+        "src/lib/local-mirror-sense.js",
+        "scripts/redaction_guard.sh"
+      ]
+    },
+    {
+      "claim_id": "receipt_and_proof_sprint",
+      "pattern": "\\b(?:receipt|receipts|proof[- ]sprint|request id|approval trail|proof pack|checked|source records?|citation status|used, excluded, checked|request receipt|reviewer)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/Enterprise.jsx",
+        "src/pages/Privacy.jsx",
+        "src/components/TruthStateNotice.jsx",
+        "CANONICAL_SITE.md"
+      ]
+    },
+    {
+      "claim_id": "six_choice_setup",
+      "phrase": "Six quick choices",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/Start.jsx",
+        "src/lib/brainFallback.js"
+      ]
+    },
+    {
+      "claim_id": "not_professional_advice",
+      "pattern": "\\b(?:professional medical|legal|financial|mental-health|doctor|lawyer|financial adviser|therapist|crisis service|emergency service|AI output can be incomplete|not legal advice|not to outsource judgment)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/Terms.jsx",
+        "src/pages/Privacy.jsx"
+      ]
+    },
+    {
+      "claim_id": "front_door_guard_scope",
+      "pattern": "\\b(?:one thing|one real thing|one honest next move|one useful output|Get the next move|Try this next|Start Reflection|Open chat)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/HomePage.jsx",
+        "src/pages/ReflectChat.jsx",
+        "scripts/front_door_guard.mjs"
+      ]
+    },
+    {
+      "claim_id": "truth_state_and_source_check_copy",
+      "pattern": "\\b(?:source checked|sources mixed|needs stronger support|needs sources|check plan|source check|reliable support|claim|claims|source-heavy|stronger support|missing-support|support from this turn|public example|checkable search|primary sources|what needs checking|which claim would change your next move|what sources would actually prove or disprove this)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/components/TruthStateNotice.jsx",
+        "src/components/ReflectiveSurface.jsx",
+        "src/lib/first-turn-fallback.js",
+        "src/pages/Enterprise.jsx",
+        "src/pages/HomePage.jsx",
+        "CANONICAL_SITE.md"
+      ]
+    }
+  ]
+}

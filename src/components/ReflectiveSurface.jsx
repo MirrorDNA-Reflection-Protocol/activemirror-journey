@@ -4,8 +4,8 @@ import { ArrowRight, CheckCircle2, Compass, FileText, Image, Lock, Map, RotateCc
 const SURFACES = [
     {
         id: 'decision_map',
-        title: 'Decision map',
-        summary: 'Separate the choice from the evidence.',
+        title: 'Decision helper',
+        summary: 'Separate the choice from the signal.',
         icon: Compass,
         accent: 'purple',
         test: /\b(decide|decision|choice|choose|between|option|commit|quit|stay|leave|yes|no)\b/i,
@@ -21,13 +21,13 @@ const SURFACES = [
     },
     {
         id: 'research_brief',
-        title: 'Research brief',
-        summary: 'Turn the question into a source-backed check.',
+        title: 'Research helper',
+        summary: 'Turn the question into a checkable search.',
         icon: Search,
         accent: 'cyan',
         test: /\b(research|source|sources|web|online|competitor|market|find|verify|check|latest|today)\b/i,
         blocks: ({ mirror }) => [
-            { label: 'Question', text: mirror.question || 'What needs to be verified before you act?' },
+            { label: 'Question', text: mirror.question || 'What needs checking before you act?' },
             { label: 'Check', text: 'Look for primary sources, dates, contradictions, and what changed recently.' },
             { label: 'Output', text: 'Bring back a short answer, links, and the one thing it changes.' },
         ],
@@ -38,15 +38,15 @@ const SURFACES = [
     },
     {
         id: 'launch_memo',
-        title: 'Launch memo',
-        summary: 'Convert messy positioning into something usable.',
+        title: 'Launch note',
+        summary: 'Turn the reflection into words you can use.',
         icon: Send,
         accent: 'violet',
         test: /\b(launch|site|homepage|copy|marketing|sales|ad|ads|positioning|offer|customer|user|demo)\b/i,
         blocks: ({ mirror }) => [
             { label: 'Promise', text: 'What the user gets in one sentence.' },
-            { label: 'Proof', text: mirror.receipt?.context_used || 'Only use the strongest evidence from this turn.' },
-            { label: 'Next', text: mirror.move || 'Ship the smallest public proof.' },
+            { label: 'Support', text: mirror.receipt?.context_used || 'Use the strongest support from this turn.' },
+            { label: 'Next', text: mirror.move || 'Share the smallest public example.' },
         ],
         actions: ({ mirror }) => [
             { label: 'Draft the memo', intent: `Turn this into a short launch memo: ${mirror.move || mirror.question || 'the next launch move'}` },
@@ -55,13 +55,13 @@ const SURFACES = [
     },
     {
         id: 'file_review',
-        title: 'File review',
-        summary: 'Use documents without swallowing private context.',
+        title: 'File helper',
+        summary: 'Use documents without pulling in everything.',
         icon: FileText,
         accent: 'emerald',
         test: /\b(file|pdf|doc|document|spreadsheet|excel|sheet|deck|screenshot|upload|notes)\b/i,
         blocks: ({ mirror }) => [
-            { label: 'Use', text: 'Extract the decision, proof, open questions, and next action.' },
+            { label: 'Use', text: 'Extract the decision, support, open questions, and next action.' },
             { label: 'Leave out', text: mirror.receipt?.context_excluded || 'Private or unrelated details stay out.' },
             { label: 'Return', text: 'A short brief plus exact excerpts that matter.' },
         ],
@@ -72,8 +72,8 @@ const SURFACES = [
     },
     {
         id: 'visual_board',
-        title: 'Visual board',
-        summary: 'Shape the image, scene, or artifact before making it.',
+        title: 'Visual helper',
+        summary: 'Shape the thing before making it.',
         icon: Image,
         accent: 'cyan',
         test: /\b(image|visual|video|screen|screenshot|design|figma|render|asset|poster|canvas|look|feel)\b/i,
@@ -89,8 +89,8 @@ const SURFACES = [
     },
     {
         id: 'boundary_map',
-        title: 'Boundary map',
-        summary: 'Show what can help without taking what should stay yours.',
+        title: 'Privacy check',
+        summary: 'Use only what is needed.',
         icon: Lock,
         accent: 'emerald',
         test: /\b(private|privacy|secret|boundary|safe|client|confidential|memory|save|share|personal)\b/i,
@@ -106,7 +106,7 @@ const SURFACES = [
     },
     {
         id: 'reset_flow',
-        title: 'Reset flow',
+        title: 'Reset',
         summary: 'Lower the noise without losing the thread.',
         icon: RotateCcw,
         accent: 'amber',
@@ -125,7 +125,7 @@ const SURFACES = [
 
 const DEFAULT_SURFACE = {
     id: 'next_move',
-    title: 'Next move',
+    title: 'Next step',
     summary: 'Keep the work small enough to start.',
     icon: Map,
     accent: 'purple',
@@ -199,7 +199,7 @@ export default function ReflectiveSurface({ result, intent, onPrompt, disabled }
             initial={{ y: 10, scale: 0.99 }}
             animate={{ y: 0, scale: 1 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
-            className={`overflow-hidden rounded-3xl border ${styles.shell}`}
+            className={`max-w-[46rem] overflow-hidden rounded-3xl border ${styles.shell}`}
         >
             <div className="flex items-start justify-between gap-3 px-4 py-4">
                 <div className="flex min-w-0 gap-3">
@@ -219,7 +219,7 @@ export default function ReflectiveSurface({ result, intent, onPrompt, disabled }
             <div className="grid gap-2 px-4 py-4 sm:grid-cols-3">
                 {blocks.map((block) => (
                     <div key={block.label} className="rounded-2xl border border-white/10 bg-black/22 p-3">
-                        <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase text-zinc-500">
+                        <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-zinc-500">
                             <CheckCircle2 size={12} />
                             {block.label}
                         </div>

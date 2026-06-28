@@ -12,24 +12,24 @@ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const STARTERS = [
-    'I keep asking AI for help, but I still do not know what to do next.',
-    'I need honest feedback, not reassurance.',
-    'I have a messy idea and need the real question underneath it.',
-    'I am stuck between two choices and keep going in circles.',
+    'I feel stuck.',
+    'I need honest feedback.',
+    'I have a messy idea.',
+    'I need to decide.',
 ];
 
 function makeFollowUps(mirror = {}) {
     return [
         mirror.question && {
-            label: 'Help me answer this question',
+            label: 'Answer this',
             intent: `Help me answer this real question: ${mirror.question}`,
         },
         {
-            label: 'What am I not admitting?',
+            label: 'Go deeper',
             intent: 'Reflect what I may not be admitting to myself yet.',
         },
         mirror.move && {
-            label: 'Make the next move smaller',
+            label: 'Make it smaller',
             intent: `Make this next move smaller and easier to start: ${mirror.move}`,
         },
     ].filter(Boolean);
@@ -116,14 +116,14 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
             </div>
             {mirror.question && (
                 <div className="max-w-[46rem] rounded-[1.5rem] border border-purple-300/20 bg-purple-300/[0.08] px-5 py-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
-                    <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">The real question</div>
+                    <div className="mb-1 text-xs font-semibold text-purple-100/75">Question underneath</div>
                     <div className="text-base font-semibold leading-6 tracking-[-0.01em] text-white">{mirror.question}</div>
                 </div>
             )}
             <div className="flex max-w-[46rem] gap-3 rounded-[1.5rem] border border-emerald-300/15 bg-emerald-300/[0.08] px-5 py-4">
                 <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-300" />
                 <div>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">One thing</div>
+                    <div className="text-xs font-semibold text-emerald-100/75">Try this next</div>
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             </div>
@@ -144,7 +144,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                     onClick={() => setShowSurface(true)}
                     className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/[0.045] px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:border-cyan-300/30 hover:text-white"
                 >
-                    Make an output
+                    Make something from this
                 </button>
             )}
             <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
@@ -152,8 +152,8 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
             <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <div className="text-sm font-semibold text-zinc-200">Remember this only if it helps.</div>
-                        <div className="mt-1 text-xs leading-5 text-zinc-500">Save the question and next move as your starting point. Nothing else is stored.</div>
+                        <div className="text-sm font-semibold text-zinc-200">Keep this only if it helps.</div>
+                        <div className="mt-1 text-xs leading-5 text-zinc-500">Save the useful question and next move. Nothing else is stored.</div>
                     </div>
                     <button
                         type="button"
@@ -162,13 +162,13 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                         className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-2 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12] disabled:cursor-not-allowed disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
                     >
                         {saved ? <Check size={14} /> : <BookmarkPlus size={14} />}
-                        {saved ? 'Remembered' : 'Remember this'}
+                        {saved ? 'Saved' : 'Save this'}
                     </button>
                 </div>
             </div>
             <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
                 <summary className="cursor-pointer list-none font-medium text-zinc-400">
-                    Private by default · what stayed out
+                    Private by default
                     <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                 </summary>
                 <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
@@ -354,7 +354,7 @@ export default function ReflectChat() {
                                         What do you want help with?
                                     </div>
                                     <div className="mt-3 text-base leading-7 text-zinc-400">
-                                        Active Mirror asks the sharper question, gives you one useful move, and lets you choose what it remembers.
+                                        Say one real thing. I will help you find the question underneath it and one move to try.
                                     </div>
                                     {seed && (
                                         <div className="mt-4 inline-flex rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1 text-xs font-semibold text-purple-200">

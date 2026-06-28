@@ -94,14 +94,14 @@ export default function Privacy() {
                     <h2 className="text-xl font-semibold tracking-[-0.03em]">Processing, providers, and retention</h2>
                     <div className="mt-4 grid gap-3 text-sm leading-7 text-zinc-400">
                         <p>Reflection requests are processed by the gateway and the selected model route. We do not store full prompts or generated reflections as product analytics.</p>
-                        <p>Cloud model, search, hosting, and infrastructure providers may process request content and limited operational data to deliver, secure, debug, and protect the service.</p>
+                        <p>Cloud model, search, hosting, and infrastructure providers may process request content and limited operational data to deliver, debug, and protect the service.</p>
                         <p>Rate limiting uses session and network metadata to prevent abuse and control cost. The public feedback dashboard reads only your current browser session.</p>
                         <p>Contact messages and proof-sprint requests are kept as long as needed to respond, manage the relationship, and maintain ordinary business records.</p>
                     </div>
                 </section>
 
                 <section className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
-                    <h2 className="text-xl font-semibold tracking-[-0.03em]">Security limits</h2>
+                    <h2 className="text-xl font-semibold tracking-[-0.03em]">Safety limits</h2>
                     <div className="mt-4 grid gap-3 text-sm leading-7 text-zinc-400">
                         <p>The gateway blocks common API keys, tokens, credentials, and private-key patterns before model routing, but no automated filter is perfect.</p>
                         <p>Do not paste passwords, API keys, private URLs, payment data, health records, legal case details, or anything you would not want processed by an AI provider.</p>

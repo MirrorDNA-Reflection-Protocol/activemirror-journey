@@ -25,13 +25,13 @@ const workflowRuns = [
         id: 'research',
         label: 'Research brief',
         request: 'Turn a source pile into a board-ready brief.',
-        output: 'Brief outline, missing-evidence list, approval-ready next move.',
+        output: 'Brief outline, missing-support list, approval-ready next move.',
         risk: 'medium',
         steps: [
             ['intake', 'workflow received', 'Only the selected files and brief are in scope.', 'ok'],
             ['boundary', 'private context held', 'Unneeded names and side notes stay out.', 'ok'],
             ['route', 'research path selected', 'Source-heavy claims require citation status.', 'live'],
-            ['check', 'unsupported claims marked', 'Two claims need stronger evidence before use.', 'warn'],
+            ['check', 'unsupported claims marked', 'Two claims need stronger support before use.', 'warn'],
             ['receipt', 'proof pack ready', 'Used, excluded, checked, and open items recorded.', 'ok'],
         ],
     },
@@ -74,7 +74,7 @@ const controls = [
     {
         icon: FileCheck2,
         title: 'No hidden work',
-        text: 'Each serious output shows what was used, what stayed out, and what still needs evidence.',
+        text: 'Each serious output shows what was used, what stayed out, and what still needs support.',
     },
     {
         icon: ShieldCheck,
@@ -91,7 +91,7 @@ const controls = [
 const views = [
     ['MirrorDash', 'live work state, gates, files, tools, approvals'],
     ['MirrorProof', 'receipt pack for serious outputs and claims'],
-    ['Consent Gate', 'approval before memory, sharing, or side effects'],
+    ['Consent check', 'approval before memory, sharing, or side effects'],
     ['Private Runtime', 'browser-first, self-hosted, or managed deployment'],
 ];
 

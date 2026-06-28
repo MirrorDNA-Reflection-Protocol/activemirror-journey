@@ -13,15 +13,15 @@ const VERDICT_COPY = {
         link: 'text-emerald-100 hover:border-emerald-200/35 hover:bg-emerald-300/[0.10]',
     },
     mixed: {
-        title: 'Evidence mixed',
+        title: 'Sources mixed',
         shell: 'border-amber-300/20 bg-amber-300/[0.08] text-amber-50',
         icon: 'text-amber-200',
         muted: 'text-amber-100/80',
         link: 'text-amber-100 hover:border-amber-200/35 hover:bg-amber-300/[0.10]',
     },
     not_enough: {
-        title: 'Still needs proof',
-        helper: 'Found links, but not enough reliable evidence to trust the claim yet.',
+        title: 'Needs stronger support',
+        helper: 'Found links, but not enough reliable support to trust the claim yet.',
         shell: 'border-zinc-300/15 bg-white/[0.055] text-zinc-100',
         icon: 'text-zinc-300',
         muted: 'text-zinc-400',
@@ -105,7 +105,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
             <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
                 <div className="mb-2 flex items-center gap-2 font-semibold">
                     <SearchCheck size={16} className={verdict.icon} />
-                    {plan ? 'Verification plan' : verdict.title}
+                    {plan ? 'Check plan' : verdict.title}
                 </div>
                 {verdict.helper ? (
                     <div className={`mb-2 ${verdict.muted}`}>{verdict.helper}</div>
@@ -239,7 +239,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
             {sourceCheck?.truth_state?.status === 'checked' || plan ? (
                 <details className="group mt-3 rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-2">
                     <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-300">
-                        {plan ? 'Last verification plan' : 'Last source check'}
+                        {plan ? 'Last check plan' : 'Last source check'}
                         <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                     </summary>
                     <div className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-zinc-500">
@@ -249,8 +249,8 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
                                 : sourceCheck.research?.verdict === 'supported'
                                 ? 'Source checked'
                                 : sourceCheck.research?.verdict === 'mixed'
-                                    ? 'Evidence mixed'
-                                    : 'Still needs proof'}
+                                    ? 'Sources mixed'
+                                    : 'Needs stronger support'}
                         </div>
                         <div className="mt-1">{sourceCheck.research?.answer}</div>
                         {plan?.queries?.length ? (
