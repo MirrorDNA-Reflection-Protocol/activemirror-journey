@@ -143,7 +143,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
     const mirror = data.mirror || {};
     const keptOut = mirror.receipt?.context_excluded || 'private context kept out';
     const truthState = data.truth_state || mirror.truth_state;
-    const [showSurface, setShowSurface] = useState(() => shouldOpenSurface(intent, mirror));
+    const showSurface = shouldOpenSurface(intent, mirror);
     const [copied, setCopied] = useState(false);
 
     async function copyMove() {
@@ -175,7 +175,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/15 bg-black/18 px-2.5 py-1 text-[11px] font-semibold text-emerald-100 transition hover:border-emerald-200/35 hover:bg-emerald-200/[0.08]"
                         >
                             {copied ? <Check size={12} /> : <Copy size={12} />}
-                            {copied ? 'Copied' : 'Copy'}
+                            {copied ? 'Copied' : 'Do this now'}
                         </button>
                     </div>
                     <div className="mt-1 text-sm leading-6 text-zinc-100">{mirror.move}</div>
@@ -190,41 +190,31 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                 onSourceChecked={onSourceChecked}
             />
             <Visual visual={mirror.visual} />
-            {showSurface ? (
-                <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} />
-            ) : (
-                <button
-                    type="button"
-                    onClick={() => setShowSurface(true)}
-                    className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/[0.045] px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:border-cyan-300/30 hover:text-white"
-                >
-                    Open a small canvas
-                </button>
-            )}
-            <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
-            <div className="max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-3">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <div className="text-sm font-semibold text-zinc-200">Keep this only if it helps.</div>
-                        <div className="mt-1 text-xs leading-5 text-zinc-500">Save the useful question and next move. Nothing else is stored.</div>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => onSaveDefault?.(mirror)}
-                        disabled={disabled || saved}
-                        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-2 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12] disabled:cursor-not-allowed disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
-                    >
-                        {saved ? <Check size={14} /> : <BookmarkPlus size={14} />}
-                        {saved ? 'Saved' : 'Save this'}
-                    </button>
-                </div>
-            </div>
+            {showSurface ? <ReflectiveSurface result={data} intent={intent} onPrompt={onPrompt} disabled={disabled} /> : null}
             <details className="group max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-zinc-400">
                 <summary className="cursor-pointer list-none font-medium text-zinc-400">
-                    What was used
+                    More
                     <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                 </summary>
                 <div className="mt-3 grid gap-3 border-t border-white/10 pt-3">
+                    <MirrorFeedback page="mirror" surface="chat_turn" turn={turn} result={data} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
+                    <div className="rounded-2xl border border-white/10 bg-black/18 px-3 py-3">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <div className="text-sm font-semibold text-zinc-200">Saved: {saved ? 'on' : 'off'}</div>
+                                <div className="mt-1 text-xs leading-5 text-zinc-500">Save the useful question and next move. Nothing else is stored.</div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => onSaveDefault?.(mirror)}
+                                disabled={disabled || saved}
+                                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-2 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12] disabled:cursor-not-allowed disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
+                            >
+                                {saved ? <Check size={14} /> : <BookmarkPlus size={14} />}
+                                {saved ? 'Saved' : 'Save'}
+                            </button>
+                        </div>
+                    </div>
                     <SourceCheckLine truthState={truthState} sourceCheck={sourceCheck} onClearSourceCheck={onSourceChecked ? () => onSourceChecked(null) : undefined} />
                     <div>
                         <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Used</div>
@@ -235,7 +225,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
                         <div className="mt-1 leading-6">{keptOut}</div>
                     </div>
                     <div>
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Memory</div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Saved notes</div>
                         <div className="mt-1 leading-6">{mirror.receipt?.memory_decision || 'Nothing is saved unless you choose it.'}</div>
                     </div>
                 </div>
@@ -247,6 +237,7 @@ function MirrorTurn({ data, intent, onPrompt, disabled, onSaveDefault, saved, tu
 export default function ReflectChat() {
     const location = useLocation();
     const startPrompt = typeof location.state?.startPrompt === 'string' ? location.state.startPrompt : '';
+    const inputRef = useRef(null);
     const [seed] = useState(() => getArchetype());
     const [turns, setTurns] = useState([{ who: 'mirror', intro: true }]);
     const [text, setText] = useState(startPrompt);
@@ -255,22 +246,19 @@ export default function ReflectChat() {
     const [sourceChecks, setSourceChecks] = useState({});
     const [sendableDraft, setSendableDraft] = useState(null);
     const turnNum = useRef(0);
-    const mainRef = useRef(null);
     const latestTurnRef = useRef(null);
     const latestMirror = [...turns].reverse().find((turn) => turn.data?.mirror)?.data?.mirror;
     const latestFollowUps = latestMirror ? makeFollowUps(latestMirror) : [];
+    const starterSelected = STARTERS.includes(text.trim());
 
     useEffect(() => {
         trackEvent('mirror_view', { page: 'mirror', surface: 'chat' });
     }, []);
 
     useEffect(() => {
-        const main = mainRef.current;
-        if (!main) return;
-
         if (busy) {
             requestAnimationFrame(() => {
-                main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+                window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
             });
             return;
         }
@@ -279,10 +267,7 @@ export default function ReflectChat() {
         if (!target) return;
 
         requestAnimationFrame(() => {
-            const mainBox = main.getBoundingClientRect();
-            const targetBox = target.getBoundingClientRect();
-            const top = main.scrollTop + targetBox.top - mainBox.top - 20;
-            main.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     }, [turns, busy]);
 
@@ -340,8 +325,17 @@ export default function ReflectChat() {
 
     function useStarter(intent, source = 'starter') {
         if (busy) return;
-        trackEvent(source === 'follow_up' ? 'followup_clicked' : 'starter_clicked', { page: 'mirror', source });
+        if (source === 'follow_up' || source === 'feedback_repair' || source === 'surface') {
+            trackEvent('followup_clicked', { page: 'mirror', source });
+        }
         ask(intent, source);
+    }
+
+    function prepareStarter(intent, source = 'starter') {
+        if (busy) return;
+        setText(intent);
+        trackEvent(source === 'follow_up' ? 'followup_clicked' : 'starter_clicked', { page: 'mirror', source });
+        requestAnimationFrame(() => inputRef.current?.focus());
     }
 
     function rememberMirror(mirror = {}) {
@@ -359,11 +353,11 @@ export default function ReflectChat() {
         const intent = text.trim();
         if (intent.length < 12 || busy) return;
         setText('');
-        ask(intent, 'typed');
+        ask(intent, starterSelected ? 'starter' : 'typed');
     }
 
     return (
-        <div className="relative flex h-dvh flex-col overflow-hidden bg-black text-white">
+        <div className="relative flex min-h-dvh flex-col bg-black text-white">
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.20),transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(34,211,238,0.12),transparent_36%),#000]" />
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:46px_46px] opacity-25" />
 
@@ -379,12 +373,12 @@ export default function ReflectChat() {
                     </div>
                 </Link>
                 <Link to="/start" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:text-white">
-                    Make it yours
+                    Save preferences
                 </Link>
             </header>
 
-            <main ref={mainRef} className="relative z-10 min-h-0 flex-1 overflow-auto">
-                <div className="mx-auto flex max-w-[48rem] flex-col gap-7 px-4 pt-7 pb-44 sm:pb-36">
+            <main className="relative z-10 flex-1">
+                <div className="mx-auto flex max-w-[48rem] flex-col gap-7 px-4 pt-7 pb-32 sm:pb-28">
                     {turns.map((turn, index) => {
                         const isLatest = index === turns.length - 1;
 
@@ -421,9 +415,9 @@ export default function ReflectChat() {
                                             <button
                                                 key={starter}
                                                 type="button"
-                                                onClick={() => useStarter(starter, 'starter')}
+                                                onClick={() => prepareStarter(starter, 'starter')}
                                                 disabled={busy}
-                                                className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left text-sm leading-6 text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                                className={`rounded-2xl border px-4 py-3 text-left text-sm leading-6 transition disabled:cursor-not-allowed disabled:opacity-50 ${text.trim() === starter ? 'border-purple-300/45 bg-purple-300/[0.10] text-white' : 'border-white/10 bg-black/25 text-zinc-300 hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white'}`}
                                             >
                                                 {starter}
                                             </button>
@@ -465,28 +459,31 @@ export default function ReflectChat() {
                 </div>
             </main>
 
-            <footer className="relative z-10 border-t border-white/10 bg-black/70 px-3 py-3 backdrop-blur-xl">
+            <footer className="sticky bottom-0 z-10 border-t border-white/10 bg-black/78 px-3 py-2 backdrop-blur-xl">
                 {latestFollowUps.length > 0 && (
-                    <div className="mx-auto mb-3 flex max-w-[48rem] flex-wrap gap-2 pb-1">
-                        {latestFollowUps.map((item) => (
-                            <button
-                                key={item.label}
-                                type="button"
-                                onClick={() => {
-                                    if (item.action === 'draft') {
-                                        setSendableDraft(makeSendableDraft(latestMirror));
-                                        trackEvent('followup_clicked', { page: 'mirror', source: 'draft' });
-                                        return;
-                                    }
-                                    useStarter(item.intent, 'follow_up');
-                                }}
-                                disabled={busy}
-                                className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
+                    <details className="mx-auto mb-2 max-w-[48rem] rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-2">
+                        <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-400">More</summary>
+                        <div className="mt-2 flex flex-wrap gap-2 border-t border-white/10 pt-2">
+                            {latestFollowUps.map((item) => (
+                                <button
+                                    key={item.label}
+                                    type="button"
+                                    onClick={() => {
+                                        if (item.action === 'draft') {
+                                            setSendableDraft(makeSendableDraft(latestMirror));
+                                            trackEvent('followup_clicked', { page: 'mirror', source: 'draft' });
+                                            return;
+                                        }
+                                        useStarter(item.intent, 'follow_up');
+                                    }}
+                                    disabled={busy}
+                                    className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-medium text-zinc-300 transition hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </details>
                 )}
                 {!seed && latestMirror && (
                     <div className="mx-auto mb-3 flex max-w-[48rem] flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-2 text-xs text-zinc-500">
@@ -496,12 +493,13 @@ export default function ReflectChat() {
                             onClick={() => trackEvent('cta_clicked', { page: 'mirror', target: 'profile_setup' })}
                             className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 font-semibold text-purple-100 transition hover:border-purple-300/40 hover:text-white"
                         >
-                            Make it yours
+                            Save preferences
                         </Link>
                     </div>
                 )}
                 <form className="mx-auto flex max-w-[48rem] items-end gap-2" onSubmit={submit}>
                     <textarea
+                        ref={inputRef}
                         rows={1}
                         value={text}
                         maxLength={1000}
@@ -518,14 +516,14 @@ export default function ReflectChat() {
                     <button
                         type="submit"
                         disabled={busy || text.trim().length < 12}
-                        className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.28)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                        className={`${starterSelected ? 'w-auto px-4 text-sm font-semibold' : 'w-11'} grid h-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.28)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
                         aria-label="Send"
                     >
-                        <ArrowUp size={19} />
+                        {starterSelected ? 'Start with this' : <ArrowUp size={19} />}
                     </button>
                 </form>
-                <div className="mx-auto mt-2 flex max-w-[48rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-xs text-zinc-500">
-                    <span>One sentence is enough. Nothing is saved.</span>
+                <div className={`mx-auto mt-2 flex max-w-[48rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-xs text-zinc-500 ${latestMirror ? 'hidden sm:flex' : ''}`}>
+                    <span>{latestMirror ? 'Nothing is saved unless you choose.' : 'One sentence is enough. Nothing is saved.'}</span>
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
                 </div>

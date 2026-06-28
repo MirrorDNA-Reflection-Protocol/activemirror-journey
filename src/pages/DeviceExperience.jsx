@@ -41,7 +41,7 @@ const PROFILES = {
         copy: 'Use it for quick capture, one next move, and private continuity later. Keep the screen focused.',
         primary: 'Start quick mirror',
         primaryTo: '/mirror',
-        secondary: 'Make it yours',
+        secondary: 'Save preferences',
         secondaryTo: '/start',
         strengths: [
             { icon: Camera, title: 'Capture first', text: 'Use a sentence, screenshot, or file name as the start point.' },
@@ -220,7 +220,7 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
                 <div className="mt-3 space-y-2 border-t border-white/10 pt-3 leading-5">
                     <div><span className="text-zinc-300">Used:</span> {mirror.receipt?.context_used || 'Only this message.'}</div>
                     <div><span className="text-zinc-300">Left out:</span> {mirror.receipt?.context_excluded || 'Private context stayed out.'}</div>
-                    <div><span className="text-zinc-300">Memory:</span> {mirror.receipt?.memory_decision || 'Nothing saved.'}</div>
+                    <div><span className="text-zinc-300">Saved:</span> {mirror.receipt?.memory_decision || 'Nothing saved.'}</div>
                 </div>
             </details>
             {showSendable ? (
@@ -652,7 +652,7 @@ export default function DeviceExperience() {
                             <div className="grid gap-2 text-sm leading-6 text-zinc-300 sm:grid-cols-3">
                                 <div>Layout fits the screen.</div>
                                 <div>Actions match the input style.</div>
-                                <div>Memory stays your choice.</div>
+                                <div>Saving stays your choice.</div>
                             </div>
                         </div>
                     </div>

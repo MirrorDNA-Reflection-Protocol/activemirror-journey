@@ -259,37 +259,32 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
 
     return (
         <div className="mt-5 rounded-[1.55rem] border border-white/10 bg-black/24 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem]">
-                <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.075] px-4 py-4">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 text-[12px] font-semibold text-emerald-100/80">
-                            <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                            Try this next
-                        </div>
-                        <button
-                            type="button"
-                            onClick={copyMove}
-                            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/15 bg-black/18 px-2.5 py-1 text-[11px] font-semibold text-emerald-100 transition hover:border-emerald-200/35 hover:bg-emerald-200/[0.08]"
-                        >
-                            {copied ? <Check size={12} /> : <Copy size={12} />}
-                            {copied ? 'Copied' : 'Copy'}
-                        </button>
-                    </div>
-                    <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
+            <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.075] px-4 py-4">
+                <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-emerald-100/80">
+                    <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                    Try this next
                 </div>
-                <div className="flex flex-col justify-between rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
-                    <div>
-                        <div className="text-sm font-semibold text-zinc-300">Keep this?</div>
-                        <div className="mt-2 text-sm leading-6 text-zinc-400">Save only the useful question and move.</div>
-                    </div>
+                <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                    <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
+                    <button
+                        type="button"
+                        onClick={copyMove}
+                        className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.12] px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.16]"
+                    >
+                        {copied ? <Check size={15} /> : <Copy size={15} />}
+                        {copied ? 'Copied' : 'Do this now'}
+                    </button>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500">
+                    <span>Save only the useful question and move.</span>
                     <button
                         type="button"
                         onClick={() => onRemember?.(mirror)}
                         disabled={remembered}
-                        className="mt-4 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-3 text-sm font-semibold text-violet-100 transition hover:border-violet-300/40 hover:bg-violet-300/[0.12] disabled:border-emerald-300/20 disabled:bg-emerald-300/[0.08] disabled:text-emerald-100"
+                        className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 font-semibold text-zinc-300 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
                     >
-                        {remembered ? <Check size={16} /> : <BookmarkPlus size={16} />}
-                        {remembered ? 'Saved' : 'Save this'}
+                        {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
+                        {remembered ? 'Saved: on' : 'Saved: off'}
                     </button>
                 </div>
             </div>
@@ -333,11 +328,6 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
                 onPrompt={onPrompt}
                 onSourceChecked={onSourceChecked}
             />
-            {result && !disabled ? (
-                <div className="sm:pl-12">
-                    <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} onRepair={(nextIntent) => onPrompt?.(nextIntent, 'feedback_repair')} />
-                </div>
-            ) : null}
         </div>
     );
 }
@@ -392,7 +382,7 @@ function OwnedMirrorNudge({ seed }) {
 
     return (
         <div className="rounded-[1.7rem] border border-violet-300/15 bg-violet-300/[0.065] px-4 py-4 shadow-[0_0_34px_rgba(168,85,247,0.08)]">
-            <div className="text-sm font-semibold text-violet-100">Save your preferences.</div>
+            <div className="text-sm font-semibold text-violet-100">Save preferences.</div>
             <div className="mt-1 text-sm leading-6 text-zinc-400">
                 One minute of setup. Better questions, faster next moves, and a private profile you keep.
             </div>
@@ -401,7 +391,7 @@ function OwnedMirrorNudge({ seed }) {
                 onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'make_this_yours' })}
                 className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.10] px-4 text-sm font-semibold text-violet-100 transition hover:border-violet-300/40 hover:bg-violet-300/[0.14]"
             >
-                Make it yours
+                Save preferences
                 <ArrowRight size={15} />
             </Link>
         </div>
@@ -470,17 +460,17 @@ function MemoryDrawer({
     }
 
     return (
-        <div className="fixed inset-0 z-30 bg-black/65 px-3 py-4 backdrop-blur-md sm:px-6" role="dialog" aria-modal="true" aria-label="Memory">
+        <div className="fixed inset-0 z-30 bg-black/65 px-3 py-4 backdrop-blur-md sm:px-6" role="dialog" aria-modal="true" aria-label="Saved notes">
             <button
                 type="button"
                 className="absolute inset-0 cursor-default"
-                aria-label="Close memory"
+                aria-label="Close saved notes"
                 onClick={onClose}
             />
             <div className="relative mx-auto flex max-h-[88dvh] max-w-3xl flex-col overflow-hidden rounded-[2rem] border border-white/12 bg-[#0d0d11]/95 shadow-[0_0_80px_rgba(124,58,237,0.2)] ring-1 ring-white/[0.04]">
                 <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
                     <div>
-                        <div className="text-lg font-semibold tracking-[-0.03em] text-white">Memory</div>
+                        <div className="text-lg font-semibold tracking-[-0.03em] text-white">Saved notes</div>
                         <div className="mt-1 text-sm leading-6 text-zinc-400">Saved on this browser. Edit or remove anything.</div>
                         {items.length ? (
                             <button
@@ -496,7 +486,7 @@ function MemoryDrawer({
                         type="button"
                         onClick={onClose}
                         className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
-                        aria-label="Close memory"
+                        aria-label="Close saved notes"
                     >
                         <X size={18} />
                     </button>
@@ -582,7 +572,7 @@ function MemoryDrawer({
                                                     type="button"
                                                     onClick={() => editing ? setEditingKey('') : startEdit(item)}
                                                     className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
-                                                    aria-label={editing ? 'Cancel edit' : 'Edit memory'}
+                                                    aria-label={editing ? 'Cancel edit' : 'Edit saved note'}
                                                 >
                                                     {editing ? <X size={15} /> : <Pencil size={15} />}
                                                 </button>
@@ -590,7 +580,7 @@ function MemoryDrawer({
                                                     type="button"
                                                     onClick={() => onDelete?.(key)}
                                                     className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-rose-300/30 hover:text-rose-100"
-                                                    aria-label="Delete memory"
+                                                    aria-label="Delete saved note"
                                                 >
                                                     <Trash2 size={15} />
                                                 </button>
@@ -770,11 +760,19 @@ export default function HomePage() {
 
     function submit(event) {
         event.preventDefault();
-        reflect(text);
+        reflect(text, STARTERS.includes(text.trim()) ? 'starter' : 'typed');
+    }
+
+    function chooseStarter(starter) {
+        if (busy) return;
+        setText(starter);
+        trackEvent('starter_clicked', { page: 'home', source: 'starter' });
+        requestAnimationFrame(() => inputRef.current?.focus());
     }
 
     const showMirror = Boolean(result || busy || lastIntent);
     const canSubmit = text.trim().length >= 4;
+    const starterSelected = !showMirror && STARTERS.includes(text.trim());
 
     return (
         <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-purple-500/30">
@@ -836,9 +834,9 @@ export default function HomePage() {
                                     <button
                                         key={starter}
                                         type="button"
-                                        onClick={() => reflect(starter, 'starter')}
+                                        onClick={() => chooseStarter(starter)}
                                         disabled={busy}
-                                        className="rounded-full border border-white/10 bg-black/25 px-4 py-2 text-sm text-zinc-300 transition hover:border-violet-200/35 hover:bg-white/[0.06] hover:text-white"
+                                        className={`rounded-full border px-4 py-2 text-sm transition ${text.trim() === starter ? 'border-violet-200/45 bg-violet-200/[0.10] text-white' : 'border-white/10 bg-black/25 text-zinc-300 hover:border-violet-200/35 hover:bg-white/[0.06] hover:text-white'}`}
                                     >
                                         {starter}
                                     </button>
@@ -880,7 +878,7 @@ export default function HomePage() {
                                     <ArrowUp size={19} />
                                 ) : (
                                     <>
-                                        <span>Start Reflection</span>
+                                        <span>{starterSelected ? 'Start with this' : 'Start Reflection'}</span>
                                         <ArrowUp size={17} />
                                     </>
                                 )}
@@ -898,7 +896,7 @@ export default function HomePage() {
                                     className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
                                 >
                                     <SlidersHorizontal size={13} />
-                                    Saved notes{mirrorDefaults.length ? ` ${mirrorDefaults.length}` : ''}
+                                    {mirrorDefaults.length ? `Saved: ${mirrorDefaults.length}` : 'Saved: off'}
                                 </button>
                             ) : null}
                             <LocalSenseLine sense={typingSense} />
@@ -923,30 +921,41 @@ export default function HomePage() {
                         <div className="sm:pl-12">
                             <LocalSenseLine sense={lastSense} />
                         </div>
-                        {!busy && result ? <div className="flex flex-wrap gap-2 pb-1 sm:pl-12">
-                            {followUps.map((item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <button
-                                        key={item.label}
-                                        type="button"
-                                        onClick={() => {
-                                            trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
-                                            if (item.action === 'draft') {
-                                                setSendableDraft(makeSendableDraft(result?.mirror || SAMPLE_MIRROR));
-                                                return;
-                                            }
-                                            reflect(item.intent, 'follow_up');
-                                        }}
-                                        disabled={busy}
-                                        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-                                    >
-                                        <Icon size={16} className="text-purple-200" />
-                                        {item.label}
-                                    </button>
-                                );
-                            })}
-                        </div> : null}
+                        {!busy && result ? (
+                            <details className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-3 sm:ml-12">
+                                <summary className="cursor-pointer list-none text-sm font-semibold text-zinc-300">More</summary>
+                                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
+                                    {followUps.map((item) => {
+                                        const Icon = item.icon;
+                                        return (
+                                            <button
+                                                key={item.label}
+                                                type="button"
+                                                onClick={() => {
+                                                    trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
+                                                    if (item.action === 'draft') {
+                                                        setSendableDraft(makeSendableDraft(result?.mirror || SAMPLE_MIRROR));
+                                                        return;
+                                                    }
+                                                    reflect(item.intent, 'follow_up');
+                                                }}
+                                                disabled={busy}
+                                                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                                            >
+                                                <Icon size={16} className="text-purple-200" />
+                                                {item.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div className="mt-3">
+                                    <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} onRepair={(nextIntent) => {
+                                        trackEvent('followup_clicked', { page: 'home', source: 'feedback_repair' });
+                                        reflect(nextIntent, 'feedback_repair');
+                                    }} />
+                                </div>
+                            </details>
+                        ) : null}
                         <SendableDraft draft={sendableDraft} />
                     </section>
                 ) : null}
@@ -962,7 +971,7 @@ export default function HomePage() {
                         onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
                         className="inline-flex items-center gap-1 transition hover:text-white"
                     >
-                        Make it yours
+                        Save preferences
                         <ArrowRight size={12} />
                     </Link>
                 </div>
