@@ -288,11 +288,12 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
     );
 }
 
-function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onRemember, remembered }) {
+function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled, onSourceChecked, onRemember, remembered }) {
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const truthState = result?.truth_state || mirror.truth_state;
-    const showSourceCheck = truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
+    const canPromptSourceCheck = ['typed', 'follow_up', 'surface'].includes(turnSource);
+    const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
 
     if (isLoading) {
         return <LoadingPanel />;
@@ -614,6 +615,7 @@ export default function HomePage() {
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
+    const [lastSource, setLastSource] = useState('typed');
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [rememberedKey, setRememberedKey] = useState('');
@@ -632,6 +634,7 @@ export default function HomePage() {
 
         const sense = assessLocalMirrorSense(cleanIntent, { activeDefault, mirrorDefaults, seed });
         setLastIntent(cleanIntent);
+        setLastSource(source);
         setLastSense(sense);
         setSendableDraft(null);
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
@@ -875,6 +878,7 @@ export default function HomePage() {
                         <MirrorResult
                             result={result}
                             intent={lastIntent}
+                            turnSource={lastSource}
                             disabled={busy}
                             onSourceChecked={setLastSourceCheck}
                             onRemember={rememberMirror}
