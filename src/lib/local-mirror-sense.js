@@ -70,8 +70,27 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         .sort((a, b) => b.score - a.score);
     const best = scoredDefaults[0];
     const approvedDefault = best && best.score >= 0.24 ? best.item : null;
+    const setupChoices = [
+        seed?.blueprint?.help?.label,
+        seed?.blueprint?.boundary?.label,
+        seed?.blueprint?.directness?.label || seed?.blueprint?.memory?.label,
+    ].filter(Boolean);
+    const seedSummary = seed
+        ? [
+            seed.archetypeName || seed.archetype || '',
+            seed.strengths?.length ? seed.strengths.slice(0, 2).join(', ') : '',
+            setupChoices.length ? `choices: ${setupChoices.join(', ')}` : '',
+        ].filter(Boolean).join('; ')
+        : '';
 
     const cues = [];
+    if (seedSummary) {
+        cues.push({
+            kind: 'memory',
+            tone: 'good',
+            label: 'Using what you chose to remember.',
+        });
+    }
     if (approvedDefault) {
         cues.push({
             kind: 'memory',
@@ -107,9 +126,7 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         sensitive: hardPrivate || softPrivate,
         drift: broadByLength || broadByPattern,
         approvedDefault,
-        seedSummary: seed
-            ? `${seed.archetypeName || seed.archetype || 'saved profile'}${seed.strengths?.length ? `: ${seed.strengths.slice(0, 2).join(', ')}` : ''}`
-            : '',
+        seedSummary,
         cues,
     };
 }

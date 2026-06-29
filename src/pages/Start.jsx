@@ -8,91 +8,91 @@ import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
 const SETUP_STEPS = [
     {
         id: 'help',
-        question: 'How should Active Mirror help?',
-        helper: 'Pick the kind of help you want first. You can change it later.',
+        question: 'How should this help you?',
+        helper: 'Pick what you need most. You can change it later.',
         icon: MessageCircle,
         options: [
             {
                 id: 'decide',
                 label: 'Help me decide',
-                description: 'Show the real tradeoff and the next move.',
+                description: 'Show the tradeoff and the next move.',
                 prompt: 'Help me see the real tradeoff and choose one useful next move.',
                 archetype: 'strategist',
                 strength: 'Decision clarity',
             },
             {
-                id: 'move',
-                label: 'Help me move',
-                description: 'Turn the mess into one small action.',
-                prompt: 'Help me turn scattered context into one small action I can do now.',
+                id: 'write',
+                label: 'Help me write',
+                description: 'Turn a rough thought into something I can use.',
+                prompt: 'Help me turn rough context into something clear I can use.',
                 archetype: 'builder',
-                strength: 'Momentum',
+                strength: 'Clear output',
             },
             {
-                id: 'honest',
-                label: 'Tell me the truth',
-                description: 'Challenge the loop without being harsh.',
-                prompt: 'Be honest about what I may be avoiding and keep the answer useful.',
+                id: 'clear',
+                label: 'Help me think clearly',
+                description: 'Find the real question and keep me moving.',
+                prompt: 'Help me find the real question and keep the answer useful.',
                 archetype: 'analyst',
-                strength: 'Reality check',
+                strength: 'Clear thinking',
             },
         ],
     },
     {
         id: 'boundary',
         question: 'What should it avoid?',
-        helper: 'This keeps the first answers safer and less noisy.',
+        helper: 'Choose the boundary that matters most.',
         icon: ShieldCheck,
         options: [
             {
-                id: 'private',
-                label: 'Do not use private details',
-                description: 'Keep names, secrets, and sensitive context out unless I add them.',
-                prompt: 'Avoid names, secrets, and sensitive details unless I explicitly add them.',
-                strength: 'Privacy first',
-            },
-            {
                 id: 'flattery',
                 label: 'Do not just agree with me',
-                description: 'Push back when the pattern is weak.',
+                description: 'Challenge weak logic without being harsh.',
                 prompt: 'Do not flatter me or agree just to be agreeable.',
-                strength: 'No easy agreement',
+                strength: 'Honest pushback',
             },
             {
                 id: 'too_much',
-                label: 'Do not give me too much',
+                label: 'Do not over-explain',
                 description: 'Keep it short when I am trying to move.',
                 prompt: 'Avoid long explanations when one next move is enough.',
                 strength: 'Less overwhelm',
             },
+            {
+                id: 'private',
+                label: 'Do not use private details',
+                description: 'Leave names, secrets, and sensitive context out unless I add them.',
+                prompt: 'Avoid names, secrets, and sensitive details unless I explicitly add them.',
+                strength: 'Privacy first',
+            },
         ],
     },
     {
-        id: 'memory',
-        question: 'What should it remember?',
-        helper: 'You choose what this browser keeps.',
+        id: 'directness',
+        question: 'How direct should it be?',
+        helper: 'Choose the tone that makes you move.',
         icon: Lock,
         options: [
             {
-                id: 'nothing',
-                label: 'Nothing yet',
-                description: 'Start fresh until I choose to save something.',
-                prompt: 'Do not carry anything forward unless I choose to save it.',
-                strength: 'Fresh start',
+                id: 'gentle',
+                label: 'Gentle',
+                description: 'Start soft, then give me one step.',
+                prompt: 'Be gentle, then give me one concrete next move.',
+                strength: 'Gentle clarity',
             },
             {
-                id: 'style',
-                label: 'How I like help',
-                description: 'Remember the kind of answer that helps me move.',
-                prompt: 'Remember that I prefer short, honest answers with one concrete next move.',
-                strength: 'Useful defaults',
+                id: 'balanced',
+                label: 'Balanced',
+                description: 'Be kind, clear, and practical.',
+                prompt: 'Be kind, clear, practical, and honest.',
+                strength: 'Balanced reflection',
             },
             {
-                id: 'patterns',
-                label: 'My recurring patterns',
-                description: 'Remember loops I approve after a good reflection.',
-                prompt: 'Only remember recurring patterns after I explicitly approve them.',
-                strength: 'Approved continuity',
+                id: 'direct',
+                label: 'Very direct',
+                description: 'Say the hard thing plainly, then give me the move.',
+                prompt: 'Be very direct without being cruel. Say the hard thing plainly, then give me one next move.',
+                strength: 'Direct truth',
             },
         ],
     },
@@ -111,23 +111,23 @@ function makeMirrorId(archetype, answers) {
 function buildSetupResult(answers) {
     const help = answers.help || SETUP_STEPS[0].options[0];
     const boundary = answers.boundary || SETUP_STEPS[1].options[0];
-    const memory = answers.memory || SETUP_STEPS[2].options[0];
+    const directness = answers.directness || SETUP_STEPS[2].options[0];
     const archetype = help.archetype || 'builder';
     const meta = FALLBACK_ARCHETYPES[archetype] || FALLBACK_ARCHETYPES.builder;
     const mirrorId = makeMirrorId(archetype, answers);
-    const strengths = [help.strength, boundary.strength, memory.strength].filter(Boolean);
+    const strengths = [help.strength, boundary.strength, directness.strength].filter(Boolean);
 
     return {
         archetype,
         archetypeName: meta.name,
-        description: `${help.label}. ${boundary.label}. ${memory.label}.`,
+        description: `${help.label}. ${boundary.label}. ${directness.label}.`,
         help,
         boundary,
-        memory,
+        directness,
         strengths,
         mirrorId,
-        startPrompt: [help.prompt, boundary.prompt, memory.prompt].join(' '),
-        savedAt: new Date().toISOString(),
+        startPrompt: [help.prompt, boundary.prompt, directness.prompt].join(' '),
+        savedAt: null,
     };
 }
 
@@ -140,7 +140,7 @@ function downloadSettings(result) {
         createdAt: result.savedAt,
         help: result.help?.label,
         boundary: result.boundary?.label,
-        memory: result.memory?.label,
+        style: result.directness?.label,
         strengths: result.strengths || [],
         id: result.mirrorId,
     };
@@ -174,6 +174,7 @@ export default function Start() {
     const [stepIndex, setStepIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [result, setResult] = useState(null);
+    const [saved, setSaved] = useState(false);
 
     const activeStep = SETUP_STEPS[stepIndex];
     const StepIcon = activeStep.icon;
@@ -199,32 +200,39 @@ export default function Start() {
         }
 
         const setup = buildSetupResult(nextAnswers);
-        const saved = saveBrainScan({
-            archetype: setup.archetype,
-            archetypeName: setup.archetypeName,
-            strengths: setup.strengths,
-            blindSpots: [setup.boundary?.label].filter(Boolean),
-            mirrorId: setup.mirrorId,
+        setAnswers(nextAnswers);
+        setResult(setup);
+    }
+
+    function saveSetup() {
+        if (!result) return;
+        const savedState = saveBrainScan({
+            archetype: result.archetype,
+            archetypeName: result.archetypeName,
+            strengths: result.strengths,
+            blindSpots: [result.boundary?.label].filter(Boolean),
+            mirrorId: result.mirrorId,
             brainId: `setup-${Date.now().toString(36)}`,
         });
 
         saveBlueprint({
             kind: 'starter-preferences',
-            help: setup.help,
-            boundary: setup.boundary,
-            memory: setup.memory,
-            startPrompt: setup.startPrompt,
-            completedAt: saved.brainScanCompletedAt,
+            help: result.help,
+            boundary: result.boundary,
+            directness: result.directness,
+            startPrompt: result.startPrompt,
+            completedAt: savedState.brainScanCompletedAt,
         });
 
-        setAnswers(nextAnswers);
-        setResult({ ...setup, savedAt: saved.brainScanCompletedAt });
+        setSaved(true);
+        setResult({ ...result, savedAt: savedState.brainScanCompletedAt });
     }
 
     function reset() {
         setStepIndex(0);
         setAnswers({});
         setResult(null);
+        setSaved(false);
     }
 
     function goToChat() {
@@ -265,7 +273,7 @@ export default function Start() {
                                 Make it feel like yours.
                             </h1>
                             <p className="mt-3 text-[0.95rem] leading-6 text-zinc-400 sm:mt-5 sm:text-lg sm:leading-8">
-                                Three quick choices. No account. Saved on this browser.
+                                Three quick choices. No account. You decide what stays.
                             </p>
                             <div className="mt-4 rounded-[1.2rem] border border-white/10 bg-white/[0.035] p-3 text-left sm:mt-7 sm:rounded-[1.4rem]">
                                 <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
@@ -313,23 +321,29 @@ export default function Start() {
                             </div>
                             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100">
                                 <Check size={14} />
-                                Saved on this browser
+                                {saved ? 'Saved for next time' : 'Ready to save'}
                             </div>
                         </div>
 
                         <div className="order-1 lg:order-2">
+                            {saved ? (
+                                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100">
+                                    <Check size={14} />
+                                    Saved for next time
+                                </div>
+                            ) : null}
                             <h1 className="max-w-2xl text-[2.75rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.6rem]">
                                 You're set.
                             </h1>
                             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                Active Mirror will start with the way you want help, what it should avoid, and what it should remember.
+                                These choices stay in this browser only. They help Active Mirror answer in the way that actually moves you.
                             </p>
 
                             <div className="mt-6 grid gap-3">
                                 {[
                                     ['Help', result.help?.label],
                                     ['Avoid', result.boundary?.label],
-                                    ['Remember', result.memory?.label],
+                                    ['Style', result.directness?.label],
                                 ].map(([label, value]) => (
                                     <div key={label} className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-3">
                                         <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{label}</div>
@@ -339,22 +353,35 @@ export default function Start() {
                             </div>
 
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                                <button
-                                    type="button"
-                                    onClick={goToChat}
-                                    className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
-                                >
-                                    Start chat
-                                    <ArrowRight size={19} />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => downloadSettings(result)}
-                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
-                                >
-                                    <Download size={17} />
-                                    Download settings
-                                </button>
+                                {!saved ? (
+                                    <button
+                                        type="button"
+                                        onClick={saveSetup}
+                                        className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
+                                    >
+                                        Save this for next time
+                                        <Check size={19} />
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={goToChat}
+                                            className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
+                                        >
+                                            Start chat
+                                            <ArrowRight size={19} />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => downloadSettings(result)}
+                                            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
+                                        >
+                                            <Download size={17} />
+                                            Download settings
+                                        </button>
+                                    </>
+                                )}
                                 <button
                                     type="button"
                                     onClick={reset}

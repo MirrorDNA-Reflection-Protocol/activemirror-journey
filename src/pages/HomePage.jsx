@@ -11,6 +11,7 @@ import {
     deleteMirrorDefault,
     getActiveMirrorDefault,
     getArchetype,
+    getBlueprint,
     getMirrorDefaults,
     saveMirrorDefault,
     updateMirrorDefault,
@@ -44,6 +45,29 @@ const STARTERS = [
     'I need to stop spiraling',
 ];
 
+const ASK_TRAY = [
+    {
+        label: 'Decide',
+        prompt: 'I need to decide between two options.',
+    },
+    {
+        label: 'Write',
+        prompt: 'I need to write something clear that I can use.',
+    },
+    {
+        label: 'Think',
+        prompt: 'I feel scattered and need the real question.',
+    },
+    {
+        label: 'Message',
+        prompt: 'I need a short message I can send.',
+    },
+    {
+        label: 'Check claim',
+        prompt: 'I need to check whether this claim is true.',
+    },
+];
+
 const LOADING_MIRROR = {
     reflection: 'Reading the stuck point once. Active Mirror is looking for the real question underneath it.',
     question: 'What is the real question here?',
@@ -60,7 +84,7 @@ function isEcosystemAsk(intent) {
 }
 
 function isSourceHeavyAsk(intent) {
-    return /\b(today|latest|current|recent|online|web|source|sources|research|competitor|market|verify|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing)\b/i.test(intent);
+    return /\b(today|latest|current|recent|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing)\b/i.test(intent);
 }
 
 function makeEcosystemResult(intent) {
@@ -608,7 +632,12 @@ function MemoryDrawer({
 
 export default function HomePage() {
     const inputRef = useRef(null);
-    const [seed] = useState(() => getArchetype());
+    const [seed] = useState(() => {
+        const profile = getArchetype();
+        const blueprint = getBlueprint();
+        if (!profile && !blueprint) return null;
+        return { ...(profile || {}), blueprint };
+    });
     const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
     const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
     const [text, setText] = useState('');
@@ -740,6 +769,12 @@ export default function HomePage() {
         reflect(starter, 'starter');
     }
 
+    function chooseAsk(item) {
+        if (busy) return;
+        trackEvent('ask_tray_clicked', { page: 'home', source: 'ask_tray', label: item.label });
+        reflect(item.prompt, item.label === 'Check claim' ? 'surface' : 'starter');
+    }
+
     const showMirror = Boolean(result || busy || lastIntent);
     const canSubmit = text.trim().length >= 4;
 
@@ -787,17 +822,17 @@ export default function HomePage() {
                     <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-[72%] -translate-x-1/2 rounded-[100%] bg-cyan-300/8 blur-3xl" />
                     {!showMirror ? (
                         <div className="relative z-10 mx-auto flex w-full max-w-[44rem] flex-1 flex-col items-center justify-center text-center">
-                            <div className="mb-7 grid h-20 w-20 place-items-center rounded-[1.6rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)]">
+                            <div className="mb-5 grid h-16 w-16 place-items-center rounded-[1.35rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)] sm:mb-7 sm:h-20 sm:w-20 sm:rounded-[1.6rem]">
                                 <MirrorLogo />
                             </div>
-                            <h1 className="max-w-2xl overflow-visible break-words text-[2.8rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[5.1rem]">
+                            <h1 className="max-w-2xl overflow-visible break-words text-[2.55rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[5.1rem]">
                                 What do you want?
                             </h1>
-                            <p className="mt-6 max-w-[34rem] text-base leading-7 text-zinc-400 sm:text-xl sm:leading-8">
+                            <p className="mt-4 max-w-[34rem] text-base leading-7 text-zinc-400 sm:mt-6 sm:text-xl sm:leading-8">
                                 Type one thing you are stuck on. Get one honest next move.
                             </p>
 
-                            <div className="mt-6 flex flex-wrap justify-center gap-2">
+                            <div className="mt-5 flex flex-wrap justify-center gap-2 sm:mt-6">
                                 {STARTERS.map((starter) => (
                                     <button
                                         key={starter}
@@ -809,6 +844,23 @@ export default function HomePage() {
                                         {starter}
                                     </button>
                                 ))}
+                            </div>
+
+                            <div className="mt-4 w-full max-w-[34rem]">
+                                <div className="mb-2 text-xs font-semibold text-zinc-400">What can I ask?</div>
+                                <div className="flex flex-wrap justify-center gap-2 pb-1">
+                                    {ASK_TRAY.map((item) => (
+                                        <button
+                                            key={item.label}
+                                            type="button"
+                                            onClick={() => chooseAsk(item)}
+                                            disabled={busy}
+                                            className="shrink-0 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     ) : null}
@@ -828,7 +880,7 @@ export default function HomePage() {
                                         submit(event);
                                     }
                                 }}
-                                className={`${showMirror ? 'min-h-[4.5rem]' : 'min-h-[5.6rem]'} max-h-36 flex-1 resize-none rounded-3xl border border-white/10 bg-black/40 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45`}
+                                className={`${showMirror ? 'min-h-[4.5rem]' : 'min-h-20 sm:min-h-[5.6rem]'} max-h-36 flex-1 resize-none rounded-3xl border border-white/10 bg-black/40 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45`}
                                 style={{ overflowWrap: 'anywhere' }}
                             />
                             <button
@@ -837,7 +889,7 @@ export default function HomePage() {
                                 onClick={() => {
                                     if (!canSubmit && !busy) inputRef.current?.focus();
                                 }}
-                                className={`${showMirror ? 'grid h-12 w-12 place-items-center rounded-2xl' : 'inline-flex min-h-14 items-center justify-center gap-2 rounded-3xl px-5 text-sm font-bold sm:min-h-[5.6rem] sm:px-7'} shrink-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_28px_rgba(168,85,247,0.30)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
+                                className={`${showMirror ? 'grid h-12 w-12 place-items-center rounded-2xl' : 'inline-flex min-h-[3.25rem] items-center justify-center gap-2 rounded-3xl px-5 text-sm font-bold sm:min-h-[5.6rem] sm:px-7'} shrink-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_28px_rgba(168,85,247,0.30)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
                                 aria-label="Get my next move"
                             >
                                 {busy ? (
