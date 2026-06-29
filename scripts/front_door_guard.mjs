@@ -45,24 +45,23 @@ const bannedConsumerTerms = [
 ];
 
 const requiredTerms = [
-    { pattern: /What do you want\?|What do you want help with\?|What's one thing\?/i, label: 'front-door question' },
-    { pattern: /Get the next move|one honest next move|one useful output|one move/i, label: 'outcome-first promise' },
-    { pattern: /Type one thing you are stuck on/i, label: 'plain first-use helper' },
-    { pattern: /Try a messy sentence\. It works better that way\./i, label: 'messy sentence activation hint' },
-    { pattern: /Nothing saved|nothing is saved|Memory is your choice/i, label: 'privacy choice promise' },
-    { pattern: /I need to decide/i, label: 'starter: decide' },
-    { pattern: /I need to send something/i, label: 'starter: send something' },
-    { pattern: /I need to stop spiraling/i, label: 'starter: stop spiraling' },
-    { pattern: /What can I ask\?/i, label: 'ask tray prompt' },
-    { pattern: /Check claim/i, label: 'ask tray: check claim' },
+    { pattern: /What do you want to move\?/i, label: 'front-door question' },
+    { pattern: /one honest next move/i, label: 'outcome-first promise' },
+    { pattern: /Type one real thing/i, label: 'plain first-use helper' },
+    { pattern: /Say it messy/i, label: 'messy sentence activation hint' },
+    { pattern: /Nothing saved unless you choose|Private first/i, label: 'privacy choice promise' },
+    { pattern: /Get unstuck/i, label: 'starter: get unstuck' },
+    { pattern: /Make this sendable/i, label: 'starter: make sendable' },
+    { pattern: /Check my thinking/i, label: 'starter: check thinking' },
     { pattern: /How should this help you\?/i, label: 'setup: help question' },
     { pattern: /What should it avoid\?/i, label: 'setup: boundary question' },
     { pattern: /How direct should it be\?/i, label: 'setup: directness question' },
     { pattern: /Save this for next time/i, label: 'setup: explicit save' },
     { pattern: /Saved for next time/i, label: 'setup: saved confirmation' },
-    { pattern: /Make it smaller/i, label: 'first-use follow-up: make smaller' },
-    { pattern: /Be more honest/i, label: 'first-use follow-up: be honest' },
-    { pattern: /Turn into a message/i, label: 'first-use follow-up: message' },
+    { pattern: /What else\?/i, label: 'first-use follow-up: what else' },
+    { pattern: /Challenge me/i, label: 'first-use follow-up: challenge' },
+    { pattern: /Make it sendable/i, label: 'first-use follow-up: sendable' },
+    { pattern: /Pick the move/i, label: 'loop brake follow-up' },
 ];
 
 function read(file) {

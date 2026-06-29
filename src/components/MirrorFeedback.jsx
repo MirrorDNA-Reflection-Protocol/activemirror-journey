@@ -16,18 +16,18 @@ function repairOptions(result = {}) {
     return [
         {
             id: 'smaller',
-            label: 'Make it smaller',
-            intent: `Make this easier to start. Keep one tiny next move only: ${move}`,
+            label: 'What else?',
+            intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${move}`,
         },
         {
             id: 'sharper',
-            label: 'Be more honest',
-            intent: `Be more honest about what I may be avoiding here. Keep it short: ${question}`,
+            label: 'Challenge me',
+            intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${question}`,
         },
         {
             id: 'different',
-            label: 'Turn into a message',
-            intent: 'Turn this into a short message I could send, with one clear ask.',
+            label: 'Make it sendable',
+            intent: 'Create a sendable draft from this reflection.',
         },
     ];
 }

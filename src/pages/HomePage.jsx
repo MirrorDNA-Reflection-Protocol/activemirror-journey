@@ -24,9 +24,9 @@ import privateChatGlow from '../assets/home/active-mirror-private-chat-glow.jpg'
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const SAMPLE_MIRROR = {
-    reflection: 'You may not need more ideas. You may need one small action that turns the loop into a visible change.',
-    question: 'What is the next choice you are avoiding because it would make the work real?',
-    move: 'Write the smallest version of the decision in one sentence, then test it once today.',
+    reflection: 'The work gets lighter when the next move is small enough to actually start.',
+    question: 'What is the one thing you want to move first?',
+    move: 'Write the messy version in one sentence and send it here.',
     visual: {
         kind: 'reframe',
         left: 'I need better advice',
@@ -40,31 +40,17 @@ const SAMPLE_MIRROR = {
 };
 
 const STARTERS = [
-    'I need to decide',
-    'I need to send something',
-    'I need to stop spiraling',
-];
-
-const ASK_TRAY = [
     {
-        label: 'Decide',
-        prompt: 'I need to decide between two options.',
+        label: 'Get unstuck',
+        prompt: 'I feel stuck and need one honest next move.',
     },
     {
-        label: 'Write',
-        prompt: 'I need to write something clear that I can use.',
+        label: 'Make this sendable',
+        prompt: 'I need to turn messy thoughts into something I can send.',
     },
     {
-        label: 'Think',
-        prompt: 'I feel scattered and need the real question.',
-    },
-    {
-        label: 'Message',
-        prompt: 'I need a short message I can send.',
-    },
-    {
-        label: 'Check claim',
-        prompt: 'I need to check whether this claim is true.',
+        label: 'Check my thinking',
+        prompt: 'Challenge my thinking and show me the real next move.',
     },
 ];
 
@@ -155,22 +141,39 @@ function makeLocalPrivacyResult(sense = {}) {
     };
 }
 
-function makeFollowUps(mirror = {}) {
+function makeFollowUps(mirror = {}, loopCount = 0) {
+    if (loopCount >= 4) {
+        return [
+            mirror.move && {
+                label: 'Pick the move',
+                icon: Check,
+                action: 'reflect',
+                intent: `Stop expanding. Synthesize this into the one move I should do now: ${mirror.move}`,
+            },
+            {
+                label: 'Make it sendable',
+                icon: PenLine,
+                action: 'draft',
+                intent: 'Create a sendable draft from this reflection.',
+            },
+        ].filter(Boolean);
+    }
+
     return [
         mirror.move && {
-            label: 'Make it smaller',
-            icon: ArrowRight,
-            action: 'reflect',
-            intent: `Make this smaller and easier to start. Keep one tiny next move only: ${mirror.move}`,
-        },
-        mirror.question && {
-            label: 'Be more honest',
+            label: 'What else?',
             icon: Sparkles,
             action: 'reflect',
-            intent: `Be more honest about what I may be avoiding here. Keep it short: ${mirror.question}`,
+            intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
+        },
+        mirror.question && {
+            label: 'Challenge me',
+            icon: ArrowRight,
+            action: 'reflect',
+            intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${mirror.question}`,
         },
         {
-            label: 'Turn into a message',
+            label: 'Make it sendable',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -366,6 +369,51 @@ function LoadingPanel() {
                 <div className="h-3 w-3/4 animate-pulse rounded-full bg-white/10" />
                 <div className="h-3 w-1/2 animate-pulse rounded-full bg-white/10" />
                 <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/10" />
+            </div>
+        </div>
+    );
+}
+
+function IdleCanvas({ onChoose }) {
+    return (
+        <div className="relative hidden min-h-[33rem] overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#0d0d12]/72 p-5 shadow-[0_0_90px_rgba(124,58,237,0.13)] ring-1 ring-white/[0.04] backdrop-blur-2xl md:block">
+            <div className="pointer-events-none absolute inset-0 opacity-55" aria-hidden="true">
+                <img src={privateChatGlow} alt="" className="h-full w-full object-cover" loading="eager" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_24%,rgba(5,5,7,0.18),rgba(5,5,7,0.78)_58%,#050507_100%)]" />
+            </div>
+            <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/50 to-transparent" />
+            <div className="relative z-10 flex h-full min-h-[29rem] flex-col justify-between">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-xs font-medium text-zinc-300">
+                        <Lock size={13} />
+                        Private first
+                    </div>
+                    <div className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.7)]" />
+                </div>
+
+                <div className="mx-auto grid w-full max-w-md gap-3">
+                    <div className="rounded-[1.7rem] border border-white/10 bg-black/38 p-4 shadow-[0_0_60px_rgba(0,0,0,0.24)] backdrop-blur-md">
+                        <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-100/70">First turn</div>
+                        <div className="text-xl font-semibold leading-tight tracking-normal text-white">One honest next move.</div>
+                        <div className="mt-2 text-sm leading-6 text-zinc-400">No wall of text. No quiet memory grab. No agreeable nonsense.</div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                        {STARTERS.map((starter) => (
+                            <button
+                                key={starter.label}
+                                type="button"
+                                onClick={() => onChoose?.(starter)}
+                                className="min-h-20 rounded-[1.35rem] border border-white/10 bg-white/[0.055] px-3 text-left text-sm font-semibold leading-5 text-zinc-200 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.08] hover:text-white"
+                            >
+                                {starter.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="rounded-[1.35rem] border border-cyan-200/10 bg-cyan-200/[0.055] p-3 text-sm leading-6 text-cyan-50/90">
+                    The first answer should feel different. Type something real.
+                </div>
             </div>
         </div>
     );
@@ -649,8 +697,9 @@ export default function HomePage() {
     const [sendableDraft, setSendableDraft] = useState(null);
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
+    const [loopCount, setLoopCount] = useState(0);
     const [, setLastSourceCheck] = useState(null);
-    const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR), [result]);
+    const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount), [result, loopCount]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
 
     useEffect(() => {
@@ -665,6 +714,7 @@ export default function HomePage() {
         setLastIntent(cleanIntent);
         setLastSource(source);
         setLastSense(sense);
+        setLoopCount((current) => source === 'follow_up' ? Math.min(current + 1, 6) : 0);
         setSendableDraft(null);
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
@@ -760,19 +810,13 @@ export default function HomePage() {
 
     function submit(event) {
         event.preventDefault();
-        reflect(text, STARTERS.includes(text.trim()) ? 'starter' : 'typed');
+        reflect(text, 'typed');
     }
 
     function chooseStarter(starter) {
         if (busy) return;
         trackEvent('starter_clicked', { page: 'home', source: 'starter' });
-        reflect(starter, 'starter');
-    }
-
-    function chooseAsk(item) {
-        if (busy) return;
-        trackEvent('ask_tray_clicked', { page: 'home', source: 'ask_tray', label: item.label });
-        reflect(item.prompt, item.label === 'Check claim' ? 'surface' : 'starter');
+        reflect(starter.prompt, 'starter');
     }
 
     const showMirror = Boolean(result || busy || lastIntent);
@@ -780,132 +824,101 @@ export default function HomePage() {
 
     return (
         <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-purple-500/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-8%,rgba(126,87,255,0.18),transparent_38%),radial-gradient(circle_at_100%_100%,rgba(34,211,238,0.08),transparent_34%),#050507]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:52px_52px] opacity-20" />
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_24%_10%,rgba(126,87,255,0.20),transparent_34%),radial-gradient(circle_at_92%_84%,rgba(34,211,238,0.10),transparent_32%),#050507]" />
+            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:56px_56px] opacity-18" />
 
-            <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
-                <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
+            <header className="relative z-10 px-4 py-4">
+                <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
-                        <div>
-                            <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
-                        </div>
+                        <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
                     </Link>
                     <div className="flex items-center gap-2">
-                        {showMirror ? (
-                            <Link to="/enterprise" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white sm:inline-flex">
-                                For teams
-                            </Link>
-                        ) : null}
+                        <Link to="/start" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-violet-300/30 hover:text-white sm:inline-flex">
+                            Personalize
+                        </Link>
+                        <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
+                            Teams
+                        </Link>
                     </div>
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-5xl flex-col justify-center gap-4 px-4 py-5 lg:py-8">
-                <section className={`relative flex flex-col justify-between overflow-hidden rounded-[2.45rem] border border-white/10 bg-white/[0.045] shadow-[0_0_90px_rgba(168,85,247,0.13)] ring-1 ring-white/[0.04] backdrop-blur-2xl ${showMirror ? 'mx-auto w-full max-w-3xl p-3 sm:p-4' : 'min-h-[min(650px,calc(100dvh-8rem))] p-5 sm:p-8 lg:p-10'}`}>
-                    {!showMirror ? (
-                        <div
-                            className="pointer-events-none absolute inset-0 opacity-38"
-                            aria-hidden="true"
-                        >
-                            <img
-                                src={privateChatGlow}
-                                alt=""
-                                className="h-full w-full object-cover"
-                                loading="eager"
-                            />
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(5,5,7,0.22),rgba(5,5,7,0.86)_62%,#050507_100%)]" />
-                        </div>
-                    ) : null}
+            <main className="relative z-10 mx-auto grid min-h-[calc(100dvh-88px)] w-full max-w-6xl items-center gap-4 px-4 pb-5 pt-2 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-6 lg:pb-8">
+                <section className={`relative overflow-hidden rounded-[2.15rem] border border-white/10 bg-white/[0.048] shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl ${showMirror ? 'p-3 sm:p-5 lg:p-6' : 'p-4 sm:p-6 lg:p-7'}`}>
                     <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
-                    <div className="pointer-events-none absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-violet-500/12 blur-3xl" />
-                    <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-[72%] -translate-x-1/2 rounded-[100%] bg-cyan-300/8 blur-3xl" />
-                    {!showMirror ? (
-                        <div className="relative z-10 mx-auto flex w-full max-w-[44rem] flex-1 flex-col items-center justify-center text-center">
-                            <div className="mb-5 grid h-16 w-16 place-items-center rounded-[1.35rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)] sm:mb-7 sm:h-20 sm:w-20 sm:rounded-[1.6rem]">
-                                <MirrorLogo />
-                            </div>
-                            <h1 className="max-w-2xl overflow-visible break-words text-[2.55rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[5.1rem]">
-                                What do you want?
-                            </h1>
-                            <p className="mt-4 max-w-[34rem] text-base leading-7 text-zinc-400 sm:mt-6 sm:text-xl sm:leading-8">
-                                Type one thing you are stuck on. Get one honest next move.
-                            </p>
+                    <div className="pointer-events-none absolute -left-24 top-12 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+                    <div className="pointer-events-none absolute -bottom-16 right-8 h-48 w-48 rounded-full bg-cyan-300/8 blur-3xl" />
 
-                            <div className="mt-5 flex flex-wrap justify-center gap-2 sm:mt-6">
+                    <div className="relative z-10">
+                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'mb-7 grid'} h-14 w-14 place-items-center rounded-[1.25rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.16)]`}>
+                            <MirrorLogo />
+                        </div>
+
+                        <h1 className={`max-w-xl break-words font-semibold leading-[0.98] tracking-normal text-white ${showMirror ? 'text-2xl sm:text-[3.1rem] lg:text-[3.65rem]' : 'text-[2.95rem] sm:text-[4.2rem] lg:text-[4.75rem]'}`}>
+                            What do you want to move?
+                        </h1>
+                        <p className={`${showMirror ? 'hidden sm:block' : 'block'} mt-4 max-w-[31rem] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8`}>
+                            Say it messy. Get one honest next move.
+                        </p>
+
+                        {!showMirror ? (
+                            <div className="mt-6 grid gap-2 sm:grid-cols-3">
                                 {STARTERS.map((starter) => (
                                     <button
-                                        key={starter}
+                                        key={starter.label}
                                         type="button"
                                         onClick={() => chooseStarter(starter)}
                                         disabled={busy}
-                                        className={`rounded-full border px-4 py-2 text-sm transition ${text.trim() === starter ? 'border-violet-200/45 bg-violet-200/[0.10] text-white' : 'border-white/10 bg-black/25 text-zinc-300 hover:border-violet-200/35 hover:bg-white/[0.06] hover:text-white'}`}
+                                        className="min-h-14 rounded-[1.15rem] border border-white/10 bg-black/24 px-3 text-left text-sm font-semibold leading-5 text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                                     >
-                                        {starter}
+                                        {starter.label}
                                     </button>
                                 ))}
                             </div>
+                        ) : null}
 
-                            <div className="mt-4 w-full max-w-[34rem]">
-                                <div className="mb-2 text-xs font-semibold text-zinc-400">What can I ask?</div>
-                                <div className="flex flex-wrap justify-center gap-2 pb-1">
-                                    {ASK_TRAY.map((item) => (
-                                        <button
-                                            key={item.label}
-                                            type="button"
-                                            onClick={() => chooseAsk(item)}
-                                            disabled={busy}
-                                            className="shrink-0 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </div>
+                        <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mt-4'} grid gap-2`}>
+                            <div className="grid gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                                <textarea
+                                    ref={inputRef}
+                                    rows={showMirror ? 1 : 3}
+                                    value={text}
+                                    maxLength={1000}
+                                    placeholder="Type one real thing..."
+                                    onChange={(event) => setText(event.target.value)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter' && !event.shiftKey) {
+                                            event.preventDefault();
+                                            submit(event);
+                                        }
+                                    }}
+                                    className={`${showMirror ? 'min-h-14' : 'min-h-24'} max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/30`}
+                                    style={{ overflowWrap: 'anywhere' }}
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={busy || !canSubmit}
+                                    onClick={() => {
+                                        if (!canSubmit && !busy) inputRef.current?.focus();
+                                    }}
+                                    className={`${showMirror ? 'sm:min-h-14' : 'sm:min-h-16'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-bold text-white shadow-[0_0_28px_rgba(168,85,247,0.30)] transition hover:scale-[1.015] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
+                                    aria-label="Get my next move"
+                                >
+                                    {busy ? (
+                                        <Sparkles size={18} className="animate-pulse" />
+                                    ) : (
+                                        <>
+                                            <span>Reflect</span>
+                                            <ArrowUp size={17} />
+                                        </>
+                                    )}
+                                </button>
                             </div>
-                        </div>
-                    ) : null}
-
-                    <div className={showMirror ? 'relative z-10' : 'relative z-10 mx-auto mt-8 w-full max-w-[44rem]'}>
-                        <form onSubmit={submit} className={showMirror ? 'flex items-end gap-2' : 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]'}>
-                            <textarea
-                                ref={inputRef}
-                                rows={showMirror ? 1 : 2}
-                                value={text}
-                                maxLength={1000}
-                                placeholder="Type one real thing..."
-                                onChange={(event) => setText(event.target.value)}
-                                onKeyDown={(event) => {
-                                    if (event.key === 'Enter' && !event.shiftKey) {
-                                        event.preventDefault();
-                                        submit(event);
-                                    }
-                                }}
-                                className={`${showMirror ? 'min-h-[4.5rem]' : 'min-h-20 sm:min-h-[5.6rem]'} max-h-36 flex-1 resize-none rounded-3xl border border-white/10 bg-black/40 px-4 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/45`}
-                                style={{ overflowWrap: 'anywhere' }}
-                            />
-                            <button
-                                type="submit"
-                                disabled={busy || (showMirror && !canSubmit)}
-                                onClick={() => {
-                                    if (!canSubmit && !busy) inputRef.current?.focus();
-                                }}
-                                className={`${showMirror ? 'grid h-12 w-12 place-items-center rounded-2xl' : 'inline-flex min-h-[3.25rem] items-center justify-center gap-2 rounded-3xl px-5 text-sm font-bold sm:min-h-[5.6rem] sm:px-7'} shrink-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_0_28px_rgba(168,85,247,0.30)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
-                                aria-label="Get my next move"
-                            >
-                                {busy ? (
-                                    <Sparkles size={18} className="animate-pulse" />
-                                ) : showMirror ? (
-                                    <ArrowUp size={19} />
-                                ) : (
-                                    <>
-                                        <span>Get next move</span>
-                                        <ArrowUp size={17} />
-                                    </>
-                                )}
-                            </button>
                         </form>
+
                         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
-                            <span>Try a messy sentence. It works better that way.</span>
+                            <span>Private first.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
                                 Nothing saved unless you choose.
@@ -917,94 +930,87 @@ export default function HomePage() {
                                     className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
                                 >
                                     <SlidersHorizontal size={13} />
-                                    {mirrorDefaults.length ? `Saved: ${mirrorDefaults.length}` : 'Saved: off'}
+                                    Saved: {mirrorDefaults.length}
                                 </button>
                             ) : null}
                             <LocalSenseLine sense={typingSense} />
                         </div>
+
                     </div>
                 </section>
 
-                {showMirror ? (
-                    <section className="flex flex-col gap-3">
-                        <MirrorResult
-                            result={result}
-                            intent={lastIntent}
-                            turnSource={lastSource}
-                            disabled={busy}
-                            onSourceChecked={setLastSourceCheck}
-                            onRemember={rememberMirror}
-                            remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
-                            onPrompt={(nextIntent, source = 'surface') => {
-                                trackEvent('followup_clicked', { page: 'home', source });
-                                reflect(nextIntent, source);
-                            }}
-                        />
-                        <div className="sm:pl-12">
-                            <LocalSenseLine sense={lastSense} />
-                        </div>
-                        {!busy && result ? (
-                            <div className="grid gap-3 sm:ml-12">
-                                <div className="flex flex-wrap gap-2">
-                                    {followUps.map((item) => {
-                                        const Icon = item.icon;
-                                        return (
-                                            <button
-                                                key={item.label}
-                                                type="button"
-                                                onClick={() => {
-                                                    trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
-                                                    if (item.action === 'draft') {
-                                                        setSendableDraft(makeSendableDraft(result?.mirror || SAMPLE_MIRROR));
-                                                        return;
-                                                    }
-                                                    reflect(item.intent, 'follow_up');
-                                                }}
-                                                disabled={busy}
-                                                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-                                            >
-                                                <Icon size={16} className="text-purple-200" />
-                                                {item.label}
-                                            </button>
-                                        );
-                                    })}
-                                    <Link
-                                        to="/start"
-                                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'personal_setup_chip' })}
-                                        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3.5 py-2 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.09]"
-                                    >
-                                        Make it yours
-                                        <ArrowRight size={15} />
-                                    </Link>
-                                </div>
-                                <div>
+                <section className="grid gap-3">
+                    {showMirror ? (
+                        <>
+                            <MirrorResult
+                                result={result}
+                                intent={lastIntent}
+                                turnSource={lastSource}
+                                disabled={busy}
+                                onSourceChecked={setLastSourceCheck}
+                                onRemember={rememberMirror}
+                                remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
+                                onPrompt={(nextIntent, source = 'surface') => {
+                                    trackEvent('followup_clicked', { page: 'home', source });
+                                    reflect(nextIntent, source);
+                                }}
+                            />
+                            <div className="sm:pl-12">
+                                <LocalSenseLine sense={lastSense} />
+                            </div>
+                            {!busy && result ? (
+                                <div className="grid gap-3 sm:pl-12">
+                                    <div className="flex flex-wrap gap-2">
+                                        {followUps.map((item) => {
+                                            const Icon = item.icon;
+                                            return (
+                                                <button
+                                                    key={item.label}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
+                                                        if (item.action === 'draft') {
+                                                            setSendableDraft(makeSendableDraft(result?.mirror || SAMPLE_MIRROR));
+                                                            return;
+                                                        }
+                                                        reflect(item.intent, 'follow_up');
+                                                    }}
+                                                    disabled={busy}
+                                                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                                                >
+                                                    <Icon size={16} className="text-purple-200" />
+                                                    {item.label}
+                                                </button>
+                                            );
+                                        })}
+                                        <Link
+                                            to="/start"
+                                            onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'personal_setup_chip' })}
+                                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3.5 py-2 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.09]"
+                                        >
+                                            Make it yours
+                                            <ArrowRight size={15} />
+                                        </Link>
+                                    </div>
                                     <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} onRepair={(nextIntent) => {
                                         trackEvent('followup_clicked', { page: 'home', source: 'feedback_repair' });
                                         reflect(nextIntent, 'feedback_repair');
                                     }} />
                                 </div>
-                            </div>
-                        ) : null}
-                        <SendableDraft draft={sendableDraft} />
-                    </section>
-                ) : null}
+                            ) : null}
+                            <SendableDraft draft={sendableDraft} />
+                        </>
+                    ) : (
+                        <IdleCanvas onChoose={chooseStarter} />
+                    )}
+                </section>
             </main>
 
-            <div className="relative z-10 mx-auto flex max-w-3xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-                <div>Not saved unless you choose it.</div>
+            <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+                <div>Private first. Sharing and memory are your choice.</div>
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
-                    {showMirror ? (
-                        <Link
-                            to="/id"
-                            onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_preferences' })}
-                            className="inline-flex items-center gap-1 transition hover:text-white"
-                        >
-                            Make it yours
-                            <ArrowRight size={12} />
-                        </Link>
-                    ) : null}
                 </div>
             </div>
             <MemoryDrawer
