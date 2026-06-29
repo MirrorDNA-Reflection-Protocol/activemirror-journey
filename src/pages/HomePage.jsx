@@ -39,9 +39,9 @@ const SAMPLE_MIRROR = {
 };
 
 const STARTERS = [
-    "I'm avoiding a decision",
-    'My idea feels messy',
-    'I need the next step',
+    'I need to decide',
+    'I need to send something',
+    'I need to stop spiraling',
 ];
 
 const LOADING_MIRROR = {
@@ -280,7 +280,7 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
                     className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-zinc-300 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
                 >
                     {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
-                    {remembered ? 'Remembered' : 'Remember this'}
+                    {remembered ? 'Saved for next time' : 'Remember this'}
                 </button>
             </div>
             <MicroVisual visual={mirror.visual} />
@@ -850,6 +850,7 @@ export default function HomePage() {
                             </button>
                         </form>
                         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
+                            <span>Try a messy sentence. It works better that way.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
                                 Nothing saved unless you choose.
