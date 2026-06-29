@@ -59,6 +59,10 @@ function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
 }
 
+function isSourceHeavyAsk(intent) {
+    return /\b(today|latest|current|recent|online|web|source|sources|research|competitor|market|verify|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing)\b/i.test(intent);
+}
+
 function makeEcosystemResult(intent) {
     return {
         kind: 'help',
@@ -130,19 +134,19 @@ function makeLocalPrivacyResult(sense = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.move && {
-            label: 'Make it smaller',
+            label: 'Smaller',
             icon: ArrowRight,
             action: 'reflect',
             intent: `Make this smaller and easier to start. Keep one tiny next move only: ${mirror.move}`,
         },
         mirror.question && {
-            label: 'Be more honest',
+            label: 'More honest',
             icon: Sparkles,
             action: 'reflect',
             intent: `Be more honest about what I may be avoiding here. Keep it short: ${mirror.question}`,
         },
         {
-            label: 'Turn into draft',
+            label: 'Draft it',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -157,18 +161,13 @@ function makeSendableDraft(mirror = {}) {
     return {
         title: 'Sendable draft',
         body: [
-            'Quick update:',
-            '',
-            `I narrowed this to one question: ${question}`,
-            '',
+            `Question: ${question}`,
             `Next move: ${move}`,
-            '',
-            'Private context removed. Add only what the recipient needs.',
+            'Only add details the other person actually needs.',
         ].filter(Boolean).join('\n'),
         checklist: [
-            'Remove anything private before sending.',
-            'Keep the ask to one sentence.',
-            'Send it, then watch what changes.',
+            'Remove anything private.',
+            'Keep the ask short.',
         ],
     };
 }
@@ -258,35 +257,31 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
     }
 
     return (
-        <div className="mt-5 rounded-[1.55rem] border border-white/10 bg-black/24 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.075] px-4 py-4">
-                <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-emerald-100/80">
-                    <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                    Try this next
-                </div>
-                <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                    <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
-                    <button
-                        type="button"
-                        onClick={copyMove}
-                        className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.12] px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.16]"
-                    >
-                        {copied ? <Check size={15} /> : <Copy size={15} />}
-                        {copied ? 'Copied' : 'Do this now'}
-                    </button>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500">
-                    <span>Save only the useful question and move.</span>
-                    <button
-                        type="button"
-                        onClick={() => onRemember?.(mirror)}
-                        disabled={remembered}
-                        className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 font-semibold text-zinc-300 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
-                    >
-                        {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
-                        {remembered ? 'Saved: on' : 'Saved: off'}
-                    </button>
-                </div>
+        <div className="mt-5 rounded-[1.45rem] border border-emerald-200/15 bg-emerald-200/[0.07] px-4 py-4">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-100/70">
+                Next move
+            </div>
+            <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
+                <button
+                    type="button"
+                    onClick={copyMove}
+                    className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.12] px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.16]"
+                >
+                    {copied ? <Check size={15} /> : <Copy size={15} />}
+                    {copied ? 'Copied' : 'Copy'}
+                </button>
+            </div>
+            <div className="mt-3 flex justify-end">
+                <button
+                    type="button"
+                    onClick={() => onRemember?.(mirror)}
+                    disabled={remembered}
+                    className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-zinc-300 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
+                >
+                    {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
+                    {remembered ? 'Remembered' : 'Remember this'}
+                </button>
             </div>
             <MicroVisual visual={mirror.visual} />
         </div>
@@ -297,6 +292,7 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const truthState = result?.truth_state || mirror.truth_state;
+    const showSourceCheck = truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
 
     if (isLoading) {
         return <LoadingPanel />;
@@ -308,36 +304,38 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
                 <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] sm:grid">
                     <MirrorLogo />
                 </div>
-                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#111114]/82 p-4 shadow-[0_0_70px_rgba(124,58,237,0.12)] backdrop-blur-2xl sm:p-5">
+                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#111114]/72 p-4 shadow-[0_0_70px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
                     <ReflectionGlow mirror={mirror} />
                     <p className="mt-5 text-[1.05rem] leading-7 text-zinc-100 sm:text-[1.16rem]">
                         {mirror.reflection}
                     </p>
-                    <p className="mt-5 rounded-[1.35rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
-                        <span className="mb-1 block text-xs font-semibold text-violet-100/75">The real question</span>
+                    <div className="mt-5 border-l border-violet-200/25 pl-4 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
+                        <span className="font-semibold text-violet-100/80">Question: </span>
                         {mirror.question}
-                    </p>
+                    </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
                 </div>
             </div>
-            <NeedsSources
-                truthState={truthState}
-                intent={intent}
-                mirror={mirror}
-                disabled={disabled}
-                onPrompt={onPrompt}
-                onSourceChecked={onSourceChecked}
-            />
+            {showSourceCheck ? (
+                <NeedsSources
+                    truthState={truthState}
+                    intent={intent}
+                    mirror={mirror}
+                    disabled={disabled}
+                    onPrompt={onPrompt}
+                    onSourceChecked={onSourceChecked}
+                />
+            ) : null}
         </div>
     );
 }
 
 function LoadingPanel() {
     return (
-        <div className="rounded-[1.8rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-5 py-5 shadow-[0_0_46px_rgba(34,211,238,0.08)]">
+        <div className="rounded-[1.8rem] border border-cyan-300/15 bg-cyan-300/[0.045] px-5 py-5 shadow-[0_0_46px_rgba(34,211,238,0.08)]">
             <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-cyan-100">
                 <Sparkles size={16} className="animate-pulse text-cyan-200" />
-                Looking for the next honest move
+                Finding the useful move
             </div>
             <div className="grid gap-2">
                 <div className="h-3 w-3/4 animate-pulse rounded-full bg-white/10" />
@@ -753,7 +751,6 @@ export default function HomePage() {
                         <MirrorLogo />
                         <div>
                             <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
-                            <div className="hidden text-xs text-zinc-500 sm:block">one honest next move</div>
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
@@ -790,8 +787,8 @@ export default function HomePage() {
                             <div className="mb-7 grid h-20 w-20 place-items-center rounded-[1.6rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)]">
                                 <MirrorLogo />
                             </div>
-                            <h1 className="max-w-2xl overflow-visible break-words text-[2.6rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.8rem]">
-                                What do you want help with?
+                            <h1 className="max-w-2xl overflow-visible break-words text-[2.8rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[5.1rem]">
+                                What do you want?
                             </h1>
                             <p className="mt-6 max-w-[34rem] text-base leading-7 text-zinc-400 sm:text-xl sm:leading-8">
                                 Type one thing you are stuck on. Get one honest next move.
@@ -846,7 +843,7 @@ export default function HomePage() {
                                     <ArrowUp size={19} />
                                 ) : (
                                     <>
-                                        <span>Start Reflection</span>
+                                        <span>Get next move</span>
                                         <ArrowUp size={17} />
                                     </>
                                 )}
@@ -857,7 +854,7 @@ export default function HomePage() {
                                 <Lock size={13} />
                                 Nothing saved unless you choose.
                             </span>
-                            {(showMirror || mirrorDefaults.length > 0) ? (
+                            {mirrorDefaults.length > 0 ? (
                                 <button
                                     type="button"
                                     onClick={() => setMemoryOpen(true)}
@@ -890,9 +887,8 @@ export default function HomePage() {
                             <LocalSenseLine sense={lastSense} />
                         </div>
                         {!busy && result ? (
-                            <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-3 sm:ml-12">
-                                <div className="text-sm font-semibold text-zinc-300">Keep going</div>
-                                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
+                            <div className="grid gap-3 sm:ml-12">
+                                <div className="flex flex-wrap gap-2">
                                     {followUps.map((item) => {
                                         const Icon = item.icon;
                                         return (
@@ -915,8 +911,16 @@ export default function HomePage() {
                                             </button>
                                         );
                                     })}
+                                    <Link
+                                        to="/start"
+                                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'personal_setup_chip' })}
+                                        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3.5 py-2 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.09]"
+                                    >
+                                        Make it yours
+                                        <ArrowRight size={15} />
+                                    </Link>
                                 </div>
-                                <div className="mt-3">
+                                <div>
                                     <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} onRepair={(nextIntent) => {
                                         trackEvent('followup_clicked', { page: 'home', source: 'feedback_repair' });
                                         reflect(nextIntent, 'feedback_repair');
@@ -940,7 +944,7 @@ export default function HomePage() {
                             onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_preferences' })}
                             className="inline-flex items-center gap-1 transition hover:text-white"
                         >
-                            Save preferences
+                            Make it yours
                             <ArrowRight size={12} />
                         </Link>
                     ) : null}
