@@ -16,7 +16,6 @@
     "src/pages/Privacy.jsx",
     "src/pages/Terms.jsx",
     "src/components/ReflectionCardActions.jsx",
-    "src/components/ReflectiveSurface.jsx",
     "src/components/TruthStateNotice.jsx",
     "src/components/MirrorFeedback.jsx",
     "src/lib/first-turn-fallback.js",
@@ -146,7 +145,6 @@
       "verification_state": "source_backed",
       "source_refs": [
         "src/components/TruthStateNotice.jsx",
-        "src/components/ReflectiveSurface.jsx",
         "src/lib/first-turn-fallback.js",
         "src/pages/Enterprise.jsx",
         "src/pages/HomePage.jsx",

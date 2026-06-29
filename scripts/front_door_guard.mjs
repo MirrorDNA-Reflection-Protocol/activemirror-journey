@@ -13,7 +13,6 @@ const scanFiles = [
     'src/pages/Privacy.jsx',
     'src/pages/Terms.jsx',
     'src/components/ReflectionCardActions.jsx',
-    'src/components/ReflectiveSurface.jsx',
 ];
 
 const bannedConsumerTerms = [
