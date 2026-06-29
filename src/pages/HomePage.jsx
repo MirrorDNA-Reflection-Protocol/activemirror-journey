@@ -368,36 +368,6 @@ function SendableDraft({ draft }) {
     );
 }
 
-function OwnedMirrorNudge({ seed }) {
-    if (seed) {
-        return (
-            <div className="rounded-[1.7rem] border border-emerald-300/15 bg-emerald-300/[0.065] px-4 py-4 shadow-[0_0_34px_rgba(52,211,153,0.08)]">
-                <div className="text-sm font-semibold text-emerald-100">Active Mirror knows your style here.</div>
-                <div className="mt-1 text-sm leading-6 text-zinc-400">
-                    Saved on this browser. You can edit or clear what it knows about you anytime.
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="rounded-[1.7rem] border border-violet-300/15 bg-violet-300/[0.065] px-4 py-4 shadow-[0_0_34px_rgba(168,85,247,0.08)]">
-            <div className="text-sm font-semibold text-violet-100">Save preferences.</div>
-            <div className="mt-1 text-sm leading-6 text-zinc-400">
-                One minute of setup. Better questions, faster next moves, and a private profile you keep.
-            </div>
-            <Link
-                to="/id"
-                onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'make_this_yours' })}
-                className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.10] px-4 text-sm font-semibold text-violet-100 transition hover:border-violet-300/40 hover:bg-violet-300/[0.14]"
-            >
-                Save preferences
-                <ArrowRight size={15} />
-            </Link>
-        </div>
-    );
-}
-
 function LocalSenseLine({ sense }) {
     const cue = sense?.cues?.[0];
     if (!sense?.hasText || !cue) return null;
@@ -765,14 +735,12 @@ export default function HomePage() {
 
     function chooseStarter(starter) {
         if (busy) return;
-        setText(starter);
         trackEvent('starter_clicked', { page: 'home', source: 'starter' });
-        requestAnimationFrame(() => inputRef.current?.focus());
+        reflect(starter, 'starter');
     }
 
     const showMirror = Boolean(result || busy || lastIntent);
     const canSubmit = text.trim().length >= 4;
-    const starterSelected = !showMirror && STARTERS.includes(text.trim());
 
     return (
         <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-purple-500/30">
@@ -822,8 +790,8 @@ export default function HomePage() {
                             <div className="mb-7 grid h-20 w-20 place-items-center rounded-[1.6rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)]">
                                 <MirrorLogo />
                             </div>
-                            <h1 className="max-w-2xl overflow-visible break-words text-[2.75rem] font-semibold leading-[0.95] tracking-normal text-white sm:text-[5.1rem]">
-                                What do you want?
+                            <h1 className="max-w-2xl overflow-visible break-words text-[2.6rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.8rem]">
+                                What do you want help with?
                             </h1>
                             <p className="mt-6 max-w-[34rem] text-base leading-7 text-zinc-400 sm:text-xl sm:leading-8">
                                 Type one thing you are stuck on. Get one honest next move.
@@ -878,7 +846,7 @@ export default function HomePage() {
                                     <ArrowUp size={19} />
                                 ) : (
                                     <>
-                                        <span>{starterSelected ? 'Start with this' : 'Start Reflection'}</span>
+                                        <span>Start Reflection</span>
                                         <ArrowUp size={17} />
                                     </>
                                 )}
@@ -922,8 +890,8 @@ export default function HomePage() {
                             <LocalSenseLine sense={lastSense} />
                         </div>
                         {!busy && result ? (
-                            <details className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-3 sm:ml-12">
-                                <summary className="cursor-pointer list-none text-sm font-semibold text-zinc-300">More</summary>
+                            <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-3 sm:ml-12">
+                                <div className="text-sm font-semibold text-zinc-300">Keep going</div>
                                 <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
                                     {followUps.map((item) => {
                                         const Icon = item.icon;
@@ -954,7 +922,7 @@ export default function HomePage() {
                                         reflect(nextIntent, 'feedback_repair');
                                     }} />
                                 </div>
-                            </details>
+                            </div>
                         ) : null}
                         <SendableDraft draft={sendableDraft} />
                     </section>
@@ -966,14 +934,16 @@ export default function HomePage() {
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
-                    <Link
-                        to="/id"
-                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_mirrorseed' })}
-                        className="inline-flex items-center gap-1 transition hover:text-white"
-                    >
-                        Save preferences
-                        <ArrowRight size={12} />
-                    </Link>
+                    {showMirror ? (
+                        <Link
+                            to="/id"
+                            onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'footer_preferences' })}
+                            className="inline-flex items-center gap-1 transition hover:text-white"
+                        >
+                            Save preferences
+                            <ArrowRight size={12} />
+                        </Link>
+                    ) : null}
                 </div>
             </div>
             <MemoryDrawer

@@ -4,7 +4,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import ScrollToTop from './components/ScrollToTop';
 
 import HomePage from './pages/HomePage';
-import ReflectChat from './pages/ReflectChat.jsx';
 
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
@@ -65,7 +64,7 @@ export default function App() {
                     <Route path="/device" element={<DeviceExperience />} />
                     <Route path="/enterprise" element={<Enterprise />} />
                     <Route path="/feedback" element={<FeedbackDashboard />} />
-                    <Route path="/mirror" element={<ReflectChat />} />
+                    <Route path="/mirror" element={<Navigate to="/" replace />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/legal" element={<Navigate to="/privacy" replace />} />
@@ -73,8 +72,7 @@ export default function App() {
                     <Route path="/mirrorseed" element={<Navigate to="/start" replace />} />
                     <Route path="/scan" element={<Navigate to="/start" replace />} />
                     <Route path="/brainscan" element={<Navigate to="/start" replace />} />
-                    <Route path="/reflect" element={<Navigate to="/mirror" replace />} />
-                    <Route path="/app" element={<Navigate to="/mirror" replace />} />
+                    <Route path="/reflect" element={<Navigate to="/" replace />} />
                     <Route path="/index.html" element={<Navigate to="/" replace />} />
 
                     {staleRoutes.map((path) => (
