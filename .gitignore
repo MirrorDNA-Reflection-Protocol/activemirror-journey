@@ -2,6 +2,7 @@ node_modules/
 dist
 output/
 outputs/
+mirror_gate/data/
 .env
 api/.env
 ops/control-plane-snapshots/
