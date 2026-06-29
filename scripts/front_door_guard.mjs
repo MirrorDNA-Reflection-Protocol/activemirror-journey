@@ -49,9 +49,9 @@ const requiredTerms = [
     { pattern: /Get the next move|one honest next move|one useful output|one move/i, label: 'outcome-first promise' },
     { pattern: /Type one thing you are stuck on/i, label: 'plain first-use helper' },
     { pattern: /Nothing saved|nothing is saved|Memory is your choice/i, label: 'privacy choice promise' },
-    { pattern: /Smaller|Make it smaller/i, label: 'first-use follow-up: make smaller' },
-    { pattern: /More honest|Be more honest/i, label: 'first-use follow-up: be honest' },
-    { pattern: /Draft it|Turn into draft/i, label: 'first-use follow-up: draft' },
+    { pattern: /Make it smaller/i, label: 'first-use follow-up: make smaller' },
+    { pattern: /Be more honest/i, label: 'first-use follow-up: be honest' },
+    { pattern: /Turn into a message/i, label: 'first-use follow-up: message' },
 ];
 
 function read(file) {

@@ -26,8 +26,8 @@ function repairOptions(result = {}) {
         },
         {
             id: 'different',
-            label: 'Turn into draft',
-            intent: 'Turn this into a short usable draft with one ask.',
+            label: 'Turn into a message',
+            intent: 'Turn this into a short message I could send, with one clear ask.',
         },
     ];
 }

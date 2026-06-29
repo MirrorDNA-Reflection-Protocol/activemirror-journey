@@ -43,6 +43,14 @@ function makeNarrowClaimPrompt(intent, mirror = {}, research = {}) {
     ].filter(Boolean).join('\n');
 }
 
+function displayResearchText(value = '') {
+    return String(value || '')
+        .replace(/The source route could not fetch reliable citations from this edge right now\./gi, 'I could not fetch reliable citations just now.')
+        .replace(/\bsource route\b/gi, 'source check')
+        .replace(/\bfrom this edge\b/gi, 'right now')
+        .trim();
+}
+
 export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt, onSourceChecked }) {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
@@ -110,9 +118,9 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 {verdict.helper ? (
                     <div className={`mb-2 ${verdict.muted}`}>{verdict.helper}</div>
                 ) : null}
-                <div>{result.research?.answer}</div>
+                <div>{displayResearchText(result.research?.answer)}</div>
                 {result.research?.changes ? (
-                    <div className={`mt-2 ${verdict.muted}`}>{result.research.changes}</div>
+                    <div className={`mt-2 ${verdict.muted}`}>{displayResearchText(result.research.changes)}</div>
                 ) : null}
                 {plan ? (
                     <div className="mt-3 grid gap-3">
@@ -209,9 +217,12 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     }
 
     return (
-        <div className="max-w-[46rem] rounded-2xl border border-amber-300/20 bg-amber-300/[0.08] px-4 py-3 text-sm leading-5 text-amber-100">
+        <div className="max-w-[46rem] rounded-2xl border border-amber-300/20 bg-amber-300/[0.065] px-4 py-3 text-sm leading-5 text-amber-50">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="font-medium">Needs sources before you rely on it.</div>
+                <div>
+                    <div className="font-semibold">This asks for current facts.</div>
+                    <div className="mt-1 text-xs leading-5 text-amber-100/75">Check before you use it.</div>
+                </div>
                 <button
                     type="button"
                     onClick={checkSources}
@@ -219,7 +230,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                     className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-amber-200/25 bg-black/20 px-3 py-2 text-xs font-semibold text-amber-50 transition hover:border-amber-200/45 hover:bg-amber-200/[0.10] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {busy ? <Loader2 size={14} className="animate-spin" /> : <SearchCheck size={14} />}
-                    {busy ? 'Checking' : 'Check sources'}
+                    {busy ? 'Checking' : 'Check now'}
                 </button>
             </div>
             {error ? <div className="mt-2 text-xs text-amber-100/70">{error}</div> : null}
@@ -252,7 +263,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
                                     ? 'Sources mixed'
                                     : 'Needs stronger support'}
                         </div>
-                        <div className="mt-1">{sourceCheck.research?.answer}</div>
+                        <div className="mt-1">{displayResearchText(sourceCheck.research?.answer)}</div>
                         {plan?.queries?.length ? (
                             <div className="mt-3 grid gap-2">
                                 {plan.queries.slice(0, 3).map((query) => (

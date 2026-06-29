@@ -134,19 +134,19 @@ function makeLocalPrivacyResult(sense = {}) {
 function makeFollowUps(mirror = {}) {
     return [
         mirror.move && {
-            label: 'Smaller',
+            label: 'Make it smaller',
             icon: ArrowRight,
             action: 'reflect',
             intent: `Make this smaller and easier to start. Keep one tiny next move only: ${mirror.move}`,
         },
         mirror.question && {
-            label: 'More honest',
+            label: 'Be more honest',
             icon: Sparkles,
             action: 'reflect',
             intent: `Be more honest about what I may be avoiding here. Keep it short: ${mirror.question}`,
         },
         {
-            label: 'Draft it',
+            label: 'Turn into a message',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -159,15 +159,15 @@ function makeSendableDraft(mirror = {}) {
     const move = mirror.move || 'Take the smallest concrete next step.';
 
     return {
-        title: 'Sendable draft',
+        title: 'Message draft',
         body: [
-            `Question: ${question}`,
-            `Next move: ${move}`,
-            'Only add details the other person actually needs.',
+            `I am using this question: ${question}`,
+            `My next move is: ${move}`,
+            'I am keeping private details out unless they are needed.',
         ].filter(Boolean).join('\n'),
         checklist: [
             'Remove anything private.',
-            'Keep the ask short.',
+            'Keep the ask short if you send it.',
         ],
     };
 }
@@ -257,22 +257,22 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
     }
 
     return (
-        <div className="mt-5 rounded-[1.45rem] border border-emerald-200/15 bg-emerald-200/[0.07] px-4 py-4">
+        <div className="mt-5 border-t border-white/10 pt-4">
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-100/70">
                 Next move
             </div>
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                <div className="text-base font-semibold leading-7 text-white sm:text-lg">{mirror.move}</div>
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <div className="text-[1.05rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
                 <button
                     type="button"
                     onClick={copyMove}
-                    className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.12] px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.16]"
+                    className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.10] px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.16]"
                 >
                     {copied ? <Check size={15} /> : <Copy size={15} />}
                     {copied ? 'Copied' : 'Copy'}
                 </button>
             </div>
-            <div className="mt-3 flex justify-end">
+            <div className="mt-3 flex justify-start">
                 <button
                     type="button"
                     onClick={() => onRemember?.(mirror)}
@@ -301,16 +301,16 @@ function MirrorResult({ result, intent, onPrompt, disabled, onSourceChecked, onR
     return (
         <div className="grid gap-3">
             <div className="flex items-start gap-3">
-                <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] sm:grid">
+                <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid">
                     <MirrorLogo />
                 </div>
-                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#111114]/72 p-4 shadow-[0_0_70px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
+                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#101014]/78 p-4 shadow-[0_0_62px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
                     <ReflectionGlow mirror={mirror} />
-                    <p className="mt-5 text-[1.05rem] leading-7 text-zinc-100 sm:text-[1.16rem]">
+                    <p className="mt-4 text-[1.06rem] leading-7 text-zinc-100 sm:text-[1.14rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-5 border-l border-violet-200/25 pl-4 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
-                        <span className="font-semibold text-violet-100/80">Question: </span>
+                    <div className="mt-5 rounded-2xl bg-white/[0.035] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
+                        <span className="font-semibold text-violet-100/85">Real question: </span>
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
