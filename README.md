@@ -46,6 +46,9 @@ should route into this app's `/app/id/` deployment.
 
 This repo is the product source and does not deploy directly. It should not
 contain a root `CNAME`, `public/CNAME`, or a GitHub Pages publish action.
+`public/` is intentionally limited to static assets used by the React app;
+legacy pages belong in git history or reference packs, not the Vite public
+folder.
 
 The live public deployment path is:
 

@@ -9,7 +9,6 @@
     "index.html",
     "src/App.jsx",
     "src/pages/HomePage.jsx",
-    "src/pages/ReflectChat.jsx",
     "src/pages/Start.jsx",
     "src/pages/DeviceExperience.jsx",
     "src/pages/Enterprise.jsx",
@@ -40,7 +39,7 @@
     },
     {
       "glob": "public/**",
-      "reason": "Legacy/static reference pages are not certified by this product-source gate."
+      "reason": "Static assets only; public routes live in React source and the deploy repo."
     },
     {
       "glob": "src/pages/**/*.backup.jsx",
@@ -72,7 +71,6 @@
       "verification_state": "source_backed",
       "source_refs": [
         "src/pages/HomePage.jsx",
-        "src/pages/ReflectChat.jsx",
         "src/pages/Enterprise.jsx",
         "src/lib/first-turn-fallback.js",
         "CANONICAL_SITE.md"
@@ -86,7 +84,6 @@
         "src/pages/Privacy.jsx",
         "src/pages/Terms.jsx",
         "src/pages/HomePage.jsx",
-        "src/pages/ReflectChat.jsx",
         "src/pages/DeviceExperience.jsx",
         "src/lib/privacy-events.js",
         "src/lib/mirror-state.js"
@@ -99,7 +96,6 @@
       "source_refs": [
         "src/pages/Privacy.jsx",
         "src/pages/Terms.jsx",
-        "src/pages/ReflectChat.jsx",
         "src/pages/HomePage.jsx",
         "src/pages/DeviceExperience.jsx",
         "src/lib/local-mirror-sense.js",
@@ -141,7 +137,6 @@
       "verification_state": "source_backed",
       "source_refs": [
         "src/pages/HomePage.jsx",
-        "src/pages/ReflectChat.jsx",
         "scripts/front_door_guard.mjs"
       ]
     },

@@ -339,7 +339,7 @@ def run_truth_gate(*, repo_root: Path, manifest_path: Path | None = None) -> dic
         "bad_news": bad_news,
         "findings": findings,
         "limitations": [
-            "This gate scans canonical product-source presentation files, not every legacy static page in public/.",
+            "This gate scans canonical product-source presentation files; public/ is limited to static assets.",
             "It catches high-risk public copy and hard numbers; it does not prove every implied claim is true.",
             "A PASS means checked claims are bound to local source references, not that Active Mirror is externally certified.",
         ],

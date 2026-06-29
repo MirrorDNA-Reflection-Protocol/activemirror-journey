@@ -8,7 +8,6 @@ const scanFiles = [
     'index.html',
     'src/App.jsx',
     'src/pages/HomePage.jsx',
-    'src/pages/ReflectChat.jsx',
     'src/pages/Start.jsx',
     'src/pages/DeviceExperience.jsx',
     'src/pages/Privacy.jsx',
