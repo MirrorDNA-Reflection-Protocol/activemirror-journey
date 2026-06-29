@@ -7,7 +7,7 @@ Usage:
   bash scripts/redaction_guard.sh [paths...]
 
 Defaults:
-  public index.html clean-mirror blog
+  public index.html src/App.jsx src/pages src/components src/lib
 
 Allowlist:
   .redaction-allowlist (optional)
@@ -28,7 +28,7 @@ fi
 if [ "$#" -gt 0 ]; then
     targets=("$@")
 else
-    targets=("public" "index.html" "clean-mirror" "blog")
+    targets=("public" "index.html" "src/App.jsx" "src/pages" "src/components" "src/lib")
 fi
 
 existing_targets=()
