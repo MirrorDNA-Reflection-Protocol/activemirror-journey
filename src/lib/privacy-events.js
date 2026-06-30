@@ -23,6 +23,8 @@ const ALLOWED_EVENTS = new Set([
     'draft_downloaded',
     'draft_shared',
     'mirror_default_saved',
+    'saved_choices_uploaded',
+    'saved_choices_upload_failed',
     'proof_sprint_started',
     'proof_sprint_result',
     'phone_thread_cleared',

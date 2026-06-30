@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, Copy, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, Copy, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
 import { NeedsSources } from '../components/TruthStateNotice';
@@ -13,6 +13,7 @@ import {
     getArchetype,
     getBlueprint,
     getMirrorDefaults,
+    importMirrorSettings,
     saveMirrorDefault,
     updateMirrorDefault,
     useMirrorDefault,
@@ -83,7 +84,7 @@ const LOADING_MIRROR = {
 };
 
 function isEcosystemAsk(intent) {
-    return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
+    return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features|who are you)\b/i.test(intent);
 }
 
 function isSourceHeavyAsk(intent) {
@@ -95,7 +96,7 @@ function makeEcosystemResult(intent) {
         kind: 'help',
         intent,
         mirror: {
-            reflection: 'Start with the thing in front of you.',
+            reflection: 'I help turn the thing in front of you into a useful next step.',
             question: 'What do you want help moving?',
             move: 'Type it in one sentence. Leave private details out for now.',
             receipt: {
@@ -225,6 +226,13 @@ function MirrorLogo() {
     );
 }
 
+function readSavedSeed() {
+    const profile = getArchetype();
+    const blueprint = getBlueprint();
+    if (!profile && !blueprint) return null;
+    return { ...(profile || {}), blueprint };
+}
+
 function ReflectionGlow({ mirror }) {
     const text = `${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const urgent = /\b(overwhelmed|stuck|panic|confused|scared|afraid|urgent|pressure|spiral|loop)\b/.test(text);
@@ -303,7 +311,7 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
     return (
         <div className="mt-5 border-t border-white/10 pt-4">
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-100/70">
-                Next move
+                Try this
             </div>
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div className="text-[1.05rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
@@ -355,7 +363,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                         {mirror.reflection}
                     </p>
                     <div className="mt-5 rounded-2xl bg-white/[0.035] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
-                        <span className="font-semibold text-violet-100/85">Real question: </span>
+                        <span className="font-semibold text-violet-100/85">Ask this: </span>
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
@@ -545,7 +553,7 @@ function MemoryDrawer({
                             >
                                 <div className="mb-5 flex items-center justify-between gap-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
                                     <span>Card {activeCardIndex + 1} of {items.length}</span>
-                                    <span>{cardFlipped ? 'Next move' : 'Pattern'}</span>
+                                    <span>{cardFlipped ? 'Try this' : 'Pattern'}</span>
                                 </div>
                                 <div className="flex min-h-40 items-center">
                                     <p className={`text-2xl font-semibold leading-tight tracking-[-0.04em] ${cardFlipped ? 'text-emerald-50' : 'text-white'} sm:text-3xl`}>
@@ -679,13 +687,9 @@ function MemoryDrawer({
 export default function HomePage() {
     const location = useLocation();
     const inputRef = useRef(null);
+    const fileInputRef = useRef(null);
     const bootPromptRef = useRef(false);
-    const [seed] = useState(() => {
-        const profile = getArchetype();
-        const blueprint = getBlueprint();
-        if (!profile && !blueprint) return null;
-        return { ...(profile || {}), blueprint };
-    });
+    const [seed, setSeed] = useState(() => readSavedSeed());
     const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
     const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
     const [text, setText] = useState('');
@@ -697,6 +701,7 @@ export default function HomePage() {
     const [sendableDraft, setSendableDraft] = useState(null);
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
+    const [importStatus, setImportStatus] = useState('');
     const [loopCount, setLoopCount] = useState(0);
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount), [result, loopCount]);
@@ -816,6 +821,27 @@ export default function HomePage() {
         trackEvent('mirror_default_deleted', { page: 'home', source: 'memory_drawer' });
     }
 
+    async function uploadSavedChoices(event) {
+        const file = event.target.files?.[0];
+        event.target.value = '';
+        if (!file) return;
+
+        try {
+            const textFile = await file.text();
+            const imported = importMirrorSettings(JSON.parse(textFile));
+            setSeed(readSavedSeed());
+            setActiveDefault(imported.activeDefault || getActiveMirrorDefault());
+            setMirrorDefaults(getMirrorDefaults());
+            setImportStatus('Choices loaded.');
+            trackEvent('saved_choices_uploaded', { page: 'home', source: 'file' });
+            window.setTimeout(() => setImportStatus(''), 2200);
+        } catch {
+            setImportStatus('That file did not work.');
+            trackEvent('saved_choices_upload_failed', { page: 'home', source: 'file' });
+            window.setTimeout(() => setImportStatus(''), 2600);
+        }
+    }
+
     function submit(event) {
         event.preventDefault();
         reflect(text, 'typed');
@@ -847,8 +873,8 @@ export default function HomePage() {
                         <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <Link to="/id" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-violet-300/30 hover:text-white sm:inline-flex">
-                            Personalize
+                        <Link to="/id" className="rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3 py-1.5 text-xs font-medium text-cyan-100 transition hover:border-cyan-200/35 hover:text-white">
+                            Setup
                         </Link>
                         <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
                             Teams
@@ -954,6 +980,34 @@ export default function HomePage() {
                                     Saved: {mirrorDefaults.length}
                                 </button>
                             ) : null}
+                            {!showMirror ? (
+                                <>
+                                    <Link
+                                        to="/id"
+                                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'quick_setup_home_chip' })}
+                                        className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200/15 bg-cyan-200/[0.055] px-2.5 py-1.5 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/35 hover:text-white"
+                                    >
+                                        New here? Quick setup
+                                        <ArrowRight size={13} />
+                                    </Link>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="application/json,.json"
+                                        onChange={uploadSavedChoices}
+                                        className="hidden"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs font-semibold text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
+                                    >
+                                        <Upload size={13} />
+                                        Returning? Upload choices
+                                    </button>
+                                </>
+                            ) : null}
+                            {importStatus ? <span className="font-semibold text-emerald-100">{importStatus}</span> : null}
                             <LocalSenseLine sense={typingSense} />
                         </div>
 

@@ -31,7 +31,7 @@ const ENTRY_CHOICES = [
 const SCAN_QUESTIONS = [
     {
         id: 'q1',
-        question: 'What do you want from the first answer?',
+        question: 'What helps first?',
         options: [
             { label: 'One next step', archetype: 'builder', preference: 'first_answer' },
             { label: 'A sharper question', archetype: 'strategist', preference: 'first_answer' },
@@ -51,7 +51,7 @@ const SCAN_QUESTIONS = [
     },
     {
         id: 'q3',
-        question: 'How should pushback feel?',
+        question: 'How direct should it be?',
         options: [
             { label: 'Gentle', archetype: 'connector', preference: 'pushback' },
             { label: 'Balanced', archetype: 'scholar', preference: 'pushback' },
@@ -61,7 +61,7 @@ const SCAN_QUESTIONS = [
     },
     {
         id: 'q4',
-        question: 'What can it remember if you approve it?',
+        question: 'What can it save for next time?',
         options: [
             { label: 'How I like answers', archetype: 'builder', preference: 'memory' },
             { label: 'My current goals', archetype: 'strategist', preference: 'memory' },
@@ -71,7 +71,7 @@ const SCAN_QUESTIONS = [
     },
     {
         id: 'q5',
-        question: 'When should it slow you down?',
+        question: 'When should it pause you?',
         options: [
             { label: 'When I am spiraling', archetype: 'builder', preference: 'slow_down' },
             { label: 'When the claim needs evidence', archetype: 'analyst', preference: 'slow_down' },
@@ -81,7 +81,7 @@ const SCAN_QUESTIONS = [
     },
     {
         id: 'q6',
-        question: 'What makes you trust an answer?',
+        question: 'What makes an answer useful?',
         options: [
             { label: 'It is short and useful', archetype: 'builder', preference: 'trust' },
             { label: 'It names uncertainty', archetype: 'analyst', preference: 'trust' },
@@ -128,7 +128,7 @@ function makeMirrorSeed({ mirrorId, brainId, archetype, archetypeName, entryChoi
         schema: 'active-mirror-id/v1',
         id: mirrorId,
         brainId,
-        createdBy: 'Active Mirror BrainScan',
+        createdBy: 'Active Mirror setup',
         createdAt: null,
         entry: entryChoice ? {
             id: entryChoice.id,
@@ -203,7 +203,7 @@ function downloadSettings(result) {
 
     const settings = {
         product: 'Active Mirror',
-        type: 'mirror-id',
+        type: 'saved-choices',
         ...result.mirrorSeed,
         createdAt: result.savedAt || new Date().toISOString(),
     };
@@ -211,7 +211,7 @@ function downloadSettings(result) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'active-mirror-id.json';
+    link.download = 'active-mirror-choices.json';
     link.click();
     URL.revokeObjectURL(url);
 }
@@ -277,7 +277,7 @@ export default function Start() {
         });
 
         saveBlueprint({
-            kind: 'mirror-id',
+            kind: 'saved-choices',
             firstUse: result.entry,
             startingStyle: result.archetypeName,
             preferences: result.preferences,
@@ -332,10 +332,10 @@ export default function Start() {
                                 <MirrorLogo />
                             </div>
                             <h1 className="text-[3.1rem] font-semibold leading-[0.96] tracking-normal text-white sm:text-[5.2rem]">
-                                Start with you.
+                                Make it feel like yours.
                             </h1>
                             <p className="mt-4 text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                Six quick choices. Better answers. Nothing saved until you choose.
+                                Answer a few quick choices. Save them here or download them.
                             </p>
                             <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.07] px-3 py-2 text-xs font-semibold text-emerald-100">
                                 <Lock size={14} />
@@ -345,9 +345,9 @@ export default function Start() {
 
                         <div className="rounded-[1.75rem] border border-white/10 bg-[#101012]/76 p-4 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-6">
                             <div className="mb-5">
-                                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200/80">BrainScan</p>
+                                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200/80">Quick setup</p>
                                 <h2 className="mt-2 text-[1.55rem] font-semibold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
-                                    What are you bringing first?
+                                    What do you need first?
                                 </h2>
                             </div>
                             <div className="grid gap-3">
@@ -412,7 +412,7 @@ export default function Start() {
                                 You're set.
                             </h1>
                             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                This is a preference file, not a personality test. Keep it in this browser or download it and bring it with you.
+                                These choices stay in this browser unless you download them.
                             </p>
 
                             <div className="mt-6 grid gap-2">
@@ -429,7 +429,7 @@ export default function Start() {
                                     onClick={saveAndReflect}
                                     className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-violet-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.28)] transition hover:scale-[1.01]"
                                 >
-                                    Save and reflect
+                                    Save and start
                                     <ArrowRight size={19} />
                                 </button>
                                 <button
@@ -438,7 +438,7 @@ export default function Start() {
                                     className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
                                 >
                                     <Download size={17} />
-                                    Download Mirror ID
+                                    Download choices
                                 </button>
                                 <button
                                     type="button"

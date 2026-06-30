@@ -1,4 +1,4 @@
-# Active Mirror ID Flow
+# Active Mirror Saved Choices Flow
 
 Status: product contract for the public front door.
 
@@ -7,24 +7,26 @@ Status: product contract for the public front door.
 1. Homepage asks: `What do you want?`
 2. User gets a useful reflection before any account, setup, or explanation.
 3. If they want better defaults, they open `/id`.
-4. BrainScan asks six preference questions.
-5. The answers generate a browser-local Mirror ID object.
-6. The user can keep it in this browser or download `active-mirror-id.json`.
-7. `Save and reflect` returns to the chat and uses the approved preferences.
+4. Quick setup asks six preference questions.
+5. The answers generate a browser-local saved choices object.
+6. The user can keep it in this browser or download `active-mirror-choices.json`.
+7. `Save and start` returns to the chat and uses the approved preferences.
 
 ## Public Language
 
 Use:
 
-- `Mirror ID`
+- `Quick setup`
 - `Make it yours`
 - `Saved in this browser`
-- `Download Mirror ID`
-- `Six quick choices. Better answers.`
+- `Download choices`
+- `Make it feel like yours.`
 
 Avoid on consumer surfaces:
 
 - `MirrorSeed`
+- `BrainScan`
+- `Mirror ID`
 - `node of 1`
 - `sovereign`
 - `kernel`
@@ -34,7 +36,7 @@ Avoid on consumer surfaces:
 
 ## Accuracy Boundary
 
-BrainScan is preference calibration, not psychometrics.
+Quick setup is preference calibration, not psychometrics.
 
 Allowed claim: the answers improve starting defaults.
 

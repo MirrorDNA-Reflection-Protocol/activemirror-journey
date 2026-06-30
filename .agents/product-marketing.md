@@ -30,7 +30,9 @@ Use normal language:
 - What do you want?
 - Make it yours.
 - Saved in this browser.
-- Download Mirror ID.
+- Download choices.
+- New here? Quick setup.
+- Returning? Upload choices.
 - You choose what carries forward.
 
 Avoid consumer-facing internal language:
@@ -41,6 +43,8 @@ Avoid consumer-facing internal language:
 - viewport
 - widget
 - MirrorSeed
+- BrainScan
+- Mirror ID
 - sovereign
 - node of 1
 - cryptographic receipt
@@ -57,9 +61,9 @@ Avoid consumer-facing internal language:
 
 ## Accuracy Boundary
 
-BrainScan is preference calibration. It does not claim personality, diagnosis, or identity accuracy.
+Quick setup is preference calibration. It does not claim personality, diagnosis, or identity accuracy.
 
-Mirror ID is a portable preference file generated from explicit choices.
+Saved choices are a portable choices file generated from explicit user choices.
 
 ## Conversion Goal
 
@@ -67,5 +71,5 @@ The desired first-session outcome is:
 
 1. User sends or taps one real starting point.
 2. User sees one useful reflection.
-3. User optionally creates a Mirror ID.
+3. User optionally saves or uploads choices.
 4. User returns to reflection with those preferences active.

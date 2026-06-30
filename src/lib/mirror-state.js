@@ -143,6 +143,45 @@ export function saveBrainScan({ archetype, archetypeName, twin, twinName, streng
     });
 }
 
+/** Import a downloaded Active Mirror choices file. */
+export function importMirrorSettings(settings = {}) {
+    const seed = settings?.schema ? settings : settings?.mirrorSeed;
+    if (!seed || typeof seed !== 'object' || !String(seed.schema || '').startsWith('active-mirror-id/')) {
+        throw new Error('invalid_active_mirror_settings');
+    }
+
+    const createdAt = seed.createdAt || settings.createdAt || new Date().toISOString();
+    const preferences = Array.isArray(seed.preferences) ? seed.preferences : [];
+    const mirrorSeed = {
+        ...seed,
+        createdAt,
+    };
+    const blueprint = {
+        kind: 'saved-choices',
+        firstUse: seed.entry || null,
+        startingStyle: seed.styleHint?.label || null,
+        preferences,
+        mirrorSeed,
+        startPrompt: seed.firstReflection || '',
+        completedAt: createdAt,
+    };
+
+    return setState({
+        archetype: seed.styleHint?.archetype || null,
+        archetypeName: seed.styleHint?.label || null,
+        strengths: [],
+        blindSpots: seed.entry?.label ? [seed.entry.label] : [],
+        mirrorId: seed.id || null,
+        brainId: seed.brainId || null,
+        preferences,
+        mirrorSeed,
+        brainScanCompletedAt: createdAt,
+        blueprint,
+        intakeComplete: true,
+        intakeCompletedAt: createdAt,
+    });
+}
+
 /** Save intake draft (auto-save from Setup.jsx). */
 export function saveIntakeDraft(draft) {
     return setState({ intakeDraft: draft });

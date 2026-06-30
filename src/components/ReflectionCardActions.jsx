@@ -7,10 +7,10 @@ function reflectionText(mirror = {}) {
     return [
         'Active Mirror',
         '',
-        'Real question:',
+        'Ask this:',
         mirror.question || 'What is the useful question here?',
         '',
-        'One move:',
+        'Try this:',
         mirror.move || 'Take the smallest concrete next step.',
         '',
         'Private by default. Nothing saved unless accepted.',
@@ -119,14 +119,14 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                     </div>
 
                     <div className="rounded-[28px] border border-purple-300/20 bg-purple-300/[0.08] p-6">
-                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">Real question</div>
+                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">Ask this</div>
                         <div className="text-[30px] font-semibold leading-[1.16] tracking-[-0.04em] text-white">
                             {mirror.question || 'What is the useful question here?'}
                         </div>
                     </div>
 
                     <div className="mt-5 rounded-[28px] border border-emerald-300/15 bg-emerald-300/[0.08] p-6">
-                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">One move</div>
+                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">Try this</div>
                         <div className="text-[22px] leading-[1.45] text-zinc-100">
                             {mirror.move || 'Take the smallest concrete next step.'}
                         </div>

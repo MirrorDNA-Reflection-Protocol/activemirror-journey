@@ -90,14 +90,14 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         cues.push({
             kind: 'memory',
             tone: 'good',
-            label: 'Using what you chose to remember.',
+            label: 'Using your saved choices.',
         });
     }
     if (approvedDefault) {
         cues.push({
             kind: 'memory',
             tone: 'good',
-            label: 'Using what you chose to remember.',
+            label: 'Using your saved choices.',
         });
     }
     if (broadByLength || broadByPattern) {
