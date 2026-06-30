@@ -46,14 +46,10 @@ const bannedConsumerTerms = [
 
 const requiredTerms = [
     { pattern: /What do you want\?/i, label: 'front-door question' },
-    { pattern: /Not sure how to ask\? Start here\./i, label: 'outcome-first promise' },
-    { pattern: /Message Active Mirror/i, label: 'plain first-use helper' },
+    { pattern: /Start here/i, label: 'front-door start button' },
+    { pattern: /Already have ID\?/i, label: 'front-door upload button' },
+    { pattern: /Or type what you want/i, label: 'plain first-use helper' },
     { pattern: /Your thoughts stay yours/i, label: 'privacy choice promise' },
-    { pattern: /Get unstuck/i, label: 'starter: get unstuck' },
-    { pattern: /Make this sendable/i, label: 'starter: make sendable' },
-    { pattern: /Check my thinking/i, label: 'starter: check thinking' },
-    { pattern: /New here\? Quick setup/i, label: 'homepage: new user setup' },
-    { pattern: /Returning\? Upload choices/i, label: 'homepage: returning user upload' },
     { pattern: /Make it feel like yours\./i, label: 'setup: plain promise' },
     { pattern: /What do you need first\?/i, label: 'setup: entry question' },
     { pattern: /What helps first\?/i, label: 'setup: first-answer question' },

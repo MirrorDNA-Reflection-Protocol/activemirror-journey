@@ -24,7 +24,7 @@ import { copyText } from '../lib/sendable-actions';
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const SAMPLE_MIRROR = {
-    reflection: 'The work gets lighter when the next move is small enough to actually start.',
+    reflection: 'You do not need the perfect prompt. Say the messy thing, and we will make it usable.',
     question: 'What is the one thing you want to move first?',
     move: 'Write the messy version in one sentence and send it here.',
     visual: {
@@ -41,19 +41,9 @@ const SAMPLE_MIRROR = {
 
 const STARTERS = [
     {
-        label: 'Get unstuck',
-        prompt: 'I feel stuck and need one clear next move.',
+        label: 'Start here',
+        prompt: 'I feel stuck and need something useful to try.',
         tone: 'steady',
-    },
-    {
-        label: 'Make this sendable',
-        prompt: 'I need to turn messy thoughts into something I can send.',
-        tone: 'clear',
-    },
-    {
-        label: 'Check my thinking',
-        prompt: 'Challenge my thinking and show me the real next move.',
-        tone: 'challenge',
     },
 ];
 
@@ -66,6 +56,10 @@ const STARTER_TONES = {
         dot: 'bg-cyan-300 shadow-[0_0_16px_rgba(103,232,249,0.48)]',
         button: 'hover:border-cyan-200/35 hover:bg-cyan-200/[0.08]',
     },
+    focus: {
+        dot: 'bg-blue-300 shadow-[0_0_16px_rgba(147,197,253,0.48)]',
+        button: 'hover:border-blue-200/35 hover:bg-blue-200/[0.08]',
+    },
     challenge: {
         dot: 'bg-violet-300 shadow-[0_0_16px_rgba(196,181,253,0.50)]',
         button: 'hover:border-violet-200/35 hover:bg-violet-200/[0.08]',
@@ -73,7 +67,7 @@ const STARTER_TONES = {
 };
 
 const LOADING_MIRROR = {
-    reflection: 'Finding the next move.',
+    reflection: 'Finding the useful thing.',
     question: 'What matters here?',
     move: 'One moment.',
     receipt: {
@@ -200,14 +194,14 @@ function makeFollowUps(mirror = {}, loopCount = 0) {
 }
 
 function makeSendableDraft(mirror = {}) {
-    const question = mirror.question || 'What is the useful next move?';
+    const question = mirror.question || 'What is the useful thing to try?';
     const move = mirror.move || 'Take the smallest concrete next step.';
 
     return {
         title: 'Message draft',
         body: [
             `I am using this question: ${question}`,
-            `My next move is: ${move}`,
+            `What I will try: ${move}`,
             'I am keeping private details out unless they are needed.',
         ].filter(Boolean).join('\n'),
         checklist: [
@@ -835,6 +829,8 @@ export default function HomePage() {
             setImportStatus('Choices loaded.');
             trackEvent('saved_choices_uploaded', { page: 'home', source: 'file' });
             window.setTimeout(() => setImportStatus(''), 2200);
+            const startPrompt = imported.blueprint?.startPrompt || 'I already set this up. Help me start with something useful.';
+            reflect(startPrompt, 'uploaded_id');
         } catch {
             setImportStatus('That file did not work.');
             trackEvent('saved_choices_upload_failed', { page: 'home', source: 'file' });
@@ -901,27 +897,31 @@ export default function HomePage() {
                         <h1 className={`mx-auto max-w-xl break-words font-semibold leading-[0.98] tracking-normal text-white ${showMirror ? 'text-2xl sm:text-[3.1rem] lg:text-[3.65rem]' : 'text-[3.15rem] sm:text-[4.85rem]'}`}>
                             What do you want?
                         </h1>
-                        <p className={`${showMirror ? 'hidden sm:block' : 'block'} mx-auto mt-4 max-w-[35rem] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8`}>
-                            Not sure how to ask? Start here.
-                        </p>
-
                         {!showMirror ? (
-                            <div className="mx-auto mt-7 grid max-w-2xl gap-2 sm:grid-cols-3">
-                                {STARTERS.map((starter) => {
-                                    const tone = STARTER_TONES[starter.tone] || STARTER_TONES.challenge;
-                                    return (
-                                        <button
-                                            key={starter.label}
-                                            type="button"
-                                            onClick={() => chooseStarter(starter)}
-                                            disabled={busy}
-                                            className={`group flex min-h-14 items-center gap-3 rounded-[1.15rem] border border-white/10 bg-black/24 px-3 text-left text-sm font-semibold leading-5 text-zinc-300 transition hover:-translate-y-0.5 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${tone.button}`}
-                                        >
-                                            <span className={`h-2 w-2 shrink-0 rounded-full ${tone.dot}`} />
-                                            <span>{starter.label}</span>
-                                        </button>
-                                    );
-                                })}
+                            <div className="mx-auto mt-7 flex max-w-2xl flex-col items-center justify-center gap-3 sm:flex-row">
+                                <Link
+                                    to="/id"
+                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_primary' })}
+                                    className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-500 px-7 text-base font-bold text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] transition hover:scale-[1.015] sm:w-auto"
+                                >
+                                    Start here
+                                    <ArrowRight size={17} />
+                                </Link>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="application/json,.json"
+                                    onChange={uploadSavedChoices}
+                                    className="hidden"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-7 text-base font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white sm:w-auto"
+                                >
+                                    <Upload size={16} />
+                                    Already have ID?
+                                </button>
                             </div>
                         ) : null}
 
@@ -932,7 +932,7 @@ export default function HomePage() {
                                     rows={showMirror ? 1 : 3}
                                     value={text}
                                     maxLength={1000}
-                                    placeholder="Message Active Mirror..."
+                                    placeholder="Or type what you want..."
                                     onChange={(event) => setText(event.target.value)}
                                     onKeyDown={(event) => {
                                         if (event.key === 'Enter' && !event.shiftKey) {
@@ -950,13 +950,13 @@ export default function HomePage() {
                                         if (!canSubmit && !busy) inputRef.current?.focus();
                                     }}
                                     className={`${showMirror ? 'sm:min-h-14' : 'sm:min-h-16'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r px-5 text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 ${ctaClass}`}
-                                    aria-label="Get my next move"
+                                    aria-label="Send"
                                 >
                                     {busy ? (
                                         <Sparkles size={18} className="animate-pulse" />
                                     ) : (
                                         <>
-                                            <span>Reflect</span>
+                                            <span>Send</span>
                                             <ArrowUp size={17} />
                                         </>
                                     )}
@@ -979,33 +979,6 @@ export default function HomePage() {
                                     <SlidersHorizontal size={13} />
                                     Saved: {mirrorDefaults.length}
                                 </button>
-                            ) : null}
-                            {!showMirror ? (
-                                <>
-                                    <Link
-                                        to="/id"
-                                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'quick_setup_home_chip' })}
-                                        className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200/15 bg-cyan-200/[0.055] px-2.5 py-1.5 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/35 hover:text-white"
-                                    >
-                                        New here? Quick setup
-                                        <ArrowRight size={13} />
-                                    </Link>
-                                    <input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept="application/json,.json"
-                                        onChange={uploadSavedChoices}
-                                        className="hidden"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs font-semibold text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
-                                    >
-                                        <Upload size={13} />
-                                        Returning? Upload choices
-                                    </button>
-                                </>
                             ) : null}
                             {importStatus ? <span className="font-semibold text-emerald-100">{importStatus}</span> : null}
                             <LocalSenseLine sense={typingSense} />
