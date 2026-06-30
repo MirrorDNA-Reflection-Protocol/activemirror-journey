@@ -20,13 +20,13 @@ function classify(intent = '') {
     if (/\b(decide|decision|choice|choos(?:e|ing)|between|whether|worth pursuing|pursue|do not know if|don't know if|should i|should we|should\b.*\bor\b|do i\b.*\bor\b|or switch|commit|quit|stay or leave|leave or stay)\b/.test(text)) {
         return 'decision';
     }
-    if (/\b(leave my browser|leave the browser|personal details|personal history|privacy|private|sensitive|secret\w*|confidential|client|notes|send|sendable|shar\w*|expos\w*|reveal\w*|leak\w*|saved|swallow|safe|boundary)\b/.test(text)) {
+    if (/\b(leave my browser|leave the browser|personal details|personal history|privacy|private|sensitive|secret\w*|confidential|client|private notes|sensitive notes|send|sendable|shar\w*|expos\w*|reveal\w*|leak\w*|saved|swallow|safe|boundary)\b/.test(text)) {
         return 'private_output';
     }
     if (/\b(hallucinat\w*|overthink\w*|overwhelmed|scattered|spiral\w*|circles|too much|lost|losing the thread|too many ideas|cannot pick|can't pick|what else|lock\w* the next thing|less clear|feels urgent|feels obvious|adding tools|anxious|panic|tired|drift|drifting|fast-moving|nonlinear)\b/.test(text) || /\b(thoughts?|mind)\b.*\b(moving fast|too fast|racing|all over)\b/.test(text) || /\b(i feel|i am|i'm|we are|we're)\b.*\b(confused|stuck|lost)\b/.test(text)) {
         return 'reset';
     }
-    if (/\b(site|page|product|homepage|copy|marketing|sales|sell|ads?|launch|positioning|offer|user|customer|demo|public|proof|reflection|receipts?|systems?)\b/.test(text)) {
+    if (/\b(site|page|product|homepage|copy|marketing|sales|sell|ads?|positioning|offer|user|customer|demo|public|proof|reflection|receipts?|systems?)\b/.test(text)) {
         return 'launch_clarity';
     }
     if (/\b(overwhelmed|scattered|confused|lost|losing the thread|too many ideas|cannot pick|can't pick|what else|lock\w* the next thing|less clear|feels urgent|feels obvious|adding tools|stuck|spiral\w*|circles|loop|too much|drift|drifting|anxious|panic|tired|fast-moving|nonlinear)\b/.test(text) || /\b(thoughts?|mind)\b.*\b(moving fast|too fast|racing|all over)\b/.test(text)) {
@@ -55,9 +55,9 @@ const MIRRORS = {
         move: 'Write one promise and one button label, then hide anything that competes with them.',
     },
     decision: {
-        reflection: 'This is not ready to be solved by preference. One option needs a signal strong enough to earn the decision.',
-        question: 'What signal would make one option clearly earned?',
-        move: 'Name the signal, then run the smallest test that could produce it today.',
+        reflection: 'This should not be solved by preference yet. You need a real-world sign that makes one option clearly better.',
+        question: 'What sign would make one option clearly better?',
+        move: 'Name the sign, then run the smallest test that could produce it today.',
     },
     reset: {
         reflection: 'You are carrying too many open loops as one problem. The relief comes from moving one loop, not solving the whole pile.',
@@ -72,7 +72,7 @@ const MIRRORS = {
     general: {
         reflection: 'The thought is staying big because the next move would make it testable. Shrink it until it can meet the real world today.',
         question: 'What is the smallest version of this that could be tested today?',
-        move: 'Write the testable version in one sentence, then show it to one person or one page.',
+        move: 'Write the testable version in one sentence, then show it to one person.',
     },
 };
 

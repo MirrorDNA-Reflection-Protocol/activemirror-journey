@@ -12,6 +12,7 @@ const scanFiles = [
     'src/pages/DeviceExperience.jsx',
     'src/pages/Privacy.jsx',
     'src/pages/Terms.jsx',
+    'src/components/MirrorFeedback.jsx',
     'src/components/ReflectionCardActions.jsx',
 ];
 
@@ -58,11 +59,10 @@ const requiredTerms = [
     { pattern: /Start chat/i, label: 'setup: start chat' },
     { pattern: /Saved in this browser/i, label: 'setup: saved confirmation' },
     { pattern: /Download ID/i, label: 'setup: portable download' },
-    { pattern: /Ask this/i, label: 'response label: ask this' },
-    { pattern: /Try this/i, label: 'response label: try this' },
-    { pattern: /What else\?/i, label: 'first-use follow-up: what else' },
-    { pattern: /Challenge me/i, label: 'first-use follow-up: challenge' },
-    { pattern: /Make it sendable/i, label: 'first-use follow-up: sendable' },
+    { pattern: /Helpful\?/i, label: 'quiet feedback line' },
+    { pattern: /Another angle/i, label: 'first-use follow-up: another angle' },
+    { pattern: /Push back/i, label: 'first-use follow-up: push back' },
+    { pattern: /Draft it/i, label: 'first-use follow-up: draft it' },
     { pattern: /Pick the move/i, label: 'loop brake follow-up' },
 ];
 

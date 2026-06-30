@@ -163,7 +163,7 @@ function makeFollowUps(mirror = {}, loopCount = 0) {
                 intent: `Stop expanding. Synthesize this into the one move I should do now: ${mirror.move}`,
             },
             {
-                label: 'Make it sendable',
+                label: 'Draft it',
                 icon: PenLine,
                 action: 'draft',
                 intent: 'Create a sendable draft from this reflection.',
@@ -173,19 +173,19 @@ function makeFollowUps(mirror = {}, loopCount = 0) {
 
     return [
         mirror.move && {
-            label: 'What else?',
+            label: 'Another angle',
             icon: Sparkles,
             action: 'reflect',
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
         },
         mirror.question && {
-            label: 'Challenge me',
+            label: 'Push back',
             icon: ArrowRight,
             action: 'reflect',
             intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${mirror.question}`,
         },
         {
-            label: 'Make it sendable',
+            label: 'Draft it',
             icon: PenLine,
             action: 'draft',
             intent: 'Create a sendable draft from this reflection.',
@@ -303,22 +303,21 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
     }
 
     return (
-        <div className="mt-5 border-t border-white/10 pt-4">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-100/70">
-                Try this
+        <div className="mt-5 grid gap-3">
+            <div className="rounded-[1.45rem] border border-emerald-200/18 bg-emerald-200/[0.07] p-3.5 shadow-[0_0_34px_rgba(16,185,129,0.08)]">
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                    <div className="text-[1.05rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
+                    <button
+                        type="button"
+                        onClick={copyMove}
+                        className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-black/18 px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.10]"
+                    >
+                        {copied ? <Check size={15} /> : <Copy size={15} />}
+                        {copied ? 'Copied' : 'Copy'}
+                    </button>
+                </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                <div className="text-[1.05rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
-                <button
-                    type="button"
-                    onClick={copyMove}
-                    className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.10] px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.16]"
-                >
-                    {copied ? <Check size={15} /> : <Copy size={15} />}
-                    {copied ? 'Copied' : 'Copy'}
-                </button>
-            </div>
-            <div className="mt-3 flex justify-start">
+            <div className="flex justify-start">
                 <button
                     type="button"
                     onClick={() => onRemember?.(mirror)}
@@ -353,11 +352,10 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#101014]/78 p-4 shadow-[0_0_62px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
                     <ReflectionGlow mirror={mirror} />
-                    <p className="mt-4 text-[1.06rem] leading-7 text-zinc-100 sm:text-[1.14rem]">
+                    <p className="mt-4 text-[1.08rem] leading-7 text-zinc-100 sm:text-[1.18rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-5 rounded-2xl bg-white/[0.035] px-4 py-3 text-sm leading-6 text-zinc-300 sm:text-[0.95rem]">
-                        <span className="font-semibold text-violet-100/85">Ask this: </span>
+                    <div className="mt-5 rounded-[1.35rem] border border-violet-200/12 bg-white/[0.035] px-4 py-3 text-[0.98rem] font-medium leading-7 text-violet-50/90">
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
@@ -547,7 +545,7 @@ function MemoryDrawer({
                             >
                                 <div className="mb-5 flex items-center justify-between gap-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
                                     <span>Card {activeCardIndex + 1} of {items.length}</span>
-                                    <span>{cardFlipped ? 'Try this' : 'Pattern'}</span>
+                                    <span>{cardFlipped ? 'Move' : 'Pattern'}</span>
                                 </div>
                                 <div className="flex min-h-40 items-center">
                                     <p className={`text-2xl font-semibold leading-tight tracking-[-0.04em] ${cardFlipped ? 'text-emerald-50' : 'text-white'} sm:text-3xl`}>
@@ -927,7 +925,7 @@ export default function HomePage() {
                         ) : null}
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
-                            <div className="grid gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                            <div className={`grid gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl ${showMirror ? 'grid-cols-[minmax(0,1fr)_auto] items-end' : 'sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end'}`}>
                                 <textarea
                                     ref={inputRef}
                                     rows={showMirror ? 1 : 3}
@@ -941,7 +939,7 @@ export default function HomePage() {
                                             submit(event);
                                         }
                                     }}
-                                    className={`${showMirror ? 'min-h-14' : 'min-h-24'} max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/30`}
+                                    className={`${showMirror ? 'min-h-12' : 'min-h-24'} max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/30`}
                                     style={{ overflowWrap: 'anywhere' }}
                                 />
                                 <button
@@ -950,14 +948,14 @@ export default function HomePage() {
                                     onClick={() => {
                                         if (!canSubmit && !busy) inputRef.current?.focus();
                                     }}
-                                    className={`${showMirror ? 'sm:min-h-14' : 'sm:min-h-16'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r px-5 text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 ${ctaClass}`}
+                                    className={`${showMirror ? 'min-h-12 w-12 px-0 sm:min-h-14 sm:w-auto sm:px-5' : 'sm:min-h-16 px-5'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 ${ctaClass}`}
                                     aria-label="Send"
                                 >
                                     {busy ? (
                                         <Sparkles size={18} className="animate-pulse" />
                                     ) : (
                                         <>
-                                            <span>Send</span>
+                                            <span className={showMirror ? 'hidden sm:inline' : ''}>Send</span>
                                             <ArrowUp size={17} />
                                         </>
                                     )}
@@ -965,7 +963,7 @@ export default function HomePage() {
                             </div>
                         </form>
 
-                        <div className={`mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500 ${showMirror ? '' : 'justify-center'}`}>
+                        <div className={`mt-3 flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
                             <span>Your thoughts stay yours.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />

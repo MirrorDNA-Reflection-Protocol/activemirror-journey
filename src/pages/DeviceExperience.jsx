@@ -158,7 +158,7 @@ function makeSendableArtifact(mirror = {}) {
             '',
             `I narrowed this to: ${question}`,
             '',
-            `Try this: ${move}`,
+            `Next move: ${move}`,
         ].join('\n'),
         checks: [
             'Remove anything private before sending.',

@@ -16,17 +16,17 @@ function repairOptions(result = {}) {
     return [
         {
             id: 'smaller',
-            label: 'What else?',
+            label: 'Another angle',
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${move}`,
         },
         {
             id: 'sharper',
-            label: 'Challenge me',
+            label: 'Push back',
             intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${question}`,
         },
         {
             id: 'different',
-            label: 'Make it sendable',
+            label: 'Draft it',
             intent: 'Create a sendable draft from this reflection.',
         },
     ];
@@ -64,12 +64,9 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
     }
 
     return (
-        <div className={`max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-black/20 px-4 py-3 ${className}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <div className="text-xs font-semibold text-zinc-300">Did this help?</div>
-                    {selected ? <div className="mt-1 text-[11px] text-zinc-500">Thanks. No message text was saved.</div> : null}
-                </div>
+        <div className={`max-w-[46rem] rounded-[1.25rem] px-1 py-1 ${className}`}>
+            <div className="flex flex-wrap items-center gap-2">
+                <div className="mr-1 text-xs font-medium text-zinc-500">Helpful?</div>
                 <div className="flex flex-wrap gap-2">
                     {FEEDBACK_OPTIONS.map((option) => {
                         const active = selected === option.id;
@@ -83,7 +80,7 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
                                 className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                                     active
                                         ? 'border-cyan-200/45 bg-cyan-300/[0.14] text-cyan-100'
-                                        : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white'
+                                        : 'border-white/10 bg-white/[0.025] text-zinc-500 hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white'
                                 }`}
                             >
                                 {option.label}
@@ -91,9 +88,10 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
                         );
                     })}
                 </div>
+                {selected ? <div className="text-[11px] text-zinc-600">No message text saved.</div> : null}
             </div>
             {showRepair ? (
-                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
+                <div className="mt-2 flex flex-wrap gap-2">
                     {repairOptions(result).map((option) => (
                         <button
                             key={option.id}
