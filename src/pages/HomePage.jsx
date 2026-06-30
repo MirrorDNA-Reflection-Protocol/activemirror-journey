@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Check, Copy, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
@@ -19,7 +19,6 @@ import {
 } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 import { copyText } from '../lib/sendable-actions';
-import privateChatGlow from '../assets/home/active-mirror-private-chat-glow.jpg';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
@@ -42,22 +41,40 @@ const SAMPLE_MIRROR = {
 const STARTERS = [
     {
         label: 'Get unstuck',
-        prompt: 'I feel stuck and need one honest next move.',
+        prompt: 'I feel stuck and need one clear next move.',
+        tone: 'steady',
     },
     {
         label: 'Make this sendable',
         prompt: 'I need to turn messy thoughts into something I can send.',
+        tone: 'clear',
     },
     {
         label: 'Check my thinking',
         prompt: 'Challenge my thinking and show me the real next move.',
+        tone: 'challenge',
     },
 ];
 
+const STARTER_TONES = {
+    steady: {
+        dot: 'bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.52)]',
+        button: 'hover:border-emerald-200/35 hover:bg-emerald-200/[0.08]',
+    },
+    clear: {
+        dot: 'bg-cyan-300 shadow-[0_0_16px_rgba(103,232,249,0.48)]',
+        button: 'hover:border-cyan-200/35 hover:bg-cyan-200/[0.08]',
+    },
+    challenge: {
+        dot: 'bg-violet-300 shadow-[0_0_16px_rgba(196,181,253,0.50)]',
+        button: 'hover:border-violet-200/35 hover:bg-violet-200/[0.08]',
+    },
+};
+
 const LOADING_MIRROR = {
-    reflection: 'Reading the stuck point once. Active Mirror is looking for the real question underneath it.',
-    question: 'What is the real question here?',
-    move: 'Hold the thread for a moment; the mirror is shaping one move.',
+    reflection: 'Finding the next move.',
+    question: 'What matters here?',
+    move: 'One moment.',
     receipt: {
         context_used: 'The sentence you just sent.',
         context_excluded: 'Private context stays out unless approved.',
@@ -78,9 +95,9 @@ function makeEcosystemResult(intent) {
         kind: 'help',
         intent,
         mirror: {
-            reflection: 'Active Mirror is for the moment when regular AI gives you more words but you still do not know what to do. Start with one real thing; it will help you find the next move.',
-            question: 'What is the one thing you want help moving right now?',
-            move: 'Type the stuck point in one sentence. Leave out names, secrets, and private details until they are actually needed.',
+            reflection: 'Start with the thing in front of you.',
+            question: 'What do you want help moving?',
+            move: 'Type it in one sentence. Leave private details out for now.',
             receipt: {
                 context_used: 'Your question about how Active Mirror helps.',
                 context_excluded: 'No private details were needed.',
@@ -374,47 +391,28 @@ function LoadingPanel() {
     );
 }
 
-function IdleCanvas({ onChoose }) {
+function ReflectionField({ awake = false }) {
     return (
-        <div className="relative hidden min-h-[33rem] overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#0d0d12]/72 p-5 shadow-[0_0_90px_rgba(124,58,237,0.13)] ring-1 ring-white/[0.04] backdrop-blur-2xl md:block">
-            <div className="pointer-events-none absolute inset-0 opacity-55" aria-hidden="true">
-                <img src={privateChatGlow} alt="" className="h-full w-full object-cover" loading="eager" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_24%,rgba(5,5,7,0.18),rgba(5,5,7,0.78)_58%,#050507_100%)]" />
-            </div>
-            <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/50 to-transparent" />
-            <div className="relative z-10 flex h-full min-h-[29rem] flex-col justify-between">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-xs font-medium text-zinc-300">
-                        <Lock size={13} />
-                        Private first
-                    </div>
-                    <div className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.7)]" />
-                </div>
-
-                <div className="mx-auto grid w-full max-w-md gap-3">
-                    <div className="rounded-[1.7rem] border border-white/10 bg-black/38 p-4 shadow-[0_0_60px_rgba(0,0,0,0.24)] backdrop-blur-md">
-                        <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-100/70">First turn</div>
-                        <div className="text-xl font-semibold leading-tight tracking-normal text-white">One honest next move.</div>
-                        <div className="mt-2 text-sm leading-6 text-zinc-400">No wall of text. No quiet memory grab. No agreeable nonsense.</div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                        {STARTERS.map((starter) => (
-                            <button
-                                key={starter.label}
-                                type="button"
-                                onClick={() => onChoose?.(starter)}
-                                className="min-h-20 rounded-[1.35rem] border border-white/10 bg-white/[0.055] px-3 text-left text-sm font-semibold leading-5 text-zinc-200 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.08] hover:text-white"
-                            >
-                                {starter.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="rounded-[1.35rem] border border-cyan-200/10 bg-cyan-200/[0.055] p-3 text-sm leading-6 text-cyan-50/90">
-                    The first answer should feel different. Type something real.
-                </div>
-            </div>
+        <div className={`reflection-field ${awake ? 'reflection-field--awake' : ''}`} aria-hidden="true">
+            <svg className="reflection-field__svg" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <linearGradient id="mirror-line-a" x1="0" x2="1" y1="0" y2="1">
+                        <stop offset="0%" stopColor="rgba(34,211,238,0)" />
+                        <stop offset="42%" stopColor="rgba(34,211,238,0.38)" />
+                        <stop offset="100%" stopColor="rgba(168,85,247,0)" />
+                    </linearGradient>
+                    <linearGradient id="mirror-line-b" x1="1" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+                        <stop offset="48%" stopColor="rgba(232,221,255,0.28)" />
+                        <stop offset="100%" stopColor="rgba(110,231,183,0)" />
+                    </linearGradient>
+                </defs>
+                <path className="reflection-field__arc reflection-field__arc--a" d="M174 448 C 340 196, 840 122, 1046 390" />
+                <path className="reflection-field__arc reflection-field__arc--b" d="M152 520 C 388 330, 788 292, 1070 482" />
+                <path className="reflection-field__arc reflection-field__arc--c" d="M276 610 C 492 428, 706 398, 936 576" />
+                <ellipse className="reflection-field__lens" cx="600" cy="414" rx="342" ry="118" />
+            </svg>
+            <div className="reflection-field__sheen" />
         </div>
     );
 }
@@ -679,7 +677,9 @@ function MemoryDrawer({
 }
 
 export default function HomePage() {
+    const location = useLocation();
     const inputRef = useRef(null);
+    const bootPromptRef = useRef(false);
     const [seed] = useState(() => {
         const profile = getArchetype();
         const blueprint = getBlueprint();
@@ -705,6 +705,14 @@ export default function HomePage() {
     useEffect(() => {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
     }, []);
+
+    useEffect(() => {
+        const startPrompt = location.state?.startPrompt;
+        if (bootPromptRef.current || typeof startPrompt !== 'string' || startPrompt.trim().length < 4) return;
+        bootPromptRef.current = true;
+        reflect(startPrompt, 'mirror_id');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }, [location.state]);
 
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
@@ -821,11 +829,16 @@ export default function HomePage() {
 
     const showMirror = Boolean(result || busy || lastIntent);
     const canSubmit = text.trim().length >= 4;
+    const fieldAwake = showMirror || text.trim().length > 0;
+    const ctaClass = canSubmit && !busy
+        ? 'from-emerald-400 via-cyan-400 to-violet-500 text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] hover:scale-[1.015]'
+        : 'from-zinc-800 to-zinc-700 text-zinc-500 shadow-none';
 
     return (
-        <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-purple-500/30">
+        <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-emerald-300/25">
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_24%_10%,rgba(126,87,255,0.20),transparent_34%),radial-gradient(circle_at_92%_84%,rgba(34,211,238,0.10),transparent_32%),#050507]" />
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:56px_56px] opacity-18" />
+            <ReflectionField awake={fieldAwake} />
 
             <header className="relative z-10 px-4 py-4">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
@@ -834,7 +847,7 @@ export default function HomePage() {
                         <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <Link to="/start" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-violet-300/30 hover:text-white sm:inline-flex">
+                        <Link to="/id" className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-violet-300/30 hover:text-white sm:inline-flex">
                             Personalize
                         </Link>
                         <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
@@ -844,48 +857,56 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto grid min-h-[calc(100dvh-88px)] w-full max-w-6xl items-center gap-4 px-4 pb-5 pt-2 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-6 lg:pb-8">
-                <section className={`relative overflow-hidden rounded-[2.15rem] border border-white/10 bg-white/[0.048] shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl ${showMirror ? 'p-3 sm:p-5 lg:p-6' : 'p-4 sm:p-6 lg:p-7'}`}>
-                    <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
-                    <div className="pointer-events-none absolute -left-24 top-12 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-16 right-8 h-48 w-48 rounded-full bg-cyan-300/8 blur-3xl" />
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-88px)] w-full max-w-3xl flex-col justify-center gap-4 px-4 pb-5 pt-8 lg:pb-8">
+                <section className={`relative overflow-hidden ${showMirror ? 'rounded-[2.15rem] border border-white/10 bg-white/[0.048] p-3 shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-5 lg:p-6' : 'px-0 py-8 sm:py-10'}`}>
+                    {showMirror ? (
+                        <>
+                            <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
+                            <div className="pointer-events-none absolute -left-24 top-12 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+                            <div className="pointer-events-none absolute -bottom-16 right-8 h-48 w-48 rounded-full bg-cyan-300/8 blur-3xl" />
+                        </>
+                    ) : null}
 
-                    <div className="relative z-10">
-                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'mb-7 grid'} h-14 w-14 place-items-center rounded-[1.25rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.16)]`}>
+                    <div className={`relative z-10 ${showMirror ? '' : 'text-center'}`}>
+                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'mx-auto mb-7 grid'} h-14 w-14 place-items-center rounded-[1.25rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.16)]`}>
                             <MirrorLogo />
                         </div>
 
-                        <h1 className={`max-w-xl break-words font-semibold leading-[0.98] tracking-normal text-white ${showMirror ? 'text-2xl sm:text-[3.1rem] lg:text-[3.65rem]' : 'text-[2.95rem] sm:text-[4.2rem] lg:text-[4.75rem]'}`}>
-                            What do you want to move?
+                        <h1 className={`mx-auto max-w-xl break-words font-semibold leading-[0.98] tracking-normal text-white ${showMirror ? 'text-2xl sm:text-[3.1rem] lg:text-[3.65rem]' : 'text-[3.15rem] sm:text-[4.85rem]'}`}>
+                            What do you want?
                         </h1>
-                        <p className={`${showMirror ? 'hidden sm:block' : 'block'} mt-4 max-w-[31rem] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8`}>
-                            Say it messy. Get one honest next move.
+                        <p className={`${showMirror ? 'hidden sm:block' : 'block'} mx-auto mt-4 max-w-[35rem] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8`}>
+                            Not sure how to ask? Start here.
                         </p>
 
                         {!showMirror ? (
-                            <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                                {STARTERS.map((starter) => (
-                                    <button
-                                        key={starter.label}
-                                        type="button"
-                                        onClick={() => chooseStarter(starter)}
-                                        disabled={busy}
-                                        className="min-h-14 rounded-[1.15rem] border border-white/10 bg-black/24 px-3 text-left text-sm font-semibold leading-5 text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                        {starter.label}
-                                    </button>
-                                ))}
+                            <div className="mx-auto mt-7 grid max-w-2xl gap-2 sm:grid-cols-3">
+                                {STARTERS.map((starter) => {
+                                    const tone = STARTER_TONES[starter.tone] || STARTER_TONES.challenge;
+                                    return (
+                                        <button
+                                            key={starter.label}
+                                            type="button"
+                                            onClick={() => chooseStarter(starter)}
+                                            disabled={busy}
+                                            className={`group flex min-h-14 items-center gap-3 rounded-[1.15rem] border border-white/10 bg-black/24 px-3 text-left text-sm font-semibold leading-5 text-zinc-300 transition hover:-translate-y-0.5 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${tone.button}`}
+                                        >
+                                            <span className={`h-2 w-2 shrink-0 rounded-full ${tone.dot}`} />
+                                            <span>{starter.label}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         ) : null}
 
-                        <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mt-4'} grid gap-2`}>
-                            <div className="grid gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                        <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
+                            <div className="grid gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                                 <textarea
                                     ref={inputRef}
                                     rows={showMirror ? 1 : 3}
                                     value={text}
                                     maxLength={1000}
-                                    placeholder="Type one real thing..."
+                                    placeholder="Message Active Mirror..."
                                     onChange={(event) => setText(event.target.value)}
                                     onKeyDown={(event) => {
                                         if (event.key === 'Enter' && !event.shiftKey) {
@@ -902,7 +923,7 @@ export default function HomePage() {
                                     onClick={() => {
                                         if (!canSubmit && !busy) inputRef.current?.focus();
                                     }}
-                                    className={`${showMirror ? 'sm:min-h-14' : 'sm:min-h-16'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-bold text-white shadow-[0_0_28px_rgba(168,85,247,0.30)] transition hover:scale-[1.015] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100`}
+                                    className={`${showMirror ? 'sm:min-h-14' : 'sm:min-h-16'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r px-5 text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 ${ctaClass}`}
                                     aria-label="Get my next move"
                                 >
                                     {busy ? (
@@ -917,11 +938,11 @@ export default function HomePage() {
                             </div>
                         </form>
 
-                        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
-                            <span>Private first.</span>
+                        <div className={`mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500 ${showMirror ? '' : 'justify-center'}`}>
+                            <span>Your thoughts stay yours.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
-                                Nothing saved unless you choose.
+                                You choose what carries forward.
                             </span>
                             {mirrorDefaults.length > 0 ? (
                                 <button
@@ -939,8 +960,8 @@ export default function HomePage() {
                     </div>
                 </section>
 
-                <section className="grid gap-3">
-                    {showMirror ? (
+                {showMirror ? (
+                    <section className="grid gap-3">
                         <>
                             <MirrorResult
                                 result={result}
@@ -984,7 +1005,7 @@ export default function HomePage() {
                                             );
                                         })}
                                         <Link
-                                            to="/start"
+                                            to="/id"
                                             onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'personal_setup_chip' })}
                                             className="inline-flex min-h-10 items-center gap-2 rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3.5 py-2 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.09]"
                                         >
@@ -1000,14 +1021,11 @@ export default function HomePage() {
                             ) : null}
                             <SendableDraft draft={sendableDraft} />
                         </>
-                    ) : (
-                        <IdleCanvas onChoose={chooseStarter} />
-                    )}
-                </section>
+                    </section>
+                ) : null}
             </main>
 
-            <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-                <div>Private first. Sharing and memory are your choice.</div>
+            <div className="relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs text-zinc-500 sm:justify-end">
                 <div className="flex flex-wrap gap-3">
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>

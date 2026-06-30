@@ -110,7 +110,7 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                             </div>
                             <div>
                                 <div className="text-[20px] font-semibold tracking-[-0.02em]">Active Mirror</div>
-                                <div className="text-[13px] text-zinc-500">one honest next move</div>
+                                <div className="text-[13px] text-zinc-500">one clear move</div>
                             </div>
                         </div>
                         <div className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-4 py-2 text-[13px] font-semibold text-emerald-100">

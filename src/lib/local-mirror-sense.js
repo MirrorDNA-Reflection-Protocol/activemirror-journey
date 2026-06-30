@@ -71,6 +71,8 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
     const best = scoredDefaults[0];
     const approvedDefault = best && best.score >= 0.24 ? best.item : null;
     const setupChoices = [
+        ...(Array.isArray(seed?.preferences) ? seed.preferences.map((item) => item.answer) : []),
+        ...(Array.isArray(seed?.blueprint?.preferences) ? seed.blueprint.preferences.map((item) => item.answer) : []),
         seed?.blueprint?.help?.label,
         seed?.blueprint?.boundary?.label,
         seed?.blueprint?.directness?.label || seed?.blueprint?.memory?.label,
@@ -79,7 +81,7 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         ? [
             seed.archetypeName || seed.archetype || '',
             seed.strengths?.length ? seed.strengths.slice(0, 2).join(', ') : '',
-            setupChoices.length ? `choices: ${setupChoices.join(', ')}` : '',
+            setupChoices.length ? `choices: ${setupChoices.slice(0, 5).join(', ')}` : '',
         ].filter(Boolean).join('; ')
         : '';
 

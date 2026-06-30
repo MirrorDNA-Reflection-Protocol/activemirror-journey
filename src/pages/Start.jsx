@@ -1,105 +1,106 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, Download, Lock, MessageCircle, RotateCcw, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Download, Lock, RotateCcw, Sparkles } from 'lucide-react';
 import MirrorSig from '../components/MirrorSig';
 import { FALLBACK_ARCHETYPES } from '../lib/brainFallback';
 import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
 
-const SETUP_STEPS = [
+const ENTRY_CHOICES = [
     {
-        id: 'help',
-        question: 'How should this help you?',
-        helper: 'Pick what you need most. You can change it later.',
-        icon: MessageCircle,
+        id: 'stuck',
+        label: 'I feel stuck',
+        prompt: 'Help me name the real stuck point and choose one useful next move.',
+    },
+    {
+        id: 'decision',
+        label: 'I need a decision',
+        prompt: 'Help me see the tradeoff clearly and choose one useful next move.',
+    },
+    {
+        id: 'make',
+        label: 'I need to make something',
+        prompt: 'Help me turn messy context into something clear I can use.',
+    },
+    {
+        id: 'pushback',
+        label: 'I need pushback',
+        prompt: 'Challenge the weak part of my thinking without over-explaining.',
+    },
+];
+
+const SCAN_QUESTIONS = [
+    {
+        id: 'q1',
+        question: 'What do you want from the first answer?',
         options: [
-            {
-                id: 'decide',
-                label: 'Help me decide',
-                description: 'Show the tradeoff and the next move.',
-                prompt: 'Help me see the real tradeoff and choose one useful next move.',
-                archetype: 'strategist',
-                strength: 'Decision clarity',
-            },
-            {
-                id: 'write',
-                label: 'Help me write',
-                description: 'Turn a rough thought into something I can use.',
-                prompt: 'Help me turn rough context into something clear I can use.',
-                archetype: 'builder',
-                strength: 'Clear output',
-            },
-            {
-                id: 'clear',
-                label: 'Help me think clearly',
-                description: 'Find the real question and keep me moving.',
-                prompt: 'Help me find the real question and keep the answer useful.',
-                archetype: 'analyst',
-                strength: 'Clear thinking',
-            },
+            { label: 'One next step', archetype: 'builder', preference: 'first_answer' },
+            { label: 'A sharper question', archetype: 'strategist', preference: 'first_answer' },
+            { label: 'A calm reality check', archetype: 'analyst', preference: 'first_answer' },
+            { label: 'Better words for the thought', archetype: 'connector', preference: 'first_answer' },
         ],
     },
     {
-        id: 'boundary',
+        id: 'q2',
         question: 'What should it avoid?',
-        helper: 'Choose the boundary that matters most.',
-        icon: ShieldCheck,
         options: [
-            {
-                id: 'flattery',
-                label: 'Do not just agree with me',
-                description: 'Challenge weak logic without being harsh.',
-                prompt: 'Do not flatter me or agree just to be agreeable.',
-                strength: 'Honest pushback',
-            },
-            {
-                id: 'too_much',
-                label: 'Do not over-explain',
-                description: 'Keep it short when I am trying to move.',
-                prompt: 'Avoid long explanations when one next move is enough.',
-                strength: 'Less overwhelm',
-            },
-            {
-                id: 'private',
-                label: 'Do not use private details',
-                description: 'Leave names, secrets, and sensitive context out unless I add them.',
-                prompt: 'Avoid names, secrets, and sensitive details unless I explicitly add them.',
-                strength: 'Privacy first',
-            },
+            { label: 'Too much text', archetype: 'builder', preference: 'avoid' },
+            { label: 'Easy agreement', archetype: 'analyst', preference: 'avoid' },
+            { label: 'Using private details too soon', archetype: 'scholar', preference: 'avoid' },
+            { label: 'Generic advice', archetype: 'connector', preference: 'avoid' },
         ],
     },
     {
-        id: 'directness',
-        question: 'How direct should it be?',
-        helper: 'Choose the tone that makes you move.',
-        icon: Lock,
+        id: 'q3',
+        question: 'How should pushback feel?',
         options: [
-            {
-                id: 'gentle',
-                label: 'Gentle',
-                description: 'Start soft, then give me one step.',
-                prompt: 'Be gentle, then give me one concrete next move.',
-                strength: 'Gentle clarity',
-            },
-            {
-                id: 'balanced',
-                label: 'Balanced',
-                description: 'Be kind, clear, and practical.',
-                prompt: 'Be kind, clear, practical, and honest.',
-                strength: 'Balanced reflection',
-            },
-            {
-                id: 'direct',
-                label: 'Very direct',
-                description: 'Say the hard thing plainly, then give me the move.',
-                prompt: 'Be very direct without being cruel. Say the hard thing plainly, then give me one next move.',
-                strength: 'Direct truth',
-            },
+            { label: 'Gentle', archetype: 'connector', preference: 'pushback' },
+            { label: 'Balanced', archetype: 'scholar', preference: 'pushback' },
+            { label: 'Direct', archetype: 'analyst', preference: 'pushback' },
+            { label: 'Fast and practical', archetype: 'builder', preference: 'pushback' },
+        ],
+    },
+    {
+        id: 'q4',
+        question: 'What can it remember if you approve it?',
+        options: [
+            { label: 'How I like answers', archetype: 'builder', preference: 'memory' },
+            { label: 'My current goals', archetype: 'strategist', preference: 'memory' },
+            { label: 'My recurring patterns', archetype: 'architect', preference: 'memory' },
+            { label: 'Ask me first', archetype: 'analyst', preference: 'memory' },
+        ],
+    },
+    {
+        id: 'q5',
+        question: 'When should it slow you down?',
+        options: [
+            { label: 'When I am spiraling', archetype: 'builder', preference: 'slow_down' },
+            { label: 'When the claim needs evidence', archetype: 'analyst', preference: 'slow_down' },
+            { label: 'When priorities are scattered', archetype: 'strategist', preference: 'slow_down' },
+            { label: 'When the bigger picture is missing', archetype: 'architect', preference: 'slow_down' },
+        ],
+    },
+    {
+        id: 'q6',
+        question: 'What makes you trust an answer?',
+        options: [
+            { label: 'It is short and useful', archetype: 'builder', preference: 'trust' },
+            { label: 'It names uncertainty', archetype: 'analyst', preference: 'trust' },
+            { label: 'It shows the tradeoff', archetype: 'strategist', preference: 'trust' },
+            { label: 'It sounds like something I would actually say', archetype: 'connector', preference: 'trust' },
         ],
     },
 ];
 
+function MirrorLogo() {
+    return (
+        <span className="grid h-9 w-9 place-items-center rounded-[1rem] border border-violet-200/20 bg-white/[0.045] text-cyan-100 shadow-[0_0_34px_rgba(168,85,247,0.15)]">
+            <Sparkles size={16} />
+        </span>
+    );
+}
+
 function makeMirrorId(archetype, answers) {
-    const raw = `${archetype}:${Object.values(answers).map((item) => item.id).join(':')}:${Date.now()}`;
+    const raw = `${archetype}:${answers.map((item) => item.answerIndex).join('')}:${Date.now()}`;
     let hash = 0;
     for (let i = 0; i < raw.length; i += 1) {
         hash = ((hash << 5) - hash) + raw.charCodeAt(i);
@@ -108,25 +109,91 @@ function makeMirrorId(archetype, answers) {
     return `mirror-${Math.abs(hash).toString(36)}`;
 }
 
-function buildSetupResult(answers) {
-    const help = answers.help || SETUP_STEPS[0].options[0];
-    const boundary = answers.boundary || SETUP_STEPS[1].options[0];
-    const directness = answers.directness || SETUP_STEPS[2].options[0];
-    const archetype = help.archetype || 'builder';
+function selectedPreferences(answers) {
+    return answers.map((answer) => {
+        const question = SCAN_QUESTIONS[answer.questionIndex];
+        const option = question?.options?.[answer.answerIndex];
+        if (!question || !option) return null;
+        return {
+            id: question.id,
+            preference: option.preference || question.id,
+            question: question.question,
+            answer: option.label,
+        };
+    }).filter(Boolean);
+}
+
+function makeMirrorSeed({ mirrorId, brainId, archetype, archetypeName, entryChoice, preferences, startPrompt }) {
+    return {
+        schema: 'active-mirror-id/v1',
+        id: mirrorId,
+        brainId,
+        createdBy: 'Active Mirror BrainScan',
+        createdAt: null,
+        entry: entryChoice ? {
+            id: entryChoice.id,
+            label: entryChoice.label,
+        } : null,
+        preferences,
+        styleHint: {
+            archetype,
+            label: archetypeName,
+        },
+        firstReflection: startPrompt,
+        storage: {
+            default: 'browser',
+            portable: true,
+        },
+    };
+}
+
+function evaluateScan(answers, entryChoice) {
+    const tally = Object.keys(FALLBACK_ARCHETYPES).reduce((acc, key) => {
+        acc[key] = 0;
+        return acc;
+    }, {});
+
+    answers.forEach((answer) => {
+        const option = SCAN_QUESTIONS[answer.questionIndex]?.options?.[answer.answerIndex];
+        if (option?.archetype && tally[option.archetype] !== undefined) {
+            tally[option.archetype] += 1;
+        }
+    });
+
+    const archetype = Object.entries(tally).sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return a[0].localeCompare(b[0]);
+    })[0]?.[0] || 'builder';
+
     const meta = FALLBACK_ARCHETYPES[archetype] || FALLBACK_ARCHETYPES.builder;
+    const preferences = selectedPreferences(answers);
+    const avoid = preferences.map((item) => item.answer).filter(Boolean);
     const mirrorId = makeMirrorId(archetype, answers);
-    const strengths = [help.strength, boundary.strength, directness.strength].filter(Boolean);
+    const brainId = `brainscan-${Date.now().toString(36)}`;
+    const startPrompt = entryChoice?.prompt || ENTRY_CHOICES[0].prompt;
+    const mirrorSeed = makeMirrorSeed({
+        mirrorId,
+        brainId,
+        archetype,
+        archetypeName: meta.name,
+        entryChoice,
+        preferences,
+        startPrompt,
+    });
 
     return {
         archetype,
         archetypeName: meta.name,
-        description: `${help.label}. ${boundary.label}. ${directness.label}.`,
-        help,
-        boundary,
-        directness,
-        strengths,
+        description: meta.description,
+        strengths: meta.strengths,
         mirrorId,
-        startPrompt: [help.prompt, boundary.prompt, directness.prompt].join(' '),
+        brainId,
+        entry: entryChoice,
+        answers,
+        avoid,
+        preferences,
+        mirrorSeed,
+        startPrompt,
         savedAt: null,
     };
 }
@@ -136,252 +203,243 @@ function downloadSettings(result) {
 
     const settings = {
         product: 'Active Mirror',
-        type: 'browser-settings',
-        createdAt: result.savedAt,
-        help: result.help?.label,
-        boundary: result.boundary?.label,
-        style: result.directness?.label,
-        strengths: result.strengths || [],
-        id: result.mirrorId,
+        type: 'mirror-id',
+        ...result.mirrorSeed,
+        createdAt: result.savedAt || new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'active-mirror-settings.json';
+    link.download = 'active-mirror-id.json';
     link.click();
     URL.revokeObjectURL(url);
 }
 
-function ChoiceButton({ option, onClick }) {
+function ChoiceCard({ choice, onClick }) {
     return (
         <button
             type="button"
             onClick={onClick}
-            className="group flex min-h-[4.85rem] items-center justify-between gap-4 rounded-[1.15rem] border border-white/10 bg-white/[0.045] p-3 text-left transition hover:-translate-y-0.5 hover:border-purple-300/35 hover:bg-purple-300/[0.08] sm:min-h-[6.75rem] sm:rounded-[1.35rem] sm:p-4"
+            className="group flex min-h-16 items-center justify-between gap-4 rounded-[1.15rem] border border-white/10 bg-white/[0.045] p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07]"
         >
-            <span>
-                <span className="block text-base font-semibold tracking-[-0.02em] text-white sm:text-lg">{option.label}</span>
-                <span className="mt-1 block text-sm leading-5 text-zinc-500 sm:leading-6">{option.description}</span>
-            </span>
-            <ArrowRight className="shrink-0 text-purple-200 transition group-hover:translate-x-1" size={19} />
+            <span className="text-base font-semibold tracking-[-0.02em] text-white">{choice.label}</span>
+            <ArrowRight className="shrink-0 text-emerald-200 transition group-hover:translate-x-1" size={18} />
         </button>
     );
 }
 
 export default function Start() {
     const navigate = useNavigate();
-    const [stepIndex, setStepIndex] = useState(0);
-    const [answers, setAnswers] = useState({});
+    const [phase, setPhase] = useState('intro');
+    const [entryChoice, setEntryChoice] = useState(ENTRY_CHOICES[0]);
+    const [questionIndex, setQuestionIndex] = useState(0);
+    const [answers, setAnswers] = useState([]);
     const [result, setResult] = useState(null);
     const [saved, setSaved] = useState(false);
 
-    const activeStep = SETUP_STEPS[stepIndex];
-    const StepIcon = activeStep.icon;
-    const progress = useMemo(() => Math.round(((stepIndex + 1) / SETUP_STEPS.length) * 100), [stepIndex]);
-    const ready = Boolean(result);
+    const activeQuestion = SCAN_QUESTIONS[questionIndex];
+    const progress = useMemo(() => Math.round((answers.length / SCAN_QUESTIONS.length) * 100), [answers.length]);
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            window.scrollTo(0, 0);
-        }
-    }, [stepIndex, ready]);
+    function begin(choice) {
+        setEntryChoice(choice);
+        setPhase('scan');
+    }
 
-    function chooseOption(option) {
-        const nextAnswers = {
-            ...answers,
-            [activeStep.id]: option,
-        };
-
-        if (stepIndex < SETUP_STEPS.length - 1) {
+    function chooseAnswer(answerIndex) {
+        const nextAnswers = [...answers, { questionIndex, answerIndex }];
+        if (questionIndex < SCAN_QUESTIONS.length - 1) {
             setAnswers(nextAnswers);
-            setStepIndex((current) => current + 1);
+            setQuestionIndex((current) => current + 1);
             return;
         }
 
-        const setup = buildSetupResult(nextAnswers);
+        const nextResult = evaluateScan(nextAnswers, entryChoice);
         setAnswers(nextAnswers);
-        setResult(setup);
+        setResult(nextResult);
+        setPhase('result');
     }
 
-    function saveSetup() {
+    function saveAndReflect() {
         if (!result) return;
         const savedState = saveBrainScan({
             archetype: result.archetype,
             archetypeName: result.archetypeName,
             strengths: result.strengths,
-            blindSpots: [result.boundary?.label].filter(Boolean),
+            blindSpots: [result.entry?.label, ...result.avoid].filter(Boolean).slice(0, 4),
             mirrorId: result.mirrorId,
-            brainId: `setup-${Date.now().toString(36)}`,
+            brainId: result.brainId,
+            preferences: result.preferences,
+            mirrorSeed: {
+                ...result.mirrorSeed,
+                createdAt: new Date().toISOString(),
+            },
         });
 
         saveBlueprint({
-            kind: 'starter-preferences',
-            help: result.help,
-            boundary: result.boundary,
-            directness: result.directness,
+            kind: 'mirror-id',
+            firstUse: result.entry,
+            startingStyle: result.archetypeName,
+            preferences: result.preferences,
+            mirrorSeed: {
+                ...result.mirrorSeed,
+                createdAt: savedState.brainScanCompletedAt,
+            },
             startPrompt: result.startPrompt,
             completedAt: savedState.brainScanCompletedAt,
         });
 
         setSaved(true);
         setResult({ ...result, savedAt: savedState.brainScanCompletedAt });
+        navigate('/', { state: { startPrompt: result.startPrompt } });
     }
 
     function reset() {
-        setStepIndex(0);
-        setAnswers({});
+        setPhase('intro');
+        setEntryChoice(ENTRY_CHOICES[0]);
+        setQuestionIndex(0);
+        setAnswers([]);
         setResult(null);
         setSaved(false);
     }
 
-    function goToChat() {
-        navigate('/', { state: { startPrompt: result?.startPrompt } });
-    }
-
     return (
-        <div className="min-h-dvh overflow-x-hidden bg-[#050507] text-white selection:bg-purple-500/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-8%,rgba(126,87,255,0.18),transparent_38%),radial-gradient(circle_at_100%_100%,rgba(34,211,238,0.08),transparent_34%),#050507]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:52px_52px] opacity-20" />
+        <div className="min-h-dvh overflow-x-hidden bg-[#030303] text-white selection:bg-emerald-300/30">
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-12%,rgba(16,185,129,0.18),transparent_34%),radial-gradient(circle_at_95%_82%,rgba(168,85,247,0.12),transparent_30%),#030303]" />
+            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
 
-            <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
+            <header className="relative z-10 border-b border-white/10 bg-black/50 px-4 py-3 backdrop-blur-xl">
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
-                        <span className="grid h-8 w-8 place-items-center rounded-xl border border-violet-200/20 bg-white/[0.045] text-cyan-100">
-                            <Sparkles size={16} />
-                        </span>
+                        <MirrorLogo />
                         <span className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</span>
                     </Link>
                     <div className="flex items-center gap-3 text-xs">
                         <Link to="/privacy" className="hidden text-zinc-500 transition hover:text-white sm:inline">Privacy</Link>
                         <Link to="/terms" className="hidden text-zinc-500 transition hover:text-white sm:inline">Terms</Link>
-                        <Link to="/" className="rounded-full border border-white/10 px-4 py-2 font-semibold text-zinc-300 transition hover:border-purple-300/35 hover:text-white">
+                        <Link to="/" className="rounded-full border border-white/10 px-4 py-2 font-semibold text-zinc-300 transition hover:border-emerald-200/35 hover:text-white">
                             Open chat
                         </Link>
                     </div>
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-5xl items-center px-4 py-4 sm:py-10">
-                {!ready ? (
-                    <section className="grid w-full gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-5xl items-center px-4 py-6 sm:py-10">
+                {phase === 'intro' ? (
+                    <section className="grid w-full gap-7 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
                         <div className="mx-auto max-w-xl text-center lg:mx-0 lg:text-left">
-                            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-[1.1rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.18)] sm:mb-6 sm:h-16 sm:w-16 sm:rounded-[1.35rem] lg:mx-0">
-                                <StepIcon size={20} className="text-cyan-100 sm:size-6" />
+                            <div className="mx-auto mb-5 flex justify-center lg:mx-0 lg:justify-start">
+                                <MirrorLogo />
                             </div>
-                            <h1 className="text-[2.12rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.6rem]">
-                                Make it feel like yours.
+                            <h1 className="text-[3.1rem] font-semibold leading-[0.96] tracking-normal text-white sm:text-[5.2rem]">
+                                Start with you.
                             </h1>
-                            <p className="mt-3 text-[0.95rem] leading-6 text-zinc-400 sm:mt-5 sm:text-lg sm:leading-8">
-                                Three quick choices. No account. You decide what stays.
+                            <p className="mt-4 text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
+                                Six quick choices. Better answers. Nothing saved until you choose.
                             </p>
-                            <div className="mt-4 rounded-[1.2rem] border border-white/10 bg-white/[0.035] p-3 text-left sm:mt-7 sm:rounded-[1.4rem]">
-                                <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
-                                    <span>{stepIndex + 1} of {SETUP_STEPS.length}</span>
-                                    <span>{progress}%</span>
-                                </div>
-                                <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                                    <div className="h-full rounded-full bg-gradient-to-r from-violet-400 to-cyan-200 transition-all" style={{ width: `${progress}%` }} />
-                                </div>
+                            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.07] px-3 py-2 text-xs font-semibold text-emerald-100">
+                                <Lock size={14} />
+                                Nothing is saved until you choose.
                             </div>
                         </div>
 
-                        <div className="rounded-[1.55rem] border border-white/10 bg-[#111114]/72 p-3 shadow-[0_0_70px_rgba(124,58,237,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-5">
-                            <div className="mb-3 sm:mb-5">
-                                <h2 className="text-[1.4rem] font-semibold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
-                                    {activeStep.question}
+                        <div className="rounded-[1.75rem] border border-white/10 bg-[#101012]/76 p-4 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-6">
+                            <div className="mb-5">
+                                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200/80">BrainScan</p>
+                                <h2 className="mt-2 text-[1.55rem] font-semibold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
+                                    What are you bringing first?
                                 </h2>
-                                <p className="mt-2 text-sm leading-5 text-zinc-500 sm:leading-6">{activeStep.helper}</p>
                             </div>
                             <div className="grid gap-3">
-                                {activeStep.options.map((option) => (
-                                    <ChoiceButton
-                                        key={option.id}
-                                        option={option}
-                                        onClick={() => chooseOption(option)}
-                                    />
+                                {ENTRY_CHOICES.map((choice) => (
+                                    <ChoiceCard key={choice.id} choice={choice} onClick={() => begin(choice)} />
                                 ))}
                             </div>
-                            {stepIndex > 0 ? (
-                                <button
-                                    type="button"
-                                    onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
-                                    className="mt-4 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
-                                >
-                                    Back
-                                </button>
-                            ) : null}
                         </div>
                     </section>
-                ) : (
+                ) : null}
+
+                {phase === 'scan' ? (
+                    <section className="mx-auto w-full max-w-2xl rounded-[1.75rem] border border-white/10 bg-[#101012]/78 p-5 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-8">
+                        <div className="mb-6">
+                            <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                                <span>{questionIndex + 1} of {SCAN_QUESTIONS.length}</span>
+                                <span>{progress}%</span>
+                            </div>
+                            <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                                <div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-violet-300 transition-all" style={{ width: `${progress}%` }} />
+                            </div>
+                        </div>
+                        <h1 className="text-[2rem] font-semibold leading-tight tracking-[-0.03em] text-white sm:text-4xl">
+                            {activeQuestion.question}
+                        </h1>
+                        <div className="mt-7 grid gap-3">
+                            {activeQuestion.options.map((option, index) => (
+                                <button
+                                    key={option.label}
+                                    type="button"
+                                    onClick={() => chooseAnswer(index)}
+                                    className="rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-4 py-4 text-left text-base font-semibold leading-6 text-zinc-200 transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07] hover:text-white"
+                                >
+                                    {option.label}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={reset}
+                            className="mt-5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
+                        >
+                            Start over
+                        </button>
+                    </section>
+                ) : null}
+
+                {phase === 'result' && result ? (
                     <section className="grid w-full gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-                        <div className="order-2 rounded-[2rem] border border-white/10 bg-[#111114]/72 p-6 text-center shadow-[0_0_70px_rgba(124,58,237,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl lg:order-1">
+                        <div className="order-2 rounded-[2rem] border border-white/10 bg-[#101012]/76 p-6 text-center shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl lg:order-1">
                             <div className="flex justify-center">
                                 <MirrorSig archetype={result.archetype} seed={result.mirrorId} size={210} />
                             </div>
                             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100">
                                 <Check size={14} />
-                                {saved ? 'Saved for next time' : 'Ready to save'}
+                                {saved ? 'Saved in this browser' : 'Ready when you are'}
                             </div>
                         </div>
 
                         <div className="order-1 lg:order-2">
-                            {saved ? (
-                                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100">
-                                    <Check size={14} />
-                                    Saved for next time
-                                </div>
-                            ) : null}
-                            <h1 className="max-w-2xl text-[2.75rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.6rem]">
+                            <h1 className="max-w-2xl text-[2.85rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.7rem]">
                                 You're set.
                             </h1>
                             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                These choices stay in this browser only. They help Active Mirror answer in the way that actually moves you.
+                                This is a preference file, not a personality test. Keep it in this browser or download it and bring it with you.
                             </p>
 
-                            <div className="mt-6 grid gap-3">
-                                {[
-                                    ['Help', result.help?.label],
-                                    ['Avoid', result.boundary?.label],
-                                    ['Style', result.directness?.label],
-                                ].map(([label, value]) => (
-                                    <div key={label} className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-3">
-                                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{label}</div>
-                                        <div className="mt-1 text-base font-semibold text-white">{value}</div>
-                                    </div>
+                            <div className="mt-6 grid gap-2">
+                                {result.preferences.slice(0, 4).map((item) => (
+                                    <span key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-semibold text-zinc-300">
+                                        {item.answer}
+                                    </span>
                                 ))}
                             </div>
 
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                                {!saved ? (
-                                    <button
-                                        type="button"
-                                        onClick={saveSetup}
-                                        className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
-                                    >
-                                        Save this for next time
-                                        <Check size={19} />
-                                    </button>
-                                ) : (
-                                    <>
-                                        <button
-                                            type="button"
-                                            onClick={goToChat}
-                                            className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.34)] transition hover:scale-[1.01]"
-                                        >
-                                            Start chat
-                                            <ArrowRight size={19} />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => downloadSettings(result)}
-                                            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
-                                        >
-                                            <Download size={17} />
-                                            Download settings
-                                        </button>
-                                    </>
-                                )}
+                                <button
+                                    type="button"
+                                    onClick={saveAndReflect}
+                                    className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-violet-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.28)] transition hover:scale-[1.01]"
+                                >
+                                    Save and reflect
+                                    <ArrowRight size={19} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => downloadSettings(result)}
+                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
+                                >
+                                    <Download size={17} />
+                                    Download Mirror ID
+                                </button>
                                 <button
                                     type="button"
                                     onClick={reset}
@@ -393,7 +451,7 @@ export default function Start() {
                             </div>
                         </div>
                     </section>
-                )}
+                ) : null}
             </main>
         </div>
     );

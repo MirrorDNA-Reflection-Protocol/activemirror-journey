@@ -23,7 +23,7 @@ const INITIAL_PHONE_TURNS = [
         mirror: {
             reflection: 'What is one thing you are stuck on?',
             question: 'Say it in one sentence.',
-            move: 'Send the smallest honest version.',
+            move: 'Send the smallest useful version.',
             receipt: {
                 context_used: 'Nothing yet.',
                 context_excluded: 'No private context has been sent.',
@@ -42,7 +42,7 @@ const PROFILES = {
         primary: 'Start quick mirror',
         primaryTo: '/mirror',
         secondary: 'Save preferences',
-        secondaryTo: '/start',
+        secondaryTo: '/id',
         strengths: [
             { icon: Camera, title: 'Capture first', text: 'Use a sentence, screenshot, or file name as the start point.' },
             { icon: Sparkles, title: 'One move only', text: 'Small answers fit the screen and keep you moving.' },
@@ -57,7 +57,7 @@ const PROFILES = {
         primary: 'Open full mirror',
         primaryTo: '/mirror',
         secondary: 'Quick setup',
-        secondaryTo: '/start',
+        secondaryTo: '/id',
         strengths: [
             { icon: FileText, title: 'Review mode', text: 'Read the mirror next to the work without crowding the page.' },
             { icon: Sparkles, title: 'Shape outputs', text: 'Turn rough context into a memo, checklist, or next step.' },

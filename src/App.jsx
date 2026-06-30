@@ -58,29 +58,29 @@ export default function App() {
             <BrowserRouter basename={basename}>
                 <ScrollToTop />
                 <Suspense fallback={<div className="min-h-screen bg-black text-white" />}>
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/start" element={<Start />} />
-                    <Route path="/device" element={<DeviceExperience />} />
-                    <Route path="/enterprise" element={<Enterprise />} />
-                    <Route path="/feedback" element={<FeedbackDashboard />} />
-                    <Route path="/mirror" element={<Navigate to="/" replace />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/legal" element={<Navigate to="/privacy" replace />} />
-                    <Route path="/id" element={<Navigate to="/start" replace />} />
-                    <Route path="/mirrorseed" element={<Navigate to="/start" replace />} />
-                    <Route path="/scan" element={<Navigate to="/start" replace />} />
-                    <Route path="/brainscan" element={<Navigate to="/start" replace />} />
-                    <Route path="/reflect" element={<Navigate to="/" replace />} />
-                    <Route path="/index.html" element={<Navigate to="/" replace />} />
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/id" element={<Start />} />
+                        <Route path="/start" element={<Navigate to="/id" replace />} />
+                        <Route path="/device" element={<DeviceExperience />} />
+                        <Route path="/enterprise" element={<Enterprise />} />
+                        <Route path="/feedback" element={<FeedbackDashboard />} />
+                        <Route path="/mirror" element={<Navigate to="/" replace />} />
+                        <Route path="/privacy" element={<Privacy />} />
+                        <Route path="/terms" element={<Terms />} />
+                        <Route path="/legal" element={<Navigate to="/privacy" replace />} />
+                        <Route path="/mirrorseed" element={<Navigate to="/id" replace />} />
+                        <Route path="/scan" element={<Navigate to="/id" replace />} />
+                        <Route path="/brainscan" element={<Navigate to="/id" replace />} />
+                        <Route path="/reflect" element={<Navigate to="/" replace />} />
+                        <Route path="/index.html" element={<Navigate to="/" replace />} />
 
-                    {staleRoutes.map((path) => (
-                        <Route key={path} path={path} element={<Navigate to="/" replace />} />
-                    ))}
+                        {staleRoutes.map((path) => (
+                            <Route key={path} path={path} element={<Navigate to="/" replace />} />
+                        ))}
 
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
                 </Suspense>
             </BrowserRouter>
         </ThemeProvider>

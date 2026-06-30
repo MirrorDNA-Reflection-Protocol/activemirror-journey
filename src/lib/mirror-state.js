@@ -27,6 +27,8 @@ const DEFAULT_STATE = {
     blindSpots: [],
     mirrorId: null,        // "0x..."
     brainId: null,         // Brain API ID
+    preferences: [],        // Explicit user choices from setup
+    mirrorSeed: null,       // Portable Mirror ID object generated from setup
 
     // MirrorIntake output
     blueprint: null,       // Full blueprint object
@@ -125,7 +127,7 @@ export function setState(updates) {
 }
 
 /** Save BrainScan results (called from Start.jsx COMPLETE phase). */
-export function saveBrainScan({ archetype, archetypeName, twin, twinName, strengths, blindSpots, mirrorId, brainId }) {
+export function saveBrainScan({ archetype, archetypeName, twin, twinName, strengths, blindSpots, mirrorId, brainId, preferences, mirrorSeed }) {
     return setState({
         archetype,
         archetypeName: archetypeName || null,
@@ -135,6 +137,8 @@ export function saveBrainScan({ archetype, archetypeName, twin, twinName, streng
         blindSpots: blindSpots || [],
         mirrorId: mirrorId || null,
         brainId: brainId || null,
+        preferences: Array.isArray(preferences) ? preferences : [],
+        mirrorSeed: mirrorSeed || null,
         brainScanCompletedAt: new Date().toISOString(),
     });
 }
@@ -175,6 +179,8 @@ export function getArchetype() {
         strengths: s.strengths,
         blindSpots: s.blindSpots,
         mirrorId: s.mirrorId,
+        preferences: Array.isArray(s.preferences) ? s.preferences : [],
+        mirrorSeed: s.mirrorSeed || null,
     };
 }
 
