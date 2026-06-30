@@ -44,6 +44,8 @@ const bannedConsumerTerms = [
     { pattern: /\bcloud model\b/i, label: 'internal/vendor language: cloud model' },
     { pattern: /\bsearch providers\b/i, label: 'internal/vendor language: search providers' },
     { pattern: /need to hear|want to hear/i, label: 'paternal promise' },
+    { pattern: /\byou\s+(?:keep|are|you're|seem to|may be|might be)\s+[^.!?]{0,80}\b(?:avoid|avoiding|delay|delaying|procrastinat|hiding|dodging)\b/i, label: 'blamey motive-reading' },
+    { pattern: /\byou\s+(?:use|are using|you're using)\s+[^.!?]{0,80}\b(?:to avoid|to delay|as a way to avoid|as a way to delay)\b/i, label: 'blamey motive-reading' },
     { pattern: /honest next move/i, label: 'wordy honesty phrasing' },
     { pattern: /Getting honest pushback|How should I push back|Push back/i, label: 'internal setup copy' },
     { pattern: /\bADHD\b|neurodivergent|neuroD/i, label: 'diagnostic audience language' },

@@ -40,7 +40,7 @@ function classify(intent = '') {
 
 const MIRRORS = {
     source_check: {
-        reflection: 'This needs a source before it becomes a direction. The trap is letting a fresh-sounding answer become your plan.',
+        reflection: 'This needs a source before it becomes a direction. A fresh-sounding answer is not enough to build on.',
         question: 'Which claim would change your next move if it turned out to be false?',
         move: 'Write that one claim, then check one current source before using the answer.',
     },
@@ -60,7 +60,7 @@ const MIRRORS = {
         move: 'Name the sign, then run the smallest test that could produce it today.',
     },
     reset: {
-        reflection: 'You are carrying too many open loops as one problem. The relief comes from moving one loop, not solving the whole pile.',
+        reflection: 'Too many open loops are being treated as one problem. Relief comes from moving one loop, not solving the whole pile.',
         question: 'Which one loop would make the rest easier if it moved a little?',
         move: 'Pick that loop, set a ten-minute timer, and write only the next visible action.',
     },

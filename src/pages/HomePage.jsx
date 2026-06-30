@@ -208,7 +208,7 @@ function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
             label: 'Challenge it',
             icon: ArrowRight,
             action: 'reflect',
-            intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${mirror.question}`,
+            intent: `Challenge the premise and name what the plan may be skipping. Keep it short: ${mirror.question}`,
         },
         {
             ...artifactAction,
