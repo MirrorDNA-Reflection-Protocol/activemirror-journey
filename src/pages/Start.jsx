@@ -245,7 +245,7 @@ export default function Start() {
 
     function startChat() {
         if (!result) return;
-        navigate('/', { state: { startPrompt: result.startPrompt } });
+        navigate('/', { state: { mirrorReady: true } });
     }
 
     function reset() {

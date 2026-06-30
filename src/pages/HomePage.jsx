@@ -706,10 +706,12 @@ export default function HomePage() {
     }, []);
 
     useEffect(() => {
-        const startPrompt = location.state?.startPrompt;
-        if (bootPromptRef.current || typeof startPrompt !== 'string' || startPrompt.trim().length < 4) return;
+        if (bootPromptRef.current || !location.state?.mirrorReady) return;
         bootPromptRef.current = true;
-        reflect(startPrompt, 'mirror_id');
+        setSeed(readSavedSeed());
+        setImportStatus('Ready. What is on your mind?');
+        window.setTimeout(() => setImportStatus(''), 2800);
+        window.setTimeout(() => inputRef.current?.focus(), 60);
         window.history.replaceState({}, document.title, window.location.pathname);
     }, [location.state]);
 
@@ -826,11 +828,10 @@ export default function HomePage() {
             setSeed(readSavedSeed());
             setActiveDefault(imported.activeDefault || getActiveMirrorDefault());
             setMirrorDefaults(getMirrorDefaults());
-            setImportStatus('Choices loaded.');
+            setImportStatus('ID loaded. What is on your mind?');
             trackEvent('saved_choices_uploaded', { page: 'home', source: 'file' });
-            window.setTimeout(() => setImportStatus(''), 2200);
-            const startPrompt = imported.blueprint?.startPrompt || 'I already set this up. Help me start with something useful.';
-            reflect(startPrompt, 'uploaded_id');
+            window.setTimeout(() => setImportStatus(''), 2800);
+            window.setTimeout(() => inputRef.current?.focus(), 60);
         } catch {
             setImportStatus('That file did not work.');
             trackEvent('saved_choices_upload_failed', { page: 'home', source: 'file' });
