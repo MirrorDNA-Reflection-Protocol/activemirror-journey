@@ -1,92 +1,49 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, Download, Lock, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Download, RotateCcw, Sparkles } from 'lucide-react';
 import MirrorSig from '../components/MirrorSig';
 import { FALLBACK_ARCHETYPES } from '../lib/brainFallback';
 import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
 
-const ENTRY_CHOICES = [
-    {
-        id: 'stuck',
-        label: 'I feel stuck',
-        prompt: 'Help me name the real stuck point and choose one useful next move.',
-    },
-    {
-        id: 'decision',
-        label: 'I need a decision',
-        prompt: 'Help me see the tradeoff clearly and choose one useful next move.',
-    },
-    {
-        id: 'make',
-        label: 'I need to make something',
-        prompt: 'Help me turn messy context into something clear I can use.',
-    },
-    {
-        id: 'pushback',
-        label: 'I need pushback',
-        prompt: 'Challenge the weak part of my thinking without over-explaining.',
-    },
-];
-
 const SCAN_QUESTIONS = [
     {
         id: 'q1',
-        question: 'What helps first?',
+        question: 'What do you usually need help with?',
         options: [
-            { label: 'One next step', archetype: 'builder', preference: 'first_answer' },
-            { label: 'A sharper question', archetype: 'strategist', preference: 'first_answer' },
-            { label: 'A calm reality check', archetype: 'analyst', preference: 'first_answer' },
-            { label: 'Better words for the thought', archetype: 'connector', preference: 'first_answer' },
+            { label: 'Getting unstuck', archetype: 'builder', preference: 'help_with' },
+            { label: 'Making a decision', archetype: 'strategist', preference: 'help_with' },
+            { label: 'Turning thoughts into something useful', archetype: 'connector', preference: 'help_with' },
+            { label: 'Getting honest pushback', archetype: 'analyst', preference: 'help_with' },
         ],
     },
     {
         id: 'q2',
-        question: 'What should it avoid?',
+        question: 'How should I push back?',
         options: [
-            { label: 'Too much text', archetype: 'builder', preference: 'avoid' },
-            { label: 'Easy agreement', archetype: 'analyst', preference: 'avoid' },
-            { label: 'Using private details too soon', archetype: 'scholar', preference: 'avoid' },
-            { label: 'Generic advice', archetype: 'connector', preference: 'avoid' },
+            { label: 'Gently', archetype: 'connector', preference: 'pushback' },
+            { label: 'Directly', archetype: 'analyst', preference: 'pushback' },
+            { label: 'Only when I am looping', archetype: 'builder', preference: 'pushback' },
+            { label: 'When something needs checking', archetype: 'scholar', preference: 'pushback' },
         ],
     },
     {
         id: 'q3',
-        question: 'How direct should it be?',
+        question: 'What should I avoid assuming?',
         options: [
-            { label: 'Gentle', archetype: 'connector', preference: 'pushback' },
-            { label: 'Balanced', archetype: 'scholar', preference: 'pushback' },
-            { label: 'Direct', archetype: 'analyst', preference: 'pushback' },
-            { label: 'Fast and practical', archetype: 'builder', preference: 'pushback' },
+            { label: 'I want a long answer', archetype: 'builder', preference: 'never_assume' },
+            { label: 'I already know what I want', archetype: 'strategist', preference: 'never_assume' },
+            { label: 'Private details are needed', archetype: 'scholar', preference: 'never_assume' },
+            { label: 'Agreement helps', archetype: 'analyst', preference: 'never_assume' },
         ],
     },
     {
         id: 'q4',
-        question: 'What can it save for next time?',
+        question: 'What kind of answers help you move?',
         options: [
-            { label: 'How I like answers', archetype: 'builder', preference: 'memory' },
-            { label: 'My current goals', archetype: 'strategist', preference: 'memory' },
-            { label: 'My recurring patterns', archetype: 'architect', preference: 'memory' },
-            { label: 'Ask me first', archetype: 'analyst', preference: 'memory' },
-        ],
-    },
-    {
-        id: 'q5',
-        question: 'When should it pause you?',
-        options: [
-            { label: 'When I am spiraling', archetype: 'builder', preference: 'slow_down' },
-            { label: 'When the claim needs evidence', archetype: 'analyst', preference: 'slow_down' },
-            { label: 'When priorities are scattered', archetype: 'strategist', preference: 'slow_down' },
-            { label: 'When the bigger picture is missing', archetype: 'architect', preference: 'slow_down' },
-        ],
-    },
-    {
-        id: 'q6',
-        question: 'What makes an answer useful?',
-        options: [
-            { label: 'It is short and useful', archetype: 'builder', preference: 'trust' },
-            { label: 'It names uncertainty', archetype: 'analyst', preference: 'trust' },
-            { label: 'It shows the tradeoff', archetype: 'strategist', preference: 'trust' },
-            { label: 'It sounds like something I would actually say', archetype: 'connector', preference: 'trust' },
+            { label: 'One clear next step', archetype: 'builder', preference: 'answer_style' },
+            { label: 'A better question', archetype: 'strategist', preference: 'answer_style' },
+            { label: 'A short draft I can use', archetype: 'connector', preference: 'answer_style' },
+            { label: 'A simple plan', archetype: 'architect', preference: 'answer_style' },
         ],
     },
 ];
@@ -123,31 +80,49 @@ function selectedPreferences(answers) {
     }).filter(Boolean);
 }
 
-function makeMirrorSeed({ mirrorId, brainId, archetype, archetypeName, entryChoice, preferences, startPrompt }) {
+function preferenceLabel(preference) {
+    if (preference === 'help_with') return 'Help with';
+    if (preference === 'pushback') return 'Push back';
+    if (preference === 'never_assume') return 'Avoid assuming';
+    if (preference === 'answer_style') return 'Give me';
+    return 'Choice';
+}
+
+function makeStartPrompt(preferences = []) {
+    const helpWith = preferences.find((item) => item.preference === 'help_with')?.answer || 'something useful';
+    const pushback = preferences.find((item) => item.preference === 'pushback')?.answer || 'when needed';
+    const avoidAssuming = preferences.find((item) => item.preference === 'never_assume')?.answer || 'what I have not said';
+    const answerStyle = preferences.find((item) => item.preference === 'answer_style')?.answer || 'one clear next step';
+
+    return [
+        `I set up my Active Mirror. I usually need help with: ${helpWith}.`,
+        `Push back: ${pushback}.`,
+        `Avoid assuming: ${avoidAssuming}.`,
+        `Give me: ${answerStyle}.`,
+        'Start by asking what I want to work on.',
+    ].join(' ');
+}
+
+function makeMirrorSeed({ mirrorId, setupId, archetype, archetypeName, preferences, startPrompt, createdAt = null }) {
     return {
         schema: 'active-mirror-id/v1',
         id: mirrorId,
-        brainId,
-        createdBy: 'Active Mirror setup',
-        createdAt: null,
-        entry: entryChoice ? {
-            id: entryChoice.id,
-            label: entryChoice.label,
-        } : null,
+        setupId,
+        brainId: setupId,
+        createdBy: 'Active Mirror',
+        createdAt,
+        entry: null,
         preferences,
         styleHint: {
             archetype,
             label: archetypeName,
         },
         firstReflection: startPrompt,
-        storage: {
-            default: 'browser',
-            portable: true,
-        },
+        storage: { default: 'browser', portable: true },
     };
 }
 
-function evaluateScan(answers, entryChoice) {
+function evaluateScan(answers) {
     const tally = Object.keys(FALLBACK_ARCHETYPES).reduce((acc, key) => {
         acc[key] = 0;
         return acc;
@@ -169,14 +144,13 @@ function evaluateScan(answers, entryChoice) {
     const preferences = selectedPreferences(answers);
     const avoid = preferences.map((item) => item.answer).filter(Boolean);
     const mirrorId = makeMirrorId(archetype, answers);
-    const brainId = `brainscan-${Date.now().toString(36)}`;
-    const startPrompt = entryChoice?.prompt || ENTRY_CHOICES[0].prompt;
+    const setupId = `setup-${Date.now().toString(36)}`;
+    const startPrompt = makeStartPrompt(preferences);
     const mirrorSeed = makeMirrorSeed({
         mirrorId,
-        brainId,
+        setupId,
         archetype,
         archetypeName: meta.name,
-        entryChoice,
         preferences,
         startPrompt,
     });
@@ -187,8 +161,9 @@ function evaluateScan(answers, entryChoice) {
         description: meta.description,
         strengths: meta.strengths,
         mirrorId,
-        brainId,
-        entry: entryChoice,
+        brainId: setupId,
+        setupId,
+        entry: null,
         answers,
         avoid,
         preferences,
@@ -203,7 +178,7 @@ function downloadSettings(result) {
 
     const settings = {
         product: 'Active Mirror',
-        type: 'saved-choices',
+        type: 'active-mirror-id',
         ...result.mirrorSeed,
         createdAt: result.savedAt || new Date().toISOString(),
     };
@@ -211,40 +186,20 @@ function downloadSettings(result) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'active-mirror-choices.json';
+    link.download = 'active-mirror-id.json';
     link.click();
     URL.revokeObjectURL(url);
 }
 
-function ChoiceCard({ choice, onClick }) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className="group flex min-h-16 items-center justify-between gap-4 rounded-[1.15rem] border border-white/10 bg-white/[0.045] p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07]"
-        >
-            <span className="text-base font-semibold tracking-[-0.02em] text-white">{choice.label}</span>
-            <ArrowRight className="shrink-0 text-emerald-200 transition group-hover:translate-x-1" size={18} />
-        </button>
-    );
-}
-
 export default function Start() {
     const navigate = useNavigate();
-    const [phase, setPhase] = useState('intro');
-    const [entryChoice, setEntryChoice] = useState(ENTRY_CHOICES[0]);
+    const [phase, setPhase] = useState('scan');
     const [questionIndex, setQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState([]);
     const [result, setResult] = useState(null);
-    const [saved, setSaved] = useState(false);
 
     const activeQuestion = SCAN_QUESTIONS[questionIndex];
     const progress = useMemo(() => Math.round((answers.length / SCAN_QUESTIONS.length) * 100), [answers.length]);
-
-    function begin(choice) {
-        setEntryChoice(choice);
-        setPhase('scan');
-    }
 
     function chooseAnswer(answerIndex) {
         const nextAnswers = [...answers, { questionIndex, answerIndex }];
@@ -254,53 +209,50 @@ export default function Start() {
             return;
         }
 
-        const nextResult = evaluateScan(nextAnswers, entryChoice);
-        setAnswers(nextAnswers);
-        setResult(nextResult);
-        setPhase('result');
-    }
-
-    function saveAndReflect() {
-        if (!result) return;
+        const nextResult = evaluateScan(nextAnswers);
+        const createdAt = new Date().toISOString();
+        const mirrorSeed = {
+            ...nextResult.mirrorSeed,
+            createdAt,
+        };
         const savedState = saveBrainScan({
-            archetype: result.archetype,
-            archetypeName: result.archetypeName,
-            strengths: result.strengths,
-            blindSpots: [result.entry?.label, ...result.avoid].filter(Boolean).slice(0, 4),
-            mirrorId: result.mirrorId,
-            brainId: result.brainId,
-            preferences: result.preferences,
-            mirrorSeed: {
-                ...result.mirrorSeed,
-                createdAt: new Date().toISOString(),
-            },
+            archetype: nextResult.archetype,
+            archetypeName: nextResult.archetypeName,
+            strengths: nextResult.strengths,
+            blindSpots: nextResult.preferences.map((item) => item.answer).filter(Boolean).slice(0, 4),
+            mirrorId: nextResult.mirrorId,
+            brainId: nextResult.brainId,
+            preferences: nextResult.preferences,
+            mirrorSeed,
         });
 
         saveBlueprint({
-            kind: 'saved-choices',
-            firstUse: result.entry,
-            startingStyle: result.archetypeName,
-            preferences: result.preferences,
-            mirrorSeed: {
-                ...result.mirrorSeed,
-                createdAt: savedState.brainScanCompletedAt,
-            },
-            startPrompt: result.startPrompt,
+            kind: 'active-mirror-id',
+            preferences: nextResult.preferences,
+            mirrorSeed,
+            startPrompt: nextResult.startPrompt,
             completedAt: savedState.brainScanCompletedAt,
         });
 
-        setSaved(true);
-        setResult({ ...result, savedAt: savedState.brainScanCompletedAt });
+        setAnswers(nextAnswers);
+        setResult({
+            ...nextResult,
+            mirrorSeed,
+            savedAt: savedState.brainScanCompletedAt,
+        });
+        setPhase('result');
+    }
+
+    function startChat() {
+        if (!result) return;
         navigate('/', { state: { startPrompt: result.startPrompt } });
     }
 
     function reset() {
-        setPhase('intro');
-        setEntryChoice(ENTRY_CHOICES[0]);
+        setPhase('scan');
         setQuestionIndex(0);
         setAnswers([]);
         setResult(null);
-        setSaved(false);
     }
 
     return (
@@ -325,40 +277,6 @@ export default function Start() {
             </header>
 
             <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-5xl items-center px-4 py-6 sm:py-10">
-                {phase === 'intro' ? (
-                    <section className="grid w-full gap-7 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-                        <div className="mx-auto max-w-xl text-center lg:mx-0 lg:text-left">
-                            <div className="mx-auto mb-5 flex justify-center lg:mx-0 lg:justify-start">
-                                <MirrorLogo />
-                            </div>
-                            <h1 className="text-[3.1rem] font-semibold leading-[0.96] tracking-normal text-white sm:text-[5.2rem]">
-                                Make it feel like yours.
-                            </h1>
-                            <p className="mt-4 text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                Answer a few quick choices. Save them here or download them.
-                            </p>
-                            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.07] px-3 py-2 text-xs font-semibold text-emerald-100">
-                                <Lock size={14} />
-                                Nothing is saved until you choose.
-                            </div>
-                        </div>
-
-                        <div className="rounded-[1.75rem] border border-white/10 bg-[#101012]/76 p-4 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-6">
-                            <div className="mb-5">
-                                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200/80">Quick setup</p>
-                                <h2 className="mt-2 text-[1.55rem] font-semibold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
-                                    What do you need first?
-                                </h2>
-                            </div>
-                            <div className="grid gap-3">
-                                {ENTRY_CHOICES.map((choice) => (
-                                    <ChoiceCard key={choice.id} choice={choice} onClick={() => begin(choice)} />
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-                ) : null}
-
                 {phase === 'scan' ? (
                     <section className="mx-auto w-full max-w-2xl rounded-[1.75rem] border border-white/10 bg-[#101012]/78 p-5 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-8">
                         <div className="mb-6">
@@ -403,22 +321,22 @@ export default function Start() {
                             </div>
                             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100">
                                 <Check size={14} />
-                                {saved ? 'Saved in this browser' : 'Ready when you are'}
+                                Saved in this browser
                             </div>
                         </div>
 
                         <div className="order-1 lg:order-2">
                             <h1 className="max-w-2xl text-[2.85rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.7rem]">
-                                You're set.
+                                Your mirror is ready.
                             </h1>
                             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                These choices stay in this browser unless you download them.
+                                Ask anything, or start with what is on your mind.
                             </p>
 
                             <div className="mt-6 grid gap-2">
                                 {result.preferences.slice(0, 4).map((item) => (
                                     <span key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-semibold text-zinc-300">
-                                        {item.answer}
+                                        <span className="text-zinc-500">{preferenceLabel(item.preference)}:</span> {item.answer}
                                     </span>
                                 ))}
                             </div>
@@ -426,10 +344,10 @@ export default function Start() {
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                                 <button
                                     type="button"
-                                    onClick={saveAndReflect}
+                                    onClick={startChat}
                                     className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-violet-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.28)] transition hover:scale-[1.01]"
                                 >
-                                    Save and start
+                                    Start chat
                                     <ArrowRight size={19} />
                                 </button>
                                 <button
@@ -438,7 +356,7 @@ export default function Start() {
                                     className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
                                 >
                                     <Download size={17} />
-                                    Download choices
+                                    Download ID
                                 </button>
                                 <button
                                     type="button"
