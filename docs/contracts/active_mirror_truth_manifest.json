@@ -132,7 +132,7 @@
     },
     {
       "claim_id": "front_door_guard_scope",
-      "pattern": "\\b(?:one thing|one real thing|one honest next move|one useful output|Get the next move|Try this next|Start Reflection|Open chat)\\b",
+      "pattern": "\\b(?:one thing|one real thing|one concrete next move|one useful output|Get the next move|Try this next|Start Reflection|Open chat)\\b",
       "verification_state": "source_backed",
       "source_refs": [
         "src/pages/HomePage.jsx",

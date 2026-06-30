@@ -45,9 +45,9 @@ const MIRRORS = {
         move: 'Write that one claim, then check one current source before using the answer.',
     },
     private_output: {
-        reflection: 'You do not need to expose the private parts to move the work. Keep the shape and remove the names, secrets, and raw context.',
-        question: 'What is useful here after the private details are replaced with placeholders?',
-        move: 'Swap the sensitive details for placeholders, then write the shareable sentence.',
+        reflection: 'Private details can stay with you. The useful part is the shape of the problem.',
+        question: 'What is the same problem with names and secrets replaced by placeholders?',
+        move: 'Write one sentence with placeholders for anything private.',
     },
     launch_clarity: {
         reflection: 'The page is asking the user to understand too much before they feel a reason to act. The first action has to beat the feature list.',

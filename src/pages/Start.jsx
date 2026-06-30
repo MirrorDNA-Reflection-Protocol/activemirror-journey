@@ -13,12 +13,12 @@ const SCAN_QUESTIONS = [
             { label: 'Getting unstuck', archetype: 'builder', preference: 'help_with' },
             { label: 'Making a decision', archetype: 'strategist', preference: 'help_with' },
             { label: 'Turning thoughts into something useful', archetype: 'connector', preference: 'help_with' },
-            { label: 'Getting honest pushback', archetype: 'analyst', preference: 'help_with' },
+            { label: 'Clear challenge', archetype: 'analyst', preference: 'help_with' },
         ],
     },
     {
         id: 'q2',
-        question: 'How should I push back?',
+        question: 'How direct should it be?',
         options: [
             { label: 'Gently', archetype: 'connector', preference: 'pushback' },
             { label: 'Directly', archetype: 'analyst', preference: 'pushback' },
@@ -82,7 +82,7 @@ function selectedPreferences(answers) {
 
 function preferenceLabel(preference) {
     if (preference === 'help_with') return 'Help with';
-    if (preference === 'pushback') return 'Push back';
+    if (preference === 'pushback') return 'Directness';
     if (preference === 'never_assume') return 'Avoid assuming';
     if (preference === 'answer_style') return 'Give me';
     return 'Choice';
@@ -96,7 +96,7 @@ function makeStartPrompt(preferences = []) {
 
     return [
         `I set up my Active Mirror. I usually need help with: ${helpWith}.`,
-        `Push back: ${pushback}.`,
+        `Directness: ${pushback}.`,
         `Avoid assuming: ${avoidAssuming}.`,
         `Give me: ${answerStyle}.`,
         'Start by asking what I want to work on.',

@@ -21,7 +21,7 @@ function repairOptions(result = {}) {
         },
         {
             id: 'sharper',
-            label: 'Push back',
+            label: 'Challenge it',
             intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${question}`,
         },
         {

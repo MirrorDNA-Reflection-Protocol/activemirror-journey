@@ -43,6 +43,10 @@ const bannedConsumerTerms = [
     { pattern: /\bAI provider\b/i, label: 'internal/vendor language: AI provider' },
     { pattern: /\bcloud model\b/i, label: 'internal/vendor language: cloud model' },
     { pattern: /\bsearch providers\b/i, label: 'internal/vendor language: search providers' },
+    { pattern: /need to hear|want to hear/i, label: 'paternal promise' },
+    { pattern: /honest next move/i, label: 'wordy honesty phrasing' },
+    { pattern: /Getting honest pushback|How should I push back|Push back/i, label: 'internal setup copy' },
+    { pattern: /\bADHD\b|neurodivergent|neuroD/i, label: 'diagnostic audience language' },
 ];
 
 const requiredTerms = [
@@ -52,7 +56,7 @@ const requiredTerms = [
     { pattern: /Or type what you want/i, label: 'plain first-use helper' },
     { pattern: /Your thoughts stay yours/i, label: 'privacy choice promise' },
     { pattern: /What do you usually need help with\?/i, label: 'setup: help question' },
-    { pattern: /How should I push back\?/i, label: 'setup: pushback question' },
+    { pattern: /How direct should it be\?/i, label: 'setup: directness question' },
     { pattern: /What should I avoid assuming\?/i, label: 'setup: assumption question' },
     { pattern: /What kind of answers help you move\?/i, label: 'setup: answer question' },
     { pattern: /Your mirror is ready\./i, label: 'setup: ready state' },
@@ -61,7 +65,7 @@ const requiredTerms = [
     { pattern: /Download ID/i, label: 'setup: portable download' },
     { pattern: /Helpful\?/i, label: 'quiet feedback line' },
     { pattern: /Another angle/i, label: 'first-use follow-up: another angle' },
-    { pattern: /Push back/i, label: 'first-use follow-up: push back' },
+    { pattern: /Challenge it/i, label: 'first-use follow-up: challenge' },
     { pattern: /Draft it/i, label: 'first-use follow-up: draft it' },
     { pattern: /Pick the move/i, label: 'loop brake follow-up' },
 ];

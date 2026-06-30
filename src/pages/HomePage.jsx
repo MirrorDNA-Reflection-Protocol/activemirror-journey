@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, Copy, FileText, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
 import MirrorFeedback from '../components/MirrorFeedback';
 import { NeedsSources } from '../components/TruthStateNotice';
@@ -105,6 +105,7 @@ function makeEcosystemResult(intent) {
 function makeBlockedResult(data = {}) {
     if (data.error === 'rate_limited') {
         return {
+            kind: 'cooldown',
             mirror: {
                 reflection: 'The answer is cooling down for a moment. Your page is still private, and nothing needs to be re-entered.',
                 question: 'Can you hold the same stuck point and try again in a minute?',
@@ -119,14 +120,20 @@ function makeBlockedResult(data = {}) {
     }
 
     return {
+        kind: 'privacy_hold',
         mirror: {
-            reflection: 'That looks like it may contain private or sensitive context, so Active Mirror held the turn back.',
-            question: 'Can you restate the stuck point without secrets or identifying details?',
-            move: 'Remove names, account details, and private facts, then try one sentence again.',
+            reflection: 'Private details can stay with you. I only need the shape of the problem.',
+            question: 'What do you want help moving, with names and secrets replaced by placeholders?',
+            move: 'Try: "I need help with [problem] without sharing [private detail]."',
             receipt: {
                 context_used: 'The current prompt only.',
-                context_excluded: 'Potentially sensitive details were not processed further.',
+                context_excluded: 'Private-looking details were not sent out.',
                 memory_decision: 'Nothing saved.',
+            },
+            visual: {
+                kind: 'reframe',
+                left: 'Share the whole thing',
+                right: 'Share only the shape',
             },
         },
     };
@@ -134,10 +141,11 @@ function makeBlockedResult(data = {}) {
 
 function makeLocalPrivacyResult(sense = {}) {
     return {
+        kind: 'privacy_hold',
         mirror: {
-            reflection: 'That looks like it contains a secret, so I held it on this page instead of sending it out.',
-            question: 'Can you replace the private detail with a placeholder?',
-            move: 'Rewrite the same stuck point with names, keys, passwords, and account details removed.',
+            reflection: 'Keep the secret with you. The mirror can still work from a safer version.',
+            question: 'What is the same problem with the private detail replaced by a placeholder?',
+            move: 'Replace names, keys, passwords, and account details with brackets, then send one sentence.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
                 context_excluded: 'The sensitive-looking text was not sent out.',
@@ -145,15 +153,33 @@ function makeLocalPrivacyResult(sense = {}) {
             },
             visual: {
                 kind: 'reframe',
-                left: 'Send the whole thing',
-                right: 'Send only the shape of the problem',
+                left: 'Send the secret',
+                right: 'Send the shape',
             },
         },
         local_sense: sense,
     };
 }
 
-function makeFollowUps(mirror = {}, loopCount = 0) {
+function detectArtifactKind(intent = '', mirror = {}) {
+    const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
+    if (/\b(image|visual|poster|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
+    if (/\b(code|app|component|script|function|api|html|css|javascript|react|python)\b/.test(text)) return 'code';
+    if (/\b(document|doc|pdf|memo|brief|email|deck|slide|report|summary|proposal|outline|post|message)\b/.test(text)) return 'doc';
+    return 'draft';
+}
+
+function artifactActionFor(kind = 'draft') {
+    if (kind === 'image') return { label: 'Make visual brief', icon: Image };
+    if (kind === 'code') return { label: 'Make code starter', icon: Code2 };
+    if (kind === 'doc') return { label: 'Make doc', icon: FileText };
+    return { label: 'Draft it', icon: PenLine };
+}
+
+function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
+    const artifactKind = detectArtifactKind(intent, mirror);
+    const artifactAction = artifactActionFor(artifactKind);
+
     if (loopCount >= 4) {
         return [
             mirror.move && {
@@ -163,10 +189,10 @@ function makeFollowUps(mirror = {}, loopCount = 0) {
                 intent: `Stop expanding. Synthesize this into the one move I should do now: ${mirror.move}`,
             },
             {
-                label: 'Draft it',
-                icon: PenLine,
-                action: 'draft',
-                intent: 'Create a sendable draft from this reflection.',
+                ...artifactAction,
+                action: 'artifact',
+                artifactKind,
+                intent: 'Create the smallest useful output from this reflection.',
             },
         ].filter(Boolean);
     }
@@ -179,25 +205,103 @@ function makeFollowUps(mirror = {}, loopCount = 0) {
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
         },
         mirror.question && {
-            label: 'Push back',
+            label: 'Challenge it',
             icon: ArrowRight,
             action: 'reflect',
             intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${mirror.question}`,
         },
         {
-            label: 'Draft it',
-            icon: PenLine,
-            action: 'draft',
-            intent: 'Create a sendable draft from this reflection.',
+            ...artifactAction,
+            action: 'artifact',
+            artifactKind,
+            intent: 'Create the smallest useful output from this reflection.',
         },
     ].filter(Boolean);
 }
 
-function makeSendableDraft(mirror = {}) {
+function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
     const question = mirror.question || 'What is the useful thing to try?';
     const move = mirror.move || 'Take the smallest concrete next step.';
+    const cleanIntent = String(intent || 'the thing you want').replace(/\s+/g, ' ').trim();
+
+    if (kind === 'image') {
+        return {
+            kind,
+            title: 'Visual brief',
+            body: [
+                'Visual brief',
+                '',
+                `Goal: ${cleanIntent || question}`,
+                `Feeling: calm, useful, warm, lightly magical, not busy.`,
+                `Main idea: ${question}`,
+                `Scene: one clear focal point that shows the outcome, not the machinery.`,
+                `Avoid: clutter, medical or diagnostic cues, dashboards unless asked, model names, private details.`,
+                `Next action: ${move}`,
+            ].join('\n'),
+            checklist: [
+                'Use this as the prompt for image generation.',
+                'Remove anything private before sending it to a media model.',
+            ],
+        };
+    }
+
+    if (kind === 'code') {
+        return {
+            kind,
+            title: 'Code starter',
+            body: [
+                'Goal',
+                cleanIntent || question,
+                '',
+                'Acceptance',
+                `- ${move}`,
+                '- Keep the first version small enough to test in one screen.',
+                '- Do not add storage, external calls, or irreversible actions unless approved.',
+                '',
+                'Starter',
+                '```js',
+                'export function nextStep(input) {',
+                '  const text = String(input || "").trim();',
+                '  if (!text) return { ok: false, message: "Add one sentence first." };',
+                '  return { ok: true, move: text };',
+                '}',
+                '```',
+            ].join('\n'),
+            checklist: [
+                'Replace the starter with exact code once the target stack is known.',
+                'Keep private inputs out of logs and analytics.',
+            ],
+        };
+    }
+
+    if (kind === 'doc') {
+        return {
+            kind,
+            title: 'Working doc',
+            body: [
+                'Working doc',
+                '',
+                `What this is for: ${cleanIntent || question}`,
+                '',
+                'The decision',
+                question,
+                '',
+                'The move',
+                move,
+                '',
+                'Sendable version',
+                `I am working from this question: ${question}`,
+                `The next thing I am trying is: ${move}`,
+            ].join('\n'),
+            checklist: [
+                'Remove private names or details before sharing.',
+                'Keep the ask to one sentence if you send it.',
+            ],
+        };
+    }
 
     return {
+        kind,
         title: 'Message draft',
         body: [
             `I am using this question: ${question}`,
@@ -292,7 +396,7 @@ function MicroVisual({ visual }) {
     return null;
 }
 
-function NextMoveSurface({ mirror, onRemember, remembered }) {
+function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true }) {
     const [copied, setCopied] = useState(false);
 
     async function copyMove() {
@@ -317,6 +421,7 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
                     </button>
                 </div>
             </div>
+            {allowRemember ? (
             <div className="flex justify-start">
                 <button
                     type="button"
@@ -328,6 +433,7 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
                     {remembered ? 'Saved for next time' : 'Remember this'}
                 </button>
             </div>
+            ) : null}
             <MicroVisual visual={mirror.visual} />
         </div>
     );
@@ -336,6 +442,7 @@ function NextMoveSurface({ mirror, onRemember, remembered }) {
 function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled, onSourceChecked, onRemember, remembered }) {
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
+    const isPrivacyHold = result?.kind === 'privacy_hold';
     const truthState = result?.truth_state || mirror.truth_state;
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
@@ -358,7 +465,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     <div className="mt-5 rounded-[1.35rem] border border-violet-200/12 bg-white/[0.035] px-4 py-3 text-[0.98rem] font-medium leading-7 text-violet-50/90">
                         {mirror.question}
                     </div>
-                    <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} />
+                    <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold} />
                 </div>
             </div>
             {showSourceCheck ? (
@@ -419,6 +526,7 @@ function ReflectionField({ awake = false }) {
 
 function SendableDraft({ draft }) {
     if (!draft) return null;
+    const isCode = draft.kind === 'code';
 
     return (
         <div className="rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
@@ -426,7 +534,7 @@ function SendableDraft({ draft }) {
                 <FileText size={16} />
                 {draft.title}
             </div>
-            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{draft.body}</pre>
+            <div className={`whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100 ${isCode ? 'font-mono' : 'font-sans'}`}>{draft.body}</div>
             <DraftActions title={draft.title} text={draft.body} surface="home" />
             <div className="mt-3 grid gap-2">
                 {draft.checklist.map((item) => (
@@ -696,7 +804,7 @@ export default function HomePage() {
     const [importStatus, setImportStatus] = useState('');
     const [loopCount, setLoopCount] = useState(0);
     const [, setLastSourceCheck] = useState(null);
-    const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount), [result, loopCount]);
+    const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount, lastIntent), [result, loopCount, lastIntent]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
 
     useEffect(() => {
@@ -1005,7 +1113,7 @@ export default function HomePage() {
                             <div className="sm:pl-12">
                                 <LocalSenseLine sense={lastSense} />
                             </div>
-                            {!busy && result ? (
+                            {!busy && result && result.kind !== 'privacy_hold' ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">
                                         {followUps.map((item) => {
@@ -1016,8 +1124,8 @@ export default function HomePage() {
                                                     type="button"
                                                     onClick={() => {
                                                         trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
-                                                        if (item.action === 'draft') {
-                                                            setSendableDraft(makeSendableDraft(result?.mirror || SAMPLE_MIRROR));
+                                                        if (item.action === 'artifact') {
+                                                            setSendableDraft(makeArtifact(result?.mirror || SAMPLE_MIRROR, lastIntent, item.artifactKind || 'draft'));
                                                             return;
                                                         }
                                                         reflect(item.intent, 'follow_up');

@@ -118,7 +118,7 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         cues.push({
             kind: 'privacy',
             tone: 'block',
-            label: 'This looks sensitive. Remove the secret first.',
+            label: 'Keep secrets out. Use placeholders.',
         });
     }
 
