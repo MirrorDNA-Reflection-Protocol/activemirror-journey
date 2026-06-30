@@ -22,6 +22,7 @@ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 import { copyText } from '../lib/sendable-actions';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
+const ARTIFACT_GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/artifact';
 
 const SAMPLE_MIRROR = {
     reflection: 'You do not need the perfect prompt. Say the messy thing, and we will make it usable.',
@@ -799,6 +800,7 @@ export default function HomePage() {
     const [lastSource, setLastSource] = useState('typed');
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
+    const [artifactBusy, setArtifactBusy] = useState('');
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
     const [importStatus, setImportStatus] = useState('');
@@ -831,6 +833,7 @@ export default function HomePage() {
         setLastSense(sense);
         setLoopCount((current) => source === 'follow_up' ? Math.min(current + 1, 6) : 0);
         setSendableDraft(null);
+        setArtifactBusy('');
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
         if (sense.blocked) {
@@ -948,6 +951,50 @@ export default function HomePage() {
     function submit(event) {
         event.preventDefault();
         reflect(text, 'typed');
+    }
+
+    async function createArtifact(kind = 'draft') {
+        const mirror = result?.mirror || SAMPLE_MIRROR;
+        const artifactKind = kind || detectArtifactKind(lastIntent, mirror);
+        setArtifactBusy(artifactKind);
+        trackEvent('sendable_created', { page: 'home', source: 'artifact_button', status: 'started', label: artifactKind });
+
+        try {
+            const response = await fetch(ARTIFACT_GATEWAY, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Active-Mirror-Session': getPrivacySessionId(),
+                },
+                body: JSON.stringify({
+                    intent: lastIntent || mirror.question || mirror.move || 'Create the smallest useful output.',
+                    artifactKind,
+                    boundary: 'personal',
+                    mirror: {
+                        reflection: mirror.reflection || '',
+                        question: mirror.question || '',
+                        move: mirror.move || '',
+                    },
+                }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data?.artifact) {
+                throw new Error(data?.error || 'artifact_failed');
+            }
+            setSendableDraft(data.artifact);
+            trackEvent('sendable_created', {
+                page: 'home',
+                source: data.fallback ? 'gateway_fallback' : 'gateway',
+                status: 'ok',
+                fallback: Boolean(data.fallback),
+                label: data.artifact.kind || artifactKind,
+            });
+        } catch {
+            setSendableDraft(makeArtifact(mirror, lastIntent, artifactKind));
+            trackEvent('sendable_created', { page: 'home', source: 'local_fallback', status: 'fallback', label: artifactKind });
+        } finally {
+            setArtifactBusy('');
+        }
     }
 
     function chooseStarter(starter) {
@@ -1125,16 +1172,16 @@ export default function HomePage() {
                                                     onClick={() => {
                                                         trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
                                                         if (item.action === 'artifact') {
-                                                            setSendableDraft(makeArtifact(result?.mirror || SAMPLE_MIRROR, lastIntent, item.artifactKind || 'draft'));
+                                                            createArtifact(item.artifactKind || 'draft');
                                                             return;
                                                         }
                                                         reflect(item.intent, 'follow_up');
                                                     }}
-                                                    disabled={busy}
+                                                    disabled={busy || Boolean(artifactBusy)}
                                                     className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                                                 >
-                                                    <Icon size={16} className="text-purple-200" />
-                                                    {item.label}
+                                                    <Icon size={16} className={artifactBusy === item.artifactKind ? 'animate-pulse text-cyan-200' : 'text-purple-200'} />
+                                                    {artifactBusy === item.artifactKind ? 'Making...' : item.label}
                                                 </button>
                                             );
                                         })}
