@@ -1,6 +1,7 @@
 const HARD_PRIVATE_PATTERNS = [
     /\bsk-(?:ant|proj|live|test|[a-z0-9])[a-z0-9_-]{16,}\b/i,
     /\b(?:api[_-]?key|secret|token|password|passcode|private[_-]?key)\s*[:=]\s*\S{6,}/i,
+    /\b(?:my|the)\s+(?:password|passcode|otp|pin|token|api key|secret)\s+(?:is|=|:)\s*\S{4,}/i,
     /-----BEGIN [A-Z ]*PRIVATE KEY-----/i,
 ];
 

@@ -135,6 +135,22 @@ function makeBlockedResult(data = {}) {
         };
     }
 
+    if (data.error && !/privacy|secret|redact|sensitive/i.test(data.error)) {
+        return {
+            kind: 'route_hold',
+            mirror: {
+                reflection: 'That did not run cleanly.',
+                question: 'Can you try the same ask once more?',
+                move: 'Send one short sentence. If it fails again, keep working with the local draft.',
+                receipt: {
+                    context_used: 'Only the service status for this turn.',
+                    context_excluded: 'Your prompt was not saved by this page.',
+                    memory_decision: 'Nothing saved.',
+                },
+            },
+        };
+    }
+
     return {
         kind: 'privacy_hold',
         mirror: {
