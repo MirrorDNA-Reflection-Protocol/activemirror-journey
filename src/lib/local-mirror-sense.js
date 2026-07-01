@@ -90,35 +90,35 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         cues.push({
             kind: 'memory',
             tone: 'good',
-            label: 'Using your saved choices.',
+            label: 'Using your choices.',
         });
     }
     if (approvedDefault) {
         cues.push({
             kind: 'memory',
             tone: 'good',
-            label: 'Using your saved choices.',
+            label: 'Using your choices.',
         });
     }
     if (broadByLength || broadByPattern) {
         cues.push({
             kind: 'drift',
             tone: 'steady',
-            label: 'This looks broad. I will keep it to one move.',
+            label: 'Keeping this small.',
         });
     }
     if (softPrivate && !hardPrivate) {
         cues.push({
             kind: 'privacy',
             tone: 'caution',
-            label: 'Private-looking details found. Share only what is needed.',
+            label: 'Use placeholders for private details.',
         });
     }
     if (hardPrivate) {
         cues.push({
             kind: 'privacy',
             tone: 'block',
-            label: 'Keep secrets out. Use placeholders.',
+            label: 'Use placeholders.',
         });
     }
 

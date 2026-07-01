@@ -28,12 +28,12 @@ const SCAN_QUESTIONS = [
     },
     {
         id: 'q3',
-        question: 'What should I avoid assuming?',
+        question: 'What gets annoying fast?',
         options: [
-            { label: 'I want a long answer', archetype: 'builder', preference: 'never_assume' },
-            { label: 'I already know what I want', archetype: 'strategist', preference: 'never_assume' },
-            { label: 'Private details are needed', archetype: 'scholar', preference: 'never_assume' },
-            { label: 'Agreement helps', archetype: 'analyst', preference: 'never_assume' },
+            { label: 'Long answers', archetype: 'builder', preference: 'never_assume' },
+            { label: 'Assuming I know what I want', archetype: 'strategist', preference: 'never_assume' },
+            { label: 'Asking for private details', archetype: 'scholar', preference: 'never_assume' },
+            { label: 'Agreeing too quickly', archetype: 'analyst', preference: 'never_assume' },
         ],
     },
     {

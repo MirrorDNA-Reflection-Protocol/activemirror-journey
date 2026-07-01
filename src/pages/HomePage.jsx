@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
 import DraftActions from '../components/DraftActions';
-import MirrorFeedback from '../components/MirrorFeedback';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
@@ -123,9 +122,9 @@ function makeBlockedResult(data = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Private details can stay with you. I only need the shape of the problem.',
-            question: 'What do you want help moving, with names and secrets replaced by placeholders?',
-            move: 'Try: "I need help with [problem] without sharing [private detail]."',
+            reflection: 'Keep that detail private. I can work with a placeholder.',
+            question: 'What is the same ask with the private part replaced by [something]?',
+            move: 'Replace the private part with brackets and send one sentence.',
             receipt: {
                 context_used: 'The current prompt only.',
                 context_excluded: 'Private-looking details were not sent out.',
@@ -133,8 +132,8 @@ function makeBlockedResult(data = {}) {
             },
             visual: {
                 kind: 'reframe',
-                left: 'Share the whole thing',
-                right: 'Share only the shape',
+                left: 'Private detail',
+                right: 'Placeholder',
             },
         },
     };
@@ -144,9 +143,9 @@ function makeLocalPrivacyResult(sense = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep the secret with you. The mirror can still work from a safer version.',
-            question: 'What is the same problem with the private detail replaced by a placeholder?',
-            move: 'Replace names, keys, passwords, and account details with brackets, then send one sentence.',
+            reflection: 'Keep that detail private. I can work with a placeholder.',
+            question: 'What is the same ask with the private part replaced by [something]?',
+            move: 'Replace the private part with brackets and send one sentence.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
                 context_excluded: 'The sensitive-looking text was not sent out.',
@@ -154,8 +153,8 @@ function makeLocalPrivacyResult(sense = {}) {
             },
             visual: {
                 kind: 'reframe',
-                left: 'Send the secret',
-                right: 'Send the shape',
+                left: 'Private detail',
+                right: 'Placeholder',
             },
         },
         local_sense: sense,
@@ -200,16 +199,10 @@ function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
 
     return [
         mirror.move && {
-            label: 'Another angle',
+            label: 'Different angle',
             icon: Sparkles,
             action: 'reflect',
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
-        },
-        mirror.question && {
-            label: 'Challenge it',
-            icon: ArrowRight,
-            action: 'reflect',
-            intent: `Challenge the premise and name what the plan may be skipping. Keep it short: ${mirror.question}`,
         },
         {
             ...artifactAction,
@@ -362,10 +355,10 @@ function MicroVisual({ visual }) {
 
     if (visual.kind === 'reframe') {
         return (
-            <div className="mt-3 grid gap-2 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] p-3 text-sm sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-                <div className="text-zinc-500 line-through decoration-zinc-600">{visual.left}</div>
-                <div className="hidden text-cyan-200 sm:block">to</div>
-                <div className="font-semibold text-cyan-100">{visual.right}</div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-zinc-500 line-through decoration-zinc-600">{visual.left}</span>
+                <span className="text-cyan-200">to</span>
+                <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-1.5 font-semibold text-cyan-100">{visual.right}</span>
             </div>
         );
     }
@@ -409,9 +402,9 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true 
 
     return (
         <div className="mt-5 grid gap-3">
-            <div className="rounded-[1.45rem] border border-emerald-200/18 bg-emerald-200/[0.07] p-3.5 shadow-[0_0_34px_rgba(16,185,129,0.08)]">
+            <div className="rounded-[1.45rem] border border-emerald-200/16 bg-emerald-200/[0.065] p-3.5 shadow-[0_0_34px_rgba(16,185,129,0.08)]">
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                    <div className="text-[1.05rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
+                    <div className="text-[1rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
                     <button
                         type="button"
                         onClick={copyMove}
@@ -428,10 +421,10 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true 
                     type="button"
                     onClick={() => onRemember?.(mirror)}
                     disabled={remembered}
-                    className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-zinc-300 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
+                    className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.032] px-3 text-xs font-semibold text-zinc-400 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
                 >
                     {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
-                    {remembered ? 'Saved for next time' : 'Remember this'}
+                    {remembered ? 'Saved' : 'Save'}
                 </button>
             </div>
             ) : null}
@@ -460,10 +453,10 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#101014]/78 p-4 shadow-[0_0_62px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
                     <ReflectionGlow mirror={mirror} />
-                    <p className="mt-4 text-[1.08rem] leading-7 text-zinc-100 sm:text-[1.18rem]">
+                    <p className="mt-4 text-[1rem] leading-7 text-zinc-100 sm:text-[1.12rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-5 rounded-[1.35rem] border border-violet-200/12 bg-white/[0.035] px-4 py-3 text-[0.98rem] font-medium leading-7 text-violet-50/90">
+                    <div className="mt-4 border-l border-violet-200/24 pl-3 text-[0.94rem] font-medium leading-7 text-violet-50/82">
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold} />
@@ -1024,7 +1017,7 @@ export default function HomePage() {
                     </Link>
                     <div className="flex items-center gap-2">
                         <Link to="/id" className="rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3 py-1.5 text-xs font-medium text-cyan-100 transition hover:border-cyan-200/35 hover:text-white">
-                            Setup
+                            Start
                         </Link>
                         <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
                             Teams
@@ -1185,19 +1178,7 @@ export default function HomePage() {
                                                 </button>
                                             );
                                         })}
-                                        <Link
-                                            to="/id"
-                                            onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'personal_setup_chip' })}
-                                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3.5 py-2 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.09]"
-                                        >
-                                            Make it yours
-                                            <ArrowRight size={15} />
-                                        </Link>
                                     </div>
-                                    <MirrorFeedback page="home" surface="first_turn" turn={1} result={result} onRepair={(nextIntent) => {
-                                        trackEvent('followup_clicked', { page: 'home', source: 'feedback_repair' });
-                                        reflect(nextIntent, 'feedback_repair');
-                                    }} />
                                 </div>
                             ) : null}
                             <SendableDraft draft={sendableDraft} />
