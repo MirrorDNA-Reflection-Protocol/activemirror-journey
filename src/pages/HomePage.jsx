@@ -266,7 +266,7 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
             ].join('\n'),
             checklist: [
                 'Use this as the prompt for image generation.',
-                'Remove anything private before sending it to a media model.',
+                'Remove anything private before generating it.',
             ],
         };
     }
