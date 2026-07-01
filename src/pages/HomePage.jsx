@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
-import DraftActions from '../components/DraftActions';
+import ArtifactCard from '../components/ArtifactCard';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
@@ -554,24 +554,7 @@ function ReflectionField({ awake = false }) {
 }
 
 function SendableDraft({ draft }) {
-    if (!draft) return null;
-    const isCode = draft.kind === 'code';
-
-    return (
-        <div className="rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-cyan-100">
-                <FileText size={16} />
-                {draft.title}
-            </div>
-            <div className={`whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100 ${isCode ? 'font-mono' : 'font-sans'}`}>{draft.body}</div>
-            <DraftActions title={draft.title} text={draft.body} surface="home" />
-            <div className="mt-3 grid gap-2">
-                {draft.checklist.map((item) => (
-                    <div key={item} className="text-xs leading-5 text-zinc-400">{item}</div>
-                ))}
-            </div>
-        </div>
-    );
+    return <ArtifactCard artifact={draft} surface="home" />;
 }
 
 function LocalSenseLine({ sense }) {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, BookmarkPlus, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
-import DraftActions from '../components/DraftActions';
+import ArtifactCard from '../components/ArtifactCard';
 import MirrorFeedback from '../components/MirrorFeedback';
 import ReflectionCardActions from '../components/ReflectionCardActions';
 import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
@@ -152,6 +152,7 @@ function makeSendableArtifact(mirror = {}) {
     const move = mirror.move || 'Take the smallest concrete next step.';
 
     return {
+        kind: 'draft',
         title: 'Sendable draft',
         body: [
             'Quick update:',
@@ -252,21 +253,7 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
 }
 
 function PhoneArtifactTurn({ artifact }) {
-    return (
-        <div className="space-y-3 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-cyan-100">
-                <FileText size={15} />
-                {artifact.title}
-            </div>
-            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-3 text-sm leading-6 text-zinc-100">{artifact.body}</pre>
-            <DraftActions title={artifact.title} text={artifact.body} surface="device" />
-            <div className="space-y-1">
-                {artifact.checks.map((item) => (
-                    <div key={item} className="text-xs leading-5 text-zinc-400">{item}</div>
-                ))}
-            </div>
-        </div>
-    );
+    return <ArtifactCard artifact={artifact} surface="device" />;
 }
 
 export default function DeviceExperience() {

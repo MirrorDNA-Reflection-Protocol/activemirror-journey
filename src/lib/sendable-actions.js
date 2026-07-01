@@ -29,10 +29,10 @@ export async function copyText(text) {
     return fallbackCopy(clean);
 }
 
-export function downloadTextFile(filename, text) {
+export function downloadTextFile(filename, text, type = 'text/plain;charset=utf-8') {
     if (typeof document === 'undefined') return false;
 
-    const blob = new Blob([String(text || '')], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([String(text || '')], { type });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

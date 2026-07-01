@@ -3,17 +3,65 @@ import { Check, Copy, Download, Share2 } from 'lucide-react';
 import { copyText, downloadTextFile, shareText } from '../lib/sendable-actions';
 import { trackEvent } from '../lib/privacy-events';
 
-function filenameFromTitle(title = 'active-mirror-draft') {
+const KIND_DOWNLOADS = {
+    code: { ext: 'js', type: 'text/javascript;charset=utf-8', label: 'Download code' },
+    doc: { ext: 'md', type: 'text/markdown;charset=utf-8', label: 'Download .md' },
+    image: { ext: 'md', type: 'text/markdown;charset=utf-8', label: 'Download brief' },
+    draft: { ext: 'txt', type: 'text/plain;charset=utf-8', label: 'Download' },
+};
+
+const CODE_LANG_EXTENSIONS = {
+    bash: 'sh',
+    css: 'css',
+    html: 'html',
+    js: 'js',
+    javascript: 'js',
+    json: 'json',
+    jsx: 'jsx',
+    py: 'py',
+    python: 'py',
+    sh: 'sh',
+    ts: 'ts',
+    tsx: 'tsx',
+};
+
+function firstCodeBlock(text = '') {
+    const match = String(text || '').match(/```([a-z0-9_-]+)?\n?([\s\S]*?)```/i);
+    if (!match) return null;
+    return {
+        lang: String(match[1] || 'js').toLowerCase(),
+        code: match[2].trim(),
+    };
+}
+
+function downloadInfo(kind = 'draft', text = '') {
+    if (kind !== 'code') return KIND_DOWNLOADS[kind] || KIND_DOWNLOADS.draft;
+
+    const block = firstCodeBlock(text);
+    const ext = CODE_LANG_EXTENSIONS[block?.lang] || KIND_DOWNLOADS.code.ext;
+    const type = ext === 'json'
+        ? 'application/json;charset=utf-8'
+        : ext === 'html'
+            ? 'text/html;charset=utf-8'
+            : ext === 'css'
+                ? 'text/css;charset=utf-8'
+                : 'text/plain;charset=utf-8';
+    return { ext, type, label: `Download .${ext}`, code: block?.code || String(text || '') };
+}
+
+function filenameFromTitle(title = 'active-mirror-draft', kind = 'draft') {
     const slug = String(title || 'active-mirror-draft')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '')
         .slice(0, 48);
-    return `${slug || 'active-mirror-draft'}.txt`;
+    const ext = KIND_DOWNLOADS[kind]?.ext || 'txt';
+    return `${slug || 'active-mirror-draft'}.${ext}`;
 }
 
-export default function DraftActions({ title = 'Sendable draft', text = '', surface = 'home' }) {
+export default function DraftActions({ title = 'Sendable draft', text = '', kind = 'draft', surface = 'home' }) {
     const [status, setStatus] = useState('');
+    const download = downloadInfo(kind, text);
 
     function flash(nextStatus) {
         setStatus(nextStatus);
@@ -32,7 +80,7 @@ export default function DraftActions({ title = 'Sendable draft', text = '', surf
 
     function downloadDraft() {
         try {
-            downloadTextFile(filenameFromTitle(title), text);
+            downloadTextFile(filenameFromTitle(title, kind).replace(/\.[^.]+$/, `.${download.ext}`), download.code || text, download.type);
             trackEvent('draft_downloaded', { page: surface, source: 'sendable' });
             flash('Downloaded');
         } catch {
@@ -68,7 +116,7 @@ export default function DraftActions({ title = 'Sendable draft', text = '', surf
             </button>
             <button type="button" onClick={downloadDraft} className={buttonClass}>
                 <Download size={13} />
-                Download
+                {download.label}
             </button>
             {status ? (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-100">
