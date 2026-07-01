@@ -102,6 +102,22 @@ function makeEcosystemResult(intent) {
     };
 }
 
+function makeSetupReadyResult() {
+    return {
+        kind: 'setup_ready',
+        mirror: {
+            reflection: 'You are set. Bring one real thing, messy is fine.',
+            question: 'What do you want to work on first?',
+            move: 'Type it in one sentence. I will keep it short.',
+            receipt: {
+                context_used: 'Your saved choices on this browser.',
+                context_excluded: 'Private details and extra history stay out.',
+                memory_decision: 'Your choices stay on this browser.',
+            },
+        },
+    };
+}
+
 function makeBlockedResult(data = {}) {
     if (data.error === 'rate_limited') {
         return {
@@ -390,7 +406,7 @@ function MicroVisual({ visual }) {
     return null;
 }
 
-function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true }) {
+function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true, allowCopy = true }) {
     const [copied, setCopied] = useState(false);
 
     async function copyMove() {
@@ -405,14 +421,16 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true 
             <div className="rounded-[1.45rem] border border-emerald-200/16 bg-emerald-200/[0.065] p-3.5 shadow-[0_0_34px_rgba(16,185,129,0.08)]">
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                     <div className="text-[1rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
-                    <button
-                        type="button"
-                        onClick={copyMove}
-                        className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-black/18 px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.10]"
-                    >
-                        {copied ? <Check size={15} /> : <Copy size={15} />}
-                        {copied ? 'Copied' : 'Copy'}
-                    </button>
+                    {allowCopy ? (
+                        <button
+                            type="button"
+                            onClick={copyMove}
+                            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-black/18 px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.10]"
+                        >
+                            {copied ? <Check size={15} /> : <Copy size={15} />}
+                            {copied ? 'Copied' : 'Copy'}
+                        </button>
+                    ) : null}
                 </div>
             </div>
             {allowRemember ? (
@@ -437,6 +455,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const isPrivacyHold = result?.kind === 'privacy_hold';
+    const isSetupReady = result?.kind === 'setup_ready';
     const truthState = result?.truth_state || mirror.truth_state;
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
@@ -459,7 +478,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     <div className="mt-4 border-l border-violet-200/24 pl-3 text-[0.94rem] font-medium leading-7 text-violet-50/82">
                         {mirror.question}
                     </div>
-                    <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold} />
+                    <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold && !isSetupReady} allowCopy={!isSetupReady} />
                 </div>
             </div>
             {showSourceCheck ? (
@@ -810,7 +829,10 @@ export default function HomePage() {
         if (bootPromptRef.current || !location.state?.mirrorReady) return;
         bootPromptRef.current = true;
         setSeed(readSavedSeed());
-        setImportStatus('Ready. What is on your mind?');
+        setResult(makeSetupReadyResult());
+        setLastIntent('setup ready');
+        setLastSource('setup_ready');
+        setImportStatus('Ready.');
         window.setTimeout(() => setImportStatus(''), 2800);
         window.setTimeout(() => inputRef.current?.focus(), 60);
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -1153,7 +1175,7 @@ export default function HomePage() {
                             <div className="sm:pl-12">
                                 <LocalSenseLine sense={lastSense} />
                             </div>
-                            {!busy && result && result.kind !== 'privacy_hold' ? (
+                            {!busy && result && !['privacy_hold', 'setup_ready'].includes(result.kind) ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">
                                         {followUps.map((item) => {
