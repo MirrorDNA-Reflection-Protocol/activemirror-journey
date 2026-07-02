@@ -15,6 +15,14 @@ function hasExplicitSecret(intent = '') {
     ].some((pattern) => pattern.test(intent));
 }
 
+function needsSourceCheck(text = '') {
+    const explicitSourceAsk = /\b(2026|this year|recently|right now|current|latest|online|web|source|sources|research|competitor|market|verify|check|paper|study|studies|report|pricing|released|launched|who is doing)\b/.test(text);
+    const timedFactAsk = /\b(today|right now|this week|this month|this year|as of)\b/.test(text)
+        && /\b(news|market|price|pricing|competitor|research|source|verify|check|fact|facts|numbers|paper|study|studies|report|released|launched|happened|weather|stock|model|api)\b/.test(text);
+
+    return explicitSourceAsk || timedFactAsk;
+}
+
 function classify(intent = '') {
     const text = cleanIntent(intent).toLowerCase();
     if (hasExplicitSecret(intent)) {
@@ -23,7 +31,7 @@ function classify(intent = '') {
     if (/\b(models?|browser|ai apps?|apple|memory|genui)\b.*\bnow\b/.test(text)) {
         return 'source_check';
     }
-    if (/\b(2026|this year|recently|right now|current|latest|today|online|web|source|sources|research|competitor|market|verify|check|paper|study|studies|report|pricing|released|launched|who is doing)\b/.test(text)) {
+    if (needsSourceCheck(text)) {
         return 'source_check';
     }
     if (!/\b(switch|whether|between|decid\w*|should i|should we|do i)\b/.test(text) && /\b(landing page|homepage|site|page)\b/.test(text) && /\b(brainscan|mirrorseed|enterprise|too much|first action|first screen|users?|button|copy|ads?)\b/.test(text)) {

@@ -82,7 +82,12 @@ function isEcosystemAsk(intent) {
 }
 
 function isSourceHeavyAsk(intent) {
-    return /\b(today|latest|current|recent|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing)\b/i.test(intent);
+    const text = String(intent || '');
+    const explicitSourceAsk = /\b(latest|current|recent|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing)\b/i.test(text);
+    const timedFactAsk = /\b(today|right now|this week|this month|this year|as of)\b/i.test(text)
+        && /\b(news|market|price|pricing|competitor|research|source|verif\w*|check|fact|facts|numbers|paper|study|studies|report|released|launched|happened|weather|stock|model|api)\b/i.test(text);
+
+    return explicitSourceAsk || timedFactAsk;
 }
 
 function makeEcosystemResult(intent) {
@@ -198,6 +203,14 @@ function artifactActionFor(kind = 'draft') {
     return { label: 'Draft it', icon: PenLine };
 }
 
+function artifactIntentFor(kind = 'draft', mirror = {}, intent = '') {
+    const base = String(intent || mirror.question || mirror.move || 'this').replace(/\s+/g, ' ').trim();
+    if (kind === 'image') return `Create a visual brief for this, using the reflection and next move: ${base}`;
+    if (kind === 'code') return `Create a small code starter for this, using the reflection and next move: ${base}`;
+    if (kind === 'doc') return `Create a short working document from this reflection, ready to copy: ${base}`;
+    return `Draft the smallest sendable version from this reflection, ready to copy: ${base}`;
+}
+
 function shouldOpenWorkSurface(intent = '', mirror = {}) {
     if (isSourceHeavyAsk(intent)) return false;
 
@@ -212,6 +225,7 @@ function shouldOpenWorkSurface(intent = '', mirror = {}) {
 function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
     const artifactKind = detectArtifactKind(intent, mirror);
     const artifactAction = artifactActionFor(artifactKind);
+    const artifactIntent = artifactIntentFor(artifactKind, mirror, intent);
 
     if (loopCount >= 4) {
         return [
@@ -225,23 +239,23 @@ function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
                 ...artifactAction,
                 action: 'artifact',
                 artifactKind,
-                intent: 'Create the smallest useful output from this reflection.',
+                intent: artifactIntent,
             },
         ].filter(Boolean);
     }
 
     return [
+        {
+            ...artifactAction,
+            action: 'artifact',
+            artifactKind,
+            intent: artifactIntent,
+        },
         mirror.move && {
             label: 'Another angle',
             icon: Sparkles,
             action: 'reflect',
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
-        },
-        {
-            ...artifactAction,
-            action: 'artifact',
-            artifactKind,
-            intent: 'Create the smallest useful output from this reflection.',
         },
     ].filter(Boolean);
 }
@@ -306,19 +320,15 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
             kind,
             title: 'Working doc',
             body: [
-                'Working doc',
+                cleanIntent || 'Working note',
                 '',
-                `What this is for: ${cleanIntent || question}`,
+                `Question: ${question}`,
+                `Next: ${move}`,
                 '',
-                'The decision',
-                question,
-                '',
-                'The move',
-                move,
-                '',
-                'Sendable version',
-                `I am working from this question: ${question}`,
-                `The next thing I am trying is: ${move}`,
+                'Sendable version:',
+                `I am working on this: ${cleanIntent || question}`,
+                `The next step I am testing is: ${move}`,
+                'Can you react to the idea and point out one thing that is unclear?',
             ].join('\n'),
             checklist: [
                 'Remove private names or details before sharing.',
@@ -331,9 +341,11 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
         kind,
         title: 'Message draft',
         body: [
-            `I am using this question: ${question}`,
-            `What I will try: ${move}`,
-            'I am keeping private details out unless they are needed.',
+            `I am working on this: ${cleanIntent || question}`,
+            '',
+            `The next thing I am trying is: ${move}`,
+            '',
+            'Can you give me one clear reaction?',
         ].filter(Boolean).join('\n'),
         checklist: [
             'Remove anything private.',
@@ -576,7 +588,7 @@ function WorkSurface({ draft, busyKind, onClose }) {
                 <X size={15} />
             </button>
             <ArtifactCard artifact={draft} surface="home" dismissInset />
-            <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">Edit before you send.</div>
+            <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">Ready to copy. Edit if needed.</div>
         </div>
     );
 }
@@ -850,6 +862,7 @@ export default function HomePage() {
     const location = useLocation();
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
+    const workSurfaceRef = useRef(null);
     const bootPromptRef = useRef(false);
     const [seed, setSeed] = useState(() => readSavedSeed());
     const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
@@ -887,6 +900,15 @@ export default function HomePage() {
         window.setTimeout(() => inputRef.current?.focus(), 60);
         window.history.replaceState({}, document.title, window.location.pathname);
     }, [location.state]);
+
+    useEffect(() => {
+        if (!workSurfaceOpen || (!sendableDraft && !artifactBusy)) return;
+        if (!window.matchMedia('(max-width: 1023px)').matches) return;
+
+        window.setTimeout(() => {
+            workSurfaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+    }, [artifactBusy, sendableDraft, workSurfaceOpen]);
 
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
@@ -1261,7 +1283,11 @@ export default function HomePage() {
                                                     onClick={() => {
                                                         trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
                                                         if (item.action === 'artifact') {
-                                                            createArtifact(item.artifactKind || 'draft');
+                                                            createArtifact(item.artifactKind || 'draft', {
+                                                                intent: item.intent,
+                                                                mirror: result?.mirror,
+                                                                source: 'follow_up',
+                                                            });
                                                             return;
                                                         }
                                                         reflect(item.intent, 'follow_up');
@@ -1278,11 +1304,13 @@ export default function HomePage() {
                                 </div>
                             ) : null}
                         </div>
-                        <WorkSurface
-                            draft={sendableDraft}
-                            busyKind={artifactBusy}
-                            onClose={() => setWorkSurfaceOpen(false)}
-                        />
+                        <div ref={workSurfaceRef} className="min-w-0">
+                            <WorkSurface
+                                draft={sendableDraft}
+                                busyKind={artifactBusy}
+                                onClose={() => setWorkSurfaceOpen(false)}
+                            />
+                        </div>
                     </section>
                 ) : null}
             </main>

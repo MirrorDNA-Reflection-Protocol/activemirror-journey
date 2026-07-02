@@ -113,6 +113,9 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
                         <div className="text-xs text-zinc-500">{meta.label}</div>
                     </div>
                 </div>
+                <div className="rounded-full border border-emerald-300/15 bg-emerald-300/[0.065] px-2.5 py-1 text-[11px] font-semibold text-emerald-100">
+                    Ready to use
+                </div>
             </div>
             <ArtifactBody body={body} />
             <DraftActions title={title} text={body} kind={kind} surface={surface} />
