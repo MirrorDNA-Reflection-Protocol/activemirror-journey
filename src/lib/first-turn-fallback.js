@@ -57,9 +57,9 @@ const MIRRORS = {
         move: 'Name that one claim, then check one current source before using it.',
     },
     private_output: {
-        reflection: 'Private details can stay with you. I can work with the shape.',
-        question: 'What is the same problem with private parts replaced?',
-        move: 'Use placeholders for anything private and send one sentence.',
+        reflection: 'Keep the private part out. I can still help with the shape.',
+        question: 'What are you trying to move, with names and secrets replaced?',
+        move: 'Replace private details with [name] or [secret], then send one sentence.',
     },
     launch_clarity: {
         reflection: 'The first screen should make one useful action obvious before anything else asks for attention.',

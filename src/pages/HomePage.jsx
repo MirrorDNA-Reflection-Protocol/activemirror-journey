@@ -154,18 +154,13 @@ function makeBlockedResult(data = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep the private part with you. A placeholder is enough.',
-            question: 'What is the same ask with the private part replaced?',
-            move: 'Swap the private part for [something] and send one sentence.',
+            reflection: 'Keep the private part out. I can still help with the shape.',
+            question: 'What are you trying to move, with names and secrets replaced?',
+            move: 'Replace private details with [name] or [secret], then send one sentence.',
             receipt: {
                 context_used: 'The current prompt only.',
                 context_excluded: 'Private-looking details were not sent out.',
                 memory_decision: 'Nothing saved.',
-            },
-            visual: {
-                kind: 'reframe',
-                left: 'Private detail',
-                right: 'Placeholder',
             },
         },
     };
@@ -175,18 +170,13 @@ function makeLocalPrivacyResult(sense = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep the private part with you. A placeholder is enough.',
-            question: 'What is the same ask with the private part replaced?',
-            move: 'Swap the private part for [something] and send one sentence.',
+            reflection: 'Keep the private part out. I can still help with the shape.',
+            question: 'What are you trying to move, with names and secrets replaced?',
+            move: 'Replace private details with [name] or [secret], then send one sentence.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
                 context_excluded: 'The sensitive-looking text was not sent out.',
                 memory_decision: 'Nothing saved.',
-            },
-            visual: {
-                kind: 'reframe',
-                left: 'Private detail',
-                right: 'Placeholder',
             },
         },
         local_sense: sense,

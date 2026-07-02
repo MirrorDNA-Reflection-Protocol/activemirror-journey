@@ -24,7 +24,7 @@ const secretFallback = makeOfflineMirrorResult(explicitSecret, 'network');
 
 check(secretSense.blocked, 'explicit password sentence must be locally blocked');
 check(
-    secretFallback.mirror?.move === 'Use placeholders for anything private and send one sentence.',
+    secretFallback.mirror?.move === 'Replace private details with [name] or [secret], then send one sentence.',
     'explicit password sentence must become the privacy fallback'
 );
 
