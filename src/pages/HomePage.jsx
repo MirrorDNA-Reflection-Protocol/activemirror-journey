@@ -90,11 +90,11 @@ function makeEcosystemResult(intent) {
         kind: 'help',
         intent,
         mirror: {
-            reflection: 'I help turn the thing in front of you into a useful next step.',
-            question: 'What do you want help moving?',
-            move: 'Type it in one sentence. Leave private details out for now.',
+            reflection: 'Bring the thing in front of you. I will help make it clearer, smaller, and usable.',
+            question: 'What do you want to move?',
+            move: 'Type the messy version in one sentence.',
             receipt: {
-                context_used: 'Your question about how Active Mirror helps.',
+                context_used: 'Your question about what this can do.',
                 context_excluded: 'No private details were needed.',
                 memory_decision: 'Nothing saved.',
             },
@@ -108,7 +108,7 @@ function makeSetupReadyResult() {
         mirror: {
             reflection: 'You are set. Bring one real thing, messy is fine.',
             question: 'What do you want to work on first?',
-            move: 'Type it in one sentence. I will keep it short.',
+            move: 'Type the rough version. I will keep it short.',
             receipt: {
                 context_used: 'Your saved choices on this browser.',
                 context_excluded: 'Private details and extra history stay out.',
@@ -139,9 +139,9 @@ function makeBlockedResult(data = {}) {
         return {
             kind: 'route_hold',
             mirror: {
-                reflection: 'That did not run cleanly.',
-                question: 'Can you try the same ask once more?',
-                move: 'Send one short sentence. If it fails again, keep working with the local draft.',
+                reflection: 'That did not come through cleanly.',
+                question: 'Can you send the same thing once more?',
+                move: 'Try one short sentence. I will keep a local version ready if the live answer fails.',
                 receipt: {
                     context_used: 'Only the service status for this turn.',
                     context_excluded: 'Your prompt was not saved by this page.',
@@ -154,9 +154,9 @@ function makeBlockedResult(data = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep that detail private. I can work with a placeholder.',
-            question: 'What is the same ask with the private part replaced by [something]?',
-            move: 'Replace the private part with brackets and send one sentence.',
+            reflection: 'Keep the private part with you. A placeholder is enough.',
+            question: 'What is the same ask with the private part replaced?',
+            move: 'Swap the private part for [something] and send one sentence.',
             receipt: {
                 context_used: 'The current prompt only.',
                 context_excluded: 'Private-looking details were not sent out.',
@@ -175,9 +175,9 @@ function makeLocalPrivacyResult(sense = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep that detail private. I can work with a placeholder.',
-            question: 'What is the same ask with the private part replaced by [something]?',
-            move: 'Replace the private part with brackets and send one sentence.',
+            reflection: 'Keep the private part with you. A placeholder is enough.',
+            question: 'What is the same ask with the private part replaced?',
+            move: 'Swap the private part for [something] and send one sentence.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
                 context_excluded: 'The sensitive-looking text was not sent out.',
@@ -231,7 +231,7 @@ function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
 
     return [
         mirror.move && {
-            label: 'Different angle',
+            label: 'Another angle',
             icon: Sparkles,
             action: 'reflect',
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
@@ -951,7 +951,7 @@ export default function HomePage() {
             setSeed(readSavedSeed());
             setActiveDefault(imported.activeDefault || getActiveMirrorDefault());
             setMirrorDefaults(getMirrorDefaults());
-            setImportStatus('ID loaded. What is on your mind?');
+            setImportStatus('Loaded. What do you want?');
             trackEvent('saved_choices_uploaded', { page: 'home', source: 'file' });
             window.setTimeout(() => setImportStatus(''), 2800);
             window.setTimeout(() => inputRef.current?.focus(), 60);
@@ -1038,7 +1038,7 @@ export default function HomePage() {
                     </Link>
                     <div className="flex items-center gap-2">
                         <Link to="/id" className="rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3 py-1.5 text-xs font-medium text-cyan-100 transition hover:border-cyan-200/35 hover:text-white">
-                            Start
+                            Start here
                         </Link>
                         <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
                             Teams
@@ -1088,16 +1088,16 @@ export default function HomePage() {
                                     className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-7 text-base font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white sm:w-auto"
                                 >
                                     <Upload size={16} />
-                                    Already have ID?
+                                    Use my mirror
                                 </button>
                             </div>
                         ) : null}
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
-                            <div className={`grid gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl ${showMirror ? 'grid-cols-[minmax(0,1fr)_auto] items-end' : 'sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end'}`}>
+                            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl">
                                 <textarea
                                     ref={inputRef}
-                                    rows={showMirror ? 1 : 3}
+                                    rows={1}
                                     value={text}
                                     maxLength={1000}
                                     placeholder="Or type what you want..."
@@ -1108,7 +1108,7 @@ export default function HomePage() {
                                             submit(event);
                                         }
                                     }}
-                                    className={`${showMirror ? 'min-h-12' : 'min-h-24'} max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/30`}
+                                    className="min-h-12 max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/30 sm:min-h-14"
                                     style={{ overflowWrap: 'anywhere' }}
                                 />
                                 <button
@@ -1117,7 +1117,7 @@ export default function HomePage() {
                                     onClick={() => {
                                         if (!canSubmit && !busy) inputRef.current?.focus();
                                     }}
-                                    className={`${showMirror ? 'min-h-12 w-12 px-0 sm:min-h-14 sm:w-auto sm:px-5' : 'sm:min-h-16 px-5'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 ${ctaClass}`}
+                                    className={`${showMirror ? 'w-12 px-0 sm:w-auto sm:px-5' : 'px-4 sm:px-5'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 sm:min-h-14 ${ctaClass}`}
                                     aria-label="Send"
                                 >
                                     {busy ? (

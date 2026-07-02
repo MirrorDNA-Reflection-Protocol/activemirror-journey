@@ -52,37 +52,37 @@ function classify(intent = '') {
 
 const MIRRORS = {
     source_check: {
-        reflection: 'This needs a source before it becomes a direction. A fresh-sounding answer is not enough to build on.',
+        reflection: 'This is worth checking before you build around it.',
         question: 'Which claim would change your next move if it turned out to be false?',
-        move: 'Write that one claim, then check one current source before using the answer.',
+        move: 'Name that one claim, then check one current source before using it.',
     },
     private_output: {
-        reflection: 'Private details can stay with you. The useful part is the shape of the problem.',
-        question: 'What is the same problem with names and secrets replaced by placeholders?',
-        move: 'Write one sentence with placeholders for anything private.',
+        reflection: 'Private details can stay with you. I can work with the shape.',
+        question: 'What is the same problem with private parts replaced?',
+        move: 'Use placeholders for anything private and send one sentence.',
     },
     launch_clarity: {
-        reflection: 'The page is asking the user to understand too much before they feel a reason to act. The first action has to beat the feature list.',
-        question: 'What should someone want to do within the first thirty seconds?',
-        move: 'Write one promise and one button label, then hide anything that competes with them.',
+        reflection: 'The first screen should make one useful action obvious before anything else asks for attention.',
+        question: 'What should someone try in the first thirty seconds?',
+        move: 'Pick one promise and one button. Hide anything that competes with them.',
     },
     decision: {
-        reflection: 'This should not be solved by preference yet. You need a real-world sign that makes one option clearly better.',
+        reflection: 'Another opinion will not help as much as a real-world signal.',
         question: 'What sign would make one option clearly better?',
         move: 'Name the sign, then run the smallest test that could produce it today.',
     },
     reset: {
-        reflection: 'Too many open loops are being treated as one problem. Relief comes from moving one loop, not solving the whole pile.',
+        reflection: 'Too many open loops are being treated as one problem.',
         question: 'Which one loop would make the rest easier if it moved a little?',
         move: 'Pick that loop, set a ten-minute timer, and write only the next visible action.',
     },
     artifact: {
-        reflection: 'This wants to become something you can use, not another pass of thinking about it.',
+        reflection: 'This wants to become something you can use.',
         question: 'What output would still be useful if it were rough?',
         move: 'Draft the smallest usable version with a title, three bullets, and one ask.',
     },
     general: {
-        reflection: 'The thought is staying big because the next move would make it testable. Shrink it until it can meet the real world today.',
+        reflection: 'The thought is still big. Make it small enough to try today.',
         question: 'What is the smallest version of this that could be tested today?',
         move: 'Write the testable version in one sentence, then show it to one person.',
     },

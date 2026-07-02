@@ -14,7 +14,7 @@ const normalFallback = makeOfflineMirrorResult(normalDraftAsk, 'network');
 
 check(!normalSense.blocked, 'normal send/safe wording must not be locally blocked');
 check(
-    normalFallback.mirror?.reflection !== 'Private details can stay with you. The useful part is the shape of the problem.',
+    normalFallback.mirror?.reflection !== 'Private details can stay with you. I can work with the shape.',
     'normal send/safe wording must not become the privacy fallback'
 );
 
@@ -24,7 +24,7 @@ const secretFallback = makeOfflineMirrorResult(explicitSecret, 'network');
 
 check(secretSense.blocked, 'explicit password sentence must be locally blocked');
 check(
-    secretFallback.mirror?.move === 'Write one sentence with placeholders for anything private.',
+    secretFallback.mirror?.move === 'Use placeholders for anything private and send one sentence.',
     'explicit password sentence must become the privacy fallback'
 );
 

@@ -270,7 +270,7 @@ export default function Start() {
                         <Link to="/privacy" className="hidden text-zinc-500 transition hover:text-white sm:inline">Privacy</Link>
                         <Link to="/terms" className="hidden text-zinc-500 transition hover:text-white sm:inline">Terms</Link>
                         <Link to="/" className="rounded-full border border-white/10 px-4 py-2 font-semibold text-zinc-300 transition hover:border-emerald-200/35 hover:text-white">
-                            Open chat
+                            Chat
                         </Link>
                     </div>
                 </div>
@@ -303,13 +303,15 @@ export default function Start() {
                                 </button>
                             ))}
                         </div>
-                        <button
-                            type="button"
-                            onClick={reset}
-                            className="mt-5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
-                        >
-                            Start over
-                        </button>
+                        {answers.length > 0 ? (
+                            <button
+                                type="button"
+                                onClick={reset}
+                                className="mt-5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
+                            >
+                                Start over
+                            </button>
+                        ) : null}
                     </section>
                 ) : null}
 
@@ -347,7 +349,7 @@ export default function Start() {
                                     onClick={startChat}
                                     className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-violet-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.28)] transition hover:scale-[1.01]"
                                 >
-                                    Start chat
+                                    Start reflecting
                                     <ArrowRight size={19} />
                                 </button>
                                 <button
@@ -356,7 +358,7 @@ export default function Start() {
                                     className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
                                 >
                                     <Download size={17} />
-                                    Download ID
+                                    Keep a copy
                                 </button>
                                 <button
                                     type="button"
