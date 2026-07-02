@@ -184,12 +184,12 @@ function phoneBlocked(error) {
     }
 
     return {
-        reflection: 'Keep the private part with you. A placeholder is enough.',
-        question: 'What is the same ask with the private part replaced?',
-        move: 'Swap the private part for [something] and send one sentence.',
+        reflection: 'Use placeholders for anything private. I can still help with the useful part.',
+        question: 'What do you want help making, deciding, or sending?',
+        move: 'Swap private details for [name] or [detail], then send the useful version.',
         receipt: {
             context_used: 'The current message only.',
-            context_excluded: 'Potentially sensitive details were not processed further.',
+            context_excluded: 'Potentially private details were kept out of the live route.',
             memory_decision: 'Nothing saved.',
         },
     };

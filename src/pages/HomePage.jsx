@@ -159,12 +159,12 @@ function makeBlockedResult(data = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep the private part out. I can still help with the shape.',
-            question: 'What are you trying to move, with names and secrets replaced?',
-            move: 'Replace private details with [name] or [secret], then send one sentence.',
+            reflection: 'Use placeholders for anything private. I can still help with the useful part.',
+            question: 'What do you want help making, deciding, or sending?',
+            move: 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
             receipt: {
                 context_used: 'The current prompt only.',
-                context_excluded: 'Private-looking details were not sent out.',
+                context_excluded: 'Potentially private details were kept out of the live route.',
                 memory_decision: 'Nothing saved.',
             },
         },
@@ -175,12 +175,12 @@ function makeLocalPrivacyResult(sense = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Keep the private part out. I can still help with the shape.',
-            question: 'What are you trying to move, with names and secrets replaced?',
-            move: 'Replace private details with [name] or [secret], then send one sentence.',
+            reflection: 'Use placeholders for anything private. I can still help with the useful part.',
+            question: 'What do you want help making, deciding, or sending?',
+            move: 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
-                context_excluded: 'The sensitive-looking text was not sent out.',
+                context_excluded: 'Potentially private details stayed in this browser.',
                 memory_decision: 'Nothing saved.',
             },
         },

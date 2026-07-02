@@ -30,7 +30,7 @@ Prefer:
 - What do you want?
 - Start here.
 - Use my mirror.
-- Keep the private part out.
+- Use placeholders for anything private.
 - Make one small version and test it.
 
 Avoid in consumer answers unless explicitly asked:

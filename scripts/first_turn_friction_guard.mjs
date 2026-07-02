@@ -35,8 +35,12 @@ const secretFallback = makeOfflineMirrorResult(explicitSecret, 'network');
 
 check(secretSense.blocked, 'explicit password sentence must be locally blocked');
 check(
-    secretFallback.mirror?.move === 'Replace private details with [name] or [secret], then send one sentence.',
+    secretFallback.mirror?.move === 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
     'explicit password sentence must become the privacy fallback'
+);
+check(
+    !/held the turn|stuck point|private facts|sensitive context|what are you trying to move/i.test(JSON.stringify(secretFallback)),
+    'privacy fallback must not sound scary, clinical, or accusatory'
 );
 
 const homePage = fs.readFileSync(new URL('../src/pages/HomePage.jsx', import.meta.url), 'utf8');
