@@ -10,9 +10,9 @@ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const PHONE_STARTERS = [
-    'I am stuck. Give me one next move.',
-    'Challenge my thinking.',
-    'Turn this into something sendable.',
+    'I am stuck.',
+    'Another angle',
+    'Make it sendable',
 ];
 
 const PHONE_THREAD_KEY = 'activeMirror_phoneThread_v1';
@@ -184,9 +184,9 @@ function phoneBlocked(error) {
     }
 
     return {
-        reflection: 'I held that one back because it may contain private details.',
-        question: 'Can you restate it without names, secrets, or account details?',
-        move: 'Send the one-sentence version.',
+        reflection: 'Keep the private part with you. A placeholder is enough.',
+        question: 'What is the same ask with the private part replaced?',
+        move: 'Swap the private part for [something] and send one sentence.',
         receipt: {
             context_used: 'The current message only.',
             context_excluded: 'Potentially sensitive details were not processed further.',

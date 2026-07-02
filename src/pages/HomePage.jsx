@@ -124,7 +124,7 @@ function makeBlockedResult(data = {}) {
             kind: 'cooldown',
             mirror: {
                 reflection: 'The answer is cooling down for a moment. Your page is still private, and nothing needs to be re-entered.',
-                question: 'Can you hold the same stuck point and try again in a minute?',
+                question: 'Can you send the same sentence again in a minute?',
                 move: 'Wait for the short cooldown, then send the same sentence again.',
                 receipt: {
                     context_used: 'Only the request limit state was used.',
@@ -654,7 +654,7 @@ function MemoryDrawer({
                 <div className="overflow-y-auto px-4 py-4">
                     {!items.length ? (
                         <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
-                            Nothing saved yet. When an answer is useful, choose Remember.
+                            Nothing saved yet. When an answer is useful, choose Save.
                         </div>
                     ) : mode === 'cards' && activeCard ? (
                         <div className="grid gap-3">
