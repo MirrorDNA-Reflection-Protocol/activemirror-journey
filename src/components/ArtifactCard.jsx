@@ -68,7 +68,7 @@ function CodeSegment({ lang, text }) {
 
 function TextSegment({ text }) {
     return (
-        <div className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 px-3 py-3 text-sm leading-6 text-zinc-100">
+        <div className="whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-black/25 px-3 py-3 text-sm leading-6 text-zinc-100">
             {text}
         </div>
     );
@@ -87,7 +87,7 @@ function ArtifactBody({ body }) {
     );
 }
 
-export default function ArtifactCard({ artifact, surface = 'home' }) {
+export default function ArtifactCard({ artifact, surface = 'home', dismissInset = false }) {
     if (!artifact) return null;
 
     const kind = cleanKind(artifact.kind);
@@ -102,14 +102,14 @@ export default function ArtifactCard({ artifact, surface = 'home' }) {
     const body = artifact.body || '';
 
     return (
-        <section className="rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2">
+        <section className="min-w-0 overflow-hidden rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
+            <div className={`mb-3 flex flex-wrap items-start justify-between gap-2 ${dismissInset ? 'pr-10' : ''}`}>
+                <div className="flex min-w-0 items-start gap-2">
                     <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-2xl border ${meta.tone}`}>
                         <Icon size={15} />
                     </span>
                     <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold text-cyan-50">{title}</div>
+                        <div className="break-words text-sm font-semibold leading-5 text-cyan-50">{title}</div>
                         <div className="text-xs text-zinc-500">{meta.label}</div>
                     </div>
                 </div>

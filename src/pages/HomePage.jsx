@@ -208,6 +208,17 @@ function artifactActionFor(kind = 'draft') {
     return { label: 'Draft it', icon: PenLine };
 }
 
+function shouldOpenWorkSurface(intent = '', mirror = {}) {
+    if (isSourceHeavyAsk(intent)) return false;
+
+    const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
+    const directAsk = /\b(make it sendable|something i can send|turn (this|it) into|draft it|write it|build it|create it|give me code|make a doc|make a visual|make an image)\b/i.test(text);
+    const asksToMake = /\b(make|create|draft|write|generate|build|prepare|compose|turn)\b/i.test(text);
+    const asksForThing = /\b(message|email|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan)\b/i.test(text);
+
+    return directAsk || (asksToMake && asksForThing);
+}
+
 function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
     const artifactKind = detectArtifactKind(intent, mirror);
     const artifactAction = artifactActionFor(artifactKind);
@@ -436,7 +447,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
         <div className="mt-5 grid gap-3">
             <div className="rounded-[1.45rem] border border-emerald-200/16 bg-emerald-200/[0.065] p-3.5 shadow-[0_0_34px_rgba(16,185,129,0.08)]">
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                    <div className="text-[1rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
+                    <div className="break-words text-[1rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
                     {allowCopy ? (
                         <button
                             type="button"
@@ -488,10 +499,10 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#101014]/78 p-4 shadow-[0_0_62px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
                     <ReflectionGlow mirror={mirror} />
-                    <p className="mt-4 text-[1rem] leading-7 text-zinc-100 sm:text-[1.12rem]">
+                    <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.12rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-4 border-l border-violet-200/24 pl-3 text-[0.94rem] font-medium leading-7 text-violet-50/82">
+                    <div className="mt-4 break-words border-l border-violet-200/24 pl-3 text-[0.94rem] font-medium leading-7 text-violet-50/82">
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold && !isSetupReady} allowCopy={!isSetupReady} />
@@ -527,6 +538,59 @@ function LoadingPanel() {
     );
 }
 
+function WorkSurface({ draft, busyKind, onClose }) {
+    const working = Boolean(busyKind && !draft);
+    if (!draft && !working) return null;
+
+    if (working) {
+        const { icon: Icon } = artifactActionFor(busyKind);
+
+        return (
+            <section className="min-w-0 overflow-hidden rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
+                <div className="mb-4 flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-2xl border border-cyan-200/20 bg-cyan-300/[0.07] text-cyan-100">
+                            <Icon size={15} />
+                        </span>
+                        <div className="min-w-0">
+                            <div className="text-sm font-semibold text-cyan-50">Making it useful</div>
+                            <div className="text-xs text-zinc-500">Almost there.</div>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-white/25 hover:text-white"
+                        aria-label="Close"
+                    >
+                        <X size={15} />
+                    </button>
+                </div>
+                <div className="grid gap-2">
+                    <div className="h-3 w-4/5 animate-pulse rounded-full bg-white/10" />
+                    <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/10" />
+                    <div className="h-24 animate-pulse rounded-2xl border border-white/10 bg-black/20" />
+                </div>
+            </section>
+        );
+    }
+
+    return (
+        <div className="relative min-w-0">
+            <button
+                type="button"
+                onClick={onClose}
+                className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/40 text-zinc-400 backdrop-blur transition hover:border-white/25 hover:text-white"
+                aria-label="Close"
+            >
+                <X size={15} />
+            </button>
+            <ArtifactCard artifact={draft} surface="home" dismissInset />
+            <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">Edit before you send.</div>
+        </div>
+    );
+}
+
 function ReflectionField({ awake = false }) {
     return (
         <div className={`reflection-field ${awake ? 'reflection-field--awake' : ''}`} aria-hidden="true">
@@ -551,10 +615,6 @@ function ReflectionField({ awake = false }) {
             <div className="reflection-field__sheen" />
         </div>
     );
-}
-
-function SendableDraft({ draft }) {
-    return <ArtifactCard artifact={draft} surface="home" />;
 }
 
 function LocalSenseLine({ sense }) {
@@ -812,6 +872,7 @@ export default function HomePage() {
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [artifactBusy, setArtifactBusy] = useState('');
+    const [workSurfaceOpen, setWorkSurfaceOpen] = useState(true);
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
     const [importStatus, setImportStatus] = useState('');
@@ -848,6 +909,7 @@ export default function HomePage() {
         setLoopCount((current) => source === 'follow_up' ? Math.min(current + 1, 6) : 0);
         setSendableDraft(null);
         setArtifactBusy('');
+        setWorkSurfaceOpen(false);
         trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
 
         if (sense.blocked) {
@@ -893,10 +955,28 @@ export default function HomePage() {
                 visualKind: data.mirror?.visual?.kind || 'none',
             });
 
-            setResult(data.ok ? data : makeBlockedResult(data));
+            const nextResult = data.ok ? data : makeBlockedResult(data);
+            setResult(nextResult);
+
+            if (data.ok && shouldOpenWorkSurface(cleanIntent, nextResult.mirror)) {
+                createArtifact(detectArtifactKind(cleanIntent, nextResult.mirror), {
+                    mirror: nextResult.mirror,
+                    intent: cleanIntent,
+                    source: 'auto',
+                });
+            }
         } catch {
             trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
-            setResult(makeOfflineMirrorResult(cleanIntent));
+            const fallbackResult = makeOfflineMirrorResult(cleanIntent);
+            setResult(fallbackResult);
+
+            if (shouldOpenWorkSurface(cleanIntent, fallbackResult.mirror)) {
+                createArtifact(detectArtifactKind(cleanIntent, fallbackResult.mirror), {
+                    mirror: fallbackResult.mirror,
+                    intent: cleanIntent,
+                    source: 'auto_local',
+                });
+            }
         } finally {
             setBusy(false);
         }
@@ -967,11 +1047,15 @@ export default function HomePage() {
         reflect(text, 'typed');
     }
 
-    async function createArtifact(kind = 'draft') {
-        const mirror = result?.mirror || SAMPLE_MIRROR;
-        const artifactKind = kind || detectArtifactKind(lastIntent, mirror);
+    async function createArtifact(kind = 'draft', options = {}) {
+        const mirror = options.mirror || result?.mirror || SAMPLE_MIRROR;
+        const artifactIntent = options.intent || lastIntent || mirror.question || mirror.move || 'Create the smallest useful output.';
+        const eventSource = options.source || 'artifact_button';
+        const artifactKind = kind || detectArtifactKind(artifactIntent, mirror);
+        setSendableDraft(null);
+        setWorkSurfaceOpen(true);
         setArtifactBusy(artifactKind);
-        trackEvent('sendable_created', { page: 'home', source: 'artifact_button', status: 'started', label: artifactKind });
+        trackEvent('sendable_created', { page: 'home', source: eventSource, status: 'started', label: artifactKind });
 
         try {
             const response = await fetch(ARTIFACT_GATEWAY, {
@@ -981,7 +1065,7 @@ export default function HomePage() {
                     'X-Active-Mirror-Session': getPrivacySessionId(),
                 },
                 body: JSON.stringify({
-                    intent: lastIntent || mirror.question || mirror.move || 'Create the smallest useful output.',
+                    intent: artifactIntent,
                     artifactKind,
                     boundary: 'personal',
                     mirror: {
@@ -1004,7 +1088,7 @@ export default function HomePage() {
                 label: data.artifact.kind || artifactKind,
             });
         } catch {
-            setSendableDraft(makeArtifact(mirror, lastIntent, artifactKind));
+            setSendableDraft(makeArtifact(mirror, artifactIntent, artifactKind));
             trackEvent('sendable_created', { page: 'home', source: 'local_fallback', status: 'fallback', label: artifactKind });
         } finally {
             setArtifactBusy('');
@@ -1018,6 +1102,7 @@ export default function HomePage() {
     }
 
     const showMirror = Boolean(result || busy || lastIntent);
+    const hasWorkSurface = workSurfaceOpen && Boolean(sendableDraft || artifactBusy);
     const canSubmit = text.trim().length >= 4;
     const fieldAwake = showMirror || text.trim().length > 0;
     const ctaClass = canSubmit && !busy
@@ -1047,8 +1132,8 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-88px)] w-full max-w-3xl flex-col justify-center gap-4 px-4 pb-5 pt-8 lg:pb-8">
-                <section className={`relative overflow-hidden ${showMirror ? 'rounded-[2.15rem] border border-white/10 bg-white/[0.048] p-3 shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-5 lg:p-6' : 'px-0 py-8 sm:py-10'}`}>
+            <main className={`relative z-10 mx-auto flex min-h-[calc(100dvh-88px)] w-full flex-col justify-center gap-4 px-4 pb-5 pt-8 lg:pb-8 ${hasWorkSurface ? 'max-w-6xl' : 'max-w-3xl'}`}>
+                <section className={`relative w-full overflow-hidden ${hasWorkSurface ? 'mx-auto max-w-3xl' : ''} ${showMirror ? 'rounded-[2.15rem] border border-white/10 bg-white/[0.048] p-3 shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-5 lg:p-6' : 'px-0 py-8 sm:py-10'}`}>
                     {showMirror ? (
                         <>
                             <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
@@ -1156,8 +1241,8 @@ export default function HomePage() {
                 </section>
 
                 {showMirror ? (
-                    <section className="grid gap-3">
-                        <>
+                    <section className={`grid min-w-0 gap-3 ${hasWorkSurface ? 'lg:grid-cols-[minmax(0,0.95fr)_minmax(340px,0.72fr)] lg:items-start' : ''}`}>
+                        <div className="grid min-w-0 gap-3">
                             <MirrorResult
                                 result={result}
                                 intent={lastIntent}
@@ -1202,8 +1287,12 @@ export default function HomePage() {
                                     </div>
                                 </div>
                             ) : null}
-                            <SendableDraft draft={sendableDraft} />
-                        </>
+                        </div>
+                        <WorkSurface
+                            draft={sendableDraft}
+                            busyKind={artifactBusy}
+                            onClose={() => setWorkSurfaceOpen(false)}
+                        />
                     </section>
                 ) : null}
             </main>
