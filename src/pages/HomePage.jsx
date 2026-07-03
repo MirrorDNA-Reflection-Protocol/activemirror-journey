@@ -192,7 +192,7 @@ function detectArtifactKind(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     if (/\b(image|visual|poster|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
     if (/\b(code|app|component|script|function|api|html|css|javascript|react|python)\b/.test(text)) return 'code';
-    if (/\b(document|doc|pdf|memo|brief|email|deck|slide|report|summary|proposal|outline|post|message)\b/.test(text)) return 'doc';
+    if (/\b(document|doc|pdf|memo|brief|email|deck|slide|report|summary|proposal|outline|post|message|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
     return 'draft';
 }
 
@@ -217,9 +217,13 @@ function shouldOpenWorkSurface(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const directAsk = /\b(make it sendable|something i can send|turn (this|it) into|draft it|write it|build it|create it|give me code|make a doc|make a visual|make an image)\b/i.test(text);
     const asksToMake = /\b(make|create|draft|write|generate|build|prepare|compose|turn)\b/i.test(text);
-    const asksForThing = /\b(message|email|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan)\b/i.test(text);
+    const asksForThing = /\b(message|email|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
 
     return directAsk || (asksToMake && asksForThing);
+}
+
+function isShortStartResult(result = {}) {
+    return Array.isArray(result?.straitjacket) && result.straitjacket.includes('deterministic_short_start');
 }
 
 function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
@@ -916,6 +920,7 @@ export default function HomePage() {
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
+        const shortStartFollowup = source === 'typed' && isShortStartResult(result);
 
         const sense = assessLocalMirrorSense(cleanIntent, { activeDefault, mirrorDefaults, seed });
         setLastIntent(cleanIntent);
@@ -957,7 +962,8 @@ export default function HomePage() {
                     intent: seededIntent,
                     boundary: 'personal',
                     route: 'reflection',
-                    turn: 1,
+                    turn: shortStartFollowup ? 2 : 1,
+                    mode: shortStartFollowup ? 'short_start_followup' : 'standard',
                 }),
             });
             const data = await response.json();
@@ -977,7 +983,7 @@ export default function HomePage() {
                 createArtifact(detectArtifactKind(cleanIntent, nextResult.mirror), {
                     mirror: nextResult.mirror,
                     intent: cleanIntent,
-                    source: 'auto',
+                    source: shortStartFollowup ? 'auto_second_turn' : 'auto',
                 });
             }
         } catch {
