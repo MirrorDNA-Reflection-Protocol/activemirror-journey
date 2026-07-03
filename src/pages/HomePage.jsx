@@ -42,7 +42,7 @@ const SAMPLE_MIRROR = {
 const STARTERS = [
     {
         label: 'Try it',
-        prompt: 'I want to test Active Mirror with my launch page. Help me get one useful next step.',
+        prompt: 'Use this sample goal: make a launch page easier to try. Give me one useful next step and make first-screen copy.',
         tone: 'clear',
     },
     {
