@@ -39,38 +39,6 @@ const SAMPLE_MIRROR = {
     },
 };
 
-const STARTERS = [
-    {
-        label: 'Try it',
-        prompt: 'Use this sample goal: make a launch page easier to try. Give me one useful next step and make first-screen copy.',
-        tone: 'clear',
-    },
-    {
-        label: 'Not sure?',
-        prompt: "I don't know what to ask yet. Help me find one useful next step.",
-        tone: 'steady',
-    },
-];
-
-const STARTER_TONES = {
-    steady: {
-        dot: 'bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.52)]',
-        button: 'hover:border-emerald-200/35 hover:bg-emerald-200/[0.08]',
-    },
-    clear: {
-        dot: 'bg-cyan-300 shadow-[0_0_16px_rgba(103,232,249,0.48)]',
-        button: 'hover:border-cyan-200/35 hover:bg-cyan-200/[0.08]',
-    },
-    focus: {
-        dot: 'bg-blue-300 shadow-[0_0_16px_rgba(147,197,253,0.48)]',
-        button: 'hover:border-blue-200/35 hover:bg-blue-200/[0.08]',
-    },
-    challenge: {
-        dot: 'bg-violet-300 shadow-[0_0_16px_rgba(196,181,253,0.50)]',
-        button: 'hover:border-violet-200/35 hover:bg-violet-200/[0.08]',
-    },
-};
-
 const LOADING_MIRROR = {
     reflection: 'Finding the useful thing.',
     question: 'What matters here?',
@@ -1284,12 +1252,6 @@ export default function HomePage() {
         }
     }
 
-    function chooseStarter(starter) {
-        if (busy) return;
-        trackEvent('starter_clicked', { page: 'home', source: 'starter' });
-        reflect(starter.prompt, 'starter');
-    }
-
     const showMirror = Boolean(result || busy || lastIntent);
     const hasWorkSurface = workSurfaceOpen && Boolean(sendableDraft || artifactBusy);
     const canSubmit = text.trim().length >= 4;
@@ -1331,9 +1293,37 @@ export default function HomePage() {
                             <MirrorLogo />
                         </div>
 
-                        <h1 className={`mx-auto max-w-xl break-words font-semibold leading-[0.98] tracking-normal text-white ${showMirror ? 'text-2xl sm:text-[3.1rem] lg:text-[3.65rem]' : 'text-[3.15rem] sm:text-[4.85rem]'}`}>
+                        <h1 className={`mx-auto w-full max-w-[21rem] break-words font-semibold leading-[1.02] tracking-normal text-white sm:max-w-xl ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.7rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
                             What do you want?
                         </h1>
+
+                        {!showMirror ? (
+                            <div className="mx-auto mt-5 grid max-w-xl gap-2 sm:grid-cols-2">
+                                <Link
+                                    to="/id"
+                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_action' })}
+                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-[1.2rem] bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-5 text-base font-bold text-white shadow-[0_0_42px_rgba(168,85,247,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_0_54px_rgba(34,211,238,0.24)]"
+                                >
+                                    Start here
+                                    <ArrowRight size={17} />
+                                </Link>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="application/json,.json"
+                                    onChange={uploadSavedChoices}
+                                    className="hidden"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-[1.2rem] border border-white/10 bg-white/[0.045] px-5 text-base font-bold text-zinc-200 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white"
+                                >
+                                    <Upload size={17} />
+                                    Already have one?
+                                </button>
+                            </div>
+                        ) : null}
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
                             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl">
@@ -1373,50 +1363,6 @@ export default function HomePage() {
                                 </button>
                             </div>
                         </form>
-
-                        {!showMirror ? (
-                            <div className="mx-auto mt-3 flex max-w-2xl flex-wrap justify-center gap-2">
-                                <Link
-                                    to="/id"
-                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_action' })}
-                                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.08] hover:text-white"
-                                >
-                                    Start here
-                                    <ArrowRight size={14} />
-                                </Link>
-                                {STARTERS.map((starter) => {
-                                    const tone = STARTER_TONES[starter.tone] || STARTER_TONES.steady;
-
-                                    return (
-                                        <button
-                                            key={starter.label}
-                                            type="button"
-                                            onClick={() => chooseStarter(starter)}
-                                            disabled={busy}
-                                            className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${tone.button}`}
-                                        >
-                                            <span className={`h-1.5 w-1.5 rounded-full ${tone.dot}`} />
-                                            {starter.label}
-                                        </button>
-                                    );
-                                })}
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="application/json,.json"
-                                    onChange={uploadSavedChoices}
-                                    className="hidden"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white"
-                                >
-                                    <Upload size={14} />
-                                    Already have one?
-                                </button>
-                            </div>
-                        ) : null}
 
                         <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
                             <span>Private by default.</span>

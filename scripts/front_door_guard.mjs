@@ -71,7 +71,6 @@ const bannedConsumerTerms = [
 const requiredTerms = [
     { pattern: /What do you want\?/i, label: 'front-door question' },
     { pattern: /Start here/i, label: 'front-door start button' },
-    { pattern: /Try it/i, label: 'front-door demo button' },
     { pattern: /Already have one\?/i, label: 'front-door upload button' },
     { pattern: /Or type what you want/i, label: 'plain first-use helper' },
     { pattern: /Private by default/i, label: 'privacy choice promise' },
