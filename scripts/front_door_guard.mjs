@@ -71,9 +71,9 @@ const bannedConsumerTerms = [
 const requiredTerms = [
     { pattern: /What do you want\?/i, label: 'front-door question' },
     { pattern: /Start here/i, label: 'front-door start button' },
-    { pattern: /Use my mirror/i, label: 'front-door upload button' },
+    { pattern: /Already have one\?/i, label: 'front-door upload button' },
     { pattern: /Or type what you want/i, label: 'plain first-use helper' },
-    { pattern: /Your thoughts stay yours/i, label: 'privacy choice promise' },
+    { pattern: /Private by default/i, label: 'privacy choice promise' },
     { pattern: /What do you usually need help with\?/i, label: 'setup: help question' },
     { pattern: /How direct should it be\?/i, label: 'setup: directness question' },
     { pattern: /What gets annoying fast\?/i, label: 'setup: friction question' },

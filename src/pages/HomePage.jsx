@@ -1133,14 +1133,9 @@ export default function HomePage() {
                         <MirrorLogo />
                         <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
                     </Link>
-                    <div className="flex items-center gap-2">
-                        <Link to="/id" className="rounded-full border border-cyan-200/15 bg-cyan-200/[0.06] px-3 py-1.5 text-xs font-medium text-cyan-100 transition hover:border-cyan-200/35 hover:text-white">
-                            Start here
-                        </Link>
-                        <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
-                            Teams
-                        </Link>
-                    </div>
+                    <Link to="/enterprise" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
+                        Teams
+                    </Link>
                 </div>
             </header>
 
@@ -1185,7 +1180,7 @@ export default function HomePage() {
                                     className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-7 text-base font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white sm:w-auto"
                                 >
                                     <Upload size={16} />
-                                    Use my mirror
+                                    Already have one?
                                 </button>
                             </div>
                         ) : null}
@@ -1250,11 +1245,11 @@ export default function HomePage() {
                             </div>
                         ) : null}
 
-                        <div className={`mt-3 flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
-                            <span>Your thoughts stay yours.</span>
+                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
+                            <span>Private by default.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
-                                You choose what carries forward.
+                                Saved only if you choose.
                             </span>
                             {mirrorDefaults.length > 0 ? (
                                 <button
@@ -1267,7 +1262,7 @@ export default function HomePage() {
                                 </button>
                             ) : null}
                             {importStatus ? <span className="font-semibold text-emerald-100">{importStatus}</span> : null}
-                            <LocalSenseLine sense={typingSense} />
+                            {showMirror ? <LocalSenseLine sense={typingSense} /> : null}
                         </div>
 
                     </div>
