@@ -24,6 +24,9 @@ Updated: 2026-07-03
 - Production artifact route returned a usable draft, not advice about making one.
 - `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.
 - `guard:mirror` preserves canonical local repo paths but also runs inside GitHub Actions checkouts.
+- `.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml` exists for risky deploy/file/memory actions.
+- `npm run mirror:report` prints checked scope, unchecked scope, bad news, and next controls.
+- `npm run mirror:context` builds a file-derived context pack from `.mirror/CONTEXT_PACK.yaml`.
 
 ## Bad News / Known Limits
 
@@ -33,7 +36,9 @@ Updated: 2026-07-03
 - Generated artifacts are useful text/brief/code outputs today; they are not yet a fully sandboxed file-export system.
 - The current UI is still a product front door, not the full ActiveMirrorOS control plane.
 - File export registry exists as a design stub only; there are no active registered exports.
+- Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
 
 ## Unrelated Local Dirt
 
 - `docs/ACTIVE_MIRROR_HARDENING_RESOLUTION_CONTRACTS.md` is untracked and was not created by this status update.
+- `.mirror/.PLAN.md.swp` is held by an active Vim process and was not removed.

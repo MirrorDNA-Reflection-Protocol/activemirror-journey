@@ -24,9 +24,10 @@
 
 ## Next Control-Plane Slice
 
-1. Add a lightweight context-pack builder only after the static guard proves useful.
-2. Add an approval request template for risky deploy/file/memory actions.
-3. Add a small report command that prints checked scope, unchecked scope, and bad news.
+1. Keep `npm run mirror:report` as the first status command before risky edits.
+2. Keep `npm run mirror:context` as the context source instead of chat memory.
+3. Add real approval request files only when a risky action is actually proposed.
+4. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
 
 ## Do Not Do Yet
 

@@ -21,12 +21,15 @@ const requiredFiles = [
     '.mirror/schemas/context_pack.schema.json',
     '.mirror/schemas/memory_update_proposal.schema.json',
     '.mirror/schemas/evaluation_report.schema.json',
+    '.mirror/schemas/approval_request.schema.json',
     '.mirror/MEMORY_UPDATE_PROPOSALS/TEMPLATE.yaml',
     '.mirror/EVALS/TEMPLATE.yaml',
+    '.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml',
     '.mirror/FILE_EXPORT_REGISTRY.md',
 ];
 
 const requiredDirs = [
+    '.mirror/APPROVAL_REQUESTS',
     '.mirror/AUDIT_LOGS',
     '.mirror/EVALS',
     '.mirror/MEMORY_UPDATE_PROPOSALS',
@@ -141,6 +144,11 @@ function walkFiles(dir) {
     return out;
 }
 
+function isIgnoredControlArtifact(relativePath) {
+    const name = path.basename(relativePath);
+    return name === '.DS_Store' || name.endsWith('.swp') || name.endsWith('.swo') || name.endsWith('~');
+}
+
 for (const file of requiredFiles) requireFile(file);
 for (const dir of requiredDirs) requireDir(dir);
 
@@ -157,6 +165,7 @@ if (!failures.length) {
 if (exists('.mirror')) {
     for (const full of walkFiles(path.join(root, '.mirror'))) {
         const relative = path.relative(root, full);
+        if (isIgnoredControlArtifact(relative)) continue;
         const bytes = fs.readFileSync(full);
         if (bytes.some((byte) => byte > 0x7f)) failures.push(`non-ASCII control file: ${relative}`);
         const text = bytes.toString('utf8');
@@ -301,6 +310,13 @@ if (exists('package.json')) {
     if (/\bsovereign\b/i.test(String(pkg.description || ''))) {
         failures.push('package.json description must not use broad sovereign positioning');
     }
+    const scripts = pkg.scripts || {};
+    if (scripts['mirror:report'] !== 'node scripts/mirror_control_report.mjs') {
+        failures.push('package.json must expose mirror:report');
+    }
+    if (scripts['mirror:context'] !== 'node scripts/mirror_context_pack_builder.mjs') {
+        failures.push('package.json must expose mirror:context');
+    }
 }
 
 if (exists('package-lock.json')) {
@@ -369,12 +385,23 @@ if (exists('.mirror/FILE_EXPORT_REGISTRY.md')) {
     requireIncludes(registry, 'None.', 'file export empty current state');
 }
 
+if (exists('.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml')) {
+    const approval = read('.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml');
+    requireIncludes(approval, 'approval_request:', 'approval request root');
+    requireIncludes(approval, 'approval_required: true', 'approval required flag');
+    requireIncludes(approval, 'status: pending', 'approval pending status');
+    requireListItems(approval, '  affected_paths', ['"repo-relative/path"']);
+    requireListItems(approval, '  checked_scope', ['"What has already been checked."']);
+    requireListItems(approval, '  unchecked_scope', ['"What remains unchecked."']);
+    requireListItems(approval, '  rollback', ['"How to reverse this if it goes wrong."']);
+}
+
 if (exists('.mirror')) {
     const allowedSwfiLine = /\b(SWFI remains separate|SWFI\/client|SWFI specs and implementation|SWFI implementation|SWFI or client-specific implementation|SWFI separation|Keep SWFI|out of this repo|contaminate Active Mirror|forbidden_scopes)\b/i;
     const swfiScanFiles = [
         ...activeTextFiles.filter(exists),
         ...walkFiles(path.join(root, '.mirror')).map((full) => path.relative(root, full)),
-    ];
+    ].filter((relative) => !isIgnoredControlArtifact(relative));
     for (const relative of swfiScanFiles) {
         const text = read(relative);
         text.split(/\r?\n/).forEach((line, index) => {

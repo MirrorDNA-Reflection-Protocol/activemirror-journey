@@ -1,0 +1,18 @@
+approval_request:
+  id: approval_YYYYMMDD_001
+  task_id: active_mirror_front_door_v1
+  requested_by: codex
+  requested_at: YYYY-MM-DDTHH:MM:SSZ
+  action: "Describe the exact action that needs approval."
+  reason: "Explain why normal scoped edit authority is not enough."
+  risk_level: medium
+  affected_paths:
+    - "repo-relative/path"
+  checked_scope:
+    - "What has already been checked."
+  unchecked_scope:
+    - "What remains unchecked."
+  rollback:
+    - "How to reverse this if it goes wrong."
+  approval_required: true
+  status: pending
