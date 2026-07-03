@@ -1,0 +1,11 @@
+memory_update_proposal:
+  id: mem_prop_YYYYMMDD_001
+  glyph: "proposal"
+  project: Active Mirror
+  proposal: "Write the exact candidate memory here."
+  source: "user_instruction | verified_file | test_result | deployment_receipt"
+  confidence: "confirmed | likely | provisional"
+  timescale: "session | project | durable"
+  approval_required: true
+  human_summary: "One plain sentence explaining why this should or should not become memory."
+

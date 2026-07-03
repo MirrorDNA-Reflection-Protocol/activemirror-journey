@@ -58,6 +58,7 @@ task_contract:
 
   verification:
     local:
+      - npm run guard:mirror
       - npm run guard:front-door
       - npm run guard:friction
       - npm run guard:redaction
@@ -70,4 +71,3 @@ task_contract:
     browser:
       - mobile smoke
       - desktop smoke
-

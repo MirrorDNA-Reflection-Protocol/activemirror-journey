@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/evaluation_report.schema.json",
+  "title": "Active Mirror Evaluation Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evaluation_report"],
+  "properties": {
+    "evaluation_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "task_id",
+        "checked_scope",
+        "unchecked_scope",
+        "checks",
+        "hard_fails",
+        "bad_news",
+        "decision"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "task_id": { "type": "string" },
+        "checked_scope": { "type": "array", "items": { "type": "string" } },
+        "unchecked_scope": { "type": "array", "items": { "type": "string" } },
+        "checks": { "type": "array", "items": { "type": "string" } },
+        "hard_fails": { "type": "array", "items": { "type": "string" } },
+        "bad_news": { "type": "array", "items": { "type": "string" } },
+        "decision": { "type": "string", "enum": ["pass", "partial", "fail"] }
+      }
+    }
+  }
+}

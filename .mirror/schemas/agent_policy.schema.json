@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/agent_policy.schema.json",
+  "title": "Active Mirror Agent Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["agent_policy"],
+  "properties": {
+    "agent_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_mode",
+        "lane",
+        "canonical_product_repo",
+        "deploy_repo",
+        "principles",
+        "read_allowed",
+        "write_allowed",
+        "write_requires_extra_care",
+        "blocked",
+        "deployment_rule"
+      ],
+      "properties": {
+        "default_mode": { "type": "string" },
+        "lane": { "type": "string", "const": "Active Mirror" },
+        "canonical_product_repo": { "type": "string" },
+        "deploy_repo": { "type": "string" },
+        "principles": { "type": "array", "items": { "type": "string" }, "minItems": 5 },
+        "read_allowed": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "write_allowed": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "write_requires_extra_care": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "blocked": { "type": "array", "items": { "type": "string" }, "minItems": 5 },
+        "deployment_rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "product_source_first",
+            "package_to_deploy_repo_after_checks",
+            "verify_public_hash_after_pages_deploy"
+          ],
+          "properties": {
+            "product_source_first": { "type": "boolean", "const": true },
+            "package_to_deploy_repo_after_checks": { "type": "boolean", "const": true },
+            "verify_public_hash_after_pages_deploy": { "type": "boolean", "const": true }
+          }
+        }
+      }
+    }
+  }
+}

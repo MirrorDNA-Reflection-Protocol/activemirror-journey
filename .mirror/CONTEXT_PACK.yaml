@@ -6,6 +6,10 @@ context_pack:
   include:
     - AGENTS.md
     - README.md
+    - .mirror/STATUS.md
+    - .mirror/PLAN.md
+    - .mirror/DECISIONS.md
+    - .mirror/RISKS.md
     - .mirror/TASK_CONTRACT.yaml
     - .mirror/AGENT_POLICY.yaml
     - src/pages/HomePage.jsx
@@ -40,4 +44,3 @@ context_pack:
     app_url: https://activemirror.ai/app/
     app_bundle: index-BV8n-QWN.js
     gateway_version: 2026-07-02-first-turn-source-voice-v1
-

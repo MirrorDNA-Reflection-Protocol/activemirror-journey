@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/task_contract.schema.json",
+  "title": "Active Mirror Task Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_contract"],
+  "properties": {
+    "task_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "project",
+        "repo",
+        "deploy_bridge_repo",
+        "objective",
+        "allowed_paths",
+        "deploy_bridge_allowed_paths",
+        "forbidden_paths",
+        "forbidden_scopes",
+        "required_outputs",
+        "approval_required_for",
+        "verification"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 3 },
+        "project": { "type": "string", "const": "Active Mirror" },
+        "repo": { "type": "string" },
+        "deploy_bridge_repo": { "type": "string" },
+        "objective": { "type": "string", "minLength": 20 },
+        "allowed_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 5
+        },
+        "deploy_bridge_allowed_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 4
+        },
+        "forbidden_scopes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3
+        },
+        "required_outputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 4
+        },
+        "approval_required_for": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 4
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["local", "deploy_repo", "browser"],
+          "properties": {
+            "local": { "type": "array", "items": { "type": "string" } },
+            "deploy_repo": { "type": "array", "items": { "type": "string" } },
+            "browser": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}

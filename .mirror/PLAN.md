@@ -24,11 +24,9 @@
 
 ## Next Control-Plane Slice
 
-1. Add task contract schema.
-2. Add agent policy schema.
-3. Add memory proposal template.
-4. Add evaluation report template.
-5. Add file export registry design before any downloadable file feature becomes public.
+1. Add a lightweight context-pack builder only after the static guard proves useful.
+2. Add an approval request template for risky deploy/file/memory actions.
+3. Add a small report command that prints checked scope, unchecked scope, and bad news.
 
 ## Do Not Do Yet
 
@@ -36,4 +34,3 @@
 - Do not claim model training, LoRA, or owned local model sync until implemented and verified.
 - Do not position the product as a medical, therapy, or psychiatric tool.
 - Do not mix SWFI/client language into the public Active Mirror flow.
-

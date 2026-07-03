@@ -1,7 +1,7 @@
 # Active Mirror
 
 Canonical user-facing app: https://activemirror.ai/app/
-Canonical setup flow: https://activemirror.ai/app/start/
+Canonical setup flow: https://activemirror.ai/app/id/
 Compatibility setup domain: https://id.activemirror.ai/
 Public privacy notice: https://activemirror.ai/privacy/
 Public terms: https://activemirror.ai/terms/

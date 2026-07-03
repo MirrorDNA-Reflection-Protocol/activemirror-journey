@@ -8,9 +8,9 @@ This repo owns the current public product experience: the simple reflection fron
 
 - Canonical product repo: `/Users/mirror-pro/repos/activemirror-journey`
 - Local preview: `http://127.0.0.1:8976/`
-- Reflection route: `/mirror`
+- Reflection route: `/` (`/mirror` redirects here)
 - Public homepage route: `/`
-- BrainScan / MirrorSeed route: `/start`, with aliases `/id`, `/mirrorseed`, `/brainscan`, and `/scan`
+- BrainScan / MirrorSeed route: `/id`, with aliases `/start`, `/mirrorseed`, `/brainscan`, and `/scan`
 - Live/gateway bridge repo: `/Users/mirror-pro/repos/active-mirror-site`
 - MirrorSeed compatibility repo: `/Users/mirror-pro/repos/active-mirror-identity`
 - Prototype/reference repo: `/Users/mirror-pro/repos/activemirror-genui`

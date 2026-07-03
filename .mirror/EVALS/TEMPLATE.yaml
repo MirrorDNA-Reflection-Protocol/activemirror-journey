@@ -1,0 +1,14 @@
+evaluation_report:
+  id: eval_YYYYMMDD_001
+  task_id: active_mirror_front_door_v1
+  checked_scope:
+    - "List exact files, routes, or commands checked."
+  unchecked_scope:
+    - "List what was not checked."
+  checks:
+    - "List command or browser check result."
+  hard_fails: []
+  bad_news:
+    - "State limitations or blockers plainly."
+  decision: partial
+

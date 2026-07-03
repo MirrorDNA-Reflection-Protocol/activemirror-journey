@@ -12,6 +12,7 @@ Updated: 2026-07-03
 
 ## Verified Checks
 
+- `npm run guard:mirror` passed.
 - `npm run build:deploy` passed in product source.
 - `npm run guard:front-door` passed.
 - `npm run guard:friction` passed.
@@ -21,6 +22,7 @@ Updated: 2026-07-03
 - `npm run canary:prod` passed 13/13.
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
+- `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.
 
 ## Bad News / Known Limits
 
@@ -29,8 +31,8 @@ Updated: 2026-07-03
 - Browser-local state is useful, but not a full owned identity/memory sync layer yet.
 - Generated artifacts are useful text/brief/code outputs today; they are not yet a fully sandboxed file-export system.
 - The current UI is still a product front door, not the full ActiveMirrorOS control plane.
+- File export registry exists as a design stub only; there are no active registered exports.
 
 ## Unrelated Local Dirt
 
 - `docs/ACTIVE_MIRROR_HARDENING_RESOLUTION_CONTRACTS.md` is untracked and was not created by this status update.
-

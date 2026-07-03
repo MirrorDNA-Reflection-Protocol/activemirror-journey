@@ -11,6 +11,9 @@
 7. Model/provider names stay out of consumer copy until routing and public policy are settled.
 8. SWFI remains separate from Active Mirror product language, memory, and UI.
 9. ActiveMirrorOS is the governed control-plane direction; the public app is the simple front door into that direction.
+10. `.mirror` control files are enforced by `npm run guard:mirror` and run before product builds.
+11. `build:deploy` must run the same prebuild guard chain before packaging the deploy bundle.
+12. Memory changes stay proposals until approved; file export remains inactive until artifact registry checks exist.
 
 ## Imported From MirrorOS Download Pack
 
@@ -21,4 +24,3 @@
 5. Risky generated code/browser automation belongs in sandboxed execution.
 6. No single judge is enough for high-risk evaluation.
 7. Generated UI should become trusted components from validated payloads, not arbitrary model-defined HTML/JavaScript.
-

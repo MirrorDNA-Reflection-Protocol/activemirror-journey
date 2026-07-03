@@ -1,16 +1,19 @@
 {
-    "name": "activemirror-site",
+    "name": "activemirror-journey",
     "private": true,
     "version": "2.0.0",
-    "description": "Active Mirror — Sovereign AI that reflects, not directs",
+    "description": "Active Mirror reflection front door",
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "prebuild": "npm run guard:canonical && npm run guard:front-door && npm run guard:friction && npm run guard:redaction && npm run truth",
+        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:front-door && npm run guard:friction && npm run guard:redaction && npm run truth",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
+        "prebuild:deploy": "npm run prebuild",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
         "preview": "vite preview",
         "guard:canonical": "node scripts/canonical_source_guard.mjs",
+        "guard:mirror": "node scripts/mirror_control_guard.mjs",
+        "guard:mirror-control": "npm run guard:mirror",
         "guard:front-door": "node scripts/front_door_guard.mjs",
         "guard:friction": "node scripts/first_turn_friction_guard.mjs",
         "guard:redaction": "bash scripts/redaction_guard.sh",
@@ -49,7 +52,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/MirrorDNA-Reflection-Protocol/activemirror-site"
+        "url": "https://github.com/MirrorDNA-Reflection-Protocol/activemirror-journey"
     },
     "author": "N1 Intelligence (OPC) Pvt Ltd",
     "license": "MIT"

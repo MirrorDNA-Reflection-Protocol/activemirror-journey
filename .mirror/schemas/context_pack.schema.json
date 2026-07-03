@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/context_pack.schema.json",
+  "title": "Active Mirror Context Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["context_pack"],
+  "properties": {
+    "context_pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "updated",
+        "objective",
+        "include",
+        "exclude",
+        "product_voice",
+        "current_live_truth"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 3 },
+        "updated": { "type": "string" },
+        "objective": { "type": "string", "minLength": 20 },
+        "include": { "type": "array", "items": { "type": "string" }, "minItems": 5 },
+        "exclude": { "type": "array", "items": { "type": "string" }, "minItems": 4 },
+        "product_voice": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["consumer", "enterprise"],
+          "properties": {
+            "consumer": { "type": "array", "items": { "type": "string" }, "minItems": 4 },
+            "enterprise": { "type": "array", "items": { "type": "string" }, "minItems": 3 }
+          }
+        },
+        "current_live_truth": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["app_url", "app_bundle", "gateway_version"],
+          "properties": {
+            "app_url": { "type": "string" },
+            "app_bundle": { "type": "string" },
+            "gateway_version": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

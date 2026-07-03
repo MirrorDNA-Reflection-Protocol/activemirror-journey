@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/memory_update_proposal.schema.json",
+  "title": "Active Mirror Memory Update Proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["memory_update_proposal"],
+  "properties": {
+    "memory_update_proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "glyph",
+        "project",
+        "proposal",
+        "source",
+        "confidence",
+        "timescale",
+        "approval_required",
+        "human_summary"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "glyph": { "type": "string" },
+        "project": { "type": "string" },
+        "proposal": { "type": "string" },
+        "source": { "type": "string" },
+        "confidence": { "type": "string" },
+        "timescale": { "type": "string" },
+        "approval_required": { "type": "boolean" },
+        "human_summary": { "type": "string" }
+      }
+    }
+  }
+}
