@@ -265,11 +265,57 @@ function launchPageTestIntent(mirror = {}, intent = '') {
     ].join(' ');
 }
 
+function isOneDetailIntake(mirror = {}) {
+    return /\bmake,\s*decide,\s*fix,\s*or\s*understand\b/i.test(`${mirror?.question || ''} ${mirror?.move || ''}`);
+}
+
+function oneDetailTopic(intent = '') {
+    return String(intent || 'this')
+        .replace(/\s+/g, ' ')
+        .replace(/^my\s+/i, '')
+        .trim()
+        .slice(0, 80) || 'this';
+}
+
+function makeOneDetailFollowUps(intent = '') {
+    const topic = oneDetailTopic(intent);
+    return [
+        {
+            label: 'Make',
+            icon: PenLine,
+            action: 'reflect',
+            intent: `I want to make ${topic}. Help me turn it into the smallest useful first version.`,
+        },
+        {
+            label: 'Decide',
+            icon: Check,
+            action: 'reflect',
+            intent: `I need to decide what matters first for ${topic}. Give me the smallest choice to make.`,
+        },
+        {
+            label: 'Fix',
+            icon: SlidersHorizontal,
+            action: 'reflect',
+            intent: `I want to fix ${topic}. Help me find the smallest repair to try first.`,
+        },
+        {
+            label: 'Understand',
+            icon: Sparkles,
+            action: 'reflect',
+            intent: `I want to understand ${topic}. Help me find the first useful question.`,
+        },
+    ];
+}
+
 function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
     const artifactKind = detectArtifactKind(intent, mirror);
     const artifactAction = artifactActionFor(artifactKind);
     const artifactIntent = artifactIntentFor(artifactKind, mirror, intent);
     const launchPage = isLaunchPageContext(intent, mirror);
+
+    if (isOneDetailIntake(mirror)) {
+        return makeOneDetailFollowUps(intent);
+    }
 
     if (loopCount >= 4) {
         return [
