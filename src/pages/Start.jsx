@@ -8,41 +8,41 @@ import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
 const SCAN_QUESTIONS = [
     {
         id: 'q1',
-        question: 'What do you usually need help with?',
+        question: 'What do you want help with first?',
         options: [
             { label: 'Getting unstuck', archetype: 'builder', preference: 'help_with' },
             { label: 'Making a decision', archetype: 'strategist', preference: 'help_with' },
-            { label: 'Turning thoughts into something useful', archetype: 'connector', preference: 'help_with' },
-            { label: 'Clear challenge', archetype: 'analyst', preference: 'help_with' },
+            { label: 'Making something useful', archetype: 'connector', preference: 'help_with' },
+            { label: 'Getting a clearer take', archetype: 'analyst', preference: 'help_with' },
         ],
     },
     {
         id: 'q2',
-        question: 'How direct should it be?',
+        question: 'How should replies feel?',
         options: [
             { label: 'Gently', archetype: 'connector', preference: 'pushback' },
             { label: 'Directly', archetype: 'analyst', preference: 'pushback' },
-            { label: 'Only when I am looping', archetype: 'builder', preference: 'pushback' },
-            { label: 'When something needs checking', archetype: 'scholar', preference: 'pushback' },
+            { label: 'Briefly', archetype: 'builder', preference: 'pushback' },
+            { label: 'Careful with facts', archetype: 'scholar', preference: 'pushback' },
         ],
     },
     {
         id: 'q3',
-        question: 'What gets annoying fast?',
+        question: 'What should it avoid?',
         options: [
             { label: 'Long answers', archetype: 'builder', preference: 'never_assume' },
-            { label: 'Assuming I know what I want', archetype: 'strategist', preference: 'never_assume' },
+            { label: 'Guessing what I mean', archetype: 'strategist', preference: 'never_assume' },
             { label: 'Asking for private details', archetype: 'scholar', preference: 'never_assume' },
             { label: 'Agreeing too quickly', archetype: 'analyst', preference: 'never_assume' },
         ],
     },
     {
         id: 'q4',
-        question: 'What kind of answers help you move?',
+        question: 'What helps most?',
         options: [
             { label: 'One clear next step', archetype: 'builder', preference: 'answer_style' },
             { label: 'A better question', archetype: 'strategist', preference: 'answer_style' },
-            { label: 'A short draft I can use', archetype: 'connector', preference: 'answer_style' },
+            { label: 'Something I can copy', archetype: 'connector', preference: 'answer_style' },
             { label: 'A simple plan', archetype: 'architect', preference: 'answer_style' },
         ],
     },
@@ -200,6 +200,7 @@ export default function Start() {
 
     const activeQuestion = SCAN_QUESTIONS[questionIndex];
     const progress = useMemo(() => Math.round((answers.length / SCAN_QUESTIONS.length) * 100), [answers.length]);
+    const currentStep = questionIndex + 1;
 
     function chooseAnswer(answerIndex) {
         const nextAnswers = [...answers, { questionIndex, answerIndex }];
@@ -260,7 +261,7 @@ export default function Start() {
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-12%,rgba(16,185,129,0.18),transparent_34%),radial-gradient(circle_at_95%_82%,rgba(168,85,247,0.12),transparent_30%),#030303]" />
             <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
 
-            <header className="relative z-10 border-b border-white/10 bg-black/50 px-4 py-3 backdrop-blur-xl">
+            <header className="relative z-10 px-4 py-4">
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
@@ -269,49 +270,67 @@ export default function Start() {
                     <div className="flex items-center gap-3 text-xs">
                         <Link to="/privacy" className="hidden text-zinc-500 transition hover:text-white sm:inline">Privacy</Link>
                         <Link to="/terms" className="hidden text-zinc-500 transition hover:text-white sm:inline">Terms</Link>
-                        <Link to="/" className="rounded-full border border-white/10 px-4 py-2 font-semibold text-zinc-300 transition hover:border-emerald-200/35 hover:text-white">
+                        <Link to="/" className="rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 font-semibold text-zinc-300 transition hover:border-emerald-200/35 hover:text-white">
                             Chat
                         </Link>
                     </div>
                 </div>
             </header>
 
-            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-5xl items-center px-4 py-6 sm:py-10">
+            <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-76px)] w-full max-w-5xl items-center px-4 py-6 sm:py-10">
                 {phase === 'scan' ? (
-                    <section className="mx-auto w-full max-w-2xl rounded-[1.75rem] border border-white/10 bg-[#101012]/78 p-5 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-8">
-                        <div className="mb-6">
-                            <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
-                                <span>{questionIndex + 1} of {SCAN_QUESTIONS.length}</span>
+                    <section className="mx-auto grid w-full max-w-4xl gap-5 lg:grid-cols-[0.78fr_1fr] lg:items-center">
+                        <div className="px-1 text-center lg:text-left">
+                            <h1 className="mx-auto max-w-lg text-[3.2rem] font-semibold leading-[0.96] tracking-normal text-white sm:text-[4.8rem] lg:mx-0">
+                                Make it yours.
+                            </h1>
+                            <p className="mt-4 text-base font-medium text-zinc-400 sm:text-lg">
+                                Four taps. No account.
+                            </p>
+                            <div className="mt-7 flex justify-center gap-2 lg:justify-start" aria-label={`Step ${currentStep} of ${SCAN_QUESTIONS.length}`}>
+                                {SCAN_QUESTIONS.map((question, index) => {
+                                    const done = index < answers.length;
+                                    const active = index === questionIndex;
+                                    return (
+                                        <span
+                                            key={question.id}
+                                            className={`h-2.5 rounded-full transition-all ${active ? 'w-9 bg-emerald-200 shadow-[0_0_18px_rgba(110,231,183,0.34)]' : done ? 'w-2.5 bg-cyan-200/80' : 'w-2.5 bg-white/14'}`}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="rounded-[1.75rem] border border-white/10 bg-[#101012]/78 p-5 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-7">
+                            <div className="mb-5 flex items-center justify-between gap-3 text-xs font-semibold text-zinc-500">
+                                <span>{currentStep}/{SCAN_QUESTIONS.length}</span>
                                 <span>{progress}%</span>
                             </div>
-                            <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                                <div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-violet-300 transition-all" style={{ width: `${progress}%` }} />
+                            <h2 className="text-[1.9rem] font-semibold leading-tight tracking-normal text-white sm:text-4xl">
+                                {activeQuestion.question}
+                            </h2>
+                            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                                {activeQuestion.options.map((option, index) => (
+                                    <button
+                                        key={option.label}
+                                        type="button"
+                                        onClick={() => chooseAnswer(index)}
+                                        className="min-h-20 rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-4 py-4 text-left text-base font-semibold leading-6 text-zinc-200 transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07] hover:text-white"
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
                             </div>
-                        </div>
-                        <h1 className="text-[2rem] font-semibold leading-tight tracking-[-0.03em] text-white sm:text-4xl">
-                            {activeQuestion.question}
-                        </h1>
-                        <div className="mt-7 grid gap-3">
-                            {activeQuestion.options.map((option, index) => (
+                            {answers.length > 0 ? (
                                 <button
-                                    key={option.label}
                                     type="button"
-                                    onClick={() => chooseAnswer(index)}
-                                    className="rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-4 py-4 text-left text-base font-semibold leading-6 text-zinc-200 transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07] hover:text-white"
+                                    onClick={reset}
+                                    className="mt-5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
                                 >
-                                    {option.label}
+                                    Start over
                                 </button>
-                            ))}
+                            ) : null}
                         </div>
-                        {answers.length > 0 ? (
-                            <button
-                                type="button"
-                                onClick={reset}
-                                className="mt-5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
-                            >
-                                Start over
-                            </button>
-                        ) : null}
                     </section>
                 ) : null}
 
@@ -329,10 +348,10 @@ export default function Start() {
 
                         <div className="order-1 lg:order-2">
                             <h1 className="max-w-2xl text-[2.85rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.7rem]">
-                                Your mirror is ready.
+                                Ready.
                             </h1>
                             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                Ask anything, or start with what is on your mind.
+                                Start with anything. You can keep a copy too.
                             </p>
 
                             <div className="mt-6 grid gap-2">
@@ -349,7 +368,7 @@ export default function Start() {
                                     onClick={startChat}
                                     className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-violet-500 px-6 text-base font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.28)] transition hover:scale-[1.01]"
                                 >
-                                    Start reflecting
+                                    Start chat
                                     <ArrowRight size={19} />
                                 </button>
                                 <button
