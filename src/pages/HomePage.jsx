@@ -41,6 +41,11 @@ const SAMPLE_MIRROR = {
 
 const STARTERS = [
     {
+        label: 'Try it',
+        prompt: 'I want to test Active Mirror with my launch page. Help me get one useful next step.',
+        tone: 'clear',
+    },
+    {
         label: 'Not sure?',
         prompt: "I don't know what to ask yet. Help me find one useful next step.",
         tone: 'steady',
@@ -1355,13 +1360,6 @@ export default function HomePage() {
                                     <Upload size={14} />
                                     Already have one?
                                 </button>
-                                <Link
-                                    to="/enterprise"
-                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'teams_action' })}
-                                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white"
-                                >
-                                    Teams
-                                </Link>
                             </div>
                         ) : null}
 
