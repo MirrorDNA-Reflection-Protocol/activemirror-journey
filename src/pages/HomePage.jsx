@@ -1267,40 +1267,13 @@ export default function HomePage() {
                     ) : null}
 
                     <div className={`relative z-10 ${showMirror ? '' : 'text-center'}`}>
-                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'mx-auto mb-7 grid'} h-14 w-14 place-items-center rounded-[1.25rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.16)]`}>
+                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'hidden'} h-14 w-14 place-items-center rounded-[1.25rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.16)]`}>
                             <MirrorLogo />
                         </div>
 
                         <h1 className={`mx-auto max-w-xl break-words font-semibold leading-[0.98] tracking-normal text-white ${showMirror ? 'text-2xl sm:text-[3.1rem] lg:text-[3.65rem]' : 'text-[3.15rem] sm:text-[4.85rem]'}`}>
                             What do you want?
                         </h1>
-                        {!showMirror ? (
-                            <div className="mx-auto mt-7 flex max-w-2xl flex-col items-center justify-center gap-3 sm:flex-row">
-                                <Link
-                                    to="/id"
-                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_primary' })}
-                                    className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-500 px-7 text-base font-bold text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] transition hover:scale-[1.015] sm:w-auto"
-                                >
-                                    Start here
-                                    <ArrowRight size={17} />
-                                </Link>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="application/json,.json"
-                                    onChange={uploadSavedChoices}
-                                    className="hidden"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-7 text-base font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white sm:w-auto"
-                                >
-                                    <Upload size={16} />
-                                    Already have one?
-                                </button>
-                            </div>
-                        ) : null}
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
                             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl">
@@ -1342,7 +1315,15 @@ export default function HomePage() {
                         </form>
 
                         {!showMirror ? (
-                            <div className="mx-auto mt-3 flex max-w-2xl justify-center">
+                            <div className="mx-auto mt-3 flex max-w-2xl flex-wrap justify-center gap-2">
+                                <Link
+                                    to="/id"
+                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_action' })}
+                                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.08] hover:text-white"
+                                >
+                                    Start here
+                                    <ArrowRight size={14} />
+                                </Link>
                                 {STARTERS.map((starter) => {
                                     const tone = STARTER_TONES[starter.tone] || STARTER_TONES.steady;
 
@@ -1359,6 +1340,28 @@ export default function HomePage() {
                                         </button>
                                     );
                                 })}
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="application/json,.json"
+                                    onChange={uploadSavedChoices}
+                                    className="hidden"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white"
+                                >
+                                    <Upload size={14} />
+                                    Already have one?
+                                </button>
+                                <Link
+                                    to="/enterprise"
+                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'teams_action' })}
+                                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white"
+                                >
+                                    Teams
+                                </Link>
                             </div>
                         ) : null}
 
