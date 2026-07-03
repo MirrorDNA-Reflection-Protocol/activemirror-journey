@@ -23,6 +23,16 @@ function needsSourceCheck(text = '') {
     return explicitSourceAsk || timedFactAsk;
 }
 
+function isUnderSpecifiedIntent(text = '') {
+    if (!text) return false;
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length > 5) return false;
+    if (/\b(make|create|build|write|draft|send|decide|choose|fix|repair|understand|explain|check|verify|research|compare|plan|launch|ship|test|learn)\b/.test(text)) {
+        return false;
+    }
+    return /\b(website|business|money|career|idea|work|project|product|app|portfolio|content|strategy|relationship|habit|focus|school|job|life)\b/.test(text);
+}
+
 function classify(intent = '') {
     const text = cleanIntent(intent).toLowerCase();
     if (hasExplicitSecret(intent)) {
@@ -55,6 +65,9 @@ function classify(intent = '') {
     if (/\b(draft|write|document|memo|email|pdf|deck|file|artifact|output|useful)\b/.test(text)) {
         return 'artifact';
     }
+    if (isUnderSpecifiedIntent(text)) {
+        return 'needs_detail';
+    }
     return 'general';
 }
 
@@ -68,6 +81,11 @@ const MIRRORS = {
         reflection: 'Use placeholders for anything private. I can still help with the useful part.',
         question: 'What do you want help making, deciding, or sending?',
         move: 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
+    },
+    needs_detail: {
+        reflection: 'I can start, but I need one direction so I do not guess.',
+        question: 'Which lane fits best: make, decide, fix, or understand?',
+        move: 'Pick one word: make, decide, fix, or understand. Then add one sentence.',
     },
     launch_clarity: {
         reflection: 'The first screen should make one useful action obvious before anything else asks for attention.',
