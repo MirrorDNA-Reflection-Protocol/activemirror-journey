@@ -226,10 +226,45 @@ function isShortStartResult(result = {}) {
     return Array.isArray(result?.straitjacket) && result.straitjacket.includes('deterministic_short_start');
 }
 
+function followUpContext(intent = '', mirror = {}) {
+    return [intent, mirror?.reflection, mirror?.question, mirror?.move]
+        .map((item) => String(item || ''))
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function isLaunchPageContext(intent = '', mirror = {}) {
+    return /\b(launch page|landing page|homepage|home page|site|website|hero|headline|button label|reassurance line|visitor|first action)\b/i
+        .test(followUpContext(intent, mirror));
+}
+
+function launchPageCopyIntent(mirror = {}, intent = '') {
+    return [
+        'Create exact launch page first-screen copy from this reflection.',
+        'Include a headline, button label, reassurance line, short draft, and concrete next step.',
+        'No bracket placeholders.',
+        `Original ask: ${intent || 'launch page'}`,
+        `Reflection: ${mirror.reflection || ''}`,
+        `Question: ${mirror.question || ''}`,
+        `Move: ${mirror.move || ''}`,
+    ].join(' ');
+}
+
+function launchPageTestIntent(mirror = {}, intent = '') {
+    return [
+        'Create a five-second visitor test for this launch page.',
+        'Include the test prompt, what to watch, pass signal, fail signal, and the one copy change to try next.',
+        `Original ask: ${intent || 'launch page'}`,
+        `Current move: ${mirror.move || ''}`,
+    ].join(' ');
+}
+
 function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
     const artifactKind = detectArtifactKind(intent, mirror);
     const artifactAction = artifactActionFor(artifactKind);
     const artifactIntent = artifactIntentFor(artifactKind, mirror, intent);
+    const launchPage = isLaunchPageContext(intent, mirror);
 
     if (loopCount >= 4) {
         return [
@@ -240,12 +275,31 @@ function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
                 intent: `Stop expanding. Synthesize this into the one move I should do now: ${mirror.move}`,
             },
             {
-                ...artifactAction,
+                ...(launchPage ? { label: 'Make page copy', icon: FileText } : artifactAction),
                 action: 'artifact',
-                artifactKind,
-                intent: artifactIntent,
+                artifactKind: launchPage ? 'doc' : artifactKind,
+                intent: launchPage ? launchPageCopyIntent(mirror, intent) : artifactIntent,
             },
         ].filter(Boolean);
+    }
+
+    if (launchPage) {
+        return [
+            {
+                label: 'Make page copy',
+                icon: FileText,
+                action: 'artifact',
+                artifactKind: 'doc',
+                intent: launchPageCopyIntent(mirror, intent),
+            },
+            {
+                label: 'Test it',
+                icon: Check,
+                action: 'artifact',
+                artifactKind: 'doc',
+                intent: launchPageTestIntent(mirror, intent),
+            },
+        ];
     }
 
     return [
@@ -320,6 +374,60 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
     }
 
     if (kind === 'doc') {
+        if (isLaunchPageContext(cleanIntent, mirror)) {
+            const testMode = /\bfive-second|visitor test|pass signal|fail signal|what to watch\b/i.test(cleanIntent);
+            return testMode ? {
+                kind,
+                title: 'Five-Second Page Test',
+                body: [
+                    'Test prompt:',
+                    'Look at this first screen for five seconds. What would you click first?',
+                    '',
+                    'Watch for:',
+                    '- Do they name the first action without explanation?',
+                    '- Do they hesitate at the button?',
+                    '- Do they ask what the product is before trying anything?',
+                    '',
+                    'Pass signal:',
+                    'They can say the first action and the button feels low-risk.',
+                    '',
+                    'Fail signal:',
+                    'They describe the idea but do not know what to do next.',
+                    '',
+                    `Next copy change: ${move}`,
+                ].join('\n'),
+                checklist: [
+                    'Show only the first screen.',
+                    'Do not explain the product first.',
+                    'Write down the first action they name.',
+                    'Change only one line after the test.',
+                ],
+            } : {
+                kind,
+                title: 'Launch Page Starter Copy',
+                body: [
+                    'Purpose: Get visitors to try the first action quickly so they understand the product by using it.',
+                    '',
+                    'Headline: Try the first step in seconds.',
+                    '',
+                    'Button label: Start now',
+                    '',
+                    'Reassurance line: No setup needed to see how it works.',
+                    '',
+                    'Short draft:',
+                    'Start with the one thing your product does best. Let people try it right away, then explain the rest after they have seen the value.',
+                    '',
+                    `Concrete ask: ${move}`,
+                ].join('\n'),
+                checklist: [
+                    'Use the headline as the main page title.',
+                    'Put the button above the fold.',
+                    'Keep the reassurance line close to the button.',
+                    'Swap in your real first action where needed.',
+                ],
+            };
+        }
+
         return {
             kind,
             title: 'Working doc',
