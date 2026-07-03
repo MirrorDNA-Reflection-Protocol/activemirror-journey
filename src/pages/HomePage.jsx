@@ -378,7 +378,7 @@ function ReflectionGlow({ mirror }) {
     const label = urgent ? 'steady' : decisive ? 'clear' : 'open';
 
     return (
-        <div className={`h-2 rounded-full bg-gradient-to-r ${tone}`} aria-label={`Reflection tone: ${label}`} />
+        <div className={`h-1.5 w-24 rounded-full bg-gradient-to-r ${tone}`} aria-label={`Reflection tone: ${label}`} />
     );
 }
 
@@ -446,15 +446,18 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
     }
 
     return (
-        <div className="mt-5 grid gap-3">
-            <div className="rounded-[1.45rem] border border-emerald-200/16 bg-emerald-200/[0.065] p-3.5 shadow-[0_0_34px_rgba(16,185,129,0.08)]">
+        <div className="mt-4 grid gap-3">
+            <div className="rounded-[1.35rem] border border-white/[0.075] bg-white/[0.032] p-3.5 shadow-[0_0_22px_rgba(16,185,129,0.025)]">
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                    <div className="break-words text-[1rem] font-semibold leading-7 text-emerald-50 sm:text-lg">{mirror.move}</div>
+                    <div className="flex min-w-0 items-start gap-3">
+                        <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.36)]" />
+                        <div className="break-words text-[1rem] font-medium leading-7 text-zinc-100 sm:text-[1.02rem]">{mirror.move}</div>
+                    </div>
                     {allowCopy ? (
                         <button
                             type="button"
                             onClick={copyMove}
-                            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-black/18 px-4 text-sm font-semibold text-emerald-50 transition hover:border-emerald-200/40 hover:bg-emerald-200/[0.10]"
+                            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-black/[0.14] px-4 text-sm font-semibold text-zinc-200 transition hover:border-emerald-200/30 hover:bg-emerald-200/[0.07] hover:text-white"
                         >
                             {copied ? <Check size={15} /> : <Copy size={15} />}
                             {copied ? 'Copied' : 'Copy'}
@@ -468,7 +471,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
                     type="button"
                     onClick={() => onRemember?.(mirror)}
                     disabled={remembered}
-                    className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.032] px-3 text-xs font-semibold text-zinc-400 transition hover:border-violet-300/35 hover:text-white disabled:border-emerald-300/20 disabled:text-emerald-100"
+                    className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.028] px-3 text-xs font-semibold text-zinc-400 transition hover:border-violet-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100"
                 >
                     {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
                     {remembered ? 'Saved' : 'Save'}
@@ -499,12 +502,12 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                 <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid">
                     <MirrorLogo />
                 </div>
-                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#101014]/78 p-4 shadow-[0_0_62px_rgba(124,58,237,0.10)] backdrop-blur-2xl sm:p-5">
+                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-white/[0.075] bg-white/[0.038] p-4 shadow-[0_0_42px_rgba(0,0,0,0.20)] backdrop-blur-2xl sm:p-5">
                     <ReflectionGlow mirror={mirror} />
-                    <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.12rem]">
+                    <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.08rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-4 break-words border-l border-violet-200/24 pl-3 text-[0.94rem] font-medium leading-7 text-violet-50/82">
+                    <div className="mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86">
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold && !isSetupReady} allowCopy={!isSetupReady} />
