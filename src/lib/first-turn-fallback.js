@@ -84,7 +84,7 @@ const MIRRORS = {
     },
     needs_detail: {
         reflection: 'I can start, but I need one direction so I do not guess.',
-        question: 'Which lane fits best: make, decide, fix, or understand?',
+        question: 'What do you want first: make, decide, fix, or understand?',
         move: 'Pick one word: make, decide, fix, or understand. Then add one sentence.',
     },
     launch_clarity: {
