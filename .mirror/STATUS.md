@@ -23,6 +23,7 @@ Updated: 2026-07-03
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
 - `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.
+- `guard:mirror` preserves canonical local repo paths but also runs inside GitHub Actions checkouts.
 
 ## Bad News / Known Limits
 
