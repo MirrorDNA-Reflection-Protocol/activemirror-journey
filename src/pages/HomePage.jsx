@@ -197,7 +197,7 @@ function detectArtifactKind(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     if (/\b(image|visual|poster|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
     if (/\b(code|app|component|script|function|api|html|css|javascript|react|python)\b/.test(text)) return 'code';
-    if (/\b(document|doc|pdf|memo|brief|email|deck|slide|report|summary|proposal|outline|post|message|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
+    if (/\b(document|doc|pdf|memo|brief|email|deck|slide|report|summary|proposal|outline|post|message|website|web page|site|page|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
     return 'draft';
 }
 
@@ -222,7 +222,7 @@ function shouldOpenWorkSurface(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const directAsk = /\b(make it sendable|something i can send|turn (this|it) into|draft it|write it|build it|create it|give me code|make a doc|make a visual|make an image)\b/i.test(text);
     const asksToMake = /\b(make|create|draft|write|generate|build|prepare|compose|turn)\b/i.test(text);
-    const asksForThing = /\b(message|email|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const asksForThing = /\b(message|email|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
 
     return directAsk || (asksToMake && asksForThing);
 }
