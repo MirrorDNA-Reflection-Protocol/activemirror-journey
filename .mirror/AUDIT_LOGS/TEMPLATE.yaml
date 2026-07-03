@@ -1,0 +1,17 @@
+audit_log:
+  id: audit_YYYYMMDD_001
+  task_id: active_mirror_front_door_v1
+  created_at: YYYY-MM-DDTHH:MM:SSZ
+  actor: codex
+  action: "Describe what changed or what was checked."
+  checked_scope:
+    - "Exact files, routes, commands, or receipts checked."
+  unchecked_scope:
+    - "What was not checked."
+  evidence:
+    - "Command, file, commit, or URL evidence."
+  bad_news:
+    - "Known limitation, skipped scope, or blocker."
+  decision: partial
+  follow_up:
+    - "Small next action."

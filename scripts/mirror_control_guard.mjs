@@ -22,10 +22,20 @@ const requiredFiles = [
     '.mirror/schemas/memory_update_proposal.schema.json',
     '.mirror/schemas/evaluation_report.schema.json',
     '.mirror/schemas/approval_request.schema.json',
+    '.mirror/schemas/audit_log.schema.json',
+    '.mirror/schemas/rollback.schema.json',
     '.mirror/MEMORY_UPDATE_PROPOSALS/TEMPLATE.yaml',
     '.mirror/EVALS/TEMPLATE.yaml',
     '.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml',
+    '.mirror/AUDIT_LOGS/TEMPLATE.yaml',
+    '.mirror/ROLLBACKS/TEMPLATE.yaml',
     '.mirror/FILE_EXPORT_REGISTRY.md',
+    '.mirror/SOURCE_LEDGER.md',
+    '.mirror/SKILLS/context_pack/README.md',
+    '.mirror/SKILLS/visual_qa/README.md',
+    '.mirror/SKILLS/memory_update/README.md',
+    '.mirror/SKILLS/security_review/README.md',
+    '.mirror/SKILLS/boundary_check/README.md',
 ];
 
 const requiredDirs = [
@@ -388,12 +398,55 @@ if (exists('.mirror/FILE_EXPORT_REGISTRY.md')) {
 if (exists('.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml')) {
     const approval = read('.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml');
     requireIncludes(approval, 'approval_request:', 'approval request root');
+    requireIncludes(approval, 'required_approval_from: Paul', 'approval authority');
+    requireIncludes(approval, 'checks:', 'approval checks object');
+    requireIncludes(approval, 'tests_run: false', 'approval tests check');
+    requireIncludes(approval, 'diff_reviewed: false', 'approval diff check');
+    requireIncludes(approval, 'secrets_scan: false', 'approval secret scan check');
+    requireIncludes(approval, 'rollback_plan: false', 'approval rollback check');
     requireIncludes(approval, 'approval_required: true', 'approval required flag');
     requireIncludes(approval, 'status: pending', 'approval pending status');
+    requireIncludes(approval, 'human_summary:', 'approval human summary');
+    requireListItems(approval, '  allowed_only_if', ['human_approval_received', 'required_checks_passed', 'rollback_plan_attached']);
     requireListItems(approval, '  affected_paths', ['"repo-relative/path"']);
     requireListItems(approval, '  checked_scope', ['"What has already been checked."']);
     requireListItems(approval, '  unchecked_scope', ['"What remains unchecked."']);
     requireListItems(approval, '  rollback', ['"How to reverse this if it goes wrong."']);
+}
+
+if (exists('.mirror/AUDIT_LOGS/TEMPLATE.yaml')) {
+    const audit = read('.mirror/AUDIT_LOGS/TEMPLATE.yaml');
+    requireIncludes(audit, 'audit_log:', 'audit log root');
+    requireListItems(audit, '  checked_scope', ['"Exact files, routes, commands, or receipts checked."']);
+    requireListItems(audit, '  unchecked_scope', ['"What was not checked."']);
+    requireListItems(audit, '  evidence', ['"Command, file, commit, or URL evidence."']);
+    requireListItems(audit, '  bad_news', ['"Known limitation, skipped scope, or blocker."']);
+}
+
+if (exists('.mirror/ROLLBACKS/TEMPLATE.yaml')) {
+    const rollback = read('.mirror/ROLLBACKS/TEMPLATE.yaml');
+    requireIncludes(rollback, 'rollback_plan:', 'rollback plan root');
+    requireListItems(rollback, '  affected_paths', ['"repo-relative/path"']);
+    requireListItems(rollback, '  restore_steps', ['"Exact command or edit needed to reverse."']);
+    requireListItems(rollback, '  verification_after_restore', ['"Command or browser check to confirm restore."']);
+    requireListItems(rollback, '  risk_if_not_restored', ['"What stays broken if rollback is skipped."']);
+}
+
+if (exists('.mirror/EVALS/TEMPLATE.yaml')) {
+    const evalTemplate = read('.mirror/EVALS/TEMPLATE.yaml');
+    requireIncludes(evalTemplate, 'rubric_layer:', 'evaluation rubric layer');
+    requireIncludes(evalTemplate, 'judge_layer:', 'evaluation judge layer');
+    requireIncludes(evalTemplate, 'source_grounding:', 'evaluation source grounding');
+    requireIncludes(evalTemplate, 'visual_rubric:', 'evaluation visual rubric');
+    requireIncludes(evalTemplate, 'aggregation:', 'evaluation aggregation');
+    requireIncludes(evalTemplate, 'hard_veto_for_gated_failures', 'evaluation hard veto aggregation');
+}
+
+if (exists('.mirror/SOURCE_LEDGER.md')) {
+    const ledger = read('.mirror/SOURCE_LEDGER.md');
+    requireIncludes(ledger, 'Claims To Verify', 'source ledger claims section');
+    requireIncludes(ledger, 'Blocked Until Verified', 'source ledger blocked section');
+    requireIncludes(ledger, 'Claims visible to users need a source', 'source ledger user-visible rule');
 }
 
 if (exists('.mirror')) {

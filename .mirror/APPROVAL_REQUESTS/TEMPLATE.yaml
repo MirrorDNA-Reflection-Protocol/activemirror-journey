@@ -5,14 +5,25 @@ approval_request:
   requested_at: YYYY-MM-DDTHH:MM:SSZ
   action: "Describe the exact action that needs approval."
   reason: "Explain why normal scoped edit authority is not enough."
+  required_approval_from: Paul
   risk_level: medium
   affected_paths:
     - "repo-relative/path"
+  checks:
+    tests_run: false
+    diff_reviewed: false
+    secrets_scan: false
+    rollback_plan: false
   checked_scope:
     - "What has already been checked."
   unchecked_scope:
     - "What remains unchecked."
+  allowed_only_if:
+    - human_approval_received
+    - required_checks_passed
+    - rollback_plan_attached
   rollback:
     - "How to reverse this if it goes wrong."
+  human_summary: "Plain-language reason a human should approve or reject this."
   approval_required: true
   status: pending

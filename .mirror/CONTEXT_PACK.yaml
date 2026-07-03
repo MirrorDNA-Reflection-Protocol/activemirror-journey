@@ -10,8 +10,13 @@ context_pack:
     - .mirror/PLAN.md
     - .mirror/DECISIONS.md
     - .mirror/RISKS.md
+    - .mirror/SOURCE_LEDGER.md
     - .mirror/TASK_CONTRACT.yaml
     - .mirror/AGENT_POLICY.yaml
+    - .mirror/APPROVAL_REQUESTS/TEMPLATE.yaml
+    - .mirror/AUDIT_LOGS/TEMPLATE.yaml
+    - .mirror/EVALS/TEMPLATE.yaml
+    - .mirror/ROLLBACKS/TEMPLATE.yaml
     - src/pages/HomePage.jsx
     - src/pages/DeviceExperience.jsx
     - src/lib/first-turn-fallback.js

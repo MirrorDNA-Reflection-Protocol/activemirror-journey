@@ -16,11 +16,15 @@
         "requested_at",
         "action",
         "reason",
+        "required_approval_from",
         "risk_level",
         "affected_paths",
+        "checks",
         "checked_scope",
         "unchecked_scope",
+        "allowed_only_if",
         "rollback",
+        "human_summary",
         "approval_required",
         "status"
       ],
@@ -31,11 +35,25 @@
         "requested_at": { "type": "string" },
         "action": { "type": "string" },
         "reason": { "type": "string" },
+        "required_approval_from": { "type": "string" },
         "risk_level": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
         "affected_paths": { "type": "array", "items": { "type": "string" } },
+        "checks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tests_run", "diff_reviewed", "secrets_scan", "rollback_plan"],
+          "properties": {
+            "tests_run": { "type": "boolean" },
+            "diff_reviewed": { "type": "boolean" },
+            "secrets_scan": { "type": "boolean" },
+            "rollback_plan": { "type": "boolean" }
+          }
+        },
         "checked_scope": { "type": "array", "items": { "type": "string" } },
         "unchecked_scope": { "type": "array", "items": { "type": "string" } },
+        "allowed_only_if": { "type": "array", "items": { "type": "string" } },
         "rollback": { "type": "array", "items": { "type": "string" } },
+        "human_summary": { "type": "string" },
         "approval_required": { "type": "boolean" },
         "status": { "type": "string", "enum": ["pending", "approved", "rejected", "superseded"] }
       }

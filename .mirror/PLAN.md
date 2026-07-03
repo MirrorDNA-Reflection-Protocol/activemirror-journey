@@ -28,6 +28,7 @@
 2. Keep `npm run mirror:context` as the context source instead of chat memory.
 3. Add real approval request files only when a risky action is actually proposed.
 4. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+5. Only add runtime wiring after a small contract has been used by a real task.
 
 ## Do Not Do Yet
 

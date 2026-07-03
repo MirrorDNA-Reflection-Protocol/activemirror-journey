@@ -27,6 +27,9 @@ Updated: 2026-07-03
 - `.mirror/APPROVAL_REQUESTS/TEMPLATE.yaml` exists for risky deploy/file/memory actions.
 - `npm run mirror:report` prints checked scope, unchecked scope, bad news, and next controls.
 - `npm run mirror:context` builds a file-derived context pack from `.mirror/CONTEXT_PACK.yaml`.
+- `.mirror/AUDIT_LOGS/TEMPLATE.yaml` and `.mirror/ROLLBACKS/TEMPLATE.yaml` define receipt and restore shapes.
+- `.mirror/SOURCE_LEDGER.md` tracks public claims that need local evidence or fresh verification.
+- `.mirror/SKILLS/` contains lightweight policy stubs only; it does not spawn agent teams.
 
 ## Bad News / Known Limits
 
@@ -37,6 +40,7 @@ Updated: 2026-07-03
 - The current UI is still a product front door, not the full ActiveMirrorOS control plane.
 - File export registry exists as a design stub only; there are no active registered exports.
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
+- Audit, rollback, skill, and source-ledger files are repo-local contracts only; they are not a runtime control plane.
 
 ## Unrelated Local Dirt
 

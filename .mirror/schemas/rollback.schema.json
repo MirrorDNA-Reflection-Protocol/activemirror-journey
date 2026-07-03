@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/rollback.schema.json",
+  "title": "Active Mirror Rollback Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rollback_plan"],
+  "properties": {
+    "rollback_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "task_id",
+        "created_at",
+        "change",
+        "affected_paths",
+        "restore_steps",
+        "verification_after_restore",
+        "risk_if_not_restored",
+        "owner"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "task_id": { "type": "string" },
+        "created_at": { "type": "string" },
+        "change": { "type": "string" },
+        "affected_paths": { "type": "array", "items": { "type": "string" } },
+        "restore_steps": { "type": "array", "items": { "type": "string" } },
+        "verification_after_restore": { "type": "array", "items": { "type": "string" } },
+        "risk_if_not_restored": { "type": "array", "items": { "type": "string" } },
+        "owner": { "type": "string" }
+      }
+    }
+  }
+}

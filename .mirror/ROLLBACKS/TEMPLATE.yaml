@@ -1,0 +1,14 @@
+rollback_plan:
+  id: rollback_YYYYMMDD_001
+  task_id: active_mirror_front_door_v1
+  created_at: YYYY-MM-DDTHH:MM:SSZ
+  change: "Describe the change this rollback covers."
+  affected_paths:
+    - "repo-relative/path"
+  restore_steps:
+    - "Exact command or edit needed to reverse."
+  verification_after_restore:
+    - "Command or browser check to confirm restore."
+  risk_if_not_restored:
+    - "What stays broken if rollback is skipped."
+  owner: codex

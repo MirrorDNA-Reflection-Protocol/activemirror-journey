@@ -15,6 +15,11 @@
         "checked_scope",
         "unchecked_scope",
         "checks",
+        "rubric_layer",
+        "judge_layer",
+        "source_grounding",
+        "visual_rubric",
+        "aggregation",
         "hard_fails",
         "bad_news",
         "decision"
@@ -25,6 +30,62 @@
         "checked_scope": { "type": "array", "items": { "type": "string" } },
         "unchecked_scope": { "type": "array", "items": { "type": "string" } },
         "checks": { "type": "array", "items": { "type": "string" } },
+        "rubric_layer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["must_right", "easy_wrong", "gated_failures"],
+          "properties": {
+            "must_right": { "type": "array", "items": { "type": "string" } },
+            "easy_wrong": { "type": "array", "items": { "type": "string" } },
+            "gated_failures": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "judge_layer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correctness_judge",
+            "source_grounding_judge",
+            "safety_judge",
+            "spec_adherence_judge",
+            "adversarial_judge"
+          ],
+          "properties": {
+            "correctness_judge": { "type": "string" },
+            "source_grounding_judge": { "type": "string" },
+            "safety_judge": { "type": "string" },
+            "spec_adherence_judge": { "type": "string" },
+            "adversarial_judge": { "type": "string" }
+          }
+        },
+        "source_grounding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["claims_checked", "claims_unchecked"],
+          "properties": {
+            "claims_checked": { "type": "array", "items": { "type": "string" } },
+            "claims_unchecked": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "visual_rubric": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["must_right", "hard_fail"],
+          "properties": {
+            "must_right": { "type": "array", "items": { "type": "string" } },
+            "hard_fail": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "aggregation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "dissenting_judges", "human_override"],
+          "properties": {
+            "method": { "type": "string" },
+            "dissenting_judges": { "type": "array", "items": { "type": "string" } },
+            "human_override": { "type": "string" }
+          }
+        },
         "hard_fails": { "type": "array", "items": { "type": "string" } },
         "bad_news": { "type": "array", "items": { "type": "string" } },
         "decision": { "type": "string", "enum": ["pass", "partial", "fail"] }

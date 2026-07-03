@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/audit_log.schema.json",
+  "title": "Active Mirror Audit Log",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["audit_log"],
+  "properties": {
+    "audit_log": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "task_id",
+        "created_at",
+        "actor",
+        "action",
+        "checked_scope",
+        "unchecked_scope",
+        "evidence",
+        "bad_news",
+        "decision",
+        "follow_up"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "task_id": { "type": "string" },
+        "created_at": { "type": "string" },
+        "actor": { "type": "string" },
+        "action": { "type": "string" },
+        "checked_scope": { "type": "array", "items": { "type": "string" } },
+        "unchecked_scope": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "bad_news": { "type": "array", "items": { "type": "string" } },
+        "decision": { "type": "string", "enum": ["pass", "partial", "fail"] },
+        "follow_up": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

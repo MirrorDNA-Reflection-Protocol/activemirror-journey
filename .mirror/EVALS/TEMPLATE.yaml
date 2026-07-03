@@ -7,8 +7,42 @@ evaluation_report:
     - "List what was not checked."
   checks:
     - "List command or browser check result."
+  rubric_layer:
+    must_right:
+      - "Public route or file being evaluated is correct."
+      - "No unsupported public claim is introduced."
+    easy_wrong:
+      - "Mobile layout, visual hierarchy, or CTA clarity can regress."
+    gated_failures:
+      - "Secret leak."
+      - "Wrong public route."
+      - "Unsupported claim."
+      - "Broken mobile layout."
+  judge_layer:
+    correctness_judge: pending
+    source_grounding_judge: pending
+    safety_judge: pending
+    spec_adherence_judge: pending
+    adversarial_judge: pending
+  source_grounding:
+    claims_checked:
+      - "Claim mapped to source, file, or receipt."
+    claims_unchecked:
+      - "Claim not yet externally verified."
+  visual_rubric:
+    must_right:
+      - "Primary action is readable."
+      - "No overlapping text."
+      - "Mobile layout fits the viewport."
+    hard_fail:
+      - "Unreadable CTA."
+      - "Misleading label."
+      - "Wrong product identity."
+  aggregation:
+    method: hard_veto_for_gated_failures
+    dissenting_judges: []
+    human_override: none
   hard_fails: []
   bad_news:
     - "State limitations or blockers plainly."
   decision: partial
-
