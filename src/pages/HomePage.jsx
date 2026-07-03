@@ -41,8 +41,8 @@ const SAMPLE_MIRROR = {
 
 const STARTERS = [
     {
-        label: 'Start here',
-        prompt: 'I feel stuck and need something useful to try.',
+        label: 'Not sure?',
+        prompt: "I don't know what to ask yet. Help me find one useful next step.",
         tone: 'steady',
     },
 ];
@@ -1228,6 +1228,27 @@ export default function HomePage() {
                                 </button>
                             </div>
                         </form>
+
+                        {!showMirror ? (
+                            <div className="mx-auto mt-3 flex max-w-2xl justify-center">
+                                {STARTERS.map((starter) => {
+                                    const tone = STARTER_TONES[starter.tone] || STARTER_TONES.steady;
+
+                                    return (
+                                        <button
+                                            key={starter.label}
+                                            type="button"
+                                            onClick={() => chooseStarter(starter)}
+                                            disabled={busy}
+                                            className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${tone.button}`}
+                                        >
+                                            <span className={`h-1.5 w-1.5 rounded-full ${tone.dot}`} />
+                                            {starter.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : null}
 
                         <div className={`mt-3 flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
                             <span>Your thoughts stay yours.</span>
