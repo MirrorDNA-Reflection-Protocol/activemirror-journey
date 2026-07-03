@@ -20,6 +20,12 @@ Do not start new product/front-door work in:
 
 Use those only as references or migration sources.
 
+## Mirror Control Folder
+
+Before non-trivial edits, read `.mirror/TASK_CONTRACT.yaml`, `.mirror/AGENT_POLICY.yaml`, and `.mirror/STATUS.md`.
+
+Use `.mirror/DECISIONS.md` for durable decisions, `.mirror/RISKS.md` for active risks, and `.mirror/PLAN.md` for the next bounded slice. Keep SWFI/client work out of this repo.
+
 ## Live/Deploy Boundary
 
 `/Users/mirror-pro/repos/active-mirror-site` still contains live deployment and Worker/gateway history. Product UI changes should be built and verified here first, then intentionally packaged into the live/deploy repo if needed.

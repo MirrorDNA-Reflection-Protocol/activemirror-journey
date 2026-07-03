@@ -1,0 +1,49 @@
+agent_policy:
+  default_mode: scoped_edit_with_verification
+  lane: Active Mirror
+  canonical_product_repo: /Users/mirror-pro/repos/activemirror-journey
+  deploy_repo: /Users/mirror-pro/repos/active-mirror-site
+
+  principles:
+    - user_outcome_before_architecture_explanation
+    - no_sycophancy
+    - no_assumptions_without_labeling
+    - source_sensitive_claims_need_checking
+    - privacy_help_should_keep_users_moving
+    - artifacts_should_be_actual_outputs
+    - active_mirror_identity_only
+
+  read_allowed:
+    - approved_project_files
+    - public_docs
+    - attached_active_mirror_specs
+    - repo_local_contracts
+
+  write_allowed:
+    - .mirror/
+    - docs/
+    - src/
+    - scripts/
+    - public/
+
+  write_requires_extra_care:
+    - AGENTS.md
+    - README.md
+    - package.json
+    - package-lock.json
+    - deploy bridge files
+
+  blocked:
+    - secrets
+    - private keys
+    - provider key disclosure
+    - SWFI implementation inside this repo
+    - hidden memory mutation
+    - raw private vault export
+    - arbitrary generated UI execution
+
+  deployment_rule:
+    product_source_first: true
+    package_to_deploy_repo_after_checks: true
+    verify_public_hash_after_pages_deploy: true
+

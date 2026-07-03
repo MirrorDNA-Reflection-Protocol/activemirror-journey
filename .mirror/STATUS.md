@@ -1,0 +1,36 @@
+# Active Mirror Status
+
+Updated: 2026-07-03
+
+## Current State
+
+- Product source repo: `/Users/mirror-pro/repos/activemirror-journey`
+- Deploy/gateway repo: `/Users/mirror-pro/repos/active-mirror-site`
+- Live app route: `https://activemirror.ai/app/`
+- Current live app bundle verified: `index-BV8n-QWN.js`
+- Gateway health version verified: `2026-07-02-first-turn-source-voice-v1`
+
+## Verified Checks
+
+- `npm run build:deploy` passed in product source.
+- `npm run guard:front-door` passed.
+- `npm run guard:friction` passed.
+- `npm run guard:redaction` passed.
+- `npm run truth` passed with scoped limitations.
+- `npm run build && npm run copy:audit` passed in deploy repo.
+- `npm run canary:prod` passed 13/13.
+- Production mobile and desktop privacy smoke passed.
+- Production artifact route returned a usable draft, not advice about making one.
+
+## Bad News / Known Limits
+
+- The product source and deploy/gateway source are still two repos.
+- GitHub Pages legacy deployment can time out in `deployment_queued`; a `gh-pages` republish may be needed.
+- Browser-local state is useful, but not a full owned identity/memory sync layer yet.
+- Generated artifacts are useful text/brief/code outputs today; they are not yet a fully sandboxed file-export system.
+- The current UI is still a product front door, not the full ActiveMirrorOS control plane.
+
+## Unrelated Local Dirt
+
+- `docs/ACTIVE_MIRROR_HARDENING_RESOLUTION_CONTRACTS.md` is untracked and was not created by this status update.
+

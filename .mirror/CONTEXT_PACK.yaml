@@ -1,0 +1,43 @@
+context_pack:
+  id: active_mirror_front_door_context_v1
+  updated: 2026-07-03
+  objective: Keep Active Mirror product work focused on a simple reflective AI front door with governed outputs.
+
+  include:
+    - AGENTS.md
+    - README.md
+    - .mirror/TASK_CONTRACT.yaml
+    - .mirror/AGENT_POLICY.yaml
+    - src/pages/HomePage.jsx
+    - src/pages/DeviceExperience.jsx
+    - src/lib/first-turn-fallback.js
+    - src/lib/local-mirror-sense.js
+    - scripts/first_turn_friction_guard.mjs
+    - docs/contracts/active_mirror_truth_manifest.json
+
+  exclude:
+    - SWFI specs and implementation
+    - private identity/vault material
+    - stale legacy repos except as explicit references
+    - provider secrets
+    - unrelated untracked docs
+
+  product_voice:
+    consumer:
+      - simple
+      - warm
+      - useful
+      - direct
+      - not clinical
+      - not architectural
+    enterprise:
+      - governed
+      - auditable
+      - source-backed
+      - approval-aware
+
+  current_live_truth:
+    app_url: https://activemirror.ai/app/
+    app_bundle: index-BV8n-QWN.js
+    gateway_version: 2026-07-02-first-turn-source-voice-v1
+

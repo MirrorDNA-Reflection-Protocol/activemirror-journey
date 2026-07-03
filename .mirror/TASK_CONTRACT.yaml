@@ -1,0 +1,73 @@
+task_contract:
+  id: active_mirror_front_door_v1
+  project: Active Mirror
+  repo: /Users/mirror-pro/repos/activemirror-journey
+  deploy_bridge_repo: /Users/mirror-pro/repos/active-mirror-site
+  objective: Build a simple, useful, chat-first reflective AI front door that can produce small usable outputs.
+
+  allowed_paths:
+    - .mirror/
+    - docs/
+    - public/
+    - scripts/
+    - src/
+    - index.html
+    - package.json
+    - package-lock.json
+    - vite.config.js
+    - tailwind.config.js
+    - postcss.config.js
+
+  deploy_bridge_allowed_paths:
+    - public/app/
+    - worker/
+    - scripts/
+    - package.json
+    - package-lock.json
+
+  forbidden_paths:
+    - .env
+    - secrets/
+    - billing/
+    - production_config/
+    - private_keys/
+    - node_modules/
+    - dist/
+
+  forbidden_scopes:
+    - SWFI implementation
+    - client confidential data
+    - unrelated repo cleanup
+    - provider key disclosure
+
+  required_outputs:
+    - changed_files
+    - tests_or_checks_run
+    - deployment_status_if_deployed
+    - bad_news_or_limits
+    - rollback_note
+
+  approval_required_for:
+    - adding dependencies
+    - changing provider secrets
+    - changing billing or auth
+    - destructive file operations
+    - exposing model names publicly
+    - adding downloadable file export features
+    - durable memory promotion
+
+  verification:
+    local:
+      - npm run guard:front-door
+      - npm run guard:friction
+      - npm run guard:redaction
+      - npm run truth
+      - npm run build:deploy
+    deploy_repo:
+      - npm run build
+      - npm run copy:audit
+      - npm run canary:prod
+    browser:
+      - mobile smoke
+      - desktop smoke
+
