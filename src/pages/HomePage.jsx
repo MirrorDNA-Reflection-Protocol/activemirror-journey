@@ -1165,6 +1165,15 @@ export default function HomePage() {
             setSeed(readSavedSeed());
             setActiveDefault(imported.activeDefault || getActiveMirrorDefault());
             setMirrorDefaults(getMirrorDefaults());
+            setText('');
+            setResult(makeSetupReadyResult());
+            setLastIntent('loaded saved choices');
+            setLastSource('uploaded_id');
+            setLastSense(null);
+            setLoopCount(0);
+            setSendableDraft(null);
+            setArtifactBusy('');
+            setWorkSurfaceOpen(false);
             setImportStatus('Loaded. What do you want?');
             trackEvent('saved_choices_uploaded', { page: 'home', source: 'file' });
             window.setTimeout(() => setImportStatus(''), 2800);
