@@ -63,6 +63,18 @@ check(
     /label:\s*'Check it'/.test(mirrorFeedback),
     'repair follow-up should offer a plain answer check'
 );
+check(
+    homePage.includes('function makeStarterResult') && homePage.includes("setResult(makeStarterResult(item.kind))"),
+    'starter buttons should use deterministic first-turn mirrors before model routing'
+);
+for (const starterPhrase of [
+    'Start with the version someone can react to today',
+    'A decision gets easier when the reversible choice is separated from the one-way door',
+    'Fix the smallest visible break first',
+    'Find the missing piece that changes what you do next',
+]) {
+    check(homePage.includes(starterPhrase), `starter mirror missing phrase: ${starterPhrase}`);
+}
 
 if (failures.length) {
     console.error('First-turn friction guard FAILED.');

@@ -53,26 +53,88 @@ const LOADING_MIRROR = {
 
 const STARTER_ACTIONS = [
     {
+        kind: 'make',
         label: 'Make',
         icon: PenLine,
-        intent: 'I want to make something useful, but I am not sure where to start. Help me choose the smallest first version.',
+        intent: 'I want to make something useful.',
     },
     {
+        kind: 'decide',
         label: 'Decide',
         icon: Check,
-        intent: 'I need to make a decision. Help me see the tradeoff and pick the next step.',
+        intent: 'I need to make a decision.',
     },
     {
+        kind: 'fix',
         label: 'Fix',
         icon: SlidersHorizontal,
-        intent: 'Something is not working. Help me find the smallest useful fix to try first.',
+        intent: 'Something is not working.',
     },
     {
+        kind: 'understand',
         label: 'Understand',
         icon: Sparkles,
-        intent: 'I need to understand this better. Help me find the first useful question.',
+        intent: 'I need to understand this better.',
     },
 ];
+
+const STARTER_RESULTS = {
+    make: {
+        reflection: 'Start with the version someone can react to today, not the whole idea.',
+        question: 'What are you making: a message, page, plan, image, or product?',
+        move: 'Pick one format and write the rough version in one sentence.',
+        visual: {
+            kind: 'reframe',
+            left: 'Build the whole thing',
+            right: 'Make one testable piece',
+        },
+    },
+    decide: {
+        reflection: 'A decision gets easier when the reversible choice is separated from the one-way door.',
+        question: 'What are the two options?',
+        move: 'Write Option A and Option B. Mark the one that is easier to undo.',
+        visual: {
+            kind: 'axes',
+            left: 'Hard to undo',
+            right: 'Easy to test',
+        },
+    },
+    fix: {
+        reflection: 'Fix the smallest visible break first, not the whole system.',
+        question: 'What feels wrong: unclear, broken, slow, ugly, or blocked?',
+        move: 'Name the visible symptom in five words, then change only one thing.',
+        visual: {
+            kind: 'reframe',
+            left: 'Everything is broken',
+            right: 'One visible symptom',
+        },
+    },
+    understand: {
+        reflection: 'You do not need the full explanation yet. Find the missing piece that changes what you do next.',
+        question: 'What would help most: a definition, example, comparison, source, or next step?',
+        move: 'Choose one lens and ask for that.',
+        visual: {
+            kind: 'spectrum',
+            left: 'More information',
+            right: 'The missing piece',
+        },
+    },
+};
+
+function makeStarterResult(kind = 'make') {
+    const starter = STARTER_RESULTS[kind] || STARTER_RESULTS.make;
+    return {
+        kind: 'starter',
+        mirror: {
+            ...starter,
+            receipt: {
+                context_used: 'Only the starter button you chose.',
+                context_excluded: 'No private details were needed.',
+                memory_decision: 'Nothing saved.',
+            },
+        },
+    };
+}
 
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features|who are you)\b/i.test(intent);
@@ -1256,6 +1318,20 @@ export default function HomePage() {
         reflect(text, 'typed');
     }
 
+    function startFromStarter(item = {}) {
+        setText('');
+        setLastIntent(item.intent || item.label || 'starter');
+        setLastSource('starter');
+        setLastSense(null);
+        setLoopCount(0);
+        setSendableDraft(null);
+        setArtifactBusy('');
+        setWorkSurfaceOpen(false);
+        setResult(makeStarterResult(item.kind));
+        trackEvent('starter_clicked', { page: 'home', label: item.label || item.kind || 'starter' });
+        window.setTimeout(() => inputRef.current?.focus(), 60);
+    }
+
     async function createArtifact(kind = 'draft', options = {}) {
         const mirror = options.mirror || result?.mirror || SAMPLE_MIRROR;
         const artifactIntent = options.intent || lastIntent || mirror.question || mirror.move || 'Create the smallest useful output.';
@@ -1437,8 +1513,7 @@ export default function HomePage() {
                                             key={item.label}
                                             type="button"
                                             onClick={() => {
-                                                trackEvent('starter_clicked', { page: 'home', label: item.label });
-                                                reflect(item.intent, 'starter');
+                                                startFromStarter(item);
                                             }}
                                             className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-3.5 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white"
                                         >
