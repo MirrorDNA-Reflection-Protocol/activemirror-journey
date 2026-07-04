@@ -8,41 +8,41 @@ import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
 const SCAN_QUESTIONS = [
     {
         id: 'q1',
-        question: 'What do you want help with first?',
+        question: 'What are you here for?',
         options: [
-            { label: 'Getting unstuck', archetype: 'builder', preference: 'help_with' },
-            { label: 'Making a decision', archetype: 'strategist', preference: 'help_with' },
-            { label: 'Making something useful', archetype: 'connector', preference: 'help_with' },
-            { label: 'Getting a clearer take', archetype: 'analyst', preference: 'help_with' },
+            { label: 'Get unstuck', archetype: 'builder', preference: 'help_with' },
+            { label: 'Decide something', archetype: 'strategist', preference: 'help_with' },
+            { label: 'Make something', archetype: 'connector', preference: 'help_with' },
+            { label: 'Think it through', archetype: 'analyst', preference: 'help_with' },
         ],
     },
     {
         id: 'q2',
-        question: 'How should replies feel?',
+        question: 'What tone helps?',
         options: [
-            { label: 'Gently', archetype: 'connector', preference: 'pushback' },
-            { label: 'Directly', archetype: 'analyst', preference: 'pushback' },
-            { label: 'Briefly', archetype: 'builder', preference: 'pushback' },
-            { label: 'Careful with facts', archetype: 'scholar', preference: 'pushback' },
+            { label: 'Warm', archetype: 'connector', preference: 'reply_style' },
+            { label: 'Direct', archetype: 'analyst', preference: 'reply_style' },
+            { label: 'Short', archetype: 'builder', preference: 'reply_style' },
+            { label: 'Careful', archetype: 'scholar', preference: 'reply_style' },
         ],
     },
     {
         id: 'q3',
-        question: 'What should it avoid?',
+        question: 'What should it skip?',
         options: [
-            { label: 'Long answers', archetype: 'builder', preference: 'never_assume' },
-            { label: 'Guessing what I mean', archetype: 'strategist', preference: 'never_assume' },
-            { label: 'Asking for private details', archetype: 'scholar', preference: 'never_assume' },
-            { label: 'Agreeing too quickly', archetype: 'analyst', preference: 'never_assume' },
+            { label: 'Long answers', archetype: 'builder', preference: 'skip' },
+            { label: 'Guessing', archetype: 'strategist', preference: 'skip' },
+            { label: 'Private details', archetype: 'scholar', preference: 'skip' },
+            { label: 'Easy agreement', archetype: 'analyst', preference: 'skip' },
         ],
     },
     {
         id: 'q4',
-        question: 'What helps most?',
+        question: 'What should it give you?',
         options: [
-            { label: 'One clear next step', archetype: 'builder', preference: 'answer_style' },
+            { label: 'A next step', archetype: 'builder', preference: 'answer_style' },
             { label: 'A better question', archetype: 'strategist', preference: 'answer_style' },
-            { label: 'Something I can copy', archetype: 'connector', preference: 'answer_style' },
+            { label: 'A draft', archetype: 'connector', preference: 'answer_style' },
             { label: 'A simple plan', archetype: 'architect', preference: 'answer_style' },
         ],
     },
@@ -81,25 +81,25 @@ function selectedPreferences(answers) {
 }
 
 function preferenceLabel(preference) {
-    if (preference === 'help_with') return 'Help with';
-    if (preference === 'pushback') return 'Directness';
-    if (preference === 'never_assume') return 'Avoid assuming';
+    if (preference === 'help_with') return 'Here for';
+    if (preference === 'reply_style') return 'Tone';
+    if (preference === 'skip') return 'Skip';
     if (preference === 'answer_style') return 'Give me';
     return 'Choice';
 }
 
 function makeStartPrompt(preferences = []) {
     const helpWith = preferences.find((item) => item.preference === 'help_with')?.answer || 'something useful';
-    const pushback = preferences.find((item) => item.preference === 'pushback')?.answer || 'when needed';
-    const avoidAssuming = preferences.find((item) => item.preference === 'never_assume')?.answer || 'what I have not said';
-    const answerStyle = preferences.find((item) => item.preference === 'answer_style')?.answer || 'one clear next step';
+    const replyStyle = preferences.find((item) => item.preference === 'reply_style')?.answer || 'clear';
+    const skip = preferences.find((item) => item.preference === 'skip')?.answer || 'what I have not said';
+    const answerStyle = preferences.find((item) => item.preference === 'answer_style')?.answer || 'a next step';
 
     return [
-        `I set up my Active Mirror. I usually need help with: ${helpWith}.`,
-        `Directness: ${pushback}.`,
-        `Avoid assuming: ${avoidAssuming}.`,
-        `Give me: ${answerStyle}.`,
-        'Start by asking what I want to work on.',
+        `My Active Mirror setup: I am here for ${helpWith}.`,
+        `Tone: ${replyStyle}.`,
+        `Skip: ${skip}.`,
+        `Useful output: ${answerStyle}.`,
+        'Start by asking what I want.',
     ].join(' ');
 }
 
@@ -282,7 +282,7 @@ export default function Start() {
                     <section className="mx-auto grid w-full max-w-4xl gap-5 lg:grid-cols-[0.78fr_1fr] lg:items-center">
                         <div className="px-1 text-center lg:text-left">
                             <h1 className="mx-auto max-w-lg text-[3.2rem] font-semibold leading-[0.96] tracking-normal text-white sm:text-[4.8rem] lg:mx-0">
-                                Make it yours.
+                                Set it up.
                             </h1>
                             <p className="mt-4 text-base font-medium text-zinc-400 sm:text-lg">
                                 Four taps. No account.
@@ -342,7 +342,7 @@ export default function Start() {
                             </div>
                             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100">
                                 <Check size={14} />
-                                Saved in this browser
+                                Saved on this device
                             </div>
                         </div>
 
@@ -351,7 +351,7 @@ export default function Start() {
                                 Ready.
                             </h1>
                             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                                Start with anything. You can keep a copy too.
+                                Start with anything. You can keep a copy if you want.
                             </p>
 
                             <div className="mt-6 grid gap-2">

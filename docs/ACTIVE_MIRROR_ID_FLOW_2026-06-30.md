@@ -7,20 +7,22 @@ Status: product contract for the public front door.
 1. Homepage asks: `What do you want?`
 2. User gets a useful reflection before any account, setup, or explanation.
 3. If they want better defaults, they open `/id`.
-4. Quick setup asks six preference questions.
+4. Quick setup asks four preference questions.
 5. The answers generate a browser-local saved choices object.
-6. The user can keep it in this browser or download `active-mirror-choices.json`.
-7. `Save and start` returns to the chat and uses the approved preferences.
+6. The user can keep it on this device or download `active-mirror-id.json`.
+7. `Start chat` returns to the chat and uses the approved preferences.
 
 ## Public Language
 
 Use:
 
-- `Quick setup`
-- `Make it yours`
-- `Saved in this browser`
-- `Download choices`
-- `Make it feel like yours.`
+- `Set it up`
+- `What are you here for?`
+- `What tone helps?`
+- `What should it skip?`
+- `What should it give you?`
+- `Saved on this device`
+- `Keep a copy`
 
 Avoid on consumer surfaces:
 
