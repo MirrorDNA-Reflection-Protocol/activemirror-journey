@@ -16,6 +16,7 @@
         "guard:mirror-control": "npm run guard:mirror",
         "guard:front-door": "node scripts/front_door_guard.mjs",
         "guard:friction": "node scripts/first_turn_friction_guard.mjs",
+        "guard:dossiers": "node scripts/dossier_guard.mjs",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "truth": "python3 scripts/active_mirror_truth_gate.py --out outputs/active-mirror-truth-gate.json",
         "mirror:report": "node scripts/mirror_control_report.mjs",

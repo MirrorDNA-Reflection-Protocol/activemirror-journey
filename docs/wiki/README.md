@@ -11,6 +11,7 @@ Use this wiki when a thread, agent, or contributor needs to know what Active Mir
 - [Language Guide](./language-guide.md)
 - [Build And Deploy Runbook](./build-and-deploy.md)
 - [Open Questions](./open-questions.md)
+- [Build Dossiers](../dossiers/README.md)
 
 ## Obsidian Mirror
 

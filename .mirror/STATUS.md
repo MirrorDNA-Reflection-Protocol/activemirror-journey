@@ -23,6 +23,7 @@ Updated: 2026-07-04
 - Live mobile `/app/id/` verified after the 2026-07-04 setup polish: `Set it up.`, four taps, plain result rows, browser-local state, no old setup copy, no overflow, no console errors.
 - Repo-local wiki added at `docs/wiki/README.md` and included in `.mirror/CONTEXT_PACK.yaml`.
 - Obsidian reference sync is available through `npm run wiki:obsidian`.
+- Repo-local dossiers are available at `docs/dossiers/` and checked with `npm run guard:dossiers`.
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
 - `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.
@@ -44,7 +45,7 @@ Updated: 2026-07-04
 - File export registry exists as a design stub only; there are no active registered exports.
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
 - Audit, rollback, skill, and source-ledger files are repo-local contracts only; they are not a runtime control plane.
-- The wiki is repo-local only; it is not yet mirrored to GitHub Wiki or Obsidian.
+- GitHub Wiki is not canonical or mirrored; the Obsidian copy is generated reference material only.
 
 ## Unrelated Local Dirt
 

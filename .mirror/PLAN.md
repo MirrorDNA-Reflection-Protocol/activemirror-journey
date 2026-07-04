@@ -9,6 +9,7 @@
 5. Keep model/provider names out of consumer copy.
 6. Keep source-sensitive turns marked before reliance.
 7. Read `docs/wiki/README.md` before changing copy, setup flow, deploy packaging, or repo boundaries.
+8. Pick or create a dossier in `docs/dossiers/` before a multi-file task.
 
 ## Next Product Slice
 
@@ -24,11 +25,12 @@
 ## Next Control-Plane Slice
 
 1. Keep `npm run mirror:report` as the first status command before risky edits.
-2. Keep `npm run mirror:context` as the context source instead of chat memory; it now includes `docs/wiki/`.
+2. Keep `npm run mirror:context` as the context source instead of chat memory; it now includes `docs/wiki/` and `docs/dossiers/`.
 3. Keep `npm run wiki:obsidian` as a generated reference mirror, not the source of truth.
-4. Add real approval request files only when a risky action is actually proposed.
-5. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-6. Only add runtime wiring after a small contract has been used by a real task.
+4. Use the Model Challenge Contract for tasks that need model accountability.
+5. Add real approval request files only when a risky action is actually proposed.
+6. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+7. Only add runtime wiring after a small contract has been used by a real task.
 
 ## Do Not Do Yet
 

@@ -20,6 +20,12 @@ This runs:
 - truth gate;
 - Vite production build with `/app/` base.
 
+For dossier changes, also run:
+
+```bash
+npm run guard:dossiers
+```
+
 Known non-blocking warning as of 2026-07-04:
 
 ```text
