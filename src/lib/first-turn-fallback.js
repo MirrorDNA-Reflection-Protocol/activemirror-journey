@@ -78,14 +78,14 @@ const MIRRORS = {
         move: 'Name that one claim, then check one current source before using it.',
     },
     private_output: {
-        reflection: 'Use placeholders for anything private. I can still help with the useful part.',
-        question: 'What do you want help making, deciding, or sending?',
-        move: 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
+        reflection: 'I can help with the useful part. Leave the real secret out.',
+        question: 'What do you want me to make, decide, or fix?',
+        move: 'Send it again with [secret] or [detail] in place of the real value.',
     },
     needs_detail: {
-        reflection: 'I can start, but I need one direction so I do not guess.',
-        question: 'What do you want first: make, decide, fix, or understand?',
-        move: 'Pick one word: make, decide, fix, or understand. Then add one sentence.',
+        reflection: 'Give me one direction and I can start.',
+        question: 'Make, decide, fix, or understand?',
+        move: 'Pick one, then add one sentence.',
     },
     launch_clarity: {
         reflection: 'The first screen should make one useful action obvious before anything else asks for attention.',
@@ -98,9 +98,9 @@ const MIRRORS = {
         move: 'Name the sign, then run the smallest test that could produce it today.',
     },
     reset: {
-        reflection: 'Too many open loops are being treated as one problem.',
-        question: 'Which one loop would make the rest easier if it moved a little?',
-        move: 'Pick that loop, set a ten-minute timer, and write only the next visible action.',
+        reflection: 'There is more than one thread open. Start with the one that makes today easier.',
+        question: 'Which one matters first?',
+        move: 'Choose that one and do the smallest visible step for ten minutes.',
     },
     artifact: {
         reflection: 'This wants to become something you can use.',
@@ -108,7 +108,7 @@ const MIRRORS = {
         move: 'Draft the smallest usable version with a title, three bullets, and one ask.',
     },
     general: {
-        reflection: 'The thought is still big. Make it small enough to try today.',
+        reflection: 'This is still wide. Shrink it until it can move today.',
         question: 'What is the smallest version of this that could be tested today?',
         move: 'Write the testable version in one sentence, then show it to one person.',
     },

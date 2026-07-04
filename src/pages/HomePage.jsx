@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
 import { NeedsSources } from '../components/TruthStateNotice';
-import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
+import { buildLocalSenseContext, assessLocalMirrorSense, maskSoftPrivateText } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { attachArtifactChallenge } from '../lib/challenge-packet';
 import {
@@ -133,12 +133,12 @@ function makeBlockedResult(data = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Use placeholders for anything private. I can still help with the useful part.',
-            question: 'What do you want help making, deciding, or sending?',
-            move: 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
+            reflection: 'I can help with the useful part. Leave the real secret out.',
+            question: 'What do you want me to make, decide, or fix?',
+            move: 'Send it again with [secret] or [detail] in place of the real value.',
             receipt: {
                 context_used: 'The current prompt only.',
-                context_excluded: 'Potentially private details were kept out of the live route.',
+                context_excluded: 'The secret value was not sent.',
                 memory_decision: 'Nothing saved.',
             },
         },
@@ -149,12 +149,12 @@ function makeLocalPrivacyResult(sense = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'Use placeholders for anything private. I can still help with the useful part.',
-            question: 'What do you want help making, deciding, or sending?',
-            move: 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
+            reflection: 'I can help with the useful part. Leave the real secret out.',
+            question: 'What do you want me to make, decide, or fix?',
+            move: 'Send it again with [secret] or [detail] in place of the real value.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
-                context_excluded: 'Potentially private details stayed in this browser.',
+                context_excluded: 'The secret value stayed in this browser.',
                 memory_decision: 'Nothing saved.',
             },
         },
@@ -628,6 +628,27 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
         return <LoadingPanel />;
     }
 
+    if (isPrivacyHold) {
+        return (
+            <div className="grid gap-3">
+                <div className="flex items-start gap-3">
+                    <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid">
+                        <MirrorLogo />
+                    </div>
+                    <div className="min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-white/[0.075] bg-white/[0.038] p-4 shadow-[0_0_42px_rgba(0,0,0,0.20)] backdrop-blur-2xl sm:p-5">
+                        <ReflectionGlow mirror={mirror} />
+                        <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.08rem]">
+                            {mirror.reflection}
+                        </p>
+                        <div className="mt-4 rounded-[1.2rem] border border-emerald-200/12 bg-emerald-200/[0.055] px-3.5 py-3 text-[0.98rem] font-semibold leading-7 text-emerald-50">
+                            {mirror.move}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="grid gap-3">
             <div className="flex items-start gap-3">
@@ -1083,9 +1104,10 @@ export default function HomePage() {
 
         setBusy(true);
         try {
-            const seededIntent = seed || sense.approvedDefault || sense.drift
-                ? buildLocalSenseContext(sense, cleanIntent)
-                : cleanIntent;
+            const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+            const seededIntent = seed || sense.approvedDefault || sense.drift || sense.softPrivate
+                ? buildLocalSenseContext(sense, safeIntent)
+                : safeIntent;
             const response = await fetch(GATEWAY, {
                 method: 'POST',
                 headers: {
@@ -1422,9 +1444,6 @@ export default function HomePage() {
                                     reflect(nextIntent, source);
                                 }}
                             />
-                            <div className="sm:pl-12">
-                                <LocalSenseLine sense={lastSense} />
-                            </div>
                             {!busy && result && !['privacy_hold', 'setup_ready'].includes(result.kind) ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">

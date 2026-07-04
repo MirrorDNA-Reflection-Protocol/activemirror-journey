@@ -12,10 +12,12 @@ function check(condition, label) {
 const normalDraftAsk = 'Can you help me make this safer before I send it?';
 const normalSense = assessLocalMirrorSense(normalDraftAsk);
 const normalFallback = makeOfflineMirrorResult(normalDraftAsk, 'network');
+const softPrivateSense = assessLocalMirrorSense('My email is paul@example.com and I need a short reply.');
 const todayActionFallback = makeOfflineMirrorResult('I need one sentence I can send to one person today.', 'network');
 const currentFactFallback = makeOfflineMirrorResult('What are the latest competitors doing today?', 'network');
 
 check(!normalSense.blocked, 'normal send/safe wording must not be locally blocked');
+check(softPrivateSense.softPrivate && !softPrivateSense.blocked, 'soft personal details should be cautioned, not blocked');
 check(
     normalFallback.mirror?.reflection !== 'Private details can stay with you. I can work with the shape.',
     'normal send/safe wording must not become the privacy fallback'
@@ -35,7 +37,7 @@ const secretFallback = makeOfflineMirrorResult(explicitSecret, 'network');
 
 check(secretSense.blocked, 'explicit password sentence must be locally blocked');
 check(
-    secretFallback.mirror?.move === 'Replace names, keys, and account details with [name] or [detail], then send the useful version.',
+    secretFallback.mirror?.move === 'Send it again with [secret] or [detail] in place of the real value.',
     'explicit password sentence must become the privacy fallback'
 );
 check(

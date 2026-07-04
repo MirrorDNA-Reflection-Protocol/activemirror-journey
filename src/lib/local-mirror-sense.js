@@ -26,6 +26,13 @@ function cleanText(value) {
     return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
+export function maskSoftPrivateText(value) {
+    return cleanText(value)
+        .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email]')
+        .replace(/(^|[^\w])\+?\d[\d\s().-]{8,}\d\b/g, '$1[phone]')
+        .replace(/\b(account|passport|aadhaar|pan|ssn|otp|pin)\b\s*(?:number|no\.?|#)?\s*[:=]?\s*[A-Z0-9-]{4,}/gi, '$1 [detail]');
+}
+
 function tokenize(value) {
     return cleanText(value)
         .toLowerCase()
@@ -105,21 +112,21 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         cues.push({
             kind: 'drift',
             tone: 'steady',
-            label: 'Keeping this small.',
+            label: 'Keeping it small.',
         });
     }
     if (softPrivate && !hardPrivate) {
         cues.push({
             kind: 'privacy',
             tone: 'caution',
-            label: 'Use placeholders for private details.',
+            label: 'Mask real details.',
         });
     }
     if (hardPrivate) {
         cues.push({
             kind: 'privacy',
             tone: 'block',
-            label: 'Use placeholders.',
+            label: 'Mask the secret.',
         });
     }
 
@@ -127,6 +134,8 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         hasText: text.length > 0,
         blocked: hardPrivate,
         sensitive: hardPrivate || softPrivate,
+        hardPrivate,
+        softPrivate,
         drift: broadByLength || broadByPattern,
         approvedDefault,
         seedSummary,
@@ -145,6 +154,6 @@ export function buildLocalSenseContext(sense, userIntent) {
     if (sense?.drift) {
         lines.push('Local browser sense: keep the response narrow, practical, and limited to one next move.');
     }
-    lines.push(`User intent: ${cleanText(userIntent)}`);
+    lines.push(`User intent: ${maskSoftPrivateText(userIntent)}`);
     return lines.join('\n');
 }
