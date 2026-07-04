@@ -51,6 +51,29 @@ const LOADING_MIRROR = {
     },
 };
 
+const STARTER_ACTIONS = [
+    {
+        label: 'Make',
+        icon: PenLine,
+        intent: 'I want to make something useful, but I am not sure where to start. Help me choose the smallest first version.',
+    },
+    {
+        label: 'Decide',
+        icon: Check,
+        intent: 'I need to make a decision. Help me see the tradeoff and pick the next step.',
+    },
+    {
+        label: 'Fix',
+        icon: SlidersHorizontal,
+        intent: 'Something is not working. Help me find the smallest useful fix to try first.',
+    },
+    {
+        label: 'Understand',
+        icon: Sparkles,
+        intent: 'I need to understand this better. Help me find the first useful question.',
+    },
+];
+
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features|who are you)\b/i.test(intent);
 }
@@ -1404,6 +1427,28 @@ export default function HomePage() {
                                 </button>
                             </div>
                         </form>
+
+                        {!showMirror ? (
+                            <div className="mx-auto mt-3 flex max-w-2xl flex-wrap justify-center gap-2">
+                                {STARTER_ACTIONS.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <button
+                                            key={item.label}
+                                            type="button"
+                                            onClick={() => {
+                                                trackEvent('starter_clicked', { page: 'home', label: item.label });
+                                                reflect(item.intent, 'starter');
+                                            }}
+                                            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-3.5 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white"
+                                        >
+                                            <Icon size={15} className="text-cyan-100/80" />
+                                            {item.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : null}
 
                         <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
                             <span>Private by default.</span>
