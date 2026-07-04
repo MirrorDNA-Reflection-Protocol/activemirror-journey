@@ -12,6 +12,20 @@ Use this wiki when a thread, agent, or contributor needs to know what Active Mir
 - [Build And Deploy Runbook](./build-and-deploy.md)
 - [Open Questions](./open-questions.md)
 
+## Obsidian Mirror
+
+The repo wiki is canonical. To refresh the Obsidian reference copy:
+
+```bash
+npm run wiki:obsidian
+```
+
+Default target:
+
+```text
+/Users/mirror-pro/MirrorDNA-Vault/01_ACTIVE/ActiveMirror/Product Wiki
+```
+
 ## What This Wiki Is For
 
 - Keep the canonical product/deploy split easy to find.

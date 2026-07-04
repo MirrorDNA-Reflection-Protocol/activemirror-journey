@@ -20,6 +20,8 @@
         "truth": "python3 scripts/active_mirror_truth_gate.py --out outputs/active-mirror-truth-gate.json",
         "mirror:report": "node scripts/mirror_control_report.mjs",
         "mirror:context": "node scripts/mirror_context_pack_builder.mjs",
+        "wiki:obsidian": "node scripts/sync_wiki_to_obsidian.mjs",
+        "wiki:obsidian:dry": "node scripts/sync_wiki_to_obsidian.mjs --dry-run",
         "eval:mirror": "node scripts/mirror-eval.mjs",
         "ops:snapshot": "bash scripts/control_plane_snapshot.sh",
         "ops:diff": "bash scripts/control_plane_diff.sh",

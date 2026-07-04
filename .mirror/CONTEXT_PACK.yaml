@@ -24,6 +24,7 @@ context_pack:
     - docs/wiki/build-and-deploy.md
     - docs/wiki/open-questions.md
     - docs/ACTIVE_MIRROR_ID_FLOW_2026-06-30.md
+    - scripts/sync_wiki_to_obsidian.mjs
     - src/pages/HomePage.jsx
     - src/pages/Start.jsx
     - src/pages/DeviceExperience.jsx

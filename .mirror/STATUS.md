@@ -22,6 +22,7 @@ Updated: 2026-07-04
 - `npm run canary:prod` passed 14/14.
 - Live mobile `/app/id/` verified after the 2026-07-04 setup polish: `Set it up.`, four taps, plain result rows, browser-local state, no old setup copy, no overflow, no console errors.
 - Repo-local wiki added at `docs/wiki/README.md` and included in `.mirror/CONTEXT_PACK.yaml`.
+- Obsidian reference sync is available through `npm run wiki:obsidian`.
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
 - `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.

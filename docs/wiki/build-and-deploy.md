@@ -67,6 +67,30 @@ Minimum browser QA for front-door/setup changes:
 - no horizontal overflow;
 - no old/internal consumer copy.
 
+## Obsidian Wiki Mirror
+
+The repo wiki is canonical. The Obsidian copy is a generated reference mirror.
+
+Dry run:
+
+```bash
+npm run wiki:obsidian:dry
+```
+
+Write:
+
+```bash
+npm run wiki:obsidian
+```
+
+Default target:
+
+```text
+/Users/mirror-pro/MirrorDNA-Vault/01_ACTIVE/ActiveMirror/Product Wiki
+```
+
+The sync writes a receipt and does not delete stale Obsidian notes.
+
 ## Current Verified Slice
 
 On 2026-07-04:

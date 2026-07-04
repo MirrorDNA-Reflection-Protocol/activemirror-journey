@@ -37,12 +37,14 @@ routes and show stale pages.
 
 ## Product Rule
 
-The first screen should look and feel like the March-gold Active Mirror surface:
+The first screen should stay simple and user-led:
 
-- one striking dark glass object;
-- one obvious primary action: `Start Reflection`;
-- BrainScan/Mirror Seed available without becoming a lecture;
-- ecosystem/proof routes present but secondary;
+- one obvious question: `What do you want?`;
+- one setup doorway: `Start here`;
+- one import doorway: `Already have one?`;
+- setup copy stays short: `Set it up.` plus four taps;
+- BrainScan/Mirror Seed remain compatibility/internal language, not consumer-first copy;
+- ecosystem/proof routes stay secondary;
 - no model names or internal route language in consumer copy.
 
 Keep SWFI and other client work out of this repo.
