@@ -23,6 +23,11 @@ npm run dev -- --host 127.0.0.1 --port 8976 --strictPort
 npm run build
 ```
 
+## Wiki
+
+The repo-local product wiki starts at [`docs/wiki/README.md`](docs/wiki/README.md).
+Use it before changing copy, setup flow, deploy packaging, or repo boundaries.
+
 ## Product Lock
 
 Lead with the user action, not the machinery:
