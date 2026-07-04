@@ -66,6 +66,8 @@ const bannedConsumerTerms = [
     { pattern: /honest next move/i, label: 'wordy honesty phrasing' },
     { pattern: /Getting honest pushback|How should I push back|Push back/i, label: 'internal setup copy' },
     { pattern: /\bADHD\b|neurodivergent|neuroD/i, label: 'diagnostic audience language' },
+    { pattern: /Challenge it|what I may be avoiding/i, label: 'harsh repair prompt' },
+    { pattern: /you are treating|you're treating|the real question is|the loop is that|whole frame|this voice|specific,\s*bounded,\s*and usable/i, label: 'meta-analysis phrasing' },
 ];
 
 const requiredTerms = [
@@ -84,6 +86,7 @@ const requiredTerms = [
     { pattern: /Saved on this device/i, label: 'setup: saved confirmation' },
     { pattern: /Keep a copy/i, label: 'setup: portable download' },
     { pattern: /Another angle/i, label: 'first-use follow-up: another angle' },
+    { pattern: /Check it/i, label: 'first-use follow-up: answer check' },
     { pattern: /Draft it/i, label: 'first-use follow-up: draft it' },
     { pattern: /Pick the move/i, label: 'loop brake follow-up' },
 ];

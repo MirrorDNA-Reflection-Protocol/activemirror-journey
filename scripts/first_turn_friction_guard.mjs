@@ -46,6 +46,7 @@ check(
 );
 
 const homePage = fs.readFileSync(new URL('../src/pages/HomePage.jsx', import.meta.url), 'utf8');
+const mirrorFeedback = fs.readFileSync(new URL('../src/components/MirrorFeedback.jsx', import.meta.url), 'utf8');
 check(
     homePage.includes("createArtifact(item.artifactKind || 'draft', {") && homePage.includes('intent: item.intent,'),
     'artifact follow-up must pass its exact artifact instruction, not fall back to the old turn'
@@ -53,6 +54,14 @@ check(
 check(
     homePage.indexOf("action: 'artifact'") < homePage.indexOf("label: 'Another angle'"),
     'artifact follow-up should appear before another reflection angle'
+);
+check(
+    !/Challenge it|what I may be avoiding/i.test(mirrorFeedback),
+    'repair follow-up must check the answer without harsh motive-reading'
+);
+check(
+    /label:\s*'Check it'/.test(mirrorFeedback),
+    'repair follow-up should offer a plain answer check'
 );
 
 if (failures.length) {

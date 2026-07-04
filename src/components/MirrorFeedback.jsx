@@ -21,8 +21,8 @@ function repairOptions(result = {}) {
         },
         {
             id: 'sharper',
-            label: 'Challenge it',
-            intent: `Challenge my premise and name what I may be avoiding. Keep it short: ${question}`,
+            label: 'Check it',
+            intent: `Name the weakest part of this answer and give me the safer next move. Keep it short: ${question}`,
         },
         {
             id: 'different',
