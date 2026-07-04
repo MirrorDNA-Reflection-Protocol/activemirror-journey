@@ -80,12 +80,23 @@ function selectedPreferences(answers) {
     }).filter(Boolean);
 }
 
-function preferenceLabel(preference) {
-    if (preference === 'help_with') return 'Here for';
-    if (preference === 'reply_style') return 'Tone';
-    if (preference === 'skip') return 'Skip';
-    if (preference === 'answer_style') return 'Give me';
-    return 'Choice';
+function preferenceSummary(item) {
+    const answer = item?.answer || '';
+    if (item?.preference === 'help_with') {
+        if (answer === 'Get unstuck') return 'Help me get unstuck';
+        if (answer === 'Decide something') return 'Help me decide something';
+        if (answer === 'Make something') return 'Help me make something';
+        if (answer === 'Think it through') return 'Help me think it through';
+    }
+    if (item?.preference === 'reply_style') {
+        if (answer === 'Warm') return 'Keep it warm';
+        if (answer === 'Direct') return 'Be direct';
+        if (answer === 'Short') return 'Keep it short';
+        if (answer === 'Careful') return 'Be careful with facts';
+    }
+    if (item?.preference === 'skip') return `Skip ${answer.toLowerCase()}`;
+    if (item?.preference === 'answer_style') return `Give me ${answer.toLowerCase()}`;
+    return answer || 'Use my choices';
 }
 
 function makeStartPrompt(preferences = []) {
@@ -356,8 +367,8 @@ export default function Start() {
 
                             <div className="mt-6 grid gap-2">
                                 {result.preferences.slice(0, 4).map((item) => (
-                                    <span key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-semibold text-zinc-300">
-                                        <span className="text-zinc-500">{preferenceLabel(item.preference)}:</span> {item.answer}
+                                    <span key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-semibold text-zinc-200">
+                                        {preferenceSummary(item)}
                                     </span>
                                 ))}
                             </div>
