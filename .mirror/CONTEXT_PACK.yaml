@@ -27,6 +27,8 @@ context_pack:
     - docs/dossiers/active-mirror-front-door.md
     - docs/dossiers/wiki-and-continuity.md
     - docs/dossiers/model-challenge-contract.md
+    - docs/dossiers/offline-online-owned-ai-position.md
+    - docs/dossiers/amos-proof-layer-intake.md
     - docs/ACTIVE_MIRROR_ID_FLOW_2026-06-30.md
     - scripts/dossier_guard.mjs
     - scripts/sync_wiki_to_obsidian.mjs
@@ -35,6 +37,8 @@ context_pack:
     - src/pages/DeviceExperience.jsx
     - src/lib/first-turn-fallback.js
     - src/lib/local-mirror-sense.js
+    - src/lib/challenge-packet.js
+    - scripts/challenge_packet_guard.mjs
     - scripts/first_turn_friction_guard.mjs
     - docs/contracts/active_mirror_truth_manifest.json
 

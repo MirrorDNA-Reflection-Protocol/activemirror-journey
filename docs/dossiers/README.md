@@ -27,6 +27,8 @@ history from chat.
 - [Active Mirror Front Door](./active-mirror-front-door.md)
 - [Wiki And Continuity](./wiki-and-continuity.md)
 - [Model Challenge Contract](./model-challenge-contract.md)
+- [Offline Online Owned AI Position](./offline-online-owned-ai-position.md)
+- [AMOS Proof Layer Intake](./amos-proof-layer-intake.md)
 
 ## Template
 

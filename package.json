@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:front-door && npm run guard:friction && npm run guard:redaction && npm run truth",
+        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:front-door && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
         "prebuild:deploy": "npm run prebuild",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
@@ -16,6 +16,7 @@
         "guard:mirror-control": "npm run guard:mirror",
         "guard:front-door": "node scripts/front_door_guard.mjs",
         "guard:friction": "node scripts/first_turn_friction_guard.mjs",
+        "guard:challenge": "node scripts/challenge_packet_guard.mjs",
         "guard:dossiers": "node scripts/dossier_guard.mjs",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "truth": "python3 scripts/active_mirror_truth_gate.py --out outputs/active-mirror-truth-gate.json",

@@ -10,6 +10,13 @@ const ARTIFACT_META = {
     draft: { label: 'Draft', icon: PenLine, tone: 'text-zinc-100 border-white/10 bg-white/[0.055]' },
 };
 
+const CHALLENGE_META = {
+    passed: 'border-emerald-300/15 bg-emerald-300/[0.065] text-emerald-100',
+    draft: 'border-cyan-300/15 bg-cyan-300/[0.065] text-cyan-100',
+    needs_check: 'border-amber-300/20 bg-amber-300/[0.075] text-amber-100',
+    failed: 'border-rose-300/20 bg-rose-300/[0.075] text-rose-100',
+};
+
 function cleanKind(kind = 'draft') {
     return ARTIFACT_META[kind] ? kind : 'draft';
 }
@@ -100,6 +107,10 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
             : [];
     const title = artifact.title || meta.label;
     const body = artifact.body || '';
+    const challenge = artifact.challenge || {};
+    const challengeTone = CHALLENGE_META[challenge.status] || CHALLENGE_META.draft;
+    const challengeLabel = challenge.label || 'Draft';
+    const challengeNote = challenge.user_note || '';
 
     return (
         <section className="min-w-0 overflow-hidden rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
@@ -113,10 +124,15 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
                         <div className="text-xs text-zinc-500">{meta.label}</div>
                     </div>
                 </div>
-                <div className="rounded-full border border-emerald-300/15 bg-emerald-300/[0.065] px-2.5 py-1 text-[11px] font-semibold text-emerald-100">
-                    Ready to use
+                <div className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${challengeTone}`}>
+                    {challengeLabel}
                 </div>
             </div>
+            {challengeNote ? (
+                <div className="mb-3 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-xs leading-5 text-zinc-400">
+                    {challengeNote}
+                </div>
+            ) : null}
             <ArtifactBody body={body} />
             <DraftActions title={title} text={body} kind={kind} surface={surface} />
             {checklist.length ? (

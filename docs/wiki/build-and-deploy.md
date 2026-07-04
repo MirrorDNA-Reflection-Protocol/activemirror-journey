@@ -16,6 +16,7 @@ This runs:
 - mirror control guard;
 - front-door guard;
 - friction guard;
+- challenge packet guard;
 - redaction guard;
 - truth gate;
 - Vite production build with `/app/` base.

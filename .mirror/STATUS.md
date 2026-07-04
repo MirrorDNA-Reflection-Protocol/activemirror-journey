@@ -24,6 +24,8 @@ Updated: 2026-07-04
 - Repo-local wiki added at `docs/wiki/README.md` and included in `.mirror/CONTEXT_PACK.yaml`.
 - Obsidian reference sync is available through `npm run wiki:obsidian`.
 - Repo-local dossiers are available at `docs/dossiers/` and checked with `npm run guard:dossiers`.
+- Artifact outputs carry runtime challenge packets checked by `npm run guard:challenge`.
+- Offline/online owned-AI positioning and AMOS proof-layer intake are captured as dossiers, not consumer homepage copy.
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
 - `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.

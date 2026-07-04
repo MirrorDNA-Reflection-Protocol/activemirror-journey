@@ -57,3 +57,5 @@ active-mirror-site
 - Browser-local setup is not a full memory sync layer.
 - Downloadable Active Mirror ID is not proof of a complete identity model.
 - Enterprise proof language does not belong on the consumer first screen.
+- AMOS proof-layer architecture is intake material unless a specific runtime
+  contract and guard prove it is implemented in the consumer app.

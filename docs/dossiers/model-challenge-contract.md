@@ -60,6 +60,7 @@ challenge, what it had to prove, what failed, and what happens next.
 
 - Local guards:
   - `npm run guard:dossiers`
+  - `npm run guard:challenge`
   - task-specific guards from the active dossier
 - Browser QA: required only for user-facing UI changes.
 - Deploy checks: required only for live promotion.
@@ -73,7 +74,8 @@ challenge, what it had to prove, what failed, and what happens next.
 ## Challenge Contract
 
 - Challenge offered: prove the work against named files, routes, checks, and
-  receipts before claiming success.
+  receipts before claiming success. Artifact outputs now carry
+  `active_mirror.artifact_challenge.v1` packets.
 - Acceptance condition: the model states checked scope, unchecked scope, and the
   exact gates it will satisfy.
 - Failure condition: hallucinated evidence, unstated scope, skipped checks,
@@ -96,4 +98,3 @@ challenge, what it had to prove, what failed, and what happens next.
 Use this dossier when a task needs model accountability. Say "challenge accepted"
 only when the task has clear gates. If the gates are missing, the next step is to
 write the challenge, not to claim readiness.
-

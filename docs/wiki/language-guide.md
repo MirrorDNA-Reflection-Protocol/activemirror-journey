@@ -15,6 +15,8 @@ Use short, normal phrases:
 - `Keep a copy`
 - `Use placeholders for anything private`
 - `Make one small version and test it`
+- `Private first`
+- `Check first`
 
 ## Product Voice
 
@@ -48,6 +50,9 @@ Avoid these unless the user explicitly asks how the system works:
 - provider/model names
 - BrainScan
 - MirrorSeed
+- offline AI as the main promise
+- memory as the main promise
+- user-owned AI claims before the exact ownership layer is implemented
 
 Compatibility routes can keep old names behind the scenes, but the rendered page should use normal language.
 
@@ -84,3 +89,14 @@ Use placeholders for anything private.
 ```
 
 Avoid scary blocked-state wording unless the turn truly cannot proceed.
+
+## Positioning Rule
+
+The market is moving toward local/private AI and persistent memory. Active
+Mirror should not claim those as unique. The user-facing lane is simpler:
+
+- starts privately;
+- asks what the user wants;
+- reflects before producing;
+- checks current facts before relying on them;
+- keeps memory and sharing as a user choice.

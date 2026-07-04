@@ -5,6 +5,7 @@ import ArtifactCard from '../components/ArtifactCard';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
+import { attachArtifactChallenge } from '../lib/challenge-packet';
 import {
     clearMirrorDefault,
     deleteMirrorDefault,
@@ -711,6 +712,12 @@ function WorkSurface({ draft, busyKind, onClose }) {
         );
     }
 
+    const note = draft?.challenge?.status === 'needs_check'
+        ? 'Check before relying on it.'
+        : draft?.challenge?.status === 'failed'
+            ? 'Edit before using it.'
+            : 'Ready to copy. Edit if needed.';
+
     return (
         <div className="relative min-w-0">
             <button
@@ -722,7 +729,7 @@ function WorkSurface({ draft, busyKind, onClose }) {
                 <X size={15} />
             </button>
             <ArtifactCard artifact={draft} surface="home" dismissInset />
-            <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">Ready to copy. Edit if needed.</div>
+            <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">{note}</div>
         </div>
     );
 }
@@ -1236,7 +1243,13 @@ export default function HomePage() {
             if (!response.ok || !data?.artifact) {
                 throw new Error(data?.error || 'artifact_failed');
             }
-            setSendableDraft(data.artifact);
+            setSendableDraft(attachArtifactChallenge(data.artifact, {
+                intent: artifactIntent,
+                kind: artifactKind,
+                route: data.fallback ? 'gateway_fallback' : 'gateway',
+                fallback: Boolean(data.fallback),
+                source: eventSource,
+            }));
             trackEvent('sendable_created', {
                 page: 'home',
                 source: data.fallback ? 'gateway_fallback' : 'gateway',
@@ -1245,7 +1258,13 @@ export default function HomePage() {
                 label: data.artifact.kind || artifactKind,
             });
         } catch {
-            setSendableDraft(makeArtifact(mirror, artifactIntent, artifactKind));
+            setSendableDraft(attachArtifactChallenge(makeArtifact(mirror, artifactIntent, artifactKind), {
+                intent: artifactIntent,
+                kind: artifactKind,
+                route: 'local_fallback',
+                fallback: true,
+                source: eventSource,
+            }));
             trackEvent('sendable_created', { page: 'home', source: 'local_fallback', status: 'fallback', label: artifactKind });
         } finally {
             setArtifactBusy('');

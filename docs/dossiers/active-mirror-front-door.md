@@ -63,7 +63,8 @@ language.
   app contracts.
 - Model or gateway: do not expose model/provider names in public copy.
 - Local storage: browser-local state is a convenience, not full owned memory sync.
-- Generated artifacts: actual outputs, not instructions about making outputs.
+- Generated artifacts: actual outputs, not instructions about making outputs;
+  artifact readiness is assigned by the runtime challenge packet.
 
 ## Checks
 
@@ -71,6 +72,7 @@ language.
   - `npm run guard:mirror`
   - `npm run guard:front-door`
   - `npm run guard:friction`
+  - `npm run guard:challenge`
   - `npm run guard:redaction`
   - `npm run truth`
   - `npm run build:deploy`
