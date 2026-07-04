@@ -1,13 +1,13 @@
 # Active Mirror Status
 
-Updated: 2026-07-03
+Updated: 2026-07-04
 
 ## Current State
 
 - Product source repo: `/Users/mirror-pro/repos/activemirror-journey`
 - Deploy/gateway repo: `/Users/mirror-pro/repos/active-mirror-site`
 - Live app route: `https://activemirror.ai/app/`
-- Current live app bundle verified: `index-BV8n-QWN.js`
+- Current live app bundle verified: `index-DaAwZ3Fx.js`
 - Gateway health version verified: `2026-07-02-first-turn-source-voice-v1`
 
 ## Verified Checks
@@ -19,7 +19,9 @@ Updated: 2026-07-03
 - `npm run guard:redaction` passed.
 - `npm run truth` passed with scoped limitations.
 - `npm run build && npm run copy:audit` passed in deploy repo.
-- `npm run canary:prod` passed 13/13.
+- `npm run canary:prod` passed 14/14.
+- Live mobile `/app/id/` verified after the 2026-07-04 setup polish: `Set it up.`, four taps, plain result rows, browser-local state, no old setup copy, no overflow, no console errors.
+- Repo-local wiki added at `docs/wiki/README.md` and included in `.mirror/CONTEXT_PACK.yaml`.
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
 - `build:deploy` is wired through `prebuild:deploy`, so deploy packaging runs the local guard chain.
@@ -41,6 +43,7 @@ Updated: 2026-07-03
 - File export registry exists as a design stub only; there are no active registered exports.
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
 - Audit, rollback, skill, and source-ledger files are repo-local contracts only; they are not a runtime control plane.
+- The wiki is repo-local only; it is not yet mirrored to GitHub Wiki or Obsidian.
 
 ## Unrelated Local Dirt
 

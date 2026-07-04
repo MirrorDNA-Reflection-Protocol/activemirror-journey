@@ -1,6 +1,6 @@
 context_pack:
   id: active_mirror_front_door_context_v1
-  updated: 2026-07-03
+  updated: 2026-07-04
   objective: Keep Active Mirror product work focused on a simple reflective AI front door with governed outputs.
 
   include:
@@ -17,7 +17,15 @@ context_pack:
     - .mirror/AUDIT_LOGS/TEMPLATE.yaml
     - .mirror/EVALS/TEMPLATE.yaml
     - .mirror/ROLLBACKS/TEMPLATE.yaml
+    - docs/wiki/README.md
+    - docs/wiki/current-product-map.md
+    - docs/wiki/user-flow.md
+    - docs/wiki/language-guide.md
+    - docs/wiki/build-and-deploy.md
+    - docs/wiki/open-questions.md
+    - docs/ACTIVE_MIRROR_ID_FLOW_2026-06-30.md
     - src/pages/HomePage.jsx
+    - src/pages/Start.jsx
     - src/pages/DeviceExperience.jsx
     - src/lib/first-turn-fallback.js
     - src/lib/local-mirror-sense.js
@@ -47,5 +55,5 @@ context_pack:
 
   current_live_truth:
     app_url: https://activemirror.ai/app/
-    app_bundle: index-BV8n-QWN.js
+    app_bundle: index-DaAwZ3Fx.js
     gateway_version: 2026-07-02-first-turn-source-voice-v1
