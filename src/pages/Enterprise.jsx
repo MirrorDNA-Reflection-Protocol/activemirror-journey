@@ -4,12 +4,18 @@ import {
     ArrowRight,
     CheckCircle2,
     CircleDot,
+    Database,
+    Download,
     FileCheck2,
+    FileSearch,
+    KeyRound,
     Lock,
     Mail,
     Play,
     RotateCcw,
     Send,
+    ServerCog,
+    ShieldAlert,
     ShieldCheck,
     TerminalSquare,
     Workflow,
@@ -30,9 +36,9 @@ const workflowRuns = [
         steps: [
             ['intake', 'workflow received', 'Only the selected files and brief are in scope.', 'ok'],
             ['boundary', 'private context held', 'Unneeded names and side notes stay out.', 'ok'],
-            ['route', 'research path selected', 'Source-heavy claims require citation status.', 'live'],
+            ['path', 'research path selected', 'Source-heavy claims require support status.', 'live'],
             ['check', 'unsupported claims marked', 'Two claims need stronger support before use.', 'warn'],
-            ['receipt', 'proof pack ready', 'Used, excluded, checked, and open items recorded.', 'ok'],
+            ['record', 'review pack ready', 'Used, excluded, checked, and open items recorded.', 'ok'],
         ],
     },
     {
@@ -43,10 +49,10 @@ const workflowRuns = [
         risk: 'high',
         steps: [
             ['intake', 'memo opened', 'The draft is readable, but not trusted yet.', 'ok'],
-            ['claim', 'figures inspected', 'Numbers without source records are held.', 'block'],
+            ['check', 'figures inspected', 'Numbers without source records are held.', 'block'],
             ['gate', 'approval required', 'External sharing is paused until a human approves.', 'warn'],
             ['repair', 'safer version produced', 'Unsupported claims become questions or caveats.', 'live'],
-            ['receipt', 'approval trail saved', 'Reviewer, route, changes, and limits recorded.', 'ok'],
+            ['record', 'approval trail saved', 'Reviewer, path, changes, and limits recorded.', 'ok'],
         ],
     },
     {
@@ -60,7 +66,7 @@ const workflowRuns = [
             ['tools', 'tools observed', 'Search, file read, and draft actions are logged.', 'ok'],
             ['block', 'side effect blocked', 'No external send or destructive action without approval.', 'block'],
             ['handoff', 'human checkpoint', 'The next action waits for review.', 'warn'],
-            ['receipt', 'run summarized', 'What happened, what changed, and what is next are visible.', 'ok'],
+            ['record', 'run summarized', 'What happened, what changed, and what is next are visible.', 'ok'],
         ],
     },
 ];
@@ -78,13 +84,52 @@ const controls = [
     },
     {
         icon: ShieldCheck,
-        title: 'No model free-for-all',
-        text: 'Teams can route work through the right model while keeping the same approval rules.',
+        title: 'No ungoverned model use',
+        text: 'Teams can allow different AI help while keeping the same approval rules.',
     },
     {
         icon: Workflow,
         title: 'No drift without a reset',
         text: 'Repeated work can use defaults, but defaults stay editable and reversible.',
+    },
+];
+
+const sprintDeliverables = [
+    ['Workflow map', 'What the AI may read, produce, suggest, or keep out of scope.'],
+    ['Boundary map', 'Private context, approval points, data exits, and blocked actions.'],
+    ['Working demo', 'One useful flow running against sample or scoped real context.'],
+    ['Go / no-go plan', 'What to deploy, what to hold, and what needs stronger support.'],
+];
+
+const whyUs = [
+    ['Useful before scale', 'Start with one workflow that produces something your team can judge.'],
+    ['Private by design', 'Context is scoped before AI help touches it.'],
+    ['Built for control', 'Approvals, blocked actions, and support needs stay visible.'],
+    ['Model-flexible', 'Use the right AI help without letting any one model define the rules.'],
+];
+
+const architectureQuestions = [
+    ['Context', 'Where does the work live today: files, apps, browser tabs, inboxes, dashboards?'],
+    ['Control', 'Who approves memory, sharing, tool use, and external actions?'],
+    ['Output', 'What should the system produce: brief, memo, report, research pack, decision note, task handoff?'],
+    ['Deployment', 'What belongs in the browser, on your machines, in a private server, or behind managed access?'],
+];
+
+const architectureDiagrams = [
+    {
+        title: 'Browser pilot',
+        text: 'Fastest way to prove one workflow before any rollout.',
+        nodes: ['Browser', 'Chosen files', 'Active Mirror', 'Approved output'],
+    },
+    {
+        title: 'Private server',
+        text: 'For teams that need managed access, logs, and shared controls.',
+        nodes: ['Team tools', 'Private gateway', 'Allowed AI help', 'Review trail'],
+    },
+    {
+        title: 'Local control',
+        text: 'For sensitive work where context should stay closest to your machines.',
+        nodes: ['Your machines', 'Local context', 'Gated models', 'Team handoff'],
     },
 ];
 
@@ -94,6 +139,102 @@ const views = [
     ['Consent check', 'approval before memory, sharing, or side effects'],
     ['Private Runtime', 'browser-first, self-hosted, or managed deployment'],
 ];
+
+const machineryPanels = [
+    {
+        icon: FileSearch,
+        title: 'Files',
+        value: 'selected only',
+        note: 'Unneeded context stays out.',
+        tone: 'cyan',
+    },
+    {
+        icon: ServerCog,
+        title: 'Tools',
+        value: 'observed',
+        note: 'Reads, searches, and drafts are logged.',
+        tone: 'violet',
+    },
+    {
+        icon: ShieldAlert,
+        title: 'Actions',
+        value: 'approval first',
+        note: 'External sends and side effects wait.',
+        tone: 'amber',
+    },
+    {
+        icon: Database,
+        title: 'Memory',
+        value: 'choice',
+        note: 'Durable memory waits for approval.',
+        tone: 'emerald',
+    },
+    {
+        icon: KeyRound,
+        title: 'Evidence',
+        value: 'marked',
+        note: 'Unsupported claims are visible.',
+        tone: 'cyan',
+    },
+    {
+        icon: FileCheck2,
+        title: 'Receipts',
+        value: 'ready',
+        note: 'Used, excluded, and open items stay reviewable.',
+        tone: 'emerald',
+    },
+];
+
+function enterpriseBriefMarkdown() {
+    return [
+        '# Active Mirror Private AI Workflow Sprint',
+        '',
+        'Active Mirror helps teams use AI on private work without losing control.',
+        '',
+        'Bring one real workflow. We map the context, files, tools, approvals, and allowed AI help around your rules. The first sprint is deliberately narrow: prove one useful flow, surface the risks, and leave a clean go / no-go path.',
+        '',
+        '## What the sprint answers',
+        '',
+        '- What can AI help with in this workflow?',
+        '- What context is required, and what should stay out?',
+        '- Where must a human approve memory, sharing, or action?',
+        '- Which outputs need support before they move?',
+        '- What deployment shape fits: browser-first, local machine, private server, or managed access?',
+        '',
+        '## Sprint deliverables',
+        '',
+        '- Workflow map',
+        '- Boundary map',
+        '- Working demo',
+        '- Go / no-go plan',
+        '',
+        '## What not to send first',
+        '',
+        'Do not send private workflow content through the public request form. Start with work email, workflow type, and timeline. Details come after scoped intake.',
+        '',
+        '## First call checklist',
+        '',
+        '- One workflow worth proving',
+        '- Data sensitivity level',
+        '- Tools and files involved',
+        '- Desired output',
+        '- Approval owner',
+        '- What must stay out of shared or stored context',
+    ].join('\n');
+}
+
+function downloadEnterpriseBrief() {
+    const blob = new Blob([enterpriseBriefMarkdown()], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'active-mirror-private-ai-workflow-sprint.md';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 400);
+    trackEvent('draft_downloaded', { page: 'enterprise', source: 'workflow_sprint_brief', status: 'local' });
+}
 
 const timelineOptions = [
     ['72h', '72 hours'],
@@ -117,13 +258,60 @@ function defaultMetrics(run) {
     ];
 }
 
+function cleanEnterpriseText(value = '') {
+    return String(value)
+        .replace(/\bproof pack\b/gi, 'review pack')
+        .replace(/\bproof\b/gi, 'support')
+        .replace(/\bevidence\b/gi, 'support')
+        .replace(/\broute\b/gi, 'path')
+        .replace(/\breceipt\b/gi, 'record');
+}
+
+function cleanStepKey(value = '') {
+    const keys = {
+        route: 'path',
+        claim: 'check',
+        receipt: 'record',
+    };
+    return keys[value] || value;
+}
+
+function formatControlPath(value = '') {
+    const labels = {
+        'request.read': 'request',
+        'boundary.check': 'boundary',
+        'route.choose': 'choose path',
+        'human.approve': 'approval',
+        intake: 'intake',
+        boundary: 'boundary',
+        approval: 'approval',
+        receipt: 'record',
+    };
+    return String(value || '')
+        .split('->')
+        .map((part) => {
+            const token = part.trim();
+            const cleaned = cleanEnterpriseText(token);
+            return labels[token] || cleaned.replace('support.mark', 'mark support');
+        })
+        .filter(Boolean)
+        .join(' -> ');
+}
+
 function stepTupleFromPayload(payload, fallback) {
-    if (!payload?.step) return fallback;
+    const raw = payload?.step
+        ? [
+            payload.step.key,
+            payload.step.title,
+            payload.step.body,
+            payload.step.status,
+        ]
+        : fallback;
     return [
-        payload.step.key,
-        payload.step.title,
-        payload.step.body,
-        payload.step.status,
+        cleanStepKey(raw[0]),
+        cleanEnterpriseText(raw[1]),
+        cleanEnterpriseText(raw[2]),
+        raw[3],
     ];
 }
 
@@ -279,9 +467,9 @@ function useEnterpriseRun(activeRun) {
 function LiveConsole({ run }) {
     const { index, restart, visibleSteps, payload, streamSource, streamConnected, streamError } = useEnterpriseRun(run);
     const active = stepTupleFromPayload(payload, run.steps[index]);
-    const metrics = payload?.metrics || defaultMetrics(run);
     const completed = payload?.progress || Math.round(((index + 1) / run.steps.length) * 100);
-    const route = payload?.route || 'request.read -> boundary.check -> route.choose -> proof.mark -> human.approve';
+    const metrics = payload?.metrics || defaultMetrics(run);
+    const route = formatControlPath(payload?.route || 'intake -> boundary -> support -> approval -> record');
     const streamLabel = streamConnected ? 'gateway stream · public demo' : streamSource === 'local' ? 'local replay · public demo' : 'connecting · public demo';
     const streamPill = streamConnected ? 'stream on' : streamError ? 'local fallback' : 'connecting';
 
@@ -293,8 +481,8 @@ function LiveConsole({ run }) {
                         <TerminalSquare size={18} />
                     </span>
                     <div>
-                        <div className="text-sm font-semibold text-cyan-100">MirrorDash</div>
-                        <div className="text-[11px] text-zinc-500">{streamLabel}</div>
+                        <div className="text-sm font-semibold text-cyan-100">Glass Dashboard</div>
+                        <div className="text-[11px] text-zinc-500">visible control room · {streamLabel}</div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -315,7 +503,7 @@ function LiveConsole({ run }) {
             <div className="grid gap-3 p-4 lg:grid-cols-[1fr_1.08fr]">
                 <div className="grid gap-3">
                     <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Current route</div>
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Control path</div>
                         <div className="font-mono text-[12px] leading-6 text-zinc-300">
                             {route}
                         </div>
@@ -325,6 +513,12 @@ function LiveConsole({ run }) {
                                 style={{ width: `${completed}%` }}
                             />
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                        {machineryPanels.map((item) => (
+                            <MachineryPanel key={item.title} item={item} />
+                        ))}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -376,6 +570,50 @@ function LiveConsole({ run }) {
     );
 }
 
+function MachineryPanel({ item }) {
+    const Icon = item.icon;
+    const colors = {
+        emerald: 'border-emerald-300/15 bg-emerald-300/[0.055] text-emerald-100',
+        cyan: 'border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-100',
+        violet: 'border-violet-300/15 bg-violet-300/[0.055] text-violet-100',
+        amber: 'border-amber-300/15 bg-amber-300/[0.055] text-amber-100',
+    };
+
+    return (
+        <div className={`rounded-2xl border p-3 ${colors[item.tone] || colors.cyan}`}>
+            <div className="mb-3 flex items-center justify-between gap-2">
+                <Icon size={15} />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] opacity-70">{item.title}</span>
+            </div>
+            <div className="text-sm font-semibold tracking-[-0.02em]">{item.value}</div>
+            <div className="mt-1 text-[11px] leading-4 text-zinc-400">{item.note}</div>
+        </div>
+    );
+}
+
+function ArchitectureDiagram({ diagram }) {
+    return (
+        <div className="rounded-[1.35rem] border border-white/10 bg-black/25 p-4">
+            <div className="mb-4">
+                <div className="text-sm font-semibold text-white">{diagram.title}</div>
+                <p className="mt-1 text-xs leading-5 text-zinc-500">{diagram.text}</p>
+            </div>
+            <div className="grid gap-2">
+                {diagram.nodes.map((node, index) => (
+                    <div key={node} className="flex items-center gap-2">
+                        <div className="min-w-0 flex-1 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-xs font-semibold text-cyan-50">
+                            {node}
+                        </div>
+                        {index < diagram.nodes.length - 1 ? (
+                            <ArrowRight className="h-4 w-4 shrink-0 text-zinc-600" />
+                        ) : null}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function Metric({ label, value, tone }) {
     const colors = {
         emerald: 'border-emerald-300/15 bg-emerald-300/[0.06] text-emerald-100',
@@ -395,13 +633,13 @@ function Metric({ label, value, tone }) {
 function proofSprintFallbackHref({ workflow, timeline, receiptId }) {
     const workflowLabel = workflowRuns.find((run) => run.id === workflow)?.label || 'Not sure';
     const timelineLabel = timelineOptions.find(([value]) => value === timeline)?.[1] || timeline;
-    const subject = encodeURIComponent('Active Mirror proof sprint');
+    const subject = encodeURIComponent('Active Mirror workflow sprint');
     const body = encodeURIComponent([
-        'I want to start an Active Mirror proof sprint.',
+        'I want to start an Active Mirror workflow sprint.',
         '',
         `Workflow: ${workflowLabel}`,
         `Timeline: ${timelineLabel}`,
-        receiptId ? `Request receipt: ${receiptId}` : '',
+        receiptId ? `Request reference: ${receiptId}` : '',
         '',
         'I will share workflow details after scoped intake.',
     ].filter(Boolean).join('\n'));
@@ -459,13 +697,13 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
             setReceipt(data);
             setFallbackHref(href);
             setStatus('ready');
-            setMessage('Request receipt created.');
+            setMessage('Request sent. Details stayed out.');
             trackEvent('proof_sprint_result', { page: 'enterprise', source, workflow, timeline, status: 'ok' });
         } catch (error) {
             const href = proofSprintFallbackHref({ workflow, timeline });
             setFallbackHref(href);
             setStatus(error.message === 'rate_limited' ? 'cooldown' : 'error');
-            setMessage(error.message === 'rate_limited' ? 'The request route is cooling down. Use the email fallback.' : 'Could not create a receipt. Use the email fallback.');
+            setMessage(error.message === 'rate_limited' ? 'The request path is cooling down. Use the email fallback.' : 'Could not send through the gateway. Use the email fallback.');
             trackEvent('proof_sprint_result', { page: 'enterprise', source, workflow, timeline, status: 'fallback' });
         }
     }
@@ -478,9 +716,9 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                         <Mail size={14} />
                         Scoped request
                     </div>
-                    <h2 className="text-3xl font-semibold tracking-[-0.05em]">Start a proof sprint.</h2>
+                    <h2 className="text-3xl font-semibold tracking-[-0.05em]">Start a workflow sprint.</h2>
                     <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-300">
-                        Create a request receipt first. Keep workflow details out until intake.
+                        Send a work email and the rough workflow. Details come after scoped intake.
                     </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
@@ -525,7 +763,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                     onChange={(event) => setConsent(event.target.checked)}
                     className="mt-1 h-4 w-4 rounded border-white/20 bg-black"
                 />
-                I consent to be contacted about this proof sprint. I will share workflow details only after scoped intake.
+                I consent to be contacted about this workflow sprint. I will share workflow details only after scoped intake.
             </label>
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -534,7 +772,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                     disabled={status === 'submitting'}
                     className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                 >
-                    {status === 'submitting' ? 'Creating...' : 'Create request receipt'}
+                    {status === 'submitting' ? 'Sending...' : 'Send request'}
                     <Send size={16} />
                 </button>
                 {fallbackHref ? (
@@ -551,7 +789,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
             {message ? (
                 <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm leading-6 ${status === 'ready' ? 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-100' : 'border-amber-300/20 bg-amber-300/[0.08] text-amber-100'}`}>
                     {message}
-                    {receipt?.receipt_id ? <span className="ml-2 font-mono text-xs text-zinc-300">Receipt {receipt.receipt_id}</span> : null}
+                    {receipt?.receipt_id ? <span className="ml-2 font-mono text-xs text-zinc-300">Ref {receipt.receipt_id}</span> : null}
                 </div>
             ) : null}
         </form>
@@ -583,20 +821,28 @@ export default function Enterprise() {
                         <div className="mb-8 grid h-16 w-16 place-items-center rounded-[1.35rem] border border-emerald-200/20 bg-white/[0.045] shadow-[0_0_38px_rgba(16,185,129,0.14)]">
                             <ShieldCheck className="h-8 w-8 text-emerald-100" />
                         </div>
-                        <h1 className="max-w-[10ch] text-[3.05rem] font-semibold leading-[0.94] tracking-[-0.06em] sm:text-[4.9rem]">
-                            AI work your team can govern.
+                        <h1 className="max-w-[11ch] text-[3.05rem] font-semibold leading-[0.94] tracking-[-0.06em] sm:text-[4.9rem]">
+                            Private AI for real work.
                         </h1>
                         <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-400">
-                            Bring one workflow. Active Mirror reflects it, gates the risk, shows what happened, and leaves a clean trail before the work moves.
+                            Bring one workflow. We shape the context, approvals, tools, and allowed AI help around how your team already works.
                         </p>
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
                                 href="#proof-sprint"
                                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 text-sm font-semibold text-black shadow-[0_0_34px_rgba(16,185,129,0.24)] transition hover:scale-[1.01]"
                             >
-                                Start a proof sprint
+                                Start workflow sprint
                                 <ArrowRight size={17} />
                             </a>
+                            <button
+                                type="button"
+                                onClick={downloadEnterpriseBrief}
+                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.07] px-5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
+                            >
+                                Download brief
+                                <Download size={16} />
+                            </button>
                             <Link
                                 to="/"
                                 className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
@@ -611,12 +857,46 @@ export default function Enterprise() {
                     </div>
                 </section>
 
+                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
+                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Why Active Mirror?</h2>
+                        <p className="mt-3 text-sm leading-6 text-zinc-400">
+                            Most AI pilots start broad and become hard to trust. We start with the workflow, then build the guardrails around it.
+                        </p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        {whyUs.map(([title, text]) => (
+                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="text-sm font-semibold text-white">{title}</div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
+                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">What you get.</h2>
+                        <p className="mt-3 text-sm leading-6 text-zinc-400">
+                            A narrow sprint for teams that want AI to help with private work, but need control before scale.
+                        </p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        {sprintDeliverables.map(([title, text]) => (
+                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="text-sm font-semibold text-white">{title}</div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
                 <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
                     <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Pick one workflow.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                                The public console is a replay. A private deployment can connect the same view to your real routes, tools, files, approvals, and receipts.
+                                Use the public demo to see the controls. A private sprint connects the same pattern to your real tools, files, approval points, and support needs.
                             </p>
                         </div>
                         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.07] px-3 py-1.5 text-xs font-semibold text-cyan-200">
@@ -664,9 +944,42 @@ export default function Enterprise() {
 
                 <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">Boring where it matters.</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">Built around your work.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            The user experience can feel simple. The enterprise layer should be predictable: permissioned, logged, reversible, and quiet under pressure.
+                            We do not install a generic bot and hope it behaves. We map the work first, then decide what should run in the browser, locally, privately, or behind managed access.
+                        </p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        {architectureQuestions.map(([title, text]) => (
+                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="text-sm font-semibold text-white">{title}</div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                    <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em]">Ways to run it.</h2>
+                            <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
+                                Start narrow. Keep the option to move closer to the work as the workflow proves itself.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="grid gap-3 lg:grid-cols-3">
+                        {architectureDiagrams.map((diagram) => (
+                            <ArchitectureDiagram key={diagram.title} diagram={diagram} />
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
+                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">Ways to deploy.</h2>
+                        <p className="mt-3 text-sm leading-6 text-zinc-400">
+                            The sprint starts with one workflow. The system can grow into a private AI layer for your team if the result is worth scaling.
                         </p>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
