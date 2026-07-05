@@ -20,7 +20,7 @@ import {
     TerminalSquare,
     Workflow,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
 const ENTERPRISE_STREAM_URL = 'https://gateway.activemirror.ai/v1/mirror/enterprise-stream';
@@ -84,12 +84,12 @@ const controls = [
     },
     {
         icon: ShieldCheck,
-        title: 'No ungoverned model use',
+        title: 'No unapproved AI use',
         text: 'Teams can allow different AI help while keeping the same approval rules.',
     },
     {
         icon: Workflow,
-        title: 'No drift without a reset',
+        title: 'No runaway defaults',
         text: 'Repeated work can use defaults, but defaults stay editable and reversible.',
     },
 ];
@@ -105,16 +105,48 @@ const consultingServices = [
     ['AI workflow discovery', 'Find the first workflow worth proving, then define the output, owner, risk, and approval path.'],
     ['Private deployment design', 'Choose the right shape: browser-first, self-hosted, local machine, private server, or managed access.'],
     ['Tool and file integration', 'Connect the files, apps, and actions the workflow actually needs, with clear limits.'],
-    ['Model and agent governance', 'Use the right AI help while keeping permission, review, and support rules outside the model.'],
-    ['Evaluation and red-team', 'Test hallucination, privacy leakage, weak support, and unsafe action paths before rollout.'],
+    ['AI governance', 'Use the right AI help while keeping permission, review, and support rules outside the answer.'],
+    ['Testing and review', 'Test hallucination, privacy leakage, weak support, and unsafe action paths before rollout.'],
     ['Team enablement', 'Create the operating playbook, first workflows, and review habits your team can keep using.'],
+];
+
+const workSteps = [
+    ['Scope', 'Choose one valuable task with a clear owner and output.'],
+    ['Map', 'Define what AI may read, remember, suggest, or send.'],
+    ['Build', 'Connect the minimum files, tools, and approvals needed to run it.'],
+    ['Test', 'Check privacy leakage, hallucination, weak support, and unsafe action paths.'],
+    ['Decide', 'Ship, pause, or redesign with a clear record of what happened.'],
+];
+
+const offerLadder = [
+    {
+        title: 'Workflow Sprint',
+        time: 'Start here',
+        text: 'One workflow, one working demo, one go / no-go decision.',
+    },
+    {
+        title: 'Private AI Deployment',
+        time: 'When the sprint works',
+        text: 'A governed AI layer for selected tools, files, users, and approvals.',
+    },
+    {
+        title: 'Ongoing Governance',
+        time: 'After rollout',
+        text: 'Evals, red-team runs, policy updates, model changes, and team enablement.',
+    },
+];
+
+const proofStory = [
+    ['Before', 'An institutional research workflow had useful AI drafts, urgent data fires, and no clear line between private context, unsupported claims, and approval-ready output.'],
+    ['After', 'The work became a governed research platform: selected sources in, weak claims marked, human approval before sharing.'],
+    ['Result', 'Less rework, fewer blind claims, and a repeatable path for research, briefs, and executive review.'],
 ];
 
 const whyUs = [
     ['Useful before scale', 'Start with one workflow that produces something your team can judge.'],
     ['Private by design', 'Context is scoped before AI help touches it.'],
     ['Built for control', 'Approvals, blocked actions, and support needs stay visible.'],
-    ['Model-flexible', 'Use the right AI help without letting any one model define the rules.'],
+    ['AI-flexible', 'Use the right AI help without letting any one system define the rules.'],
 ];
 
 const architectureQuestions = [
@@ -138,15 +170,15 @@ const architectureDiagrams = [
     {
         title: 'Local control',
         text: 'For sensitive work where context should stay closest to your machines.',
-        nodes: ['Your machines', 'Local context', 'Gated models', 'Team handoff'],
+        nodes: ['Your machines', 'Local context', 'Approved AI help', 'Team handoff'],
     },
 ];
 
 const views = [
-    ['MirrorDash', 'live work state, gates, files, tools, approvals'],
-    ['MirrorProof', 'receipt pack for serious outputs and claims'],
+    ['Control dashboard', 'live work state, files, checks, tools, approvals'],
+    ['Review pack', 'support trail for serious outputs and claims'],
     ['Consent check', 'approval before memory, sharing, or side effects'],
-    ['Private Runtime', 'browser-first, self-hosted, or managed deployment'],
+    ['Private deployment', 'browser-first, self-hosted, or managed access'],
 ];
 
 const machineryPanels = [
@@ -180,14 +212,14 @@ const machineryPanels = [
     },
     {
         icon: KeyRound,
-        title: 'Evidence',
+        title: 'Support',
         value: 'marked',
         note: 'Unsupported claims are visible.',
         tone: 'cyan',
     },
     {
         icon: FileCheck2,
-        title: 'Receipts',
+        title: 'Review',
         value: 'ready',
         note: 'Used, excluded, and open items stay reviewable.',
         tone: 'emerald',
@@ -222,9 +254,31 @@ function enterpriseBriefMarkdown() {
         '- AI workflow discovery',
         '- Private deployment design',
         '- Tool and file integration',
-        '- Model and agent governance',
-        '- Evaluation and red-team',
+        '- AI governance',
+        '- Testing and review',
         '- Team enablement',
+        '',
+        '## How we work',
+        '',
+        '- Scope',
+        '- Map',
+        '- Build',
+        '- Test',
+        '- Decide',
+        '',
+        '## Offer ladder',
+        '',
+        '- Workflow Sprint',
+        '- Private AI Deployment',
+        '- Ongoing Governance',
+        '',
+        '## Case study pattern',
+        '',
+        'Composite example. No client data.',
+        '',
+        'Before: an institutional research workflow had useful AI drafts, urgent data fires, and no clear line between private context, unsupported claims, and approval-ready output.',
+        'After: the work became a governed research platform: selected sources in, weak claims marked, human approval before sharing.',
+        'Result: less rework and a repeatable path for research, briefs, and executive review.',
         '',
         '## What not to send first',
         '',
@@ -271,7 +325,7 @@ function defaultMetrics(run) {
     return [
         { label: 'Approval', value: 'Human on', tone: 'emerald' },
         { label: 'Risk', value: run.risk, tone: run.risk === 'high' ? 'amber' : 'cyan' },
-        { label: 'Memory', value: 'choice', tone: 'violet' },
+        { label: 'Saved context', value: 'choice', tone: 'violet' },
         { label: 'Sharing', value: 'gated', tone: 'emerald' },
     ];
 }
@@ -488,8 +542,8 @@ function LiveConsole({ run }) {
     const completed = payload?.progress || Math.round(((index + 1) / run.steps.length) * 100);
     const metrics = payload?.metrics || defaultMetrics(run);
     const route = formatControlPath(payload?.route || 'intake -> boundary -> support -> approval -> record');
-    const streamLabel = streamConnected ? 'gateway stream · public demo' : streamSource === 'local' ? 'local replay · public demo' : 'connecting · public demo';
-    const streamPill = streamConnected ? 'stream on' : streamError ? 'local fallback' : 'connecting';
+    const streamLabel = streamConnected ? 'live demo' : streamSource === 'local' ? 'offline replay' : 'connecting';
+    const streamPill = streamConnected ? 'demo on' : streamError ? 'offline replay' : 'connecting';
 
     return (
         <section className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[#050608]/92 shadow-[0_0_90px_rgba(34,211,238,0.12)] ring-1 ring-white/[0.04]">
@@ -499,8 +553,8 @@ function LiveConsole({ run }) {
                         <TerminalSquare size={18} />
                     </span>
                     <div>
-                        <div className="text-sm font-semibold text-cyan-100">Glass Dashboard</div>
-                        <div className="text-[11px] text-zinc-500">visible control room · {streamLabel}</div>
+                        <div className="text-sm font-semibold text-cyan-100">Live workflow console</div>
+                        <div className="text-[11px] text-zinc-500">{streamLabel}</div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -521,7 +575,7 @@ function LiveConsole({ run }) {
             <div className="grid gap-3 p-4 lg:grid-cols-[1fr_1.08fr]">
                 <div className="grid gap-3">
                     <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Control path</div>
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Review path</div>
                         <div className="font-mono text-[12px] leading-6 text-zinc-300">
                             {route}
                         </div>
@@ -546,7 +600,7 @@ function LiveConsole({ run }) {
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Active signal</div>
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Current checkpoint</div>
                         <div className="flex items-start gap-3">
                             <CircleDot className="mt-1 h-4 w-4 shrink-0 animate-pulse text-cyan-200" />
                             <div>
@@ -559,8 +613,8 @@ function LiveConsole({ run }) {
 
                 <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Gate activity</div>
-                        <div className="font-mono text-[10px] text-zinc-500">turn-{String(index + 1).padStart(3, '0')}</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Approval activity</div>
+                        <div className="font-mono text-[10px] text-zinc-500">step {index + 1}/{run.steps.length}</div>
                     </div>
                     <div className="grid gap-2">
                         {visibleSteps.map(({ step, active: isActive, complete }) => {
@@ -815,8 +869,17 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
 }
 
 export default function Enterprise() {
+    const location = useLocation();
     const [runId, setRunId] = useState(workflowRuns[0].id);
     const activeRun = workflowRuns.find((run) => run.id === runId) || workflowRuns[0];
+
+    useEffect(() => {
+        if (!/\/consulting\/?$/.test(location.pathname)) return;
+        const timeout = window.setTimeout(() => {
+            document.getElementById('consulting')?.scrollIntoView({ block: 'start' });
+        }, 80);
+        return () => window.clearTimeout(timeout);
+    }, [location.pathname]);
 
     return (
         <div className="min-h-dvh overflow-hidden bg-black text-white selection:bg-emerald-500/30">
@@ -848,7 +911,7 @@ export default function Enterprise() {
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
                                 href="#proof-sprint"
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 text-sm font-semibold text-black shadow-[0_0_34px_rgba(16,185,129,0.24)] transition hover:scale-[1.01]"
+                                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 text-sm font-semibold text-black shadow-[0_0_34px_rgba(16,185,129,0.24)] transition hover:scale-[1.01]"
                             >
                                 Start workflow sprint
                                 <ArrowRight size={17} />
@@ -856,14 +919,14 @@ export default function Enterprise() {
                             <button
                                 type="button"
                                 onClick={downloadEnterpriseBrief}
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.07] px-5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
+                                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.07] px-5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
                             >
                                 Download brief
                                 <Download size={16} />
                             </button>
                             <Link
                                 to="/"
-                                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
+                                className="inline-flex min-h-12 items-center justify-center whitespace-nowrap rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
                             >
                                 Try it first
                             </Link>
@@ -875,57 +938,77 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
+                <section id="consulting" className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Why Active Mirror?</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Private AI deployment.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            Most AI pilots start broad and become hard to trust. We start with the workflow, then build the guardrails around it.
+                            Active Mirror is the workflow and governance layer around your AI tools: what AI may read, what it may do next, who approves it, and what gets recorded before rollout.
                         </p>
                     </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        {whyUs.map(([title, text]) => (
-                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-white">{title}</div>
-                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
-                            </div>
-                        ))}
+                    <div className="rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.06] p-6 ring-1 ring-white/[0.04]">
+                        <div className="text-sm font-semibold text-emerald-50">One workflow first.</div>
+                        <p className="mt-3 text-sm leading-6 text-zinc-300">
+                            We do not replace enterprise AI platforms. We make one workflow usable inside your rules.
+                        </p>
                     </div>
                 </section>
 
-                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">What you get.</h2>
-                        <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            A narrow sprint for teams that want AI to help with private work, but need control before scale.
-                        </p>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        {sprintDeliverables.map(([title, text]) => (
-                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-white">{title}</div>
-                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                <section id="consulting" className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
-                    <div className="mb-5 grid gap-3 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+                <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                    <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Private AI deployment.</h2>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">How we work.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                                We help teams turn one real workflow into a working AI system with clear permissions, support checks, and human approval.
+                                A short path from unclear AI interest to one controlled workflow your team can judge.
                             </p>
                         </div>
-                        <div className="rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] px-4 py-3 text-sm leading-6 text-emerald-50">
-                            Our lane is deployment, governance, and workflow design. Frontier model labs provide the raw intelligence; Active Mirror makes it usable inside your rules.
-                        </div>
                     </div>
-                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                        {consultingServices.map(([title, text]) => (
+                    <div className="grid gap-3 lg:grid-cols-5">
+                        {workSteps.map(([title, text], index) => (
                             <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/[0.07] font-mono text-xs font-semibold text-cyan-100">
+                                    {String(index + 1).padStart(2, '0')}
+                                </div>
                                 <div className="text-sm font-semibold text-white">{title}</div>
                                 <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
+                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Start small. Grow only if it works.</h2>
+                        <p className="mt-3 text-sm leading-6 text-zinc-400">
+                            The first sale is not a platform promise. It is one useful workflow, tested under your rules.
+                        </p>
+                    </div>
+                    <div className="grid gap-3">
+                        {offerLadder.map((offer) => (
+                            <div key={offer.title} className="grid gap-3 rounded-2xl border border-white/10 bg-black/25 p-4 sm:grid-cols-[12rem_1fr] sm:items-center">
+                                <div>
+                                    <div className="text-sm font-semibold text-white">{offer.title}</div>
+                                    <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200/70">{offer.time}</div>
+                                </div>
+                                <p className="text-sm leading-6 text-zinc-400">{offer.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mt-6 rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.065] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                    <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Anonymized case study.</h2>
+                            <p className="mt-2 max-w-xl text-sm leading-6 text-emerald-50/75">
+                                Composite example. No client data.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-3">
+                        {proofStory.map(([title, text]) => (
+                            <div key={title} className="rounded-2xl border border-emerald-300/15 bg-black/25 p-4">
+                                <div className="text-sm font-semibold text-emerald-50">{title}</div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-300">{text}</p>
                             </div>
                         ))}
                     </div>
@@ -969,42 +1052,12 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 grid gap-4 md:grid-cols-4">
-                    {controls.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <div key={item.title} className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.035]">
-                                <Icon size={20} className="mb-4 text-cyan-100" />
-                                <h3 className="font-semibold tracking-[-0.02em]">{item.title}</h3>
-                                <p className="mt-2 text-sm leading-6 text-zinc-400">{item.text}</p>
-                            </div>
-                        );
-                    })}
-                </section>
-
-                <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">Built around your work.</h2>
-                        <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            We do not install a generic bot and hope it behaves. We map the work first, then decide what should run in the browser, locally, privately, or behind managed access.
-                        </p>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        {architectureQuestions.map(([title, text]) => (
-                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-white">{title}</div>
-                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
                 <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
                     <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em]">Ways to run it.</h2>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em]">Architecture choices.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                                Start narrow. Keep the option to move closer to the work as the workflow proves itself.
+                                Start narrow. Move closer to the work only when the workflow proves it is worth scaling.
                             </p>
                         </div>
                     </div>
@@ -1017,18 +1070,16 @@ export default function Enterprise() {
 
                 <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">Ways to deploy.</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">First call expectation.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            The sprint starts with one workflow. The system can grow into a private AI layer for your team if the result is worth scaling.
+                            Bring one workflow, one owner, and one example output. Do not send private files through the public form.
                         </p>
                     </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        {views.map(([title, text]) => (
-                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-white">{title}</div>
-                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
-                            </div>
-                        ))}
+                    <div className="rounded-[2rem] border border-cyan-300/15 bg-cyan-300/[0.06] p-6 ring-1 ring-white/[0.04]">
+                        <div className="text-sm font-semibold text-cyan-50">Scoped before priced.</div>
+                        <p className="mt-2 text-sm leading-6 text-zinc-300">
+                            We scope the workflow first, then decide whether it is a sprint, a deployment, or not worth doing yet.
+                        </p>
                     </div>
                 </section>
 
