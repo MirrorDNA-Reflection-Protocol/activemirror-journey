@@ -67,11 +67,17 @@ check(
     homePage.includes('function makeStarterResult') && homePage.includes("setResult(makeStarterResult(item.kind))"),
     'starter buttons should use deterministic first-turn mirrors before model routing'
 );
+check(
+    homePage.includes('function makeStarterFollowupResult') && homePage.includes('starterFollowupKind') && homePage.includes('setResult(starterResult)'),
+    'starter second turns should be handled locally before generic model routing'
+);
 for (const starterPhrase of [
     'Start with the version someone can react to today',
     'A decision gets easier when the reversible choice is separated from the one-way door',
     'Fix the smallest visible break first',
     'Find the missing piece that changes what you do next',
+    'Page is enough. Make the first screen, not the whole site.',
+    'Clarity is the fix. Remove one choice',
 ]) {
     check(homePage.includes(starterPhrase), `starter mirror missing phrase: ${starterPhrase}`);
 }

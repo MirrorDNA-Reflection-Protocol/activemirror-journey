@@ -136,6 +136,177 @@ function makeStarterResult(kind = 'make') {
     };
 }
 
+function starterAnswer(answer = '') {
+    return String(answer || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 120);
+}
+
+function makeStarterFollowupResult(kind = 'make', answer = '') {
+    const clean = starterAnswer(answer);
+    const text = clean.toLowerCase();
+
+    if (kind === 'make') {
+        if (/\b(page|homepage|home page|landing|site|website|web page)\b/.test(text)) {
+            return {
+                kind: 'starter_followup',
+                mirror: {
+                    reflection: 'Page is enough. Make the first screen, not the whole site.',
+                    question: 'Who is it for, and what should they click first?',
+                    move: 'Write one headline and one button label.',
+                    visual: {
+                        kind: 'reframe',
+                        left: 'Whole site',
+                        right: 'First screen',
+                    },
+                    receipt: starterFollowupReceipt(clean),
+                },
+            };
+        }
+
+        if (/\b(message|email|reply|dm|text|note)\b/.test(text)) {
+            return {
+                kind: 'starter_followup',
+                mirror: {
+                    reflection: 'Make the message easy to answer.',
+                    question: 'Who receives it, and what do you want back?',
+                    move: 'Write the ask in one sentence.',
+                    visual: {
+                        kind: 'reframe',
+                        left: 'Explain everything',
+                        right: 'Ask one thing',
+                    },
+                    receipt: starterFollowupReceipt(clean),
+                },
+            };
+        }
+
+        if (/\b(image|visual|poster|thumbnail|video|ad|creative)\b/.test(text)) {
+            return {
+                kind: 'starter_followup',
+                mirror: {
+                    reflection: 'Start with the feeling and the one thing people should notice.',
+                    question: 'What should the visual make someone feel or do?',
+                    move: 'Name the subject, feeling, and action in one line.',
+                    visual: {
+                        kind: 'spectrum',
+                        left: 'Pretty',
+                        right: 'Useful feeling',
+                    },
+                    receipt: starterFollowupReceipt(clean),
+                },
+            };
+        }
+
+        return {
+            kind: 'starter_followup',
+            mirror: {
+                reflection: `"${clean || 'This'}" is enough to start.`,
+                question: 'What would make it useful to someone else?',
+                move: 'Write the rough version before improving it.',
+                visual: {
+                    kind: 'reframe',
+                    left: 'Perfect version',
+                    right: 'Rough version',
+                },
+                receipt: starterFollowupReceipt(clean),
+            },
+        };
+    }
+
+    if (kind === 'decide') {
+        return {
+            kind: 'starter_followup',
+            mirror: {
+                reflection: 'Put the options side by side before arguing with yourself.',
+                question: clean ? `What changes if you choose ${clean}?` : 'What are Option A and Option B?',
+                move: 'Write the two options, then mark the one you can test or undo.',
+                visual: {
+                    kind: 'axes',
+                    left: 'Commit',
+                    right: 'Test',
+                },
+                receipt: starterFollowupReceipt(clean),
+            },
+        };
+    }
+
+    if (kind === 'fix') {
+        if (/\b(unclear|confusing|confused|messy|wordy|copy|message)\b/.test(text)) {
+            return {
+                kind: 'starter_followup',
+                mirror: {
+                    reflection: 'Clarity is the fix. Remove one choice, one phrase, or one step.',
+                    question: 'What should the person understand first?',
+                    move: 'Rewrite the unclear part as one plain sentence.',
+                    visual: {
+                        kind: 'reframe',
+                        left: 'Too much to parse',
+                        right: 'One plain sentence',
+                    },
+                    receipt: starterFollowupReceipt(clean),
+                },
+            };
+        }
+
+        if (/\b(slow|lag|heavy|loading|performance)\b/.test(text)) {
+            return {
+                kind: 'starter_followup',
+                mirror: {
+                    reflection: 'Speed fixes need one measurement before one change.',
+                    question: 'What is slow: load, click, typing, scrolling, or response?',
+                    move: 'Measure the slowest visible step once, then change only that step.',
+                    visual: {
+                        kind: 'axes',
+                        left: 'Guessing',
+                        right: 'Measured step',
+                    },
+                    receipt: starterFollowupReceipt(clean),
+                },
+            };
+        }
+
+        return {
+            kind: 'starter_followup',
+            mirror: {
+                reflection: 'Fix the visible symptom before chasing the hidden cause.',
+                question: 'Where do you see it fail?',
+                move: 'Name the screen, sentence, or step where it breaks.',
+                visual: {
+                    kind: 'reframe',
+                    left: 'Root cause hunt',
+                    right: 'Visible failure',
+                },
+                receipt: starterFollowupReceipt(clean),
+            },
+        };
+    }
+
+    return {
+        kind: 'starter_followup',
+        mirror: {
+            reflection: 'Choose the lens that changes what you do next.',
+            question: 'Do you need a definition, example, comparison, source, or next step?',
+            move: 'Pick one lens and ask that version.',
+            visual: {
+                kind: 'spectrum',
+                left: 'More input',
+                right: 'Useful lens',
+            },
+            receipt: starterFollowupReceipt(clean),
+        },
+    };
+}
+
+function starterFollowupReceipt(answer = '') {
+    return {
+        context_used: `Your starter answer${answer ? `: "${answer}"` : ''}.`,
+        context_excluded: 'No private history or saved memory was needed.',
+        memory_decision: 'Nothing saved.',
+    };
+}
+
 function isEcosystemAsk(intent) {
     return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features|who are you)\b/i.test(intent);
 }
@@ -1119,6 +1290,7 @@ export default function HomePage() {
     const [result, setResult] = useState(null);
     const [lastIntent, setLastIntent] = useState('');
     const [lastSource, setLastSource] = useState('typed');
+    const [lastStarterKind, setLastStarterKind] = useState('');
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [artifactBusy, setArtifactBusy] = useState('');
@@ -1161,6 +1333,7 @@ export default function HomePage() {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
         const shortStartFollowup = source === 'typed' && isShortStartResult(result);
+        const starterFollowupKind = source === 'typed' && result?.kind === 'starter' ? lastStarterKind || 'make' : '';
 
         const sense = assessLocalMirrorSense(cleanIntent, { activeDefault, mirrorDefaults, seed });
         setLastIntent(cleanIntent);
@@ -1175,18 +1348,30 @@ export default function HomePage() {
         if (sense.blocked) {
             setText('');
             setResult(makeLocalPrivacyResult(sense));
+            setLastStarterKind('');
             trackEvent('local_privacy_hold', { page: 'home', source, status: 'blocked' });
             return;
         }
 
         setText('');
 
+        if (starterFollowupKind) {
+            const safeFollowup = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+            const starterResult = makeStarterFollowupResult(starterFollowupKind, safeFollowup);
+            setResult(starterResult);
+            setLastStarterKind('');
+            trackEvent('starter_followup', { page: 'home', source: 'starter', label: starterFollowupKind, status: 'local' });
+            return;
+        }
+
         if (isEcosystemAsk(cleanIntent)) {
             setResult(makeEcosystemResult(cleanIntent));
+            setLastStarterKind('');
             trackEvent('ecosystem_result', { page: 'home', source, status: 'local' });
             return;
         }
 
+        setLastStarterKind('');
         setBusy(true);
         try {
             const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
@@ -1297,6 +1482,7 @@ export default function HomePage() {
             setResult(makeSetupReadyResult());
             setLastIntent('loaded saved choices');
             setLastSource('uploaded_id');
+            setLastStarterKind('');
             setLastSense(null);
             setLoopCount(0);
             setSendableDraft(null);
@@ -1322,6 +1508,7 @@ export default function HomePage() {
         setText('');
         setLastIntent(item.intent || item.label || 'starter');
         setLastSource('starter');
+        setLastStarterKind(item.kind || 'make');
         setLastSense(null);
         setLoopCount(0);
         setSendableDraft(null);
