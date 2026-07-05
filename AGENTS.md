@@ -24,6 +24,10 @@ Use those only as references or migration sources.
 
 Before non-trivial edits, read `.mirror/TASK_CONTRACT.yaml`, `.mirror/AGENT_POLICY.yaml`, and `.mirror/STATUS.md`.
 
+Also read `docs/CONTINUITY_LEDGER.md` before changing the site, deploy bridge, model route, public copy, or user flow. It is the compact working state: active lane, repos, rules, gates, recent commits, live proof, known limits, and next safe move.
+
+If a new topic is likely to span more than one session, create a small packet from `docs/TOPIC_PACKET_TEMPLATE.md` and link it from `docs/CONTINUITY_LEDGER.md`. Do not rely on chat memory alone.
+
 Use `.mirror/DECISIONS.md` for durable decisions, `.mirror/RISKS.md` for active risks, and `.mirror/PLAN.md` for the next bounded slice. Keep SWFI/client work out of this repo.
 
 ## Live/Deploy Boundary
