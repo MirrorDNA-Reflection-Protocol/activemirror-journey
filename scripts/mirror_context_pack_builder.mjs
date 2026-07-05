@@ -10,6 +10,12 @@ const automaticIncludes = [
     'docs/TOPIC_PACKET_TEMPLATE.md',
 ];
 const topicPacketDir = 'docs/topic-packets';
+const args = process.argv.slice(2);
+const bundleMode = args.includes('--bundle');
+const outIndex = args.indexOf('--out');
+const outputPath = outIndex >= 0 ? args[outIndex + 1] : '';
+const maxBytesIndex = args.indexOf('--max-file-bytes');
+const maxFileBytes = maxBytesIndex >= 0 ? Number.parseInt(args[maxBytesIndex + 1] || '', 10) : 40000;
 
 function read(relativePath) {
     return fs.readFileSync(path.join(root, relativePath), 'utf8');
@@ -53,6 +59,33 @@ function unique(values) {
     return [...new Set(values)];
 }
 
+function languageFor(relativePath) {
+    if (relativePath.endsWith('.md')) return 'markdown';
+    if (relativePath.endsWith('.json')) return 'json';
+    if (relativePath.endsWith('.yaml') || relativePath.endsWith('.yml')) return 'yaml';
+    if (relativePath.endsWith('.mjs') || relativePath.endsWith('.js') || relativePath.endsWith('.jsx')) return 'javascript';
+    if (relativePath.endsWith('.sh')) return 'bash';
+    if (relativePath.endsWith('.py')) return 'python';
+    if (relativePath.endsWith('.html')) return 'html';
+    if (relativePath.endsWith('.css')) return 'css';
+    return 'text';
+}
+
+function fenceContent(text) {
+    return text.replaceAll('```', '``\\`');
+}
+
+function writeOutput(text) {
+    if (!outputPath) {
+        console.log(text);
+        return;
+    }
+    const absolute = path.join(root, outputPath);
+    fs.mkdirSync(path.dirname(absolute), { recursive: true });
+    fs.writeFileSync(absolute, text);
+    console.log(`Wrote ${outputPath}`);
+}
+
 if (!exists(contextPath)) {
     console.error(`Missing ${contextPath}`);
     process.exit(1);
@@ -81,10 +114,11 @@ for (const includePath of allIncludePaths) {
         bytes: Buffer.byteLength(text, 'utf8'),
         sha256: sha256(text),
         source: includePaths.includes(includePath) ? 'configured' : 'automatic',
+        text,
     });
 }
 
-const lines = [
+const manifestLines = [
     'generated_context_pack:',
     `  source: ${contextPath}`,
     `  repo: ${root}`,
@@ -104,6 +138,51 @@ const lines = [
     '    - Provider secrets and unrelated untracked docs stay out.',
 ];
 
-console.log(lines.join('\n'));
-
 if (missing.length) process.exit(1);
+
+function renderManifest() {
+    return manifestLines.join('\n');
+}
+
+function renderBundle() {
+    const lines = [
+        '# Active Mirror Context Bundle',
+        '',
+        `Generated: ${new Date().toISOString()}`,
+        `Repo: ${root}`,
+        `Source: ${contextPath}`,
+        '',
+        'This bundle is generated from repo files, not chat memory. It is designed for a future model run to ingest the current Active Mirror lane, state, rules, gates, and topic packets without asking Paul to restate the thread.',
+        '',
+        '## Manifest',
+        '',
+        '```yaml',
+        renderManifest(),
+        '```',
+        '',
+        '## Included Files',
+        '',
+    ];
+
+    for (const item of included) {
+        lines.push(`### ${item.path}`, '');
+        lines.push(`- source: ${item.source}`);
+        lines.push(`- sha256: ${item.sha256}`);
+        lines.push(`- bytes: ${item.bytes}`);
+        lines.push('');
+
+        if (item.bytes > maxFileBytes) {
+            lines.push(`Content omitted because this file is ${item.bytes} bytes and the bundle cap is ${maxFileBytes} bytes. Use the path and hash above to load it directly when needed.`);
+            lines.push('');
+            continue;
+        }
+
+        lines.push(`\`\`\`${languageFor(item.path)}`);
+        lines.push(fenceContent(item.text));
+        lines.push('```', '');
+    }
+
+    return lines.join('\n');
+}
+
+writeOutput(bundleMode ? renderBundle() : renderManifest());

@@ -122,6 +122,9 @@ if (contextBuilder) {
   requireIncludes(contextBuilder, "'docs/CONTINUITY_LEDGER.md'", `${files.contextBuilder} ledger automatic include`);
   requireIncludes(contextBuilder, "'docs/TOPIC_PACKET_TEMPLATE.md'", `${files.contextBuilder} template automatic include`);
   requireIncludes(contextBuilder, 'walkMarkdownFiles(topicPacketDir)', `${files.contextBuilder} topic packet discovery`);
+  requireIncludes(contextBuilder, 'const outputPath =', `${files.contextBuilder} output path support`);
+  requireIncludes(contextBuilder, 'function writeOutput(text)', `${files.contextBuilder} file output writer`);
+  requireIncludes(contextBuilder, 'function renderBundle()', `${files.contextBuilder} readable bundle renderer`);
 }
 
 if (packageJsonText) {
@@ -132,6 +135,9 @@ if (packageJsonText) {
     }
     if (!String(scripts.prebuild || '').includes('npm run guard:continuity')) {
       failures.push('package.json prebuild does not run guard:continuity');
+    }
+    if (scripts['mirror:context:bundle'] !== 'node scripts/mirror_context_pack_builder.mjs --bundle --out outputs/active-mirror-context-bundle.md') {
+      failures.push('package.json mirror:context:bundle is missing or changed');
     }
   } catch (error) {
     failures.push(`package.json is not valid JSON: ${error.message}`);

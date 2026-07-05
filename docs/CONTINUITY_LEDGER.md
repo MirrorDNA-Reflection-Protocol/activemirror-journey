@@ -221,3 +221,23 @@ Do not turn this into a strategy essay. Keep it operational.
   - This improves model/session continuity only when agents run or read the context pack.
   - It does not sync private memory across devices or models by itself.
 - Next safe move: commit and push, then create topic packets only for active multi-session topics instead of dumping every idea into the ledger.
+
+### 2026-07-05: Readable Context Bundle Added
+
+- Changed: added `npm run mirror:context:bundle`, which writes a readable Markdown context bundle to `outputs/active-mirror-context-bundle.md`.
+- Files touched:
+  - `scripts/mirror_context_pack_builder.mjs`
+  - `scripts/continuity_guard.mjs`
+  - `package.json`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run mirror:context`
+  - `npm run mirror:context:bundle`
+  - `npm run guard:continuity`
+  - `npm run build:deploy`
+- Deploy status: not deployed; this is a local context-pack capability.
+- Public routes checked: none for this local context-pack slice.
+- Bad news or limits:
+  - Very large files are included by path, bytes, and hash instead of full content to keep the bundle ingestible.
+  - The bundle is generated under `outputs/`; it is evidence and runtime context, not source truth.
+- Next safe move: use topic packets for active long-running topics, then regenerate the bundle before handing work to another model or session.
