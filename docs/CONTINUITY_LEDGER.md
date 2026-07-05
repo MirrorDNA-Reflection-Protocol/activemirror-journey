@@ -145,7 +145,7 @@ Use this order:
 
 For a lightweight topic, append a dated entry to this file.
 
-For a topic that will last more than one session, create a topic packet from `docs/TOPIC_PACKET_TEMPLATE.md` and link it here. If it becomes a strategy or architecture item, promote it to `docs/dossiers/` only after it has a clear user outcome and boundaries.
+For a topic that will last more than one session, create a topic packet from `docs/TOPIC_PACKET_TEMPLATE.md`, save it under `docs/topic-packets/`, and link it here. If it becomes a strategy or architecture item, promote it to `docs/dossiers/` only after it has a clear user outcome and boundaries.
 
 ## Topic Packets
 
@@ -203,3 +203,21 @@ Do not turn this into a strategy essay. Keep it operational.
   - The guard verifies the continuity contract exists and is wired, but it does not prove future agents read with judgment.
   - It checks repo-local continuity, not global memory across every machine or client.
 - Next safe move: commit and push the guard, then use it as part of every future `prebuild`.
+
+### 2026-07-05: Context Pack Continuity Auto-Ingest
+
+- Changed: `npm run mirror:context` now auto-includes the continuity ledger, topic packet template, and all Markdown files under `docs/topic-packets/`.
+- Files touched:
+  - `scripts/mirror_context_pack_builder.mjs`
+  - `docs/topic-packets/README.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run mirror:context`
+  - `npm run guard:continuity`
+  - `npm run build:deploy`
+- Deploy status: not deployed yet; this is repo-context/governance behavior, not a public UI change.
+- Public routes checked: none for this context-pack slice.
+- Bad news or limits:
+  - This improves model/session continuity only when agents run or read the context pack.
+  - It does not sync private memory across devices or models by itself.
+- Next safe move: commit and push, then create topic packets only for active multi-session topics instead of dumping every idea into the ledger.

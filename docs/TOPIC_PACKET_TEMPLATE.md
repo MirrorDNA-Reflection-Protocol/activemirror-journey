@@ -1,6 +1,6 @@
 # Active Mirror Topic Packet Template
 
-Copy this file when a topic will span more than one session.
+Copy this file into `docs/topic-packets/<topic-slug>.md` when a topic will span more than one session.
 
 Keep it short. A topic packet should let the next model run resume the topic without asking Paul to reconstruct the thread.
 

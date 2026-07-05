@@ -9,6 +9,9 @@ const files = {
   agents: 'AGENTS.md',
   ledger: 'docs/CONTINUITY_LEDGER.md',
   topicTemplate: 'docs/TOPIC_PACKET_TEMPLATE.md',
+  topicPacketsReadme: 'docs/topic-packets/README.md',
+  contextBuilder: 'scripts/mirror_context_pack_builder.mjs',
+  packageJson: 'package.json',
   taskContract: '.mirror/TASK_CONTRACT.yaml',
   agentPolicy: '.mirror/AGENT_POLICY.yaml',
 };
@@ -37,6 +40,9 @@ function requireBullet(text, bullet, file) {
 const agents = read(files.agents);
 const ledger = read(files.ledger);
 const topicTemplate = read(files.topicTemplate);
+const topicPacketsReadme = read(files.topicPacketsReadme);
+const contextBuilder = read(files.contextBuilder);
+const packageJsonText = read(files.packageJson);
 const taskContract = read(files.taskContract);
 const agentPolicy = read(files.agentPolicy);
 
@@ -65,7 +71,7 @@ if (ledger) {
     'Start from the user outcome, not the architecture.',
     'Keep the first screen simple: `What do you want?`',
     'Bad news, partial status, and limits must be stated before success language.',
-    'For a topic that will last more than one session, create a topic packet from `docs/TOPIC_PACKET_TEMPLATE.md`',
+    'For a topic that will last more than one session, create a topic packet from `docs/TOPIC_PACKET_TEMPLATE.md`, save it under `docs/topic-packets/`',
   ]) {
     requireIncludes(ledger, phrase, `${files.ledger} continuity phrase`);
   }
@@ -82,6 +88,7 @@ if (ledger) {
 }
 
 if (topicTemplate) {
+  requireIncludes(topicTemplate, 'Copy this file into `docs/topic-packets/<topic-slug>.md`', `${files.topicTemplate} destination rule`);
   for (const section of [
     'Topic',
     'User Outcome',
@@ -98,10 +105,37 @@ if (topicTemplate) {
   }
 }
 
+if (topicPacketsReadme) {
+  requireIncludes(topicPacketsReadme, '`npm run mirror:context` automatically includes every Markdown file in this folder', `${files.topicPacketsReadme} auto-ingest rule`);
+}
+
 if (agents) {
   requireIncludes(agents, 'docs/CONTINUITY_LEDGER.md', `${files.agents} ledger pointer`);
   requireIncludes(agents, 'docs/TOPIC_PACKET_TEMPLATE.md', `${files.agents} topic packet pointer`);
+  requireIncludes(agents, 'docs/topic-packets/', `${files.agents} topic packet folder pointer`);
+  requireIncludes(agents, '`npm run mirror:context` automatically includes those packets.', `${files.agents} context auto-ingest pointer`);
   requireIncludes(agents, 'Do not rely on chat memory alone.', `${files.agents} chat-memory warning`);
+}
+
+if (contextBuilder) {
+  requireIncludes(contextBuilder, "const topicPacketDir = 'docs/topic-packets';", `${files.contextBuilder} topic packet directory`);
+  requireIncludes(contextBuilder, "'docs/CONTINUITY_LEDGER.md'", `${files.contextBuilder} ledger automatic include`);
+  requireIncludes(contextBuilder, "'docs/TOPIC_PACKET_TEMPLATE.md'", `${files.contextBuilder} template automatic include`);
+  requireIncludes(contextBuilder, 'walkMarkdownFiles(topicPacketDir)', `${files.contextBuilder} topic packet discovery`);
+}
+
+if (packageJsonText) {
+  try {
+    const scripts = JSON.parse(packageJsonText).scripts || {};
+    if (scripts['mirror:context'] !== 'node scripts/mirror_context_pack_builder.mjs') {
+      failures.push('package.json mirror:context does not point to scripts/mirror_context_pack_builder.mjs');
+    }
+    if (!String(scripts.prebuild || '').includes('npm run guard:continuity')) {
+      failures.push('package.json prebuild does not run guard:continuity');
+    }
+  } catch (error) {
+    failures.push(`package.json is not valid JSON: ${error.message}`);
+  }
 }
 
 if (taskContract && agentPolicy) {
