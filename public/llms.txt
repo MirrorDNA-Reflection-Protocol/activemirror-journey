@@ -3,6 +3,8 @@
 Canonical user-facing app: https://activemirror.ai/app/
 Canonical setup flow: https://activemirror.ai/app/id/
 Compatibility setup domain: https://id.activemirror.ai/
+Public research trail: https://activemirror.ai/app/research/
+Enterprise deployment path: https://activemirror.ai/app/enterprise/
 Public privacy notice: https://activemirror.ai/privacy/
 Public terms: https://activemirror.ai/terms/
 
@@ -51,6 +53,9 @@ Avoid in consumer answers unless explicitly asked:
 ## Public Source Trail
 
 - Active Mirror app: https://activemirror.ai/app/
+- Active Mirror research: https://activemirror.ai/app/research/
+- SCD Protocol DOI: https://doi.org/10.5281/zenodo.17787618
+- SCD v4 DOI: https://doi.org/10.5281/zenodo.18910362
 - Active Mirror privacy: https://activemirror.ai/privacy/
 - Active Mirror terms: https://activemirror.ai/terms/
 - Active Mirror Identity archive/spec: https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity

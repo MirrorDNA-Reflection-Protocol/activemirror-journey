@@ -11,6 +11,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const Start = lazy(() => import('./pages/Start'));
 const DeviceExperience = lazy(() => import('./pages/DeviceExperience'));
 const Enterprise = lazy(() => import('./pages/Enterprise'));
+const Research = lazy(() => import('./pages/Research'));
 const FeedbackDashboard = lazy(() => import('./pages/FeedbackDashboard'));
 
 const staleRoutes = [
@@ -39,7 +40,6 @@ const staleRoutes = [
     '/products',
     '/products/*',
     '/proof',
-    '/research',
     '/setup',
     '/skills',
     '/status',
@@ -65,6 +65,7 @@ export default function App() {
                         <Route path="/device" element={<DeviceExperience />} />
                         <Route path="/enterprise" element={<Enterprise />} />
                         <Route path="/consulting" element={<Enterprise />} />
+                        <Route path="/research" element={<Research />} />
                         <Route path="/feedback" element={<FeedbackDashboard />} />
                         <Route path="/mirror" element={<Navigate to="/" replace />} />
                         <Route path="/privacy" element={<Privacy />} />

@@ -1599,9 +1599,16 @@ export default function HomePage() {
                         <MirrorLogo />
                         <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
                     </Link>
-                    <Link to="/consulting" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
-                        Consulting
-                    </Link>
+                    <div className="flex items-center gap-3 sm:gap-5">
+                        <nav className="hidden items-center gap-5 text-xs font-semibold text-zinc-500 sm:flex">
+                            <Link to="/research" className="transition hover:text-white">Research</Link>
+                            <Link to="/enterprise" className="transition hover:text-white">Business</Link>
+                            <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
+                        </nav>
+                        <Link to="/consulting" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
+                            For teams
+                        </Link>
+                    </div>
                 </div>
             </header>
 

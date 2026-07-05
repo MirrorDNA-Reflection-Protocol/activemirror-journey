@@ -12,6 +12,7 @@
     "src/pages/Start.jsx",
     "src/pages/DeviceExperience.jsx",
     "src/pages/Enterprise.jsx",
+    "src/pages/Research.jsx",
     "src/pages/FeedbackDashboard.jsx",
     "src/pages/Privacy.jsx",
     "src/pages/Terms.jsx",
@@ -56,7 +57,7 @@
   "claim_bindings": [
     {
       "claim_id": "active_routes_scope",
-      "pattern": "\\b(?:route|routes|stale route|redirect|BrowserRouter|Navigate|/mirror|/start|/privacy|/terms|/enterprise|/feedback|/device)\\b",
+      "pattern": "\\b(?:route|routes|stale route|redirect|BrowserRouter|Navigate|/mirror|/start|/privacy|/terms|/enterprise|/research|/feedback|/device)\\b",
       "verification_state": "source_backed",
       "source_refs": [
         "src/App.jsx",
@@ -71,6 +72,7 @@
       "source_refs": [
         "src/pages/HomePage.jsx",
         "src/pages/Enterprise.jsx",
+        "src/pages/Research.jsx",
         "src/lib/first-turn-fallback.js",
         "CANONICAL_SITE.md"
       ]
@@ -107,6 +109,7 @@
       "verification_state": "source_backed",
       "source_refs": [
         "src/pages/Enterprise.jsx",
+        "src/pages/Research.jsx",
         "src/pages/Privacy.jsx",
         "src/components/TruthStateNotice.jsx",
         "CANONICAL_SITE.md"
@@ -147,8 +150,19 @@
         "src/components/TruthStateNotice.jsx",
         "src/lib/first-turn-fallback.js",
         "src/pages/Enterprise.jsx",
+        "src/pages/Research.jsx",
         "src/pages/HomePage.jsx",
         "CANONICAL_SITE.md"
+      ]
+    },
+    {
+      "claim_id": "public_research_trail",
+      "pattern": "\\b(?:published protocols|public source trail|research trail|SCD Protocol|SCD v4|MirrorDNA protocol|DOI|Zenodo|field proof|deployment evidence|institutional case study|client names)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/Research.jsx",
+        "public/llms.txt",
+        ".mirror/SOURCE_LEDGER.md"
       ]
     }
   ]
