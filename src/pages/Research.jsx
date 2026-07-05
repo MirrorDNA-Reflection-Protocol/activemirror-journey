@@ -124,18 +124,18 @@ export default function Research() {
                         <div className="mb-5 grid h-12 w-12 place-items-center rounded-[1.1rem] border border-emerald-200/20 bg-black/25">
                             <ShieldCheck className="h-6 w-6 text-emerald-100" />
                         </div>
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Field proof, without client exposure.</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Real work, safely anonymized.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-300">
-                            The public story can describe the pattern: source-heavy institutional work, unsupported-claim control, and human approval before sharing.
+                            A source-heavy institutional workflow became clearer: selected sources in, weak claims held, human review before anything went out.
                         </p>
                     </div>
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
                         <div className="mb-5 grid h-12 w-12 place-items-center rounded-[1.1rem] border border-violet-200/20 bg-black/25">
                             <FileCheck2 className="h-6 w-6 text-violet-100" />
                         </div>
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">What we can claim.</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Proof you can open.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            Published protocols. Public source trail. Private deployment design. Anonymized institutional case study. Named client claims wait for explicit approval.
+                            Two DOI records, a public source trail, and a safely anonymized deployment story you can inspect before a call.
                         </p>
                     </div>
                 </section>

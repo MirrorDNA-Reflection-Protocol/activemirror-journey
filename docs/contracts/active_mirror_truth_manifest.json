@@ -157,7 +157,7 @@
     },
     {
       "claim_id": "public_research_trail",
-      "pattern": "\\b(?:published protocols|public source trail|research trail|SCD Protocol|SCD v4|MirrorDNA protocol|DOI|Zenodo|field proof|deployment evidence|institutional case study|client names)\\b",
+      "pattern": "\\b(?:published protocols|public source trail|research trail|SCD Protocol|SCD v4|MirrorDNA protocol|DOI|Zenodo|deployment evidence|source-heavy institutional workflow|safely anonymized|safely anonymized deployment story|Proof you can open)\\b",
       "verification_state": "source_backed",
       "source_refs": [
         "src/pages/Research.jsx",
