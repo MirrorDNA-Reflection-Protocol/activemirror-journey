@@ -186,3 +186,20 @@ Do not turn this into a strategy essay. Keep it operational.
   - This file improves repo continuity, but it is not a runtime memory system by itself.
   - Cross-topic continuity still requires future runs to read this file and update it.
 - Next safe move: run the source docs/build gates, commit this ledger, then package/deploy only if the docs change needs to be present in the live app bundle.
+
+### 2026-07-05: Continuity Guard Added
+
+- Changed: added a build-time continuity guard so the repo checks for the ledger, topic packet template, AGENTS pointer, canonical repo paths, required sections, and key gates.
+- Files touched:
+  - `scripts/continuity_guard.mjs`
+  - `package.json`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run guard:continuity`
+  - `npm run build:deploy`
+- Deploy status: not deployed yet; this is source/build governance only unless a later slice packages a new app bundle.
+- Public routes checked: none for this guard-only slice.
+- Bad news or limits:
+  - The guard verifies the continuity contract exists and is wired, but it does not prove future agents read with judgment.
+  - It checks repo-local continuity, not global memory across every machine or client.
+- Next safe move: commit and push the guard, then use it as part of every future `prebuild`.

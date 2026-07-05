@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:front-door && npm run guard:language && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
+        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:continuity && npm run guard:front-door && npm run guard:language && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
         "prebuild:deploy": "npm run prebuild",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
@@ -14,6 +14,7 @@
         "guard:canonical": "node scripts/canonical_source_guard.mjs",
         "guard:mirror": "node scripts/mirror_control_guard.mjs",
         "guard:mirror-control": "npm run guard:mirror",
+        "guard:continuity": "node scripts/continuity_guard.mjs",
         "guard:front-door": "node scripts/front_door_guard.mjs",
         "guard:language": "node scripts/public_language_guard.mjs",
         "guard:friction": "node scripts/first_turn_friction_guard.mjs",
