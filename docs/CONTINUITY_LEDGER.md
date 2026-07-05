@@ -314,3 +314,27 @@ Do not turn this into a strategy essay. Keep it operational.
   - Source answers depend on the live source-check provider and may return a verification plan when citations are not strong enough.
   - The app can feel like Codex/ChatGPT in behavior, but it must not get Codex-level shell/keychain/repo access without explicit scoped connectors and approval gates.
 - Next safe move: add browser-local continuity ledger entries for accepted conclusions and user-approved working defaults, then expose them as a small "what you chose to remember" view.
+
+### 2026-07-05: Browser-Local Saved Context
+
+- Changed: added explicit user-approved saved continuity in the browser. The visible label is `Saved by you`, not ledger/internal language.
+- Files touched:
+  - `src/lib/mirror-state.js`
+  - `src/pages/HomePage.jsx`
+  - `src/pages/Privacy.jsx`
+  - `src/pages/Terms.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product rule:
+  - Nothing enters the saved continuity list automatically.
+  - The same Save button that approves a useful answer stores a short intent and next move locally.
+  - The user can reuse, delete, or clear saved items from the drawer.
+- Security/legal rule:
+  - Store minimized text only: short intent, short move, source, timestamp.
+  - No full transcript, hidden profile, files, prompts, or server-side memory is created by this slice.
+  - Privacy and Terms now name saved notes/browser-local memory explicitly.
+- Bad news or limits:
+  - This is not cross-device identity sync.
+  - Browser storage can be cleared by the user/browser and is not a backup.
+  - This does not make the public app a professional advice, emergency, legal, medical, or financial service.
+- Next safe move: run guards/build, package into the deploy repo, deploy the static app, and verify live with a save/open/clear smoke test.

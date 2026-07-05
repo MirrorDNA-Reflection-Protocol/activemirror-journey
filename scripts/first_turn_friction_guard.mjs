@@ -52,6 +52,7 @@ check(
 
 const homePage = fs.readFileSync(new URL('../src/pages/HomePage.jsx', import.meta.url), 'utf8');
 const mirrorFeedback = fs.readFileSync(new URL('../src/components/MirrorFeedback.jsx', import.meta.url), 'utf8');
+const mirrorState = fs.readFileSync(new URL('../src/lib/mirror-state.js', import.meta.url), 'utf8');
 check(
     homePage.includes("createArtifact(item.artifactKind || 'draft', {") && homePage.includes('intent: item.intent,'),
     'artifact follow-up must pass its exact artifact instruction, not fall back to the old turn'
@@ -87,6 +88,19 @@ check(
 check(
     /tires\?\|tyres\?/.test(homePage),
     'source-heavy detector should include tire/tyre shopping language'
+);
+check(
+    mirrorState.includes('continuityLedger: []') &&
+    mirrorState.includes('export function saveContinuityEntry') &&
+    mirrorState.includes('export function clearContinuityLedger'),
+    'browser-local continuity must be explicit, user-approved, and clearable'
+);
+check(
+    homePage.includes('saveContinuityEntry({') &&
+    homePage.includes('Saved by you') &&
+    homePage.includes('Only on this browser. Delete it anytime.') &&
+    homePage.includes("['typed', 'follow_up', 'surface', 'saved_context']"),
+    'saved continuity UI must stay user-owned, local, and source-check capable'
 );
 for (const starterPhrase of [
     'Start with the version someone can react to today',

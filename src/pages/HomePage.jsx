@@ -8,13 +8,17 @@ import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { attachArtifactChallenge } from '../lib/challenge-packet';
 import { languagePayloadFor } from '../lib/language-preference';
 import {
+    clearContinuityLedger,
     clearMirrorDefault,
+    deleteContinuityEntry,
     deleteMirrorDefault,
     getActiveMirrorDefault,
     getArchetype,
     getBlueprint,
+    getContinuityLedger,
     getMirrorDefaults,
     importMirrorSettings,
+    saveContinuityEntry,
     saveMirrorDefault,
     updateMirrorDefault,
     useMirrorDefault,
@@ -808,6 +812,13 @@ function memoryItemKey(item = {}) {
     return item.savedAt || mirrorMemoryKey(item);
 }
 
+function formatSavedDate(value) {
+    if (!value) return 'Saved here';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Saved here';
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
 function isActiveMemory(item = {}, activeDefault = null) {
     if (!activeDefault) return false;
     return memoryItemKey(item) === memoryItemKey(activeDefault) || mirrorMemoryKey(item) === mirrorMemoryKey(activeDefault);
@@ -907,7 +918,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const isPrivacyHold = result?.kind === 'privacy_hold';
     const isSetupReady = result?.kind === 'setup_ready';
     const truthState = result?.truth_state || mirror.truth_state;
-    const canPromptSourceCheck = ['typed', 'follow_up', 'surface'].includes(turnSource);
+    const canPromptSourceCheck = ['typed', 'follow_up', 'surface', 'saved_context'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
     const answerFirst = showSourceCheck && isAnswerFirstAsk(intent);
 
@@ -1109,12 +1120,16 @@ function LocalSenseLine({ sense }) {
 function MemoryDrawer({
     open,
     items,
+    continuity = [],
     activeDefault,
     onClose,
     onUse,
     onPause,
     onDelete,
     onEdit,
+    onUseContinuity,
+    onDeleteContinuity,
+    onClearContinuity,
 }) {
     const [editingKey, setEditingKey] = useState('');
     const [draft, setDraft] = useState({ question: '', move: '' });
@@ -1126,6 +1141,7 @@ function MemoryDrawer({
 
     const activeCardIndex = items.length ? Math.min(cardIndex, items.length - 1) : 0;
     const activeCard = items[activeCardIndex] || null;
+    const hasSavedContext = items.length > 0 || continuity.length > 0;
 
     function changeCard(delta) {
         if (!items.length) return;
@@ -1182,7 +1198,7 @@ function MemoryDrawer({
                 </div>
 
                 <div className="overflow-y-auto px-4 py-4">
-                    {!items.length ? (
+                    {!hasSavedContext ? (
                         <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
                             Nothing saved yet. When an answer is useful, choose Save.
                         </div>
@@ -1238,6 +1254,54 @@ function MemoryDrawer({
                         </div>
                     ) : (
                         <div className="grid gap-3">
+                            {continuity.length ? (
+                                <section className="rounded-[1.45rem] border border-cyan-300/12 bg-cyan-300/[0.045] p-3">
+                                    <div className="mb-3 flex items-start justify-between gap-3">
+                                        <div>
+                                            <div className="text-sm font-semibold text-cyan-50">Saved by you</div>
+                                            <div className="mt-1 text-xs leading-5 text-zinc-500">Only on this browser. Delete it anytime.</div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={onClearContinuity}
+                                            className="rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-xs font-semibold text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                        >
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        {continuity.map((entry) => (
+                                            <div key={entry.savedAt} className="rounded-[1.15rem] border border-white/10 bg-black/16 p-3">
+                                                <div className="mb-2 flex items-center justify-between gap-3">
+                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">{formatSavedDate(entry.savedAt)}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => onDeleteContinuity?.(entry.savedAt)}
+                                                        className="grid h-7 w-7 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                        aria-label="Delete saved item"
+                                                    >
+                                                        <Trash2 size={13} />
+                                                    </button>
+                                                </div>
+                                                <div className="text-sm leading-6 text-zinc-300">{entry.intent || 'Saved reflection'}</div>
+                                                {entry.move ? (
+                                                    <div className="mt-2 rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-2 text-sm font-semibold leading-6 text-emerald-50">
+                                                        {entry.move}
+                                                    </div>
+                                                ) : null}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onUseContinuity?.(entry)}
+                                                    className="mt-3 inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs font-semibold text-zinc-300 transition hover:border-cyan-200/30 hover:text-white"
+                                                >
+                                                    Use this
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            ) : null}
+
                             {items.map((item) => {
                                 const key = memoryItemKey(item);
                                 const editing = editingKey === key;
@@ -1335,6 +1399,7 @@ export default function HomePage() {
     const [seed, setSeed] = useState(() => readSavedSeed());
     const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
     const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
+    const [continuityLedger, setContinuityLedger] = useState(() => getContinuityLedger());
     const [text, setText] = useState('');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
@@ -1496,8 +1561,15 @@ export default function HomePage() {
             move: mirror.move,
             source: 'home',
         });
+        const nextLedger = saveContinuityEntry({
+            intent: lastIntent || mirror.question,
+            question: mirror.question,
+            move: mirror.move,
+            source: 'user_save',
+        });
         setActiveDefault(saved);
         setMirrorDefaults(getMirrorDefaults());
+        setContinuityLedger(nextLedger);
         setRememberedKey(mirrorMemoryKey(mirror));
         trackEvent('mirror_default_saved', { page: 'home', source: 'explicit_approval' });
     }
@@ -1505,6 +1577,7 @@ export default function HomePage() {
     function refreshMemoryState(nextState) {
         setActiveDefault(nextState?.activeDefault ?? getActiveMirrorDefault());
         setMirrorDefaults(nextState?.mirrorDefaults ?? getMirrorDefaults());
+        setContinuityLedger(nextState?.continuityLedger ?? getContinuityLedger());
     }
 
     function useSavedMemory(item) {
@@ -1528,6 +1601,23 @@ export default function HomePage() {
         trackEvent('mirror_default_deleted', { page: 'home', source: 'memory_drawer' });
     }
 
+    function useContinuity(entry) {
+        const intent = [entry?.intent, entry?.move].filter(Boolean).join(' Next: ');
+        setMemoryOpen(false);
+        reflect(intent || 'Use what I saved here.', 'saved_context');
+        trackEvent('continuity_used', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function removeContinuity(key) {
+        setContinuityLedger(deleteContinuityEntry(key));
+        trackEvent('continuity_deleted', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function clearContinuity() {
+        setContinuityLedger(clearContinuityLedger());
+        trackEvent('continuity_cleared', { page: 'home', source: 'memory_drawer' });
+    }
+
     async function uploadSavedChoices(event) {
         const file = event.target.files?.[0];
         event.target.value = '';
@@ -1539,6 +1629,7 @@ export default function HomePage() {
             setSeed(readSavedSeed());
             setActiveDefault(imported.activeDefault || getActiveMirrorDefault());
             setMirrorDefaults(getMirrorDefaults());
+            setContinuityLedger(getContinuityLedger());
             setText('');
             setResult(makeSetupReadyResult());
             setLastIntent('loaded saved choices');
@@ -1646,6 +1737,7 @@ export default function HomePage() {
     const hasWorkSurface = workSurfaceOpen && Boolean(sendableDraft || artifactBusy);
     const canSubmit = text.trim().length >= 4;
     const fieldAwake = showMirror || text.trim().length > 0;
+    const savedCount = mirrorDefaults.length + continuityLedger.length;
     const ctaClass = canSubmit && !busy
         ? 'from-emerald-400 via-cyan-400 to-violet-500 text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] hover:scale-[1.015]'
         : 'from-zinc-800 to-zinc-700 text-zinc-500 shadow-none';
@@ -1788,20 +1880,20 @@ export default function HomePage() {
                             </div>
                         ) : null}
 
-                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'hidden sm:flex' : 'flex justify-center'}`}>
+                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'flex' : 'flex justify-center'}`}>
                             <span>Private by default.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
                                 Saved only if you choose.
                             </span>
-                            {mirrorDefaults.length > 0 ? (
+                            {savedCount > 0 ? (
                                 <button
                                     type="button"
                                     onClick={() => setMemoryOpen(true)}
                                     className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
                                 >
                                     <SlidersHorizontal size={13} />
-                                    Saved: {mirrorDefaults.length}
+                                    Saved: {savedCount}
                                 </button>
                             ) : null}
                             {importStatus ? <span className="font-semibold text-emerald-100">{importStatus}</span> : null}
@@ -1880,12 +1972,16 @@ export default function HomePage() {
             <MemoryDrawer
                 open={memoryOpen}
                 items={mirrorDefaults}
+                continuity={continuityLedger}
                 activeDefault={activeDefault}
                 onClose={() => setMemoryOpen(false)}
                 onUse={useSavedMemory}
                 onPause={pauseMemory}
                 onDelete={removeMemory}
                 onEdit={editMemory}
+                onUseContinuity={useContinuity}
+                onDeleteContinuity={removeContinuity}
+                onClearContinuity={clearContinuity}
             />
         </div>
     );

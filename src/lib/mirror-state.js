@@ -38,6 +38,7 @@ const DEFAULT_STATE = {
     // Explicitly approved working defaults
     activeDefault: null,    // { question, move, source, savedAt }
     mirrorDefaults: [],     // Recent approved defaults, newest first
+    continuityLedger: [],   // Explicitly saved browser-local continuity, newest first
 
     // Timestamps
     brainScanCompletedAt: null,
@@ -257,6 +258,15 @@ function normalizeMirrorDefault({ question, move, source = 'reflection', savedAt
     };
 }
 
+function normalizeContinuityEntry({ intent, question, move, source = 'reflection', savedAt } = {}) {
+    return {
+        intent: cleanDefaultText(intent || question, 220),
+        move: cleanDefaultText(move, 220),
+        source: cleanDefaultText(source, 48),
+        savedAt: savedAt || new Date().toISOString(),
+    };
+}
+
 /** Get the current approved browser-local default, if any. */
 export function getActiveMirrorDefault() {
     return _read().activeDefault || null;
@@ -287,6 +297,43 @@ export function saveMirrorDefault({ question, move, source = 'reflection' } = {}
         activeDefault: item,
         mirrorDefaults: nextDefaults,
     }).activeDefault;
+}
+
+/** Get explicitly saved browser-local continuity entries, newest first. */
+export function getContinuityLedger() {
+    const entries = _read().continuityLedger;
+    return Array.isArray(entries) ? entries : [];
+}
+
+/** Save one user-approved continuity entry. Never called automatically. */
+export function saveContinuityEntry({ intent, question, move, source = 'reflection' } = {}) {
+    const item = normalizeContinuityEntry({ intent, question, move, source });
+    if (!item.intent && !item.move) return getContinuityLedger();
+
+    const current = _read();
+    const existing = Array.isArray(current.continuityLedger) ? current.continuityLedger : [];
+    const nextLedger = [
+        item,
+        ...existing.filter((entry) => (
+            entry?.intent !== item.intent || entry?.move !== item.move
+        )),
+    ].slice(0, 12);
+
+    return setState({ continuityLedger: nextLedger }).continuityLedger;
+}
+
+/** Delete one saved continuity entry by timestamp. */
+export function deleteContinuityEntry(key) {
+    const current = _read();
+    const existing = Array.isArray(current.continuityLedger) ? current.continuityLedger : [];
+    return setState({
+        continuityLedger: existing.filter((entry) => entry?.savedAt !== key),
+    }).continuityLedger;
+}
+
+/** Clear user-approved continuity entries without deleting profile or defaults. */
+export function clearContinuityLedger() {
+    return setState({ continuityLedger: [] }).continuityLedger;
 }
 
 /** Make an existing approved default active again. */

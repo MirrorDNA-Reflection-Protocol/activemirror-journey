@@ -1,7 +1,7 @@
 import { ArrowLeft, Ban, CheckCircle, FileText, Fingerprint, Scale, Shield, TriangleAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const lastUpdated = 'June 27, 2026';
+const lastUpdated = 'July 5, 2026';
 
 const prohibited = [
     'Do not paste passwords, API keys, private URLs, payment data, or other secrets.',
@@ -38,7 +38,7 @@ export default function Terms() {
                         <li>Bring one thing you want reflected.</li>
                         <li>Review the output before acting on it.</li>
                         <li>Keep secrets and sensitive details out.</li>
-                        <li>Memory and defaults are your choice.</li>
+                        <li>Memory, saved notes, and defaults are your choice.</li>
                         <li>Abuse, scraping, bypass attempts, and automated overload are not allowed.</li>
                     </ul>
                 </section>

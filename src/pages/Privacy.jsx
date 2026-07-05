@@ -1,7 +1,7 @@
 import { ArrowLeft, Cookie, Database, EyeOff, Globe2, Lock, Mail, Shield, Trash2, UserCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const lastUpdated = 'June 27, 2026';
+const lastUpdated = 'July 5, 2026';
 
 const sections = [
     {
@@ -22,7 +22,7 @@ const sections = [
     {
         icon: Lock,
         title: 'What stays local',
-        body: 'Your local profile, approved defaults, phone-thread continuity, and local feedback counts are stored in your browser when you choose to use those features. You can clear them from the app or browser storage.',
+        body: 'Your local profile, approved defaults, saved-by-you continuity, phone-thread continuity, and local feedback counts are stored in your browser when you choose to use those features. You can clear them from the app or browser storage.',
     },
     {
         icon: Mail,
@@ -70,7 +70,7 @@ export default function Privacy() {
                     <ul className="mt-4 space-y-2 text-sm leading-6 text-zinc-300">
                         <li>Only send what you want reflected.</li>
                         <li>Do not paste secrets or highly sensitive personal details.</li>
-                        <li>Memory is your choice; local defaults stay in your browser.</li>
+                        <li>Memory is your choice; saved notes and local defaults stay in your browser.</li>
                         <li>Telemetry is counts, labels, and status; not prompt content.</li>
                         <li>We do not sell your personal data or train our own models on your conversations.</li>
                     </ul>
