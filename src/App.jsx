@@ -64,6 +64,7 @@ export default function App() {
                         <Route path="/start" element={<Navigate to="/id" replace />} />
                         <Route path="/device" element={<DeviceExperience />} />
                         <Route path="/enterprise" element={<Enterprise />} />
+                        <Route path="/consulting" element={<Enterprise />} />
                         <Route path="/feedback" element={<FeedbackDashboard />} />
                         <Route path="/mirror" element={<Navigate to="/" replace />} />
                         <Route path="/privacy" element={<Privacy />} />

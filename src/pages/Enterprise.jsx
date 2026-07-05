@@ -101,6 +101,15 @@ const sprintDeliverables = [
     ['Go / no-go plan', 'What to deploy, what to hold, and what needs stronger support.'],
 ];
 
+const consultingServices = [
+    ['AI workflow discovery', 'Find the first workflow worth proving, then define the output, owner, risk, and approval path.'],
+    ['Private deployment design', 'Choose the right shape: browser-first, self-hosted, local machine, private server, or managed access.'],
+    ['Tool and file integration', 'Connect the files, apps, and actions the workflow actually needs, with clear limits.'],
+    ['Model and agent governance', 'Use the right AI help while keeping permission, review, and support rules outside the model.'],
+    ['Evaluation and red-team', 'Test hallucination, privacy leakage, weak support, and unsafe action paths before rollout.'],
+    ['Team enablement', 'Create the operating playbook, first workflows, and review habits your team can keep using.'],
+];
+
 const whyUs = [
     ['Useful before scale', 'Start with one workflow that produces something your team can judge.'],
     ['Private by design', 'Context is scoped before AI help touches it.'],
@@ -207,6 +216,15 @@ function enterpriseBriefMarkdown() {
         '- Boundary map',
         '- Working demo',
         '- Go / no-go plan',
+        '',
+        '## Services',
+        '',
+        '- AI workflow discovery',
+        '- Private deployment design',
+        '- Tool and file integration',
+        '- Model and agent governance',
+        '- Evaluation and red-team',
+        '- Team enablement',
         '',
         '## What not to send first',
         '',
@@ -883,6 +901,28 @@ export default function Enterprise() {
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                         {sprintDeliverables.map(([title, text]) => (
+                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="text-sm font-semibold text-white">{title}</div>
+                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section id="consulting" className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                    <div className="mb-5 grid gap-3 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+                        <div>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Private AI deployment.</h2>
+                            <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
+                                We help teams turn one real workflow into a working AI system with clear permissions, support checks, and human approval.
+                            </p>
+                        </div>
+                        <div className="rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] px-4 py-3 text-sm leading-6 text-emerald-50">
+                            Our lane is deployment, governance, and workflow design. Frontier model labs provide the raw intelligence; Active Mirror makes it usable inside your rules.
+                        </div>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                        {consultingServices.map(([title, text]) => (
                             <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
                                 <div className="text-sm font-semibold text-white">{title}</div>
                                 <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
