@@ -15,8 +15,8 @@ const papers = [
         label: 'Open DOI',
     },
     {
-        title: 'MirrorDNA protocol',
-        detail: 'Public source trail for identity, continuity, and reflective AI language around Active Mirror.',
+        title: 'Source repository',
+        detail: 'Public source trail for identity, continuity, and reflective AI research around Active Mirror.',
         href: 'https://github.com/MirrorDNA-Reflection-Protocol/MirrorDNA',
         label: 'Open source',
     },
