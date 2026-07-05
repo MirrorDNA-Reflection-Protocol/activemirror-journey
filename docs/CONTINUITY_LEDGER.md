@@ -338,3 +338,12 @@ Do not turn this into a strategy essay. Keep it operational.
   - Browser storage can be cleared by the user/browser and is not a backup.
   - This does not make the public app a professional advice, emergency, legal, medical, or financial service.
 - Next safe move: run guards/build, package into the deploy repo, deploy the static app, and verify live with a save/open/clear smoke test.
+
+### 2026-07-05: Front Door Legal Link Cleanup
+
+- Changed: removed the duplicate top-nav `Privacy` link from the front door. Privacy and Terms remain in the footer/legal area.
+- File touched:
+  - `src/pages/HomePage.jsx`
+- Product rule:
+  - Legal links should be findable but not repeated in the first-screen navigation.
+- Next safe move: rebuild, package, and redeploy the app bundle.
