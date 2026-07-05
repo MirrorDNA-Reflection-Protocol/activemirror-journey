@@ -241,3 +241,55 @@ Do not turn this into a strategy essay. Keep it operational.
   - Very large files are included by path, bytes, and hash instead of full content to keep the bundle ingestible.
   - The bundle is generated under `outputs/`; it is evidence and runtime context, not source truth.
 - Next safe move: use topic packets for active long-running topics, then regenerate the bundle before handing work to another model or session.
+
+### 2026-07-05: Experimental Multilingual Reflection
+
+- Changed: added experimental reply-language detection and payload routing so Active Mirror can answer in the user's message/browser language without adding another setup step.
+- Files touched:
+  - `src/lib/language-preference.js`
+  - `src/lib/first-turn-fallback.js`
+  - `src/pages/HomePage.jsx`
+  - `src/pages/Start.jsx`
+  - `src/components/TruthStateNotice.jsx`
+  - `scripts/multilingual_guard.mjs`
+  - `package.json`
+  - `docs/CONTINUITY_LEDGER.md`
+- Gateway companion changes live in `/Users/mirror-pro/repos/active-mirror-site/worker/src/` and must be deployed before live multilingual model replies are guaranteed.
+- Tools and gates planned:
+  - `npm run guard:multilingual`
+  - `npm run build:deploy`
+  - `/Users/mirror-pro/repos/active-mirror-site`: `npm run worker:test`
+  - Live smoke with non-English prompt after worker deploy.
+- Deploy status: not deployed at the time of this ledger entry.
+- Bad news or limits:
+  - This is not full product UI translation yet.
+  - Non-English support is experimental because model quality varies by language and the browser built-in translation APIs are not universal.
+  - The first durable claim is multilingual reflection, source-check, and artifact routing; localized onboarding can follow later if real users need it.
+- Next safe move: run source and worker tests, package app bundle into the deploy repo, deploy the worker/site, then verify a Hindi or Hinglish prompt on `https://activemirror.ai/app/`.
+
+### 2026-07-05: Answer-First Intent Router Correction
+
+- Changed: user testing showed Active Mirror was asking reflective questions when the user wanted online information. The product rule is now: reflection mirrors intent internally; the visible mode should answer, source-check, draft, create, or ask one necessary detail.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `src/components/TruthStateNotice.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+  - Gateway companion changes in `/Users/mirror-pro/repos/active-mirror-site/worker/src/` and `worker/KERNEL.md`.
+- Product phrasing:
+  - ChatGPT-class assistant behavior, with Active Mirror as the harness for intent, privacy, truth, continuity, and usefulness.
+  - Reflection is for the model first; the user should feel understood, not interrogated.
+- Bad news or limits:
+  - This does not yet implement full browser-local continuity memory beyond existing save/import/export surfaces.
+  - Shopping/source quality depends on the gateway source-check provider and available sources.
+- Next safe move: run guards/tests, then verify that a prompt like "I am looking for tires online" auto-checks sources instead of rendering a reflection-question card.
+
+### 2026-07-05: Front Door Copy Lock
+
+- Decision: the consumer front door should stay simple: `What do you want?` plus `Reflection > Prediction`.
+- Product rule: do not explain the thesis on the first screen. Let the user type, then let Active Mirror infer intent, source-check when needed, draft when asked, and ask only one necessary question.
+- Personality rule: keep the feel fast, direct, lightly warm, and nonlinear-friendly without naming personality labels, cognitive styles, or diagnoses.
+- Bad news or limits:
+  - This still depends on the source-check route for current web answers.
+  - Browser-local continuity is not full cross-device identity sync yet.
+- Next safe move: package this copy and answer-first router into the deploy repo and verify with Playwright.

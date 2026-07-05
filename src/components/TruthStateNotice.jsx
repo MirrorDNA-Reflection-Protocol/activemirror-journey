@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ExternalLink, Loader2, SearchCheck } from 'lucide-react';
+import { languagePayloadFor } from '../lib/language-preference';
 import { getPrivacySessionId } from '../lib/privacy-events';
 
 const SOURCE_CHECK_ENDPOINT = 'https://gateway.activemirror.ai/v1/mirror/source-check';
@@ -51,7 +52,7 @@ function displayResearchText(value = '') {
         .trim();
 }
 
-export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt, onSourceChecked }) {
+export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt, onSourceChecked, autoCheck = false, answerFirst = false }) {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState(null);
@@ -61,14 +62,23 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
         [truthState?.status, intent, mirror.question, mirror.move],
     );
     const settledKey = useRef(sourceKey);
+    const autoCheckedKey = useRef('');
 
     useEffect(() => {
         if (disabled || sourceKey === settledKey.current) return;
         settledKey.current = sourceKey;
+        autoCheckedKey.current = '';
         setResult(null);
         setError('');
         setNarrowed(false);
     }, [disabled, sourceKey]);
+
+    useEffect(() => {
+        if (!autoCheck || disabled || busy || result || truthState?.status !== 'needs_checking') return;
+        if (autoCheckedKey.current === sourceKey) return;
+        autoCheckedKey.current = sourceKey;
+        checkSources();
+    }, [autoCheck, disabled, busy, result, truthState?.status, sourceKey]);
 
     if (truthState?.status !== 'needs_checking') return null;
 
@@ -86,9 +96,10 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 },
                 body: JSON.stringify({
                     intent,
-                    question: mirror.question || intent,
+                    question: answerFirst ? intent : mirror.question || intent,
                     move: mirror.move || '',
                     boundary: 'personal',
+                    ...languagePayloadFor(intent || mirror.question || ''),
                 }),
             });
             const data = await response.json();
@@ -113,7 +124,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
             <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
                 <div className="mb-2 flex items-center gap-2 font-semibold">
                     <SearchCheck size={16} className={verdict.icon} />
-                    {plan ? 'Check plan' : verdict.title}
+                    {answerFirst && !plan ? 'What I found' : plan ? 'What to check' : verdict.title}
                 </div>
                 {verdict.helper ? (
                     <div className={`mb-2 ${verdict.muted}`}>{verdict.helper}</div>
@@ -212,6 +223,40 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                         ))}
                     </div>
                 ) : null}
+            </div>
+        );
+    }
+
+    if (answerFirst && error) {
+        return (
+            <div className="max-w-[46rem] rounded-2xl border border-amber-300/20 bg-amber-300/[0.065] px-4 py-3 text-sm leading-6 text-amber-50">
+                <div className="font-semibold">I could not check live sources just now.</div>
+                <div className="mt-1 text-xs leading-5 text-amber-100/75">
+                    I will not guess from memory. Try again, or add one detail that narrows the search.
+                </div>
+                <button
+                    type="button"
+                    onClick={checkSources}
+                    disabled={busy || disabled}
+                    className="mt-3 inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-amber-200/25 bg-black/20 px-3 text-xs font-semibold text-amber-50 transition hover:border-amber-200/45 hover:bg-amber-200/[0.10] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    {busy ? <Loader2 size={14} className="animate-spin" /> : <SearchCheck size={14} />}
+                    {busy ? 'Checking' : 'Try again'}
+                </button>
+            </div>
+        );
+    }
+
+    if (answerFirst && (busy || autoCheck)) {
+        return (
+            <div className="max-w-[46rem] rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-3 text-sm leading-6 text-cyan-50">
+                <div className="flex items-center gap-2 font-semibold">
+                    <Loader2 size={15} className="animate-spin text-cyan-100" />
+                    Checking current options
+                </div>
+                <div className="mt-1 text-xs leading-5 text-cyan-100/72">
+                    I'll answer from sources where possible, not guess from memory.
+                </div>
             </div>
         );
     }

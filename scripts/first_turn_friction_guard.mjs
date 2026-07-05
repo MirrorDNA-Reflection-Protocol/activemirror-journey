@@ -15,6 +15,7 @@ const normalFallback = makeOfflineMirrorResult(normalDraftAsk, 'network');
 const softPrivateSense = assessLocalMirrorSense('My email is paul@example.com and I need a short reply.');
 const todayActionFallback = makeOfflineMirrorResult('I need one sentence I can send to one person today.', 'network');
 const currentFactFallback = makeOfflineMirrorResult('What are the latest competitors doing today?', 'network');
+const tireShoppingFallback = makeOfflineMirrorResult('I am looking for tires online', 'network');
 
 check(!normalSense.blocked, 'normal send/safe wording must not be locally blocked');
 check(softPrivateSense.softPrivate && !softPrivateSense.blocked, 'soft personal details should be cautioned, not blocked');
@@ -29,6 +30,10 @@ check(
 check(
     currentFactFallback.truth_state?.status === 'needs_checking',
     'current competitor/fact asks must still trigger source-check warning'
+);
+check(
+    tireShoppingFallback.truth_state?.status === 'needs_checking',
+    'online shopping asks like tires must trigger answer-first source mode'
 );
 
 const explicitSecret = 'My password is examplepassword123 and I need help.';
@@ -70,6 +75,18 @@ check(
 check(
     homePage.includes('function makeStarterFollowupResult') && homePage.includes('starterFollowupKind') && homePage.includes('setResult(starterResult)'),
     'starter second turns should be handled locally before generic model routing'
+);
+check(
+    homePage.includes('function isAnswerFirstAsk') &&
+    homePage.includes('function makeAnswerFirstSourceResult') &&
+    homePage.includes('source_check_first') &&
+    homePage.includes('autoCheck') &&
+    homePage.includes('answerFirst'),
+    'current info and shopping asks should route directly to answer-first source mode instead of showing a reflection questionnaire'
+);
+check(
+    /tires\?\|tyres\?/.test(homePage),
+    'source-heavy detector should include tire/tyre shopping language'
 );
 for (const starterPhrase of [
     'Start with the version someone can react to today',

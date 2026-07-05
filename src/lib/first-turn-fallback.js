@@ -114,24 +114,119 @@ const MIRRORS = {
     },
 };
 
-export function makeOfflineMirrorResult(intent = '', reason = 'network') {
+const LANGUAGE_MIRRORS = {
+    hi: {
+        source_check: {
+            reflection: 'Is par banane se pehle ek current source check zaroori hai.',
+            question: 'Kaunsa claim galat nikla to aapka next step badal jayega?',
+            move: 'Us ek claim ko likhiye, phir use ek current source se check kijiye.',
+        },
+        private_output: {
+            reflection: 'Main useful part mein madad kar sakta hoon. Real secret bahar rakhiye.',
+            question: 'Aap mujhse kya banwana, decide karwana, ya fix karwana chahte hain?',
+            move: 'Dobara bhejiye, real value ki jagah [secret] ya [detail] likh kar.',
+        },
+        needs_detail: {
+            reflection: 'Ek direction de dijiye, main start kar sakta hoon.',
+            question: 'Banana hai, decide karna hai, fix karna hai, ya samajhna hai?',
+            move: 'Ek option chuniye, phir ek sentence aur add kijiye.',
+        },
+        launch_clarity: {
+            reflection: 'First screen par ek useful action sabse pehle obvious hona chahiye.',
+            question: 'Pehle thirty seconds mein user kya try kare?',
+            move: 'Ek promise aur ek button chuniye. Baaki sab temporarily hide kijiye.',
+        },
+        decision: {
+            reflection: 'Ek aur opinion se zyada ek real-world signal help karega.',
+            question: 'Kaunsa signal ek option ko clearly better bana dega?',
+            move: 'Signal ka naam likhiye, phir aaj uska sabse chhota test run kijiye.',
+        },
+        reset: {
+            reflection: 'Ek se zyada thread open hain. Jo aaj ko easier banata hai, usse start kijiye.',
+            question: 'Kaunsa thread pehle matter karta hai?',
+            move: 'Us ek ko chuniye aur ten minutes ke liye smallest visible step kijiye.',
+        },
+        artifact: {
+            reflection: 'Ye kisi usable cheez mein badalna chahta hai.',
+            question: 'Rough hone ke baad bhi kaunsa output useful rahega?',
+            move: 'Title, teen bullets, aur ek ask ke saath smallest usable version draft kijiye.',
+        },
+        general: {
+            reflection: 'Ye abhi wide hai. Isse itna chhota kijiye ki aaj move ho sake.',
+            question: 'Iska smallest testable version kya hai?',
+            move: 'Testable version ek sentence mein likhiye, phir ek person ko dikhaiye.',
+        },
+    },
+    es: {
+        needs_detail: {
+            reflection: 'Dame una direccion y puedo empezar.',
+            question: 'Quieres hacer, decidir, arreglar o entender algo?',
+            move: 'Elige una opcion y agrega una frase concreta.',
+        },
+        general: {
+            reflection: 'Esto todavia es amplio. Hazlo lo bastante pequeno para moverlo hoy.',
+            question: 'Cual es la version mas pequena que puedes probar hoy?',
+            move: 'Escribe la version probada en una frase y muestrala a una persona.',
+        },
+    },
+    fr: {
+        needs_detail: {
+            reflection: 'Donne-moi une direction et je peux commencer.',
+            question: 'Tu veux faire, decider, corriger ou comprendre quelque chose?',
+            move: 'Choisis une option, puis ajoute une phrase concrete.',
+        },
+        general: {
+            reflection: 'C est encore large. Reduis-le jusqu a ce que ca puisse avancer aujourd hui.',
+            question: 'Quelle est la plus petite version testable aujourd hui?',
+            move: 'Ecris la version testable en une phrase, puis montre-la a une personne.',
+        },
+    },
+};
+
+function languageCode(language = {}) {
+    const code = String(language.reply_language || language.code || '').toLowerCase();
+    if (code === 'hinglish') return 'hi';
+    return code;
+}
+
+function mirrorForLanguage(kind, language = {}) {
+    const code = languageCode(language);
+    return LANGUAGE_MIRRORS[code]?.[kind] || LANGUAGE_MIRRORS[code]?.general || MIRRORS[kind] || MIRRORS.general;
+}
+
+function receiptForLanguage(clean, reason, language = {}) {
+    const code = languageCode(language);
+    if (code === 'hi') {
+        return {
+            context_used: `Sirf aapka sentence "${clean}" use hua.`,
+            context_excluded: 'Private notes, files, identity context, aur memory bahar rahe.',
+            memory_decision: 'Kuch save nahi hua jab tak aap choose na karein.',
+            route: reason === 'network'
+                ? 'Live answer unreachable tha, isliye local fallback use hua.'
+                : 'Local fallback.',
+        };
+    }
+    return {
+        context_used: `Only your sentence about "${clean}".`,
+        context_excluded: 'Private notes, files, identity context, and memory stayed out.',
+        memory_decision: 'Nothing saved unless you choose it.',
+        route: reason === 'network'
+            ? 'Local fallback because the live answer was unreachable.'
+            : 'Local fallback.',
+    };
+}
+
+export function makeOfflineMirrorResult(intent = '', reason = 'network', language = {}) {
     const clean = cleanIntent(intent) || 'this';
     const kind = classify(clean);
-    const mirror = MIRRORS[kind] || MIRRORS.general;
+    const mirror = mirrorForLanguage(kind, language);
 
     return {
         ok: true,
         fallback: true,
         mirror: {
             ...mirror,
-            receipt: {
-                context_used: `Only your sentence about "${clean}".`,
-                context_excluded: 'Private notes, files, identity context, and memory stayed out.',
-                memory_decision: 'Nothing saved unless you choose it.',
-                route: reason === 'network'
-                    ? 'Local fallback because the live answer was unreachable.'
-                    : 'Local fallback.',
-            },
+            receipt: receiptForLanguage(clean, reason, language),
         },
         truth_state: kind === 'source_check'
             ? {

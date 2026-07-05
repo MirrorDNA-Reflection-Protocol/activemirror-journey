@@ -6,6 +6,7 @@ import { NeedsSources } from '../components/TruthStateNotice';
 import { buildLocalSenseContext, assessLocalMirrorSense, maskSoftPrivateText } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { attachArtifactChallenge } from '../lib/challenge-packet';
+import { languagePayloadFor } from '../lib/language-preference';
 import {
     clearMirrorDefault,
     deleteMirrorDefault,
@@ -308,16 +309,45 @@ function starterFollowupReceipt(answer = '') {
 }
 
 function isEcosystemAsk(intent) {
-    return /\b(ecosystem|what can|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features|who are you)\b/i.test(intent);
+    return /\b(ecosystem|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
 }
 
 function isSourceHeavyAsk(intent) {
     const text = String(intent || '');
-    const explicitSourceAsk = /\b(latest|current|recent|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing)\b/i.test(text);
+    const explicitSourceAsk = /\b(latest|current|recent|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing|buy|shopping|shop|compare|options?|deals?|available|availability|near me|tires?|tyres?|retailers?)\b/i.test(text);
     const timedFactAsk = /\b(today|right now|this week|this month|this year|as of)\b/i.test(text)
-        && /\b(news|market|price|pricing|competitor|research|source|verif\w*|check|fact|facts|numbers|paper|study|studies|report|released|launched|happened|weather|stock|model|api)\b/i.test(text);
+        && /\b(news|market|price|pricing|competitor|research|source|verif\w*|check|fact|facts|numbers|paper|study|studies|report|released|launched|happened|weather|stock|model|api|buy|shopping|shop|options?|deals?|available|availability|tires?|tyres?|retailers?)\b/i.test(text);
 
     return explicitSourceAsk || timedFactAsk;
+}
+
+function isAnswerFirstAsk(intent) {
+    return isSourceHeavyAsk(intent);
+}
+
+function makeAnswerFirstSourceResult(intent = '') {
+    const clean = String(intent || 'this').replace(/\s+/g, ' ').trim().slice(0, 160) || 'this';
+    return {
+        kind: 'answer_first_source',
+        ok: true,
+        mirror: {
+            reflection: 'Checking current sources before answering.',
+            question: clean,
+            move: 'Use the source-backed answer, then decide.',
+            receipt: {
+                context_used: `Only your request: "${clean}".`,
+                context_excluded: 'Private notes, saved memory, and personal history stayed out.',
+                memory_decision: 'Nothing saved unless you choose it.',
+                route: 'Source-check first because this asks for current or external information.',
+            },
+            visual: { kind: 'none', left: '', right: '', note: '' },
+        },
+        truth_state: {
+            status: 'needs_checking',
+            label: 'Needs current sources before answering.',
+            signals: ['current_or_external_claim'],
+        },
+    };
 }
 
 function makeEcosystemResult(intent) {
@@ -879,6 +909,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const truthState = result?.truth_state || mirror.truth_state;
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
+    const answerFirst = showSourceCheck && isAnswerFirstAsk(intent);
 
     if (isLoading) {
         return <LoadingPanel />;
@@ -901,6 +932,23 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                         </div>
                     </div>
                 </div>
+            </div>
+        );
+    }
+
+    if (answerFirst) {
+        return (
+            <div className="grid gap-3">
+                <NeedsSources
+                    truthState={truthState}
+                    intent={intent}
+                    mirror={mirror}
+                    disabled={disabled}
+                    onPrompt={onPrompt}
+                    onSourceChecked={onSourceChecked}
+                    autoCheck
+                    answerFirst
+                />
             </div>
         );
     }
@@ -930,6 +978,8 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     disabled={disabled}
                     onPrompt={onPrompt}
                     onSourceChecked={onSourceChecked}
+                    autoCheck={false}
+                    answerFirst={false}
                 />
             ) : null}
         </div>
@@ -1372,12 +1422,22 @@ export default function HomePage() {
         }
 
         setLastStarterKind('');
+
+        if (isAnswerFirstAsk(cleanIntent)) {
+            const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+            setLastIntent(safeIntent);
+            setResult(makeAnswerFirstSourceResult(safeIntent));
+            trackEvent('answer_first_source', { page: 'home', source, status: 'source_check_first' });
+            return;
+        }
+
         setBusy(true);
         try {
             const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
             const seededIntent = seed || sense.approvedDefault || sense.drift || sense.softPrivate
                 ? buildLocalSenseContext(sense, safeIntent)
                 : safeIntent;
+            const language = languagePayloadFor(cleanIntent, { seed });
             const response = await fetch(GATEWAY, {
                 method: 'POST',
                 headers: {
@@ -1390,6 +1450,7 @@ export default function HomePage() {
                     route: 'reflection',
                     turn: shortStartFollowup ? 2 : 1,
                     mode: shortStartFollowup ? 'short_start_followup' : 'standard',
+                    ...language,
                 }),
             });
             const data = await response.json();
@@ -1414,7 +1475,7 @@ export default function HomePage() {
             }
         } catch {
             trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
-            const fallbackResult = makeOfflineMirrorResult(cleanIntent);
+            const fallbackResult = makeOfflineMirrorResult(cleanIntent, 'network', languagePayloadFor(cleanIntent, { seed }));
             setResult(fallbackResult);
 
             if (shouldOpenWorkSurface(cleanIntent, fallbackResult.mirror)) {
@@ -1530,6 +1591,7 @@ export default function HomePage() {
         trackEvent('sendable_created', { page: 'home', source: eventSource, status: 'started', label: artifactKind });
 
         try {
+            const language = languagePayloadFor(artifactIntent, { seed });
             const response = await fetch(ARTIFACT_GATEWAY, {
                 method: 'POST',
                 headers: {
@@ -1540,6 +1602,7 @@ export default function HomePage() {
                     intent: artifactIntent,
                     artifactKind,
                     boundary: 'personal',
+                    ...language,
                     mirror: {
                         reflection: mirror.reflection || '',
                         question: mirror.question || '',
@@ -1630,6 +1693,12 @@ export default function HomePage() {
                         <h1 className={`mx-auto w-full max-w-[21rem] break-words font-semibold leading-[1.02] tracking-normal text-white sm:max-w-xl ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.7rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
                             What do you want?
                         </h1>
+
+                        {!showMirror ? (
+                            <div className="mt-3 text-sm font-semibold tracking-normal text-cyan-100/80 sm:text-base">
+                                Reflection &gt; Prediction
+                            </div>
+                        ) : null}
 
                         {!showMirror ? (
                             <div className="mx-auto mt-5 grid max-w-xl gap-2 sm:grid-cols-2">

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Check, Download, RotateCcw, Sparkles } from 'lucide-react';
 import MirrorSig from '../components/MirrorSig';
 import { FALLBACK_ARCHETYPES } from '../lib/brainFallback';
+import { currentLanguageSnapshot } from '../lib/language-preference';
 import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
 
 const SCAN_QUESTIONS = [
@@ -99,22 +100,26 @@ function preferenceSummary(item) {
     return answer || 'Use my choices';
 }
 
-function makeStartPrompt(preferences = []) {
+function makeStartPrompt(preferences = [], language = null) {
     const helpWith = preferences.find((item) => item.preference === 'help_with')?.answer || 'something useful';
     const replyStyle = preferences.find((item) => item.preference === 'reply_style')?.answer || 'clear';
     const skip = preferences.find((item) => item.preference === 'skip')?.answer || 'what I have not said';
     const answerStyle = preferences.find((item) => item.preference === 'answer_style')?.answer || 'a next step';
+    const languageLine = language?.label
+        ? `Reply language: ${language.label} when possible.`
+        : 'Reply language: follow my message.';
 
     return [
         `My Active Mirror setup: I am here for ${helpWith}.`,
         `Tone: ${replyStyle}.`,
         `Skip: ${skip}.`,
         `Useful output: ${answerStyle}.`,
+        languageLine,
         'Start by asking what I want.',
     ].join(' ');
 }
 
-function makeMirrorSeed({ mirrorId, setupId, archetype, archetypeName, preferences, startPrompt, createdAt = null }) {
+function makeMirrorSeed({ mirrorId, setupId, archetype, archetypeName, preferences, startPrompt, language, createdAt = null }) {
     return {
         schema: 'active-mirror-id/v1',
         id: mirrorId,
@@ -129,6 +134,11 @@ function makeMirrorSeed({ mirrorId, setupId, archetype, archetypeName, preferenc
             label: archetypeName,
         },
         firstReflection: startPrompt,
+        language: {
+            reply: language?.reply || 'en',
+            label: language?.label || 'English',
+            status: 'experimental',
+        },
         storage: { default: 'browser', portable: true },
     };
 }
@@ -156,7 +166,8 @@ function evaluateScan(answers) {
     const avoid = preferences.map((item) => item.answer).filter(Boolean);
     const mirrorId = makeMirrorId(archetype, answers);
     const setupId = `setup-${Date.now().toString(36)}`;
-    const startPrompt = makeStartPrompt(preferences);
+    const language = currentLanguageSnapshot();
+    const startPrompt = makeStartPrompt(preferences, language);
     const mirrorSeed = makeMirrorSeed({
         mirrorId,
         setupId,
@@ -164,6 +175,7 @@ function evaluateScan(answers) {
         archetypeName: meta.name,
         preferences,
         startPrompt,
+        language,
     });
 
     return {
