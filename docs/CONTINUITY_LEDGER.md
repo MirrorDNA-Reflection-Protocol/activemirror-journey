@@ -293,3 +293,24 @@ Do not turn this into a strategy essay. Keep it operational.
   - This still depends on the source-check route for current web answers.
   - Browser-local continuity is not full cross-device identity sync yet.
 - Next safe move: package this copy and answer-first router into the deploy repo and verify with Playwright.
+
+### 2026-07-05: Shipped Answer-First Harness
+
+- Source commit: `5c9d1a9 Refine Active Mirror first-turn assistant behavior`.
+- Deploy commit: `7c4fcd0 Deploy Active Mirror answer-first harness`.
+- Worker deploy: `active-mirror-site-gateway` version `42b7de4c-269d-4c26-9fd4-2ecd35c06d92`.
+- Pages deploy: GitHub Actions `Deploy site` run `28741543099`, success.
+- Production checks:
+  - `npm run canary:prod`: `15/15` pass.
+  - Live Playwright front-door check passed on `https://activemirror.ai/app/`.
+  - Local Playwright smoke verified "I am looking for tires online" routes directly to source-check first and "Who are you?" routes through the deterministic Active Mirror identity path.
+- Shipped behavior:
+  - Front door: `What do you want?` and `Reflection > Prediction`.
+  - Current/search/shopping asks source-check first instead of showing a reflection-question card.
+  - Identity questions use the signed Active Mirror identity capsule instead of local marketing copy.
+  - The product character is fast, direct, useful, and nonlinear-friendly without user labels or diagnoses.
+- Bad news or limits:
+  - Static site and gateway are deployed; full browser-local continuity is still not cross-device sync.
+  - Source answers depend on the live source-check provider and may return a verification plan when citations are not strong enough.
+  - The app can feel like Codex/ChatGPT in behavior, but it must not get Codex-level shell/keychain/repo access without explicit scoped connectors and approval gates.
+- Next safe move: add browser-local continuity ledger entries for accepted conclusions and user-approved working defaults, then expose them as a small "what you chose to remember" view.
