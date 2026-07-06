@@ -13,9 +13,10 @@ const LANGUAGES = {
 
 const HINGLISH_HINT_RE = /\b(?:mujhe|mujhse|mera|meri|mere|kya|kaise|nahi|nahin|haan|bhai|yaar|karna|bana|banana|chahiye|samajh|samjhao|kaam|shuru|madad)\b/i;
 const SPANISH_HINT_RE = /\b(?:quiero|necesito|ayuda|hacer|decidir|arreglar|entender|pagina|página|mensaje|trabajo|hoy)\b/i;
-const FRENCH_HINT_RE = /\b(?:je veux|j'ai besoin|aide|faire|decider|décider|corriger|comprendre|page|message|travail)\b/i;
+const FRENCH_HINT_RE = /\b(?:je veux|j'ai besoin|aide|faire|decider|décider|corriger|comprendre|travail)\b/i;
 const PORTUGUESE_HINT_RE = /\b(?:quero|preciso|ajuda|fazer|decidir|corrigir|entender|pagina|página|mensagem|trabalho)\b/i;
 const GERMAN_HINT_RE = /\b(?:ich will|ich möchte|brauche|hilfe|machen|entscheiden|reparieren|verstehen|seite|nachricht|arbeit)\b/i;
+const ENGLISH_HINT_RE = /\b(?:i|me|my|we|you|want|need|help|make|write|draft|create|build|fix|understand|decide|compare|latest|current|message|friend|feedback|without|what|how|why|when|where|please)\b/i;
 
 function normalizeCode(value = '') {
     const code = String(value || '').trim().toLowerCase().replace('_', '-');
@@ -36,6 +37,7 @@ export function detectPromptLanguage(text = '') {
     if (FRENCH_HINT_RE.test(value)) return LANGUAGES.fr;
     if (PORTUGUESE_HINT_RE.test(value)) return LANGUAGES.pt;
     if (GERMAN_HINT_RE.test(value)) return LANGUAGES.de;
+    if (ENGLISH_HINT_RE.test(value)) return LANGUAGES.en;
     return null;
 }
 

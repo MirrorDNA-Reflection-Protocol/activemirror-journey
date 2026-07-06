@@ -313,7 +313,11 @@ function starterFollowupReceipt(answer = '') {
 }
 
 function isEcosystemAsk(intent) {
-    return /\b(ecosystem|how does|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(intent);
+    const text = String(intent || '');
+    const directProductQuestion = /\b(what can you do|what does this do|how does this work|how do i use this|what is active mirror)\b/i.test(text);
+    const productSubject = /\b(active mirror|this app|this site|your mirror|your ecosystem)\b/i.test(text);
+    const productTopic = /\b(ecosystem|vault|brainscan|mirrorseed|receipt|privacy|tools|features)\b/i.test(text);
+    return directProductQuestion || (productSubject && productTopic);
 }
 
 function isSourceHeavyAsk(intent) {
@@ -350,6 +354,34 @@ function makeAnswerFirstSourceResult(intent = '') {
             status: 'needs_checking',
             label: 'Needs current sources before answering.',
             signals: ['current_or_external_claim'],
+        },
+    };
+}
+
+function artifactKindName(kind = 'draft') {
+    if (kind === 'image') return 'visual brief';
+    if (kind === 'code') return 'code starter';
+    if (kind === 'doc') return 'document';
+    return 'draft';
+}
+
+function makeArtifactFirstResult(intent = '', kind = 'draft') {
+    const clean = String(intent || 'this').replace(/\s+/g, ' ').trim().slice(0, 160) || 'this';
+    const name = artifactKindName(kind);
+    return {
+        kind: 'artifact_first',
+        ok: true,
+        mirror: {
+            reflection: `Making the ${name} now.`,
+            question: '',
+            move: 'Copy it if it works. Ask for a sharper version if it does not.',
+            receipt: {
+                context_used: `Only your request: "${clean}".`,
+                context_excluded: 'Private notes, saved memory, and personal history stayed out.',
+                memory_decision: 'Nothing saved unless you choose it.',
+                route: 'Creation first because you asked for a usable output.',
+            },
+            visual: { kind: 'none', left: '', right: '', note: '' },
         },
     };
 }
@@ -456,7 +488,8 @@ function detectArtifactKind(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     if (/\b(image|visual|poster|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
     if (/\b(code|app|component|script|function|api|html|css|javascript|react|python)\b/.test(text)) return 'code';
-    if (/\b(document|doc|pdf|memo|brief|email|deck|slide|report|summary|proposal|outline|post|message|website|web page|site|page|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
+    if (/\b(message|email|reply|dm|text|note)\b/.test(text)) return 'draft';
+    if (/\b(document|doc|pdf|memo|brief|deck|slide|report|summary|proposal|outline|post|website|web page|site|page|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
     return 'draft';
 }
 
@@ -916,6 +949,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const isPrivacyHold = result?.kind === 'privacy_hold';
+    const isArtifactFirst = result?.kind === 'artifact_first';
     const isSetupReady = result?.kind === 'setup_ready';
     const truthState = result?.truth_state || mirror.truth_state;
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface', 'saved_context'].includes(turnSource);
@@ -960,6 +994,27 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     autoCheck
                     answerFirst
                 />
+            </div>
+        );
+    }
+
+    if (isArtifactFirst) {
+        return (
+            <div className="grid gap-3">
+                <div className="flex items-start gap-3">
+                    <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-cyan-200/15 bg-white/[0.045] text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.10)] md:grid">
+                        <MirrorLogo />
+                    </div>
+                    <div className="min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-cyan-200/12 bg-cyan-200/[0.045] p-4 shadow-[0_0_42px_rgba(0,0,0,0.16)] backdrop-blur-2xl sm:p-5">
+                        <ReflectionGlow mirror={mirror} />
+                        <p className="mt-4 break-words text-[1rem] font-medium leading-7 text-zinc-100 sm:text-[1.08rem]">
+                            {mirror.reflection}
+                        </p>
+                        <div className="mt-3 break-words text-sm leading-6 text-zinc-400">
+                            {mirror.move}
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -1497,6 +1552,21 @@ export default function HomePage() {
             return;
         }
 
+        if (source === 'typed' && shouldOpenWorkSurface(cleanIntent, {})) {
+            const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+            const artifactKind = detectArtifactKind(safeIntent, {});
+            const artifactResult = makeArtifactFirstResult(safeIntent, artifactKind);
+            setLastIntent(safeIntent);
+            setResult(artifactResult);
+            trackEvent('artifact_first', { page: 'home', source, status: 'artifact_first', label: artifactKind });
+            createArtifact(artifactKind, {
+                mirror: artifactResult.mirror,
+                intent: safeIntent,
+                source: 'artifact_first',
+            });
+            return;
+        }
+
         setBusy(true);
         try {
             const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
@@ -1919,7 +1989,7 @@ export default function HomePage() {
                                     reflect(nextIntent, source);
                                 }}
                             />
-                            {!busy && result && !['privacy_hold', 'setup_ready'].includes(result.kind) ? (
+                            {!busy && result && !['privacy_hold', 'setup_ready', 'artifact_first'].includes(result.kind) ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">
                                         {followUps.map((item) => {
