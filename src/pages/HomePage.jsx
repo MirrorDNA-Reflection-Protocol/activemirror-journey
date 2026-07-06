@@ -322,7 +322,7 @@ function isEcosystemAsk(intent) {
 
 function isSourceHeavyAsk(intent) {
     const text = String(intent || '');
-    const explicitSourceAsk = /\b(latest|current|recent|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing|buy|shopping|shop|compare|options?|deals?|available|availability|near me|tires?|tyres?|retailers?)\b/i.test(text);
+    const explicitSourceAsk = /\b(latest|current|recent|recently|online|web|source|sources|research|competitor|market|verify|check|claim|fact|facts|numbers|price|pricing|paper|study|studies|report|released|launched|who is doing|buy|shopping|shop|compare|options?|deals?|available|availability|near me|tires?|tyres?|retailers?)\b/i.test(text);
     const timedFactAsk = /\b(today|right now|this week|this month|this year|as of)\b/i.test(text)
         && /\b(news|market|price|pricing|competitor|research|source|verif\w*|check|fact|facts|numbers|paper|study|studies|report|released|launched|happened|weather|stock|model|api|buy|shopping|shop|options?|deals?|available|availability|tires?|tyres?|retailers?)\b/i.test(text);
 
@@ -372,7 +372,7 @@ function makeArtifactFirstResult(intent = '', kind = 'draft') {
         kind: 'artifact_first',
         ok: true,
         mirror: {
-            reflection: `Making the ${name} now.`,
+            reflection: `The ${name} opens below.`,
             question: '',
             move: 'Copy it if it works. Ask for a sharper version if it does not.',
             receipt: {
@@ -514,7 +514,7 @@ function shouldOpenWorkSurface(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const directAsk = /\b(make it sendable|something i can send|turn (this|it) into|draft it|write it|build it|create it|give me code|make a doc|make a visual|make an image)\b/i.test(text);
     const asksToMake = /\b(make|create|draft|write|generate|build|prepare|compose|turn)\b/i.test(text);
-    const asksForThing = /\b(message|email|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const asksForThing = /\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
 
     return directAsk || (asksToMake && asksForThing);
 }

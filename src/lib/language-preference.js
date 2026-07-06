@@ -3,7 +3,7 @@ const STORAGE_KEY = 'active_mirror_reply_language_v1';
 const LANGUAGES = {
     en: { code: 'en', label: 'English', instruction: 'Reply in English. Keep it short, plain, and useful.' },
     hi: { code: 'hi', label: 'Hindi', instruction: 'Reply in Hindi using natural Devanagari. Keep it short, plain, and useful.' },
-    hinglish: { code: 'hinglish', label: 'Hinglish', instruction: 'Reply in natural Hinglish. Use simple Roman Hindi plus English where it feels normal. Keep it short and useful.' },
+    hinglish: { code: 'hinglish', label: 'Hinglish', instruction: 'Reply in natural Hinglish. Use simple Roman Hindi plus English where it feels normal. Avoid technical English such as tradeoff, friction, frame, or premise. Keep it short and useful.' },
     es: { code: 'es', label: 'Spanish', instruction: 'Reply in Spanish. Keep it short, plain, and useful.' },
     fr: { code: 'fr', label: 'French', instruction: 'Reply in French. Keep it short, plain, and useful.' },
     ar: { code: 'ar', label: 'Arabic', instruction: 'Reply in Arabic. Keep it short, plain, and useful.' },

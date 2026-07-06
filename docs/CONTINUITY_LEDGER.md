@@ -502,3 +502,41 @@ Do not turn this into a strategy essay. Keep it operational.
   - This is still an anonymized pattern, not a named client case study or a new enterprise backend feature.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: decide whether enterprise needs a short `What buyers get` strip above the request form, or stop here and keep the page from getting heavier.
+
+### 2026-07-06: Live User Prompt QA and Practical Draft Fix
+
+- Changed: added a repeatable live user-prompt QA harness and fixed three user-facing behavior gaps found through it.
+- Source files touched:
+  - `src/pages/HomePage.jsx`
+  - `src/lib/language-preference.js`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `worker/src/mirror-kernel.js`
+  - `scripts/user-prompt-qa.mjs`
+  - `scripts/interaction-smoke.mjs`
+  - `scripts/browser-smoke.mjs`
+  - `package.json`
+  - `public/app/**`
+- Product decisions:
+  - Practical `reply`, `text`, `note`, and `dm` requests should open a usable draft surface immediately.
+  - `recently` is current-info language and should route toward source checking instead of reflective-only output.
+  - Hinglish remains experimental, but the prompt should avoid technical English like `tradeoff`, `friction`, `frame`, and `premise`.
+  - Artifact-first top copy should not stay in a stale `Making...` state after the draft is ready; it now says `The draft opens below.`
+- Deploy status:
+  - Gateway Worker deployed: `active-mirror-site-gateway` version `efa9d25f-c0d1-45db-b788-8f986cf60a6d`.
+  - Static site deployed after final polish: `active-mirror-static-site` version `5605d306-df5a-4345-ac9e-172a7818adf5`.
+- Tools and gates used:
+  - Source: `npm run build:deploy`
+  - Worker: `npm run worker:test`
+  - Deploy repo: `npm run app:package`, `npm run guard:canonical`, `npm run copy:audit`, `npm run build`, `npm run site:worker:dry`, `npm run worker:deploy`, `npm run site:worker:deploy`
+  - Live: `npm run qa:user-prompts` split as `13/13` plus `9/9`, focused post-polish `4/4`, `npm run smoke:interaction`, `npm run smoke:browser`, `npm run canary:prod`, `npm run redteam:prod-smoke`
+- Live prompt QA coverage:
+  - 22 user-style prompts across mobile and desktop: source/search, artifacts, decisions, vague/stuck turns, identity, sycophancy bait, privacy, Hinglish, and enterprise trust.
+  - Fixed failures: stalled practical sister-reply draft, `recently` memory search not source-checking, and false-positive Hinglish flattery test caused by `perfect start`.
+  - Visual QA screenshot: `/tmp/active-mirror-qa/mobile-reply-draft-final-ready.png`
+- Bad news or limits:
+  - Playwright's managed browser cache was missing on this machine; smoke scripts now fall back to installed Chrome only when the managed executable is absent.
+  - Multilingual is still experimental, not a broad quality guarantee.
+  - The prompt QA checks user-visible behavior, not every possible prompt or every browser/device class.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: keep the new QA in the deploy gate and add only one new prompt case when a real user hits a confusing response.
