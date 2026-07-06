@@ -75,6 +75,11 @@ const blockedPublicLanguage = [
     { pattern: /\bgateway\b/i, label: 'public infrastructure language' },
     { pattern: /\bsource-check\b/i, label: 'internal source-check wording' },
     { pattern: /\bmarks? a claim as needing sources\b/i, label: 'internal claim-control wording' },
+    { pattern: /\bLive workflow console\b/i, label: 'enterprise console wording' },
+    { pattern: /\bdemo on\b/i, label: 'duplicate demo status wording' },
+    { pattern: /\bApproval activity\b/i, label: 'enterprise internal activity wording' },
+    { pattern: /\bReview path\b/i, label: 'enterprise internal path wording' },
+    { pattern: /\brequest\s*->\s*boundary\b/i, label: 'raw route path wording' },
 ];
 
 const blockedFrontDoorLanguage = [

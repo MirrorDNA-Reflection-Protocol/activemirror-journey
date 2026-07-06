@@ -341,9 +341,19 @@ function cleanEnterpriseText(value = '') {
 
 function cleanStepKey(value = '') {
     const keys = {
+        start: 'start',
+        intake: 'intake',
+        boundary: 'privacy',
         route: 'path',
+        path: 'plan',
         claim: 'check',
-        receipt: 'record',
+        gate: 'approval',
+        repair: 'rewrite',
+        tools: 'tools',
+        block: 'blocked',
+        handoff: 'handoff',
+        record: 'review',
+        receipt: 'review',
     };
     return keys[value] || value;
 }
@@ -351,13 +361,16 @@ function cleanStepKey(value = '') {
 function formatControlPath(value = '') {
     const labels = {
         'request.read': 'request',
-        'boundary.check': 'boundary',
-        'route.choose': 'choose path',
+        'boundary.check': 'privacy check',
+        'route.choose': 'choose plan',
+        'support.mark': 'mark open points',
         'human.approve': 'approval',
         intake: 'intake',
-        boundary: 'boundary',
+        boundary: 'privacy check',
+        support: 'support check',
         approval: 'approval',
-        receipt: 'record',
+        record: 'review note',
+        receipt: 'review note',
     };
     return String(value || '')
         .split('->')
@@ -542,8 +555,8 @@ function LiveConsole({ run }) {
     const completed = payload?.progress || Math.round(((index + 1) / run.steps.length) * 100);
     const metrics = payload?.metrics || defaultMetrics(run);
     const route = formatControlPath(payload?.route || 'intake -> boundary -> support -> approval -> record');
-    const streamLabel = streamConnected ? 'live demo' : streamSource === 'local' ? 'offline replay' : 'connecting';
-    const streamPill = streamConnected ? 'demo on' : streamError ? 'offline replay' : 'connecting';
+    const streamLabel = streamConnected ? 'sample run' : streamSource === 'local' ? 'sample replay' : 'connecting';
+    const streamPill = streamConnected ? 'Live' : streamError ? 'Replay' : 'Connecting';
 
     return (
         <section className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[#050608]/92 shadow-[0_0_90px_rgba(34,211,238,0.12)] ring-1 ring-white/[0.04]">
@@ -553,7 +566,7 @@ function LiveConsole({ run }) {
                         <TerminalSquare size={18} />
                     </span>
                     <div>
-                        <div className="text-sm font-semibold text-cyan-100">Live workflow console</div>
+                        <div className="text-sm font-semibold text-cyan-100">Workflow preview</div>
                         <div className="text-[11px] text-zinc-500">{streamLabel}</div>
                     </div>
                 </div>
@@ -575,7 +588,7 @@ function LiveConsole({ run }) {
             <div className="grid gap-3 p-4 lg:grid-cols-[1fr_1.08fr]">
                 <div className="grid gap-3">
                     <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Review path</div>
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">How the work moves</div>
                         <div className="font-mono text-[12px] leading-6 text-zinc-300">
                             {route}
                         </div>
@@ -613,12 +626,12 @@ function LiveConsole({ run }) {
 
                 <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Approval activity</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Review steps</div>
                         <div className="font-mono text-[10px] text-zinc-500">step {index + 1}/{run.steps.length}</div>
                     </div>
                     <div className="grid gap-2">
                         {visibleSteps.map(({ step, active: isActive, complete }) => {
-                            const [key, title, body, status] = step;
+                            const [key, title, body, status] = stepTupleFromPayload(null, step);
                             return (
                                 <div
                                     key={key}
@@ -1019,12 +1032,12 @@ export default function Enterprise() {
                         <div>
                             <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Pick one workflow.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                                Use the public demo to see the controls. A private sprint connects the same pattern to your real tools, files, approval points, and support needs.
+                                Try a sample flow first. A private sprint connects the same pattern to your real tools, files, approval points, and support needs.
                             </p>
                         </div>
                         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.07] px-3 py-1.5 text-xs font-semibold text-cyan-200">
                             <Play size={14} />
-                            Live demo
+                            Sample flows
                         </div>
                     </div>
                     <div className="grid gap-3 md:grid-cols-3">

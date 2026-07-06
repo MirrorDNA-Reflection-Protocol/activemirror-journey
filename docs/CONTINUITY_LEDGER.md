@@ -440,3 +440,34 @@ Do not turn this into a strategy essay. Keep it operational.
   - This pass improves tone and deterministic fallbacks; it does not add cross-device memory or a new model provider.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: run a small human-style prompt review on artifact creation and source-check turns, then adjust only if the user gets blocked when they expected a direct answer or draft.
+
+### 2026-07-06: Enterprise Workflow Copy Polish
+
+- Changed: cleaned the enterprise route so the machinery reads like a workflow preview instead of an internal demo console.
+- Source files touched:
+  - `src/pages/Enterprise.jsx`
+  - `scripts/public_language_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `public/app/**`
+  - `scripts/browser-smoke.mjs`
+- Product decisions:
+  - Use `Workflow preview`, `Sample flows`, `How the work moves`, and `Review steps`.
+  - Block old visible phrases such as `Live workflow console`, `demo on`, `Approval activity`, `Review path`, and `request -> boundary`.
+  - Keep the full machinery on the enterprise page, not the consumer first screen.
+- Deploy status:
+  - Static site deployed: `active-mirror-static-site` version `b99516d9-c353-48e6-948e-048f4816d67f`.
+  - No Worker deploy was needed; gateway code did not change in this slice.
+- Tools and gates used:
+  - Source: `npm run guard:language`, `npm run build:deploy`
+  - Worker: `npm run worker:test`, `npm run quality:conversation`
+  - Deploy repo: `npm run app:package`, `npm run guard:canonical`, `npm run copy:audit`, `npm run build`, `npm run site:worker:dry`
+  - Live: `npm run smoke:interaction`, `ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`, `npm run canary:prod`
+- Public routes checked:
+  - `https://activemirror.ai/app/enterprise/`
+  - mobile and desktop smoke routes for `/app/`, `/app/id/`, `/app/device/`, `/app/enterprise/`, `/app/about/`, `/app/consulting/`, `/app/research/`, `/app/privacy/`, and `/app/terms/`
+- Bad news or limits:
+  - This is copy/presentation polish only; it does not add new enterprise backend functionality.
+  - Product source and deploy bridge are still two repos.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: review the live enterprise page as a buyer, then decide whether to add one anonymized case-study proof block or keep the page purely workflow-led.
