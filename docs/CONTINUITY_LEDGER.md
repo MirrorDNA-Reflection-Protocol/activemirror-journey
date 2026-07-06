@@ -471,3 +471,34 @@ Do not turn this into a strategy essay. Keep it operational.
   - Product source and deploy bridge are still two repos.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: review the live enterprise page as a buyer, then decide whether to add one anonymized case-study proof block or keep the page purely workflow-led.
+
+### 2026-07-06: Anonymized Enterprise Case Study Strengthened
+
+- Changed: upgraded the enterprise case-study block from a thin before/after card set into a buyer-readable field story with withheld names/data, what changed in practice, and a repeatable workflow outcome.
+- Source files touched:
+  - `src/pages/Enterprise.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `public/app/**`
+  - `scripts/browser-smoke.mjs`
+- Product decisions:
+  - Keep the proof anonymized: `Names and data withheld`.
+  - Use practical language: selected context, weak lines surfaced, human review first, repeatable path.
+  - Do not name clients, use logo-slide language, or claim a broad platform rollout.
+- Deploy status:
+  - Static site deployed: `active-mirror-static-site` version `c08efb02-ca45-4c49-9acc-dbe711e54dd1`.
+  - No Worker deploy was needed; gateway code did not change in this slice.
+- Tools and gates used:
+  - Source: `npm run guard:language`, `npm run guard:continuity`, `npm run build:deploy`
+  - Deploy repo: `npm run app:package`, `npm run guard:canonical`, `npm run copy:audit`, `npm run build`, `npm run site:worker:dry`
+  - Live: `npm run smoke:interaction`, `ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`, `npm run canary:prod`
+  - Screenshot QA: `/tmp/active-mirror-case-study-20260706/desktop-case-section.png`, `/tmp/active-mirror-case-study-20260706/mobile-case-section.png`, `/tmp/active-mirror-case-study-20260706/mobile-case-proof-grid.png`
+- Public routes checked:
+  - `https://activemirror.ai/app/enterprise/`
+  - mobile and desktop smoke routes for `/app/`, `/app/id/`, `/app/device/`, `/app/enterprise/`, `/app/about/`, `/app/consulting/`, `/app/research/`, `/app/privacy/`, and `/app/terms/`
+- Bad news or limits:
+  - The first build failed because `not every note` was an absolute public claim; it was softened to `with surrounding notes kept out unless needed`.
+  - Full-page screenshot capture returned black images, so targeted section screenshots were used for visual QA.
+  - This is still an anonymized pattern, not a named client case study or a new enterprise backend feature.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: decide whether enterprise needs a short `What buyers get` strip above the request form, or stop here and keep the page from getting heavier.

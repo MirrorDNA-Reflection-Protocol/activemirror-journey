@@ -137,9 +137,16 @@ const offerLadder = [
 ];
 
 const proofStory = [
-    ['Before', 'A research workflow had useful AI drafts, urgent data fires, and no clear line between private context, weak lines, and review-ready output.'],
-    ['After', 'The work became a safer research workflow: selected material in, weak spots marked, human review before sharing.'],
-    ['Result', 'Less rework, fewer blind spots, and a repeatable path for research, briefs, and executive review.'],
+    ['Before', 'Useful AI drafts were mixed with fast-moving facts, private notes, and unclear handoff rules.'],
+    ['Shift', 'The workflow separated selected material, open questions, weak spots, and the owner review step.'],
+    ['After', 'The team had a repeatable path for briefs, updates, and executive review without sending everything through AI.'],
+];
+
+const fieldProof = [
+    ['Selected context only', 'The flow started from chosen material, with surrounding notes kept out unless needed.'],
+    ['Weak lines surfaced', 'Items that needed better support stayed visible instead of slipping into the draft.'],
+    ['Human review stayed first', 'Sharing waited until the owner had a clean version and open questions.'],
+    ['Repeatable path', 'The same shape could be reused for the next brief instead of rebuilt from scratch.'],
 ];
 
 const whyUs = [
@@ -274,11 +281,18 @@ function enterpriseBriefMarkdown() {
         '',
         '## Case study pattern',
         '',
-        'Composite example. No client data.',
+        'Composite example. Names, data, and private context withheld.',
         '',
-        'Before: a research workflow had useful AI drafts, urgent data fires, and no clear line between private context, weak lines, and review-ready output.',
-        'After: the work became a safer research workflow: selected material in, weak spots marked, human review before sharing.',
-        'Result: less rework and a repeatable path for research, briefs, and executive review.',
+        'Before: useful AI drafts were mixed with fast-moving facts, private notes, and unclear handoff rules.',
+        'Shift: the workflow separated selected material, open questions, weak spots, and the owner review step.',
+        'After: the team had a repeatable path for briefs, updates, and executive review without sending everything through AI.',
+        '',
+        'What changed:',
+        '',
+        '- Selected context only',
+        '- Weak lines surfaced',
+        '- Human review stayed first',
+        '- Repeatable path',
         '',
         '## What not to send first',
         '',
@@ -1008,22 +1022,44 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.065] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
-                    <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Anonymized case study.</h2>
-                            <p className="mt-2 max-w-xl text-sm leading-6 text-emerald-50/75">
-                                Composite example. No client data.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="grid gap-3 md:grid-cols-3">
-                        {proofStory.map(([title, text]) => (
-                            <div key={title} className="rounded-2xl border border-emerald-300/15 bg-black/25 p-4">
-                                <div className="text-sm font-semibold text-emerald-50">{title}</div>
-                                <p className="mt-2 text-sm leading-6 text-zinc-300">{text}</p>
+                <section className="mt-6 overflow-hidden rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.065] ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                    <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
+                        <div className="border-b border-emerald-300/10 p-5 sm:p-6 lg:border-b-0 lg:border-r">
+                            <div className="mb-4 inline-flex rounded-full border border-emerald-300/20 bg-black/25 px-3 py-1 text-xs font-semibold text-emerald-100">
+                                Names and data withheld
                             </div>
-                        ))}
+                            <h2 className="max-w-lg text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Anonymized case study.</h2>
+                            <p className="mt-3 max-w-xl text-sm leading-6 text-emerald-50/75">
+                                No logo slide. No private details. Just the pattern: messy research work became a controlled review flow.
+                            </p>
+                            <div className="mt-5 grid gap-3">
+                                {proofStory.map(([title, text]) => (
+                                    <div key={title} className="rounded-2xl border border-emerald-300/15 bg-black/25 p-4">
+                                        <div className="text-sm font-semibold text-emerald-50">{title}</div>
+                                        <p className="mt-2 text-sm leading-6 text-zinc-300">{text}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="p-5 sm:p-6">
+                            <div className="mb-4 text-sm font-semibold text-white">What changed in practice</div>
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                {fieldProof.map(([title, text]) => (
+                                    <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                        <div className="flex items-start gap-3">
+                                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-200" />
+                                            <div>
+                                                <div className="text-sm font-semibold text-white">{title}</div>
+                                                <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-4 rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.06] p-4 text-sm leading-6 text-cyan-50/80">
+                                The point is not a bigger AI rollout. The point is one workflow your team can trust enough to use.
+                            </div>
+                        </div>
                     </div>
                 </section>
 
