@@ -11,6 +11,7 @@
     "src/pages/HomePage.jsx",
     "src/pages/Start.jsx",
     "src/pages/DeviceExperience.jsx",
+    "src/pages/About.jsx",
     "src/pages/Enterprise.jsx",
     "src/pages/Research.jsx",
     "src/pages/FeedbackDashboard.jsx",
@@ -57,7 +58,7 @@
   "claim_bindings": [
     {
       "claim_id": "active_routes_scope",
-      "pattern": "\\b(?:route|routes|stale route|redirect|BrowserRouter|Navigate|/mirror|/start|/privacy|/terms|/enterprise|/research|/feedback|/device)\\b",
+      "pattern": "\\b(?:route|routes|stale route|redirect|BrowserRouter|Navigate|/mirror|/start|/about|/privacy|/terms|/enterprise|/research|/feedback|/device)\\b",
       "verification_state": "source_backed",
       "source_refs": [
         "src/App.jsx",
@@ -84,6 +85,7 @@
       "source_refs": [
         "src/pages/Privacy.jsx",
         "src/pages/Terms.jsx",
+        "src/pages/About.jsx",
         "src/pages/HomePage.jsx",
         "src/pages/DeviceExperience.jsx",
         "src/lib/privacy-events.js",
@@ -97,6 +99,7 @@
       "source_refs": [
         "src/pages/Privacy.jsx",
         "src/pages/Terms.jsx",
+        "src/pages/About.jsx",
         "src/pages/HomePage.jsx",
         "src/pages/DeviceExperience.jsx",
         "src/lib/local-mirror-sense.js",
@@ -139,6 +142,7 @@
       "verification_state": "source_backed",
       "source_refs": [
         "src/pages/HomePage.jsx",
+        "src/pages/About.jsx",
         "scripts/front_door_guard.mjs"
       ]
     },

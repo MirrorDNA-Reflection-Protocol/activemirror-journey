@@ -781,7 +781,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
     }
 
     return (
-        <form id="proof-sprint" onSubmit={submit} className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.07] p-5 text-left ring-1 ring-white/[0.04] sm:p-6">
+        <form id="workflow-sprint" onSubmit={submit} className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.07] p-5 text-left ring-1 ring-white/[0.04] sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-black/25 px-3 py-1 text-xs font-semibold text-emerald-100">
@@ -910,7 +910,7 @@ export default function Enterprise() {
                         </p>
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
-                                href="#proof-sprint"
+                                href="#workflow-sprint"
                                 className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 text-sm font-semibold text-black shadow-[0_0_34px_rgba(16,185,129,0.24)] transition hover:scale-[1.01]"
                             >
                                 Start workflow sprint

@@ -8,6 +8,7 @@ const scanFiles = [
     'src/pages/HomePage.jsx',
     'src/pages/Start.jsx',
     'src/pages/DeviceExperience.jsx',
+    'src/pages/About.jsx',
     'src/pages/Enterprise.jsx',
     'src/pages/Research.jsx',
     'src/pages/FeedbackDashboard.jsx',
@@ -54,6 +55,7 @@ const blockedPublicLanguage = [
     { pattern: /\bhash chain\b/i, label: 'enterprise proof machinery as public copy' },
     { pattern: /\bSWFI\b/i, label: 'client name leakage' },
     { pattern: /\bpublished protocols?\b/i, label: 'proof-room language before user value' },
+    { pattern: /\bproof sprint\b|\bproof-sprint\b/i, label: 'proof-room language before user value' },
     { pattern: /\bsource-backed\b/i, label: 'proof-room language before user value' },
     { pattern: /\bsource backed\b/i, label: 'proof-room language before user value' },
     { pattern: /\bproduct claims?\b/i, label: 'internal product-claim language' },
@@ -107,6 +109,7 @@ for (const file of scanFiles) {
     const lines = text.split(/\r?\n/);
     lines.forEach((line, index) => {
         if (!hasLikelyVisibleText(line)) return;
+        if (/PROOF_SPRINT_URL|\/v1\/mirror\/proof-sprint/.test(line)) return;
         for (const rule of blockedPublicLanguage) {
             if (rule.pattern.test(line)) {
                 failures.push(`${file}:${index + 1} ${rule.label}: ${line.trim()}`);

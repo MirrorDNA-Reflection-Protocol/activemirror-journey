@@ -1965,6 +1965,7 @@ export default function HomePage() {
 
             <div className="relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs text-zinc-500 sm:justify-end">
                 <div className="flex flex-wrap gap-3">
+                    <Link to="/about" className="transition hover:text-white">About</Link>
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
                 </div>

@@ -5,6 +5,7 @@ import ScrollToTop from './components/ScrollToTop';
 
 import HomePage from './pages/HomePage';
 
+const About = lazy(() => import('./pages/About'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -15,7 +16,6 @@ const Research = lazy(() => import('./pages/Research'));
 const FeedbackDashboard = lazy(() => import('./pages/FeedbackDashboard'));
 
 const staleRoutes = [
-    '/about',
     '/about/*',
     '/brief',
     '/builds',
@@ -65,6 +65,7 @@ export default function App() {
                         <Route path="/device" element={<DeviceExperience />} />
                         <Route path="/enterprise" element={<Enterprise />} />
                         <Route path="/consulting" element={<Enterprise />} />
+                        <Route path="/about" element={<About />} />
                         <Route path="/research" element={<Research />} />
                         <Route path="/feedback" element={<FeedbackDashboard />} />
                         <Route path="/mirror" element={<Navigate to="/" replace />} />
