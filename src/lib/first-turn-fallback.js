@@ -78,9 +78,9 @@ const MIRRORS = {
         move: 'Name that one claim, then check one current source before using it.',
     },
     private_output: {
-        reflection: 'I can help with the useful part. Leave the real secret out.',
+        reflection: 'Keep the private bits out. I can still help make the useful version.',
         question: 'What do you want me to make, decide, or fix?',
-        move: 'Send it again with [secret] or [detail] in place of the real value.',
+        move: 'Replace real names, keys, or account details with [name], [secret], or [detail], then send the safe version.',
     },
     needs_detail: {
         reflection: 'Give me one direction and I can start.',
@@ -239,7 +239,7 @@ export function makeOfflineMirrorResult(intent = '', reason = 'network', languag
             : {
                 status: 'reflective',
                 checked: false,
-                label: 'Reflective, not source-checked.',
+                label: 'Reflective, not checked with sources.',
                 reason: 'No current or external factual claim was detected.',
                 signals: [],
             },

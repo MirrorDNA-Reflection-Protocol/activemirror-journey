@@ -12,7 +12,7 @@ const sections = [
     {
         icon: Database,
         title: 'What you send',
-        body: 'When you press send, the sentence you submit, the selected boundary, and a short session id are sent to the Active Mirror gateway so a governed response can be generated.',
+        body: 'When you press send, the sentence you submit, the selected boundary, and a short session id are sent to the Active Mirror gateway so a response can be created.',
     },
     {
         icon: EyeOff,
@@ -26,8 +26,8 @@ const sections = [
     },
     {
         icon: Mail,
-        title: 'Proof sprint requests',
-        body: 'The enterprise request form creates a metadata-only receipt from your work email domain, selected workflow, timeline, source, consent, and request id. Workflow details stay out until scoped intake.',
+        title: 'Workflow sprint requests',
+        body: 'The enterprise request form stores only the basics needed to respond: work email domain, selected workflow, timeline, consent, and request id. Workflow details stay out until scoped intake.',
     },
     {
         icon: Globe2,
@@ -96,7 +96,7 @@ export default function Privacy() {
                         <p>Reflection requests are processed by Active Mirror and the secure services needed to create the answer. We do not store full prompts or generated reflections as product analytics.</p>
                         <p>AI, search, hosting, and infrastructure services may process request content and limited operational data to deliver, debug, and protect the service.</p>
                         <p>Rate limiting uses session and network metadata to prevent abuse and control cost. The public feedback dashboard reads only your current browser session.</p>
-                        <p>Contact messages and proof-sprint requests are kept as long as needed to respond, manage the relationship, and maintain ordinary business records.</p>
+                        <p>Contact messages and workflow-sprint requests are kept as long as needed to respond, manage the relationship, and maintain ordinary business records.</p>
                     </div>
                 </section>
 

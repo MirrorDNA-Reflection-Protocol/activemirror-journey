@@ -31,28 +31,28 @@ const workflowRuns = [
         id: 'research',
         label: 'Research brief',
         request: 'Turn a source pile into a board-ready brief.',
-        output: 'Brief outline, missing-support list, approval-ready next move.',
+        output: 'Brief outline, open questions, and a next move for review.',
         risk: 'medium',
         steps: [
             ['intake', 'workflow received', 'Only the selected files and brief are in scope.', 'ok'],
             ['boundary', 'private context held', 'Unneeded names and side notes stay out.', 'ok'],
-            ['path', 'research path selected', 'Source-heavy claims require support status.', 'live'],
-            ['check', 'unsupported claims marked', 'Two claims need stronger support before use.', 'warn'],
-            ['record', 'review pack ready', 'Used, excluded, checked, and open items recorded.', 'ok'],
+            ['path', 'research path selected', 'Facts that affect decisions are marked for checking.', 'live'],
+            ['check', 'open items marked', 'Two lines need better support before use.', 'warn'],
+            ['record', 'review notes ready', 'Used, excluded, checked, and open items recorded.', 'ok'],
         ],
     },
     {
         id: 'approval',
         label: 'Approval memo',
         request: 'Review an AI-generated memo before it goes to leadership.',
-        output: 'Risk notes, edits, approval state, and a clean decision trail.',
+        output: 'Risk notes, edits, approval state, and a clean handoff.',
         risk: 'high',
         steps: [
             ['intake', 'memo opened', 'The draft is readable, but not trusted yet.', 'ok'],
-            ['check', 'figures inspected', 'Numbers without source records are held.', 'block'],
+            ['check', 'figures inspected', 'Numbers without support stay in review.', 'block'],
             ['gate', 'approval required', 'External sharing is paused until a human approves.', 'warn'],
-            ['repair', 'safer version produced', 'Unsupported claims become questions or caveats.', 'live'],
-            ['record', 'approval trail saved', 'Reviewer, path, changes, and limits recorded.', 'ok'],
+            ['repair', 'safer version produced', 'Weak lines become questions or caveats.', 'live'],
+            ['record', 'review trail saved', 'Reviewer, path, changes, and limits recorded.', 'ok'],
         ],
     },
     {
@@ -105,7 +105,7 @@ const consultingServices = [
     ['AI workflow discovery', 'Find the first workflow worth proving, then define the output, owner, risk, and approval path.'],
     ['Private deployment design', 'Choose the right shape: browser-first, self-hosted, local machine, private server, or managed access.'],
     ['Tool and file integration', 'Connect the files, apps, and actions the workflow actually needs, with clear limits.'],
-    ['AI governance', 'Use the right AI help while keeping permission, review, and support rules outside the answer.'],
+    ['Operating rules', 'Use the right AI help while keeping permission, review, and support rules outside the answer.'],
     ['Testing and review', 'Test hallucination, privacy leakage, weak support, and unsafe action paths before rollout.'],
     ['Team enablement', 'Create the operating playbook, first workflows, and review habits your team can keep using.'],
 ];
@@ -127,7 +127,7 @@ const offerLadder = [
     {
         title: 'Private AI Deployment',
         time: 'When the sprint works',
-        text: 'A governed AI layer for selected tools, files, users, and approvals.',
+        text: 'A controlled AI layer for selected tools, files, users, and approvals.',
     },
     {
         title: 'Ongoing Governance',
@@ -137,9 +137,9 @@ const offerLadder = [
 ];
 
 const proofStory = [
-    ['Before', 'An institutional research workflow had useful AI drafts, urgent data fires, and no clear line between private context, unsupported claims, and approval-ready output.'],
-    ['After', 'The work became a governed research platform: selected sources in, weak claims marked, human approval before sharing.'],
-    ['Result', 'Less rework, fewer blind claims, and a repeatable path for research, briefs, and executive review.'],
+    ['Before', 'A research workflow had useful AI drafts, urgent data fires, and no clear line between private context, weak lines, and review-ready output.'],
+    ['After', 'The work became a safer research workflow: selected material in, weak spots marked, human review before sharing.'],
+    ['Result', 'Less rework, fewer blind spots, and a repeatable path for research, briefs, and executive review.'],
 ];
 
 const whyUs = [
@@ -176,7 +176,7 @@ const architectureDiagrams = [
 
 const views = [
     ['Control dashboard', 'live work state, files, checks, tools, approvals'],
-    ['Review pack', 'support trail for serious outputs and claims'],
+    ['Review pack', 'support trail for serious outputs'],
     ['Consent check', 'approval before memory, sharing, or side effects'],
     ['Private deployment', 'browser-first, self-hosted, or managed access'],
 ];
@@ -214,7 +214,7 @@ const machineryPanels = [
         icon: KeyRound,
         title: 'Support',
         value: 'marked',
-        note: 'Unsupported claims are visible.',
+        note: 'Weak spots are visible.',
         tone: 'cyan',
     },
     {
@@ -254,7 +254,7 @@ function enterpriseBriefMarkdown() {
         '- AI workflow discovery',
         '- Private deployment design',
         '- Tool and file integration',
-        '- AI governance',
+        '- Operating rules',
         '- Testing and review',
         '- Team enablement',
         '',
@@ -276,8 +276,8 @@ function enterpriseBriefMarkdown() {
         '',
         'Composite example. No client data.',
         '',
-        'Before: an institutional research workflow had useful AI drafts, urgent data fires, and no clear line between private context, unsupported claims, and approval-ready output.',
-        'After: the work became a governed research platform: selected sources in, weak claims marked, human approval before sharing.',
+        'Before: a research workflow had useful AI drafts, urgent data fires, and no clear line between private context, weak lines, and review-ready output.',
+        'After: the work became a safer research workflow: selected material in, weak spots marked, human review before sharing.',
         'Result: less rework and a repeatable path for research, briefs, and executive review.',
         '',
         '## What not to send first',
@@ -942,7 +942,7 @@ export default function Enterprise() {
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
                         <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Private AI deployment.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            Active Mirror is the workflow and governance layer around your AI tools: what AI may read, what it may do next, who approves it, and what gets recorded before rollout.
+                            Active Mirror wraps your AI tools with practical controls: what AI may read, what it may do next, who approves it, and what gets recorded before rollout.
                         </p>
                     </div>
                     <div className="rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.06] p-6 ring-1 ring-white/[0.04]">

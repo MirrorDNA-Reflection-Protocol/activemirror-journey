@@ -59,3 +59,7 @@ active-mirror-site
 - Enterprise proof language does not belong on the consumer first screen.
 - AMOS proof-layer architecture is intake material unless a specific runtime
   contract and guard prove it is implemented in the consumer app.
+- Decision Reason Mapper, Context Calculus, Coordination Layer, Memory Skill
+  Layer, Evolution Control Plane, and Synthetic Continuity are AMOS intake
+  modules unless a specific consumer feature, consent control, and guard prove
+  they are implemented in the public app.

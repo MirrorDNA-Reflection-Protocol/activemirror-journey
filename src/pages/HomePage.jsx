@@ -337,7 +337,7 @@ function makeAnswerFirstSourceResult(intent = '') {
         mirror: {
             reflection: 'Checking current sources before answering.',
             question: clean,
-            move: 'Use the source-backed answer, then decide.',
+            move: 'Use the current answer, then decide.',
             receipt: {
                 context_used: `Only your request: "${clean}".`,
                 context_excluded: 'Private notes, saved memory, and personal history stayed out.',
@@ -976,6 +976,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                         {mirror.reflection}
                     </p>
                     <div className="mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86">
+                        <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-violet-100/55">Focus</div>
                         {mirror.question}
                     </div>
                     <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold && !isSetupReady} allowCopy={!isSetupReady} />

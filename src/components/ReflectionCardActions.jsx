@@ -7,10 +7,10 @@ function reflectionText(mirror = {}) {
     return [
         'Active Mirror',
         '',
-        'Question:',
+        'Focus:',
         mirror.question || 'What is the useful question here?',
         '',
-        'Move:',
+        'Try next:',
         mirror.move || 'Take the smallest concrete next step.',
         '',
         'Private by default. Nothing saved unless accepted.',
@@ -62,8 +62,8 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
             <div className={`max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.045] px-4 py-3 ${className}`}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <div className="text-sm font-semibold text-zinc-200">Take this with you.</div>
-                        <div className="mt-1 text-xs leading-5 text-zinc-500">Share the next move, not your private prompt.</div>
+                        <div className="text-sm font-semibold text-zinc-200">Keep the useful part.</div>
+                        <div className="mt-1 text-xs leading-5 text-zinc-500">Copy the next step without the private prompt.</div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <button
@@ -110,7 +110,7 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                             </div>
                             <div>
                                 <div className="text-[20px] font-semibold tracking-[-0.02em]">Active Mirror</div>
-                                <div className="text-[13px] text-zinc-500">one clear move</div>
+                                <div className="text-[13px] text-zinc-500">useful next step</div>
                             </div>
                         </div>
                         <div className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-4 py-2 text-[13px] font-semibold text-emerald-100">
@@ -119,14 +119,14 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                     </div>
 
                     <div className="rounded-[28px] border border-purple-300/20 bg-purple-300/[0.08] p-6">
-                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">Question</div>
+                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">Focus</div>
                         <div className="text-[30px] font-semibold leading-[1.16] tracking-[-0.04em] text-white">
                             {mirror.question || 'What is the useful question here?'}
                         </div>
                     </div>
 
                     <div className="mt-5 rounded-[28px] border border-emerald-300/15 bg-emerald-300/[0.08] p-6">
-                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">Move</div>
+                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">Try next</div>
                         <div className="text-[22px] leading-[1.45] text-zinc-100">
                             {mirror.move || 'Take the smallest concrete next step.'}
                         </div>

@@ -29,6 +29,11 @@ context_pack:
     - docs/dossiers/model-challenge-contract.md
     - docs/dossiers/offline-online-owned-ai-position.md
     - docs/dossiers/amos-proof-layer-intake.md
+    - docs/dossiers/decision-reason-mapper.md
+    - docs/dossiers/evolution-control-plane.md
+    - docs/dossiers/context-coordination-layer.md
+    - docs/dossiers/memory-skill-layer.md
+    - docs/dossiers/synthetic-continuity-boundary.md
     - docs/ACTIVE_MIRROR_ID_FLOW_2026-06-30.md
     - scripts/dossier_guard.mjs
     - scripts/sync_wiki_to_obsidian.mjs

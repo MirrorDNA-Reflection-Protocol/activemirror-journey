@@ -9,6 +9,7 @@ Use this wiki when a thread, agent, or contributor needs to know what Active Mir
 - [Current Product Map](./current-product-map.md)
 - [User Flow](./user-flow.md)
 - [Language Guide](./language-guide.md)
+- [Research References](./research-references.md)
 - [Build And Deploy Runbook](./build-and-deploy.md)
 - [Open Questions](./open-questions.md)
 - [Build Dossiers](../dossiers/README.md)

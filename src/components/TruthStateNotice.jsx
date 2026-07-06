@@ -7,7 +7,7 @@ const SOURCE_CHECK_ENDPOINT = 'https://gateway.activemirror.ai/v1/mirror/source-
 
 const VERDICT_COPY = {
     supported: {
-        title: 'Source checked',
+        title: 'Checked with sources',
         shell: 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-50',
         icon: 'text-emerald-200',
         muted: 'text-emerald-100/80',
@@ -22,7 +22,7 @@ const VERDICT_COPY = {
     },
     not_enough: {
         title: 'Needs stronger support',
-        helper: 'Found links, but not enough reliable support to trust the claim yet.',
+        helper: 'Found links, but not enough reliable support to trust the line yet.',
         shell: 'border-zinc-300/15 bg-white/[0.055] text-zinc-100',
         icon: 'text-zinc-300',
         muted: 'text-zinc-400',
@@ -31,12 +31,12 @@ const VERDICT_COPY = {
 };
 
 export function sourceCheckLabel(truthState) {
-    return truthState?.label || 'Reflective, not source-checked.';
+    return truthState?.label || 'Reflective, not checked with sources.';
 }
 
 function makeNarrowClaimPrompt(intent, mirror = {}, research = {}) {
     return [
-        'Narrow this into one specific claim we can check before using it.',
+        'Narrow this into one specific line we can check before using it.',
         `Original ask: ${intent || 'the current ask'}`,
         `Current question: ${mirror.question || intent || 'What needs to be checked?'}`,
         research.answer ? `Source result: ${research.answer}` : '',
@@ -295,7 +295,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
             {sourceCheck?.truth_state?.status === 'checked' || plan ? (
                 <details className="group mt-3 rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-2">
                     <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-300">
-                        {plan ? 'Last check plan' : 'Last source check'}
+                        {plan ? 'Last check plan' : 'Last check'}
                         <ChevronDown className="float-right mt-0.5 h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
                     </summary>
                     <div className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-zinc-500">
@@ -303,7 +303,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
                             {plan
                                 ? 'Needs sources'
                                 : sourceCheck.research?.verdict === 'supported'
-                                ? 'Source checked'
+                                ? 'Checked with sources'
                                 : sourceCheck.research?.verdict === 'mixed'
                                     ? 'Sources mixed'
                                     : 'Needs stronger support'}

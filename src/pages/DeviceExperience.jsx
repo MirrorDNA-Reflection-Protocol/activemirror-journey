@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUp, BatteryCharging, BookmarkPlus, Camera, ChevronDown, FileText, Keyboard, Lock, Monitor, ShieldCheck, Smartphone, Sparkles, Tablet, Trash2, Wifi } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
 import MirrorFeedback from '../components/MirrorFeedback';
-import ReflectionCardActions from '../components/ReflectionCardActions';
 import { getActiveMirrorDefault, getArchetype, saveMirrorDefault } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 
@@ -76,7 +75,7 @@ const PROFILES = {
         strengths: [
             { icon: FileText, title: 'Files beside chat', text: 'Drop local context and decide what needs inspection first.' },
             { icon: Keyboard, title: 'Longer work', text: 'Use the full keyboard for briefs, research plans, and launch copy.' },
-            { icon: ShieldCheck, title: 'Receipts stay quiet', text: 'Audit what mattered without turning the page into homework.' },
+            { icon: ShieldCheck, title: 'Details stay tucked away', text: 'Open the trail only when you want to inspect what mattered.' },
         ],
     },
 };
@@ -184,12 +183,12 @@ function phoneBlocked(error) {
     }
 
     return {
-        reflection: 'Use placeholders for anything private. I can still help with the useful part.',
+        reflection: 'Keep the private bits out. I can still help make the useful version.',
         question: 'What do you want help making, deciding, or sending?',
-        move: 'Swap private details for [name] or [detail], then send the useful version.',
+        move: 'Swap real names, keys, or account details for [name], [secret], or [detail], then send the safe version.',
         receipt: {
             context_used: 'The current message only.',
-            context_excluded: 'Potentially private details were kept out of the live route.',
+            context_excluded: 'Private details stayed out.',
             memory_decision: 'Nothing saved.',
         },
     };
@@ -203,13 +202,13 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
             </div>
             {mirror.question ? (
                 <div className="rounded-[1.35rem] border border-purple-300/20 bg-purple-300/[0.08] px-4 py-3">
-                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-purple-200/70">Question</div>
+                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-purple-200/70">Focus</div>
                     <div className="text-sm font-semibold leading-6 text-white">{mirror.question}</div>
                 </div>
             ) : null}
             {mirror.move ? (
                 <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.08] px-4 py-3">
-                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-emerald-200/75">One move</div>
+                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-emerald-200/75">Try next</div>
                     <div className="text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             ) : null}
@@ -226,8 +225,6 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
             </details>
             {showSendable ? (
                 <>
-                    <MirrorFeedback page="device" surface="phone_chat" turn={turn} className="max-w-none rounded-[1.35rem]" />
-                    <ReflectionCardActions mirror={mirror} surface="device" className="max-w-none rounded-[1.35rem]" />
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
@@ -246,6 +243,10 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
                             {remembered ? 'Default saved' : 'Use as default'}
                         </button>
                     </div>
+                    <details className="rounded-[1.1rem] border border-white/10 bg-white/[0.025] px-3 py-2">
+                        <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-500">Tune this</summary>
+                        <MirrorFeedback page="device" surface="phone_chat" turn={turn} className="mt-2 max-w-none rounded-[1.1rem]" />
+                    </details>
                 </>
             ) : null}
         </div>

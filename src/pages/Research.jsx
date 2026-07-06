@@ -4,28 +4,28 @@ import { Link } from 'react-router-dom';
 const papers = [
     {
         title: 'SCD Protocol v3.1',
-        detail: 'A published protocol for making AI-assisted work inspectable, bounded, and repeatable.',
+        detail: 'A public paper on making AI-assisted work easier to inspect and repeat.',
         href: 'https://doi.org/10.5281/zenodo.17787618',
         label: 'Open DOI',
     },
     {
         title: 'SCD Protocol v4',
-        detail: 'A later package for protocol evaluation, deployment evidence, and governance-oriented AI workflows.',
+        detail: 'A follow-up research package on evaluation, field lessons, and safer AI workflows.',
         href: 'https://doi.org/10.5281/zenodo.18910362',
         label: 'Open DOI',
     },
     {
         title: 'Source repository',
-        detail: 'Public source trail for identity, continuity, and reflective AI research around Active Mirror.',
+        detail: 'Open source material for identity, continuity, and reflective AI research around Active Mirror.',
         href: 'https://github.com/MirrorDNA-Reflection-Protocol/MirrorDNA',
         label: 'Open source',
     },
 ];
 
 const proofPoints = [
-    ['Research', 'Published protocols and source-backed product claims before public language.'],
-    ['Deployment', 'A governed institutional workflow pattern tested around research, sources, and approval.'],
-    ['Boundary', 'Client names and private material stay out unless explicitly approved for publication.'],
+    ['Why it matters', 'AI should make the next step clearer, not harder to trust.'],
+    ['Field work', 'The pattern has been tested around research, review, and controlled sharing.'],
+    ['Boundary', 'Private material stays out unless it is explicitly approved for publication.'],
 ];
 
 export default function Research() {
@@ -52,10 +52,10 @@ export default function Research() {
                             <BookOpen className="h-8 w-8 text-cyan-100" />
                         </div>
                         <h1 className="max-w-[12ch] text-[3.05rem] font-semibold leading-[0.94] tracking-[-0.06em] sm:text-[4.9rem]">
-                            Research & deployment.
+                            How we build it.
                         </h1>
                         <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-400">
-                            Active Mirror is built from published protocols, public source trails, and live workflow lessons. Claims stay bounded to what can be checked.
+                            For people who want to look deeper: open papers, source material, and field lessons behind Active Mirror.
                         </p>
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
@@ -64,14 +64,14 @@ export default function Research() {
                                 rel="noreferrer"
                                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-violet-500 px-5 text-sm font-semibold text-white shadow-[0_0_34px_rgba(34,211,238,0.22)] transition hover:scale-[1.01]"
                             >
-                                Read the protocol
+                                Open paper
                                 <ExternalLink size={16} />
                             </a>
                             <Link
                                 to="/enterprise"
                                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-200 transition hover:border-cyan-300/30 hover:text-white"
                             >
-                                See deployment path
+                                For teams
                                 <ArrowRight size={16} />
                             </Link>
                         </div>
@@ -93,9 +93,9 @@ export default function Research() {
                 <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
                     <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Public trail.</h2>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Open materials.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                                Research belongs here when it can be opened, cited, or inspected.
+                                Deeper references live here after the product makes sense.
                             </p>
                         </div>
                     </div>
@@ -124,18 +124,18 @@ export default function Research() {
                         <div className="mb-5 grid h-12 w-12 place-items-center rounded-[1.1rem] border border-emerald-200/20 bg-black/25">
                             <ShieldCheck className="h-6 w-6 text-emerald-100" />
                         </div>
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Real work, safely anonymized.</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Field story, anonymized.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-300">
-                            A source-heavy institutional workflow became clearer: selected sources in, weak claims held, human review before anything went out.
+                            A research workflow became easier to use: chosen material in, weak spots marked, review before sharing.
                         </p>
                     </div>
                     <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
                         <div className="mb-5 grid h-12 w-12 place-items-center rounded-[1.1rem] border border-violet-200/20 bg-black/25">
                             <FileCheck2 className="h-6 w-6 text-violet-100" />
                         </div>
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Proof you can open.</h2>
+                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Open references.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
-                            Two DOI records, a public source trail, and a safely anonymized deployment story you can inspect before a call.
+                            Two DOI records, an open source repository, and an anonymized field story you can inspect before a call.
                         </p>
                     </div>
                 </section>

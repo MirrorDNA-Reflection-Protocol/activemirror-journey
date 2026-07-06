@@ -17,6 +17,9 @@ Use short, normal phrases:
 - `Make one small version and test it`
 - `Private first`
 - `Check first`
+- `Nothing is saved unless you choose.`
+- `Keep what helps. Drop the rest.`
+- `Gets better from accepted work.`
 
 ## Product Voice
 
@@ -53,6 +56,13 @@ Avoid these unless the user explicitly asks how the system works:
 - offline AI as the main promise
 - memory as the main promise
 - user-owned AI claims before the exact ownership layer is implemented
+- reads your hidden motives
+- personality profile
+- self-aware
+- conscious
+- synthetic continuity
+- context calculus
+- Markov blanket
 
 Compatibility routes can keep old names behind the scenes, but the rendered page should use normal language.
 

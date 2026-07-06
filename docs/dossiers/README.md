@@ -29,6 +29,12 @@ history from chat.
 - [Model Challenge Contract](./model-challenge-contract.md)
 - [Offline Online Owned AI Position](./offline-online-owned-ai-position.md)
 - [AMOS Proof Layer Intake](./amos-proof-layer-intake.md)
+- [Decision Reason Mapper](./decision-reason-mapper.md)
+- [Evolution Control Plane](./evolution-control-plane.md)
+- [Context And Coordination Layer](./context-coordination-layer.md)
+- [Memory Skill Layer](./memory-skill-layer.md)
+- [Synthetic Continuity Boundary](./synthetic-continuity-boundary.md)
+- [Governed Agent OS](./governed-agent-os.md)
 
 ## Template
 
