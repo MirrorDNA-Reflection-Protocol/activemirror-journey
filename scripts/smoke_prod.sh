@@ -77,6 +77,8 @@ about_html="$(fetch "${BASE_URL}/about/")"
 privacy_html="$(fetch "${BASE_URL}/privacy/")"
 terms_html="$(fetch "${BASE_URL}/terms/")"
 robots_txt="$(fetch "${BASE_URL}/robots.txt")"
+manifest_json="$(fetch "${BASE_URL}/manifest.json")"
+sitemap_xml="$(fetch "${BASE_URL}/sitemap.xml")"
 
 check_200 "${BASE_URL}/"
 check_200 "${BASE_URL}/app/"
@@ -94,6 +96,7 @@ check_200 "${BASE_URL}/research/"
 check_200 "${BASE_URL}/about/"
 check_200 "${BASE_URL}/privacy/"
 check_200 "${BASE_URL}/terms/"
+check_200 "${BASE_URL}/manifest.json"
 check_200 "${BASE_URL}/robots.txt"
 check_200 "${BASE_URL}/sitemap.xml"
 
@@ -105,6 +108,7 @@ check_not_regex "root HTML" "$root_html" 'modulepreload[^>]*web-llm'
 check_contains "app HTML" "$app_html" '<div id="root"></div>'
 check_contains "app HTML" "$app_html" 'type="module"'
 check_contains "app HTML" "$app_html" '/app/assets/'
+check_contains "app HTML" "$app_html" 'rel="manifest" href="/manifest.json"'
 check_not_contains "app HTML" "$app_html" 'Scam checks for people'
 check_not_contains "app HTML" "$app_html" 'AI Superego'
 
@@ -123,8 +127,18 @@ check_not_contains "pricing alias" "$pricing_html" '$19/mo'
 check_not_contains "trust alias" "$trust_html" 'Trust by Design starts with approved memory.'
 check_not_contains "mirror alias" "$mirror_html" 'Reflect with the full workspace.'
 
+check_contains "manifest.json" "$manifest_json" '"start_url": "/app/"'
+check_contains "manifest.json" "$manifest_json" '"scope": "/app/"'
+check_contains "manifest.json" "$manifest_json" '"display": "standalone"'
+
+check_contains "sitemap.xml" "$sitemap_xml" '<urlset'
+check_contains "sitemap.xml" "$sitemap_xml" 'https://activemirror.ai/app/'
+check_contains "sitemap.xml" "$sitemap_xml" 'https://activemirror.ai/app/enterprise/'
+
 check_not_contains "robots.txt" "$robots_txt" 'BEGIN Cloudflare Managed content'
 check_not_contains "robots.txt" "$robots_txt" 'Content-Signal:'
+check_contains "robots.txt" "$robots_txt" 'User-agent: *'
+check_contains "robots.txt" "$robots_txt" 'Sitemap: https://activemirror.ai/sitemap.xml'
 check_not_regex "robots.txt" "$robots_txt" 'User-agent: GPTBot\s+Disallow: /'
 check_not_regex "robots.txt" "$robots_txt" 'User-agent: ClaudeBot\s+Disallow: /'
 check_not_regex "robots.txt" "$robots_txt" 'User-agent: Google-Extended\s+Disallow: /'
