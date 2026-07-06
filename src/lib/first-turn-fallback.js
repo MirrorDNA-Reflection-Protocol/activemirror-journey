@@ -47,7 +47,7 @@ function classify(intent = '') {
     if (!/\b(switch|whether|between|decid\w*|should i|should we|do i)\b/.test(text) && /\b(landing page|homepage|site|page)\b/.test(text) && /\b(brainscan|mirrorseed|enterprise|too much|first action|first screen|users?|button|copy|ads?)\b/.test(text)) {
         return 'launch_clarity';
     }
-    if (/\b(decide|decision|choice|choos(?:e|ing)|between|whether|worth pursuing|pursue|do not know if|don't know if|should i|should we|should\b.*\bor\b|do i\b.*\bor\b|or switch|commit|quit|stay or leave|leave or stay)\b/.test(text)) {
+    if (/^should\b/.test(text) || /\b(decide|decision|choice|choos(?:e|ing)|between|whether|worth pursuing|pursue|do not know if|don't know if|should i|should we|should\b.*\bor\b|do i\b.*\bor\b|or switch|commit|quit|stay or leave|leave or stay)\b/.test(text)) {
         return 'decision';
     }
     if (/\b(real secret|actual secret|password|passcode|private key|api key|access token|otp|pin|credential)\b/.test(text)) {
@@ -82,7 +82,7 @@ const MIRRORS = {
     },
     private_output: {
         reflection: 'Leave the exact private details out. I can still help with the useful version.',
-        question: 'What should the shareable version help them do?',
+        question: 'What should the public version help the reader do?',
         move: 'Replace names, keys, or account details with [name], [secret], or [detail], then send the version you can share.',
     },
     needs_detail: {

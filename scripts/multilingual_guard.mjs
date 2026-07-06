@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { languagePayloadFor } from '../src/lib/language-preference.js';
 
 const root = process.cwd();
 
@@ -52,6 +53,36 @@ for (const check of checks) {
     const text = read(check.file);
     if (!check.pattern.test(text)) {
         failures.push(`${check.file}: missing ${check.label}`);
+    }
+}
+
+const languageCases = [
+    {
+        text: 'Write a short message asking a friend for honest feedback without sounding needy.',
+        expected: 'en',
+        label: 'English prompt containing the word message must stay English',
+    },
+    {
+        text: 'Je veux écrire une réponse courte.',
+        expected: 'fr',
+        label: 'French prompt should resolve to French',
+    },
+    {
+        text: 'Necesito escribir un mensaje corto.',
+        expected: 'es',
+        label: 'Spanish prompt should resolve to Spanish',
+    },
+    {
+        text: 'Mujhe ek short reply banana hai.',
+        expected: 'hinglish',
+        label: 'Hinglish prompt should resolve to Hinglish',
+    },
+];
+
+for (const item of languageCases) {
+    const actual = languagePayloadFor(item.text).reply_language;
+    if (actual !== item.expected) {
+        failures.push(`${item.label}: expected ${item.expected}, got ${actual}`);
     }
 }
 

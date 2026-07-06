@@ -184,7 +184,7 @@ function phoneBlocked(error) {
 
     return {
         reflection: 'Leave the exact private details out. I can still help with the useful version.',
-        question: 'What should the shareable version help them do?',
+        question: 'What should the public version help the reader do?',
         move: 'Replace names, keys, or account details with [name], [secret], or [detail], then send the version you can share.',
         receipt: {
             context_used: 'The current message only.',
