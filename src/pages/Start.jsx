@@ -201,7 +201,7 @@ function downloadSettings(result) {
 
     const settings = {
         product: 'Active Mirror',
-        type: 'active-mirror-id',
+        type: 'active-mirror-settings',
         ...result.mirrorSeed,
         createdAt: result.savedAt || new Date().toISOString(),
     };
@@ -209,7 +209,7 @@ function downloadSettings(result) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'active-mirror-id.json';
+    link.download = 'active-mirror-settings.json';
     link.click();
     URL.revokeObjectURL(url);
 }

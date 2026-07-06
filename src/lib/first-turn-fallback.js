@@ -78,9 +78,9 @@ const MIRRORS = {
         move: 'Name that one claim, then check one current source before using it.',
     },
     private_output: {
-        reflection: 'Keep the private bits out. I can still help make the useful version.',
-        question: 'What do you want me to make, decide, or fix?',
-        move: 'Replace real names, keys, or account details with [name], [secret], or [detail], then send the safe version.',
+        reflection: 'Leave the exact private details out. I can still help with the useful version.',
+        question: 'What should the shareable version help them do?',
+        move: 'Replace names, keys, or account details with [name], [secret], or [detail], then send the version you can share.',
     },
     needs_detail: {
         reflection: 'Give me one direction and I can start.',

@@ -347,3 +347,46 @@ Do not turn this into a strategy essay. Keep it operational.
 - Product rule:
   - Legal links should be findable but not repeated in the first-screen navigation.
 - Next safe move: rebuild, package, and redeploy the app bundle.
+
+### 2026-07-06: First-Turn Copy And Metadata Polish
+
+- Changed: softened explicit-secret/privacy fallback language, replaced the internal setup download name with `active-mirror-settings.json`, added social/link preview metadata, exposed `Enterprise` in the front-door footer, and aligned the Worker deterministic privacy fallback with the browser fallback.
+- Source files touched:
+  - `index.html`
+  - `src/lib/first-turn-fallback.js`
+  - `src/pages/HomePage.jsx`
+  - `src/pages/DeviceExperience.jsx`
+  - `src/pages/Start.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy/gateway files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `public/app/**`
+  - `public/manifest.json`
+  - `scripts/browser-smoke.mjs`
+  - `worker/src/mirror-kernel.js`
+- Deploy status:
+  - Gateway deployed: `active-mirror-site-gateway` version `caa3238e-7bf5-4b37-9ad0-aba66223aa3f`.
+  - Static site deployed: `active-mirror-static-site` version `ef6ced5a-eebf-44dd-b72c-c817ee41450a`.
+- Tools and gates used:
+  - Source: `npm run build:deploy`
+  - Worker: `npm run worker:test`
+  - Local red team: `npm run redteam:local` (`100/100`, failed `0`, fallback `0`)
+  - Deploy repo: `npm run copy:audit`, `npm run guard:canonical`, `npm run build`, `npm run site:worker:dry`
+  - Live: `npm run canary:prod` (`20/20`), `npm run redteam:prod-smoke` (`20/20`, failed `0`, fallback `0`), `npm run smoke:prod`, `ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`
+  - Screenshot smoke: `SMOKE_SCREENSHOT_DIR=/tmp/active-mirror-smoke-20260706 ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`
+- Public routes checked:
+  - `https://activemirror.ai/`
+  - `https://activemirror.ai/app/`
+  - `https://activemirror.ai/app/id/`
+  - `https://activemirror.ai/app/device/`
+  - `https://activemirror.ai/app/enterprise/`
+  - `https://activemirror.ai/app/about/`
+  - `https://activemirror.ai/app/research/`
+  - `https://activemirror.ai/app/privacy/`
+  - `https://activemirror.ai/app/terms/`
+  - root aliases and metadata routes: `/manifest.json`, `/robots.txt`, `/sitemap.xml`
+- Bad news or limits:
+  - The social image is the existing brand poster asset, not a fresh product-scene OG image.
+  - Browser-local saved context is still device/browser-local, not cross-device identity sync.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: test the live first turn with real user prompts, then improve only the response surface that feels confusing in actual use.

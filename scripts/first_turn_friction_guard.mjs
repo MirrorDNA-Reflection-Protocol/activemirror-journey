@@ -42,7 +42,7 @@ const secretFallback = makeOfflineMirrorResult(explicitSecret, 'network');
 
 check(secretSense.blocked, 'explicit password sentence must be locally blocked');
 check(
-    secretFallback.mirror?.move === 'Replace real names, keys, or account details with [name], [secret], or [detail], then send the safe version.',
+    secretFallback.mirror?.move === 'Replace names, keys, or account details with [name], [secret], or [detail], then send the version you can share.',
     'explicit password sentence must become the privacy fallback'
 );
 check(

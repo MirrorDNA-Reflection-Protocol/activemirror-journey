@@ -423,9 +423,9 @@ function makeBlockedResult(data = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'I can help with the useful part. Leave the real secret out.',
-            question: 'What do you want me to make, decide, or fix?',
-            move: 'Send it again with [secret] or [detail] in place of the real value.',
+            reflection: 'Leave the exact private details out. I can still help with the useful version.',
+            question: 'What should the shareable version help them do?',
+            move: 'Replace names, keys, or account details with [name], [secret], or [detail], then send the version you can share.',
             receipt: {
                 context_used: 'The current prompt only.',
                 context_excluded: 'The secret value was not sent.',
@@ -439,9 +439,9 @@ function makeLocalPrivacyResult(sense = {}) {
     return {
         kind: 'privacy_hold',
         mirror: {
-            reflection: 'I can help with the useful part. Leave the real secret out.',
-            question: 'What do you want me to make, decide, or fix?',
-            move: 'Send it again with [secret] or [detail] in place of the real value.',
+            reflection: 'Leave the exact private details out. I can still help with the useful version.',
+            question: 'What should the shareable version help them do?',
+            move: 'Replace names, keys, or account details with [name], [secret], or [detail], then send the version you can share.',
             receipt: {
                 context_used: 'Only the local browser privacy check.',
                 context_excluded: 'The secret value stayed in this browser.',
@@ -1966,6 +1966,7 @@ export default function HomePage() {
             <div className="relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs text-zinc-500 sm:justify-end">
                 <div className="flex flex-wrap gap-3">
                     <Link to="/about" className="transition hover:text-white">About</Link>
+                    <Link to="/enterprise" className="transition hover:text-white">Enterprise</Link>
                     <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
                     <Link to="/terms" className="transition hover:text-white">Terms</Link>
                 </div>
