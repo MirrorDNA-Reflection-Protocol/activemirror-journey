@@ -53,11 +53,14 @@ function classify(intent = '') {
     if (/\b(real secret|actual secret|password|passcode|private key|api key|access token|otp|pin|credential)\b/.test(text)) {
         return 'private_output';
     }
-    if (/\b(hallucinat\w*|overthink\w*|overwhelmed|scattered|spiral\w*|circles|too much|lost|losing the thread|too many ideas|cannot pick|can't pick|what else|lock\w* the next thing|less clear|feels urgent|feels obvious|adding tools|anxious|panic|tired|drift|drifting|fast-moving|nonlinear)\b/.test(text) || /\b(thoughts?|mind)\b.*\b(moving fast|too fast|racing|all over)\b/.test(text) || /\b(i feel|i am|i'm|we are|we're)\b.*\b(confused|stuck|lost)\b/.test(text)) {
+    if (/\b(hallucinat\w*|overreach\w*|overthink\w*|drift\w*)\b/.test(text)) {
         return 'reset';
     }
-    if (/\b(site|page|product|homepage|copy|marketing|sales|sell|ads?|positioning|offer|user|customer|demo|public|proof|reflection|receipts?|systems?)\b/.test(text)) {
+    if (/\b(site|page|product|homepage|copy|marketing|sales|sell|ads?|positioning|offer|user|customer|demo|public|proof|reflection|receipts?|systems?|first use|first-use|ritual|onboarding)\b/.test(text)) {
         return 'launch_clarity';
+    }
+    if (/\b(hallucinat\w*|overthink\w*|overwhelmed|scattered|spiral\w*|circles|too much|lost|losing the thread|too many ideas|cannot pick|can't pick|what else|lock\w* the next thing|less clear|feels urgent|feels obvious|adding tools|anxious|panic|tired|drift|drifting|fast-moving|nonlinear)\b/.test(text) || /\b(thoughts?|mind)\b.*\b(moving fast|too fast|racing|all over)\b/.test(text) || /\b(i feel|i am|i'm|we are|we're)\b.*\b(confused|stuck|lost)\b/.test(text)) {
+        return 'reset';
     }
     if (/\b(overwhelmed|scattered|confused|lost|losing the thread|too many ideas|cannot pick|can't pick|what else|lock\w* the next thing|less clear|feels urgent|feels obvious|adding tools|stuck|spiral\w*|circles|loop|too much|drift|drifting|anxious|panic|tired|fast-moving|nonlinear)\b/.test(text) || /\b(thoughts?|mind)\b.*\b(moving fast|too fast|racing|all over)\b/.test(text)) {
         return 'reset';
@@ -73,9 +76,9 @@ function classify(intent = '') {
 
 const MIRRORS = {
     source_check: {
-        reflection: 'This is worth checking before you build around it.',
-        question: 'Which claim would change your next move if it turned out to be false?',
-        move: 'Name that one claim, then check one current source before using it.',
+        reflection: 'This needs checking before it shapes your next move.',
+        question: 'Which claim would change what you do if it were wrong?',
+        move: 'Check one current source, then use only what changed.',
     },
     private_output: {
         reflection: 'Leave the exact private details out. I can still help with the useful version.',
@@ -85,7 +88,7 @@ const MIRRORS = {
     needs_detail: {
         reflection: 'Give me one direction and I can start.',
         question: 'Make, decide, fix, or understand?',
-        move: 'Pick one, then add one sentence.',
+        move: 'Pick one word, then add one sentence about the thing.',
     },
     launch_clarity: {
         reflection: 'The first screen should make one useful action obvious before anything else asks for attention.',
@@ -93,14 +96,14 @@ const MIRRORS = {
         move: 'Pick one promise and one button. Hide anything that competes with them.',
     },
     decision: {
-        reflection: 'Another opinion will not help as much as a real-world signal.',
-        question: 'What sign would make one option clearly better?',
-        move: 'Name the sign, then run the smallest test that could produce it today.',
+        reflection: 'Another opinion will not help as much as one real signal.',
+        question: 'What signal would make one option easier to choose?',
+        move: 'Name the signal, then run the smallest test you can run today.',
     },
     reset: {
-        reflection: 'There is more than one thread open. Start with the one that makes today easier.',
-        question: 'Which one matters first?',
-        move: 'Choose that one and do the smallest visible step for ten minutes.',
+        reflection: 'There are too many things open. Make one of them lighter first.',
+        question: 'Which one would make today easier?',
+        move: 'Pick that one, set a ten-minute timer, and do the smallest visible step.',
     },
     artifact: {
         reflection: 'This wants to become something you can use.',
@@ -108,9 +111,9 @@ const MIRRORS = {
         move: 'Draft the smallest usable version with a title, three bullets, and one ask.',
     },
     general: {
-        reflection: 'This is still wide. Shrink it until it can move today.',
-        question: 'What is the smallest version of this that could be tested today?',
-        move: 'Write the testable version in one sentence, then show it to one person.',
+        reflection: 'This is wide enough to get heavy. Make the first version small.',
+        question: 'What would make today feel a little easier?',
+        move: 'Write one sentence that names the result you want by tonight.',
     },
 };
 

@@ -9,7 +9,7 @@ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 
 const PHONE_STARTERS = [
-    'I am stuck.',
+    'I need a next move.',
     'Another angle',
     'Make it sendable',
 ];
@@ -20,9 +20,9 @@ const INITIAL_PHONE_TURNS = [
     {
         who: 'mirror',
         mirror: {
-            reflection: 'What is one thing you are stuck on?',
-            question: 'Say it in one sentence.',
-            move: 'Send the smallest useful version.',
+            reflection: 'Start with one thing you want help with.',
+            question: 'What do you want to move right now?',
+            move: 'Say it in one sentence. I will make the next step smaller.',
             receipt: {
                 context_used: 'Nothing yet.',
                 context_excluded: 'No private context has been sent.',
@@ -36,8 +36,8 @@ const PROFILES = {
     phone: {
         label: 'Phone',
         icon: Smartphone,
-        headline: 'A pocket mirror for the moment you get stuck.',
-        copy: 'Use it for quick capture, one next move, and private continuity later. Keep the screen focused.',
+        headline: 'A simple mirror for the moment you need a next move.',
+        copy: 'Use it for quick capture, one small answer, and private continuity later. Keep the screen focused.',
         primary: 'Start quick mirror',
         primaryTo: '/mirror',
         secondary: 'Save preferences',
@@ -477,14 +477,14 @@ export default function DeviceExperience() {
                 <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-black/80 px-3 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl">
                     <div className="mx-auto max-w-md">
                         {phoneTurns.length <= INITIAL_PHONE_TURNS.length ? (
-                            <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                            <div className="mb-2 grid grid-cols-3 gap-2">
                                 {PHONE_STARTERS.map((starter) => (
                                     <button
                                         key={starter}
                                         type="button"
                                         onClick={() => askPhone(starter, 'starter')}
                                         disabled={phoneBusy}
-                                        className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-300 disabled:opacity-50"
+                                        className="min-h-10 rounded-full border border-white/10 bg-white/[0.05] px-2 py-2 text-center text-[11px] font-semibold leading-tight text-zinc-300 disabled:opacity-50"
                                     >
                                         {starter}
                                     </button>

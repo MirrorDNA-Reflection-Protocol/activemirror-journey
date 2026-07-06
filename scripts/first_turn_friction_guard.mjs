@@ -16,6 +16,8 @@ const softPrivateSense = assessLocalMirrorSense('My email is paul@example.com an
 const todayActionFallback = makeOfflineMirrorResult('I need one sentence I can send to one person today.', 'network');
 const currentFactFallback = makeOfflineMirrorResult('What are the latest competitors doing today?', 'network');
 const tireShoppingFallback = makeOfflineMirrorResult('I am looking for tires online', 'network');
+const vagueFallback = makeOfflineMirrorResult('website', 'network');
+const resetFallback = makeOfflineMirrorResult('I keep going in circles and losing the thread.', 'network');
 
 check(!normalSense.blocked, 'normal send/safe wording must not be locally blocked');
 check(softPrivateSense.softPrivate && !softPrivateSense.blocked, 'soft personal details should be cautioned, not blocked');
@@ -35,6 +37,14 @@ check(
     tireShoppingFallback.truth_state?.status === 'needs_checking',
     'online shopping asks like tires must trigger answer-first source mode'
 );
+check(
+    vagueFallback.mirror?.reflection === 'Give me one direction and I can start.',
+    'short vague asks should feel startable, not scolded'
+);
+check(
+    resetFallback.mirror?.reflection === 'There are too many things open. Make one of them lighter first.',
+    'reset fallback should sound humane, not like internal thread management'
+);
 
 const explicitSecret = 'My password is examplepassword123 and I need help.';
 const secretSense = assessLocalMirrorSense(explicitSecret);
@@ -51,6 +61,7 @@ check(
 );
 
 const homePage = fs.readFileSync(new URL('../src/pages/HomePage.jsx', import.meta.url), 'utf8');
+const deviceExperience = fs.readFileSync(new URL('../src/pages/DeviceExperience.jsx', import.meta.url), 'utf8');
 const mirrorFeedback = fs.readFileSync(new URL('../src/components/MirrorFeedback.jsx', import.meta.url), 'utf8');
 const mirrorState = fs.readFileSync(new URL('../src/lib/mirror-state.js', import.meta.url), 'utf8');
 check(
@@ -68,6 +79,12 @@ check(
 check(
     /label:\s*'Check it'/.test(mirrorFeedback),
     'repair follow-up should offer a plain answer check'
+);
+check(
+    deviceExperience.includes('Start with one thing you want help with.') &&
+    deviceExperience.includes('What do you want to move right now?') &&
+    !deviceExperience.includes('What is one thing you are stuck on?'),
+    'phone device page should invite the user instead of leading with stuck language'
 );
 check(
     homePage.includes('function makeStarterResult') && homePage.includes("setResult(makeStarterResult(item.kind))"),

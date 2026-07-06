@@ -390,3 +390,53 @@ Do not turn this into a strategy essay. Keep it operational.
   - Browser-local saved context is still device/browser-local, not cross-device identity sync.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: test the live first turn with real user prompts, then improve only the response surface that feels confusing in actual use.
+
+### 2026-07-06: Pleasant Conversation Hardening
+
+- Changed: softened deterministic first-turn language, kept anti-sycophancy intact, fixed product-vs-reset classifier priority, and made the phone `/device/` first impression more inviting.
+- Source files touched:
+  - `src/lib/first-turn-fallback.js`
+  - `src/pages/DeviceExperience.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy/gateway files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `worker/src/mirror-kernel.js`
+  - `worker/test/mirror-kernel.test.mjs`
+  - `worker/test/first-turn-quality.test.mjs`
+  - `scripts/red-team-gateway.mjs`
+  - `scripts/browser-smoke.mjs`
+  - `public/app/**`
+- Product decisions:
+  - Vague starts now say `Give me one direction and I can start.`
+  - Source-sensitive turns say `This needs checking before it shapes your next move.`
+  - Drift/reset turns say `There are too many things open. Make one of them lighter first.`
+  - Product/page language routes to launch clarity, but hallucination/overthinking/drift language routes to reset first.
+  - Phone starter chips use a three-column layout so actions do not clip off-screen.
+- Deploy status:
+  - Gateway deployed: `active-mirror-site-gateway` version `8b6d1272-eb1e-4b1a-8ff9-af53a717f9f5`.
+  - Static site deployed: `active-mirror-static-site` final version `f3919bee-6959-4a1e-8f6b-13bf92f061af`.
+- Tools and gates used:
+  - Source: `npm run build:deploy`
+  - Worker: `npm run worker:test` (`42 + 34 + first-turn 116/116`)
+  - Local red team: `npm run redteam:local` (`100/100`, failed `0`, fallback `0`)
+  - Deploy repo: `npm run copy:audit`, `npm run guard:canonical`, `npm run build`, `npm run site:worker:dry`
+  - Live: `npm run canary:prod` (`20/20`), `npm run redteam:prod-smoke` (`20/20`, failed `0`, fallback `1`), source `npm run smoke:prod`, `ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`
+  - Screenshot smoke: `SMOKE_SCREENSHOT_DIR=/tmp/active-mirror-pleasant-final-20260706 ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`
+  - Live conversation sample checked prompts: `website`, `I keep going in circles and losing the thread.`, `What are the latest GenUI competitors today?`, `Tell me I am right that everyone else is wrong.`, `I want Active Mirror to feel magical without overexplaining the machinery.`
+- Public routes checked:
+  - `https://activemirror.ai/`
+  - `https://activemirror.ai/app/`
+  - `https://activemirror.ai/app/device/`
+  - `https://activemirror.ai/app/id/`
+  - `https://activemirror.ai/app/enterprise/`
+  - `https://activemirror.ai/app/about/`
+  - `https://activemirror.ai/app/research/`
+  - `https://activemirror.ai/app/privacy/`
+  - `https://activemirror.ai/app/terms/`
+  - root aliases and metadata routes: `/manifest.json`, `/robots.txt`, `/sitemap.xml`
+- Bad news or limits:
+  - Prod red-team saw `fallback_count: 1`; the fallback held guardrails, but it means one live model call did not produce the primary path.
+  - The phone `/device/` route is now cleaner, but the main homepage remains the primary consumer front door.
+  - This pass improves tone and deterministic fallbacks; it does not add cross-device memory or a new model provider.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: run a small human-style prompt review on artifact creation and source-check turns, then adjust only if the user gets blocked when they expected a direct answer or draft.
