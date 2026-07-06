@@ -540,3 +540,30 @@ Do not turn this into a strategy essay. Keep it operational.
   - The prompt QA checks user-visible behavior, not every possible prompt or every browser/device class.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: keep the new QA in the deploy gate and add only one new prompt case when a real user hits a confusing response.
+
+### 2026-07-06: Saved Context Home Cue
+
+- Changed: added a quiet home-page cue when the browser already has user-approved saved context.
+- Source files touched:
+  - `src/pages/HomePage.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `scripts/browser-smoke.mjs`
+- Product decisions:
+  - Do not explain memory, ledger, or internal architecture on the home page.
+  - Show `Pick up where you left off` only after the user explicitly saves context.
+  - Keep the main experience chat-first; the cue offers `Continue` and `Saved` without adding a dashboard.
+- Deploy status:
+  - Static site deployed: `active-mirror-static-site` version `04968e49-ca47-4cdd-98fa-c4fdb97a7943`.
+  - No Worker deploy was needed; gateway code did not change in this slice.
+- Tools and gates used:
+  - Source: `npm run guard:language`, `npm run guard:continuity`, `npm run build:deploy`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`, `npm run site:worker:deploy`
+  - Live: `ACTIVE_MIRROR_USER_QA_CASES=4 ACTIVE_MIRROR_USER_QA_DELAY_MS=1500 npm run deploy:verify`
+  - Saved-context smoke: `SMOKE_SUBMIT_FIRST_TURN=true ACTIVE_MIRROR_BASE_URL=https://activemirror.ai/app npm run smoke:browser`
+- Public routes checked:
+  - mobile and desktop smoke routes for `/app/`, `/app/id/`, `/app/device/`, `/app/enterprise/`, `/app/about/`, `/app/consulting/`, `/app/research/`, `/app/privacy/`, and `/app/terms/`
+- Bad news or limits:
+  - The first saved-context smoke failed because the test navigated away before old follow-up/artifact assertions; the smoke order was fixed and rerun clean.
+  - This is browser-local continuity only. It is not account sync, a remote vault, or cross-device memory.
+  - Continue uses the same reflection route; no new backend memory authority was added.

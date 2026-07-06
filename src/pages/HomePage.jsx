@@ -857,6 +857,18 @@ function isActiveMemory(item = {}, activeDefault = null) {
     return memoryItemKey(item) === memoryItemKey(activeDefault) || mirrorMemoryKey(item) === mirrorMemoryKey(activeDefault);
 }
 
+function savedContextCue({ activeDefault = null, continuity = [] } = {}) {
+    const latest = Array.isArray(continuity) ? continuity.find((entry) => entry?.intent || entry?.move) : null;
+    const source = latest || activeDefault;
+    const preview = source?.move || source?.question || source?.intent || '';
+    if (!preview) return null;
+
+    return {
+        entry: latest || null,
+        preview,
+    };
+}
+
 function MicroVisual({ visual }) {
     if (!visual) return null;
 
@@ -1473,6 +1485,7 @@ export default function HomePage() {
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount, lastIntent), [result, loopCount, lastIntent]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
+    const savedCue = useMemo(() => savedContextCue({ activeDefault, continuity: continuityLedger }), [activeDefault, continuityLedger]);
 
     useEffect(() => {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
@@ -1672,11 +1685,22 @@ export default function HomePage() {
         trackEvent('mirror_default_deleted', { page: 'home', source: 'memory_drawer' });
     }
 
-    function useContinuity(entry) {
+    function useContinuity(entry, source = 'memory_drawer') {
         const intent = [entry?.intent, entry?.move].filter(Boolean).join(' Next: ');
         setMemoryOpen(false);
         reflect(intent || 'Use what I saved here.', 'saved_context');
-        trackEvent('continuity_used', { page: 'home', source: 'memory_drawer' });
+        trackEvent('continuity_used', { page: 'home', source });
+    }
+
+    function continueSavedContext() {
+        if (savedCue?.entry) {
+            useContinuity(savedCue.entry, 'home_cue');
+            return;
+        }
+
+        const intent = [activeDefault?.question, activeDefault?.move].filter(Boolean).join(' Next: ');
+        reflect(intent || 'Use what I saved here.', 'saved_context');
+        trackEvent('mirror_default_used', { page: 'home', source: 'home_cue' });
     }
 
     function removeContinuity(key) {
@@ -1947,6 +1971,36 @@ export default function HomePage() {
                                         </button>
                                     );
                                 })}
+                            </div>
+                        ) : null}
+
+                        {!showMirror && savedCue ? (
+                            <div className="mx-auto mt-3 grid max-w-2xl gap-3 rounded-[1.45rem] border border-emerald-300/14 bg-emerald-300/[0.045] p-3.5 text-left shadow-[0_0_32px_rgba(16,185,129,0.055)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2 text-sm font-semibold text-emerald-50">
+                                        <BookmarkPlus size={15} className="text-emerald-200" />
+                                        Pick up where you left off
+                                    </div>
+                                    <div className="mt-1 max-h-12 overflow-hidden text-sm leading-6 text-zinc-400">{savedCue.preview}</div>
+                                </div>
+                                <div className="flex shrink-0 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={continueSavedContext}
+                                        disabled={busy}
+                                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-emerald-200/20 bg-emerald-200/[0.085] px-3.5 text-sm font-semibold text-emerald-50 transition hover:border-emerald-100/35 hover:bg-emerald-200/[0.12] disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        Continue
+                                        <ArrowRight size={15} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setMemoryOpen(true)}
+                                        className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-black/15 px-3.5 text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                    >
+                                        Saved
+                                    </button>
+                                </div>
                             </div>
                         ) : null}
 
