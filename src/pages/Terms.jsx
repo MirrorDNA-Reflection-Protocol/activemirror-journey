@@ -6,7 +6,7 @@ const lastUpdated = 'July 5, 2026';
 const prohibited = [
     'Do not paste passwords, API keys, private URLs, payment data, or other secrets.',
     'Do not use Active Mirror to generate illegal, harmful, deceptive, abusive, or harassing content.',
-    'Do not probe, scan, overload, scrape, or bypass the service, gateway, rate limits, or safety boundaries.',
+    'Do not probe, scan, overload, scrape, or bypass the service, rate limits, or safety protections.',
     'Do not use outputs as professional medical, legal, financial, or mental-health advice.',
 ];
 
@@ -25,7 +25,7 @@ export default function Terms() {
                     <h1 className="text-5xl font-semibold leading-none tracking-[-0.06em] sm:text-6xl">Terms</h1>
                     <p className="mt-4 text-sm text-zinc-500">Last updated: {lastUpdated}</p>
                     <p className="mt-5 max-w-2xl text-lg leading-8 text-zinc-300">
-                        Active Mirror is an AI-assisted reflection service. Use it to clarify work, not to outsource judgment.
+                        Active Mirror is an AI-assisted reflection service. Use it to clarify work, not to skip your own review.
                     </p>
                 </header>
 

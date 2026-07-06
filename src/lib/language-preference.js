@@ -16,7 +16,7 @@ const SPANISH_HINT_RE = /\b(?:quiero|necesito|ayuda|hacer|decidir|arreglar|enten
 const FRENCH_HINT_RE = /\b(?:je veux|j'ai besoin|aide|faire|decider|décider|corriger|comprendre|travail)\b/i;
 const PORTUGUESE_HINT_RE = /\b(?:quero|preciso|ajuda|fazer|decidir|corrigir|entender|pagina|página|mensagem|trabalho)\b/i;
 const GERMAN_HINT_RE = /\b(?:ich will|ich möchte|brauche|hilfe|machen|entscheiden|reparieren|verstehen|seite|nachricht|arbeit)\b/i;
-const ENGLISH_HINT_RE = /\b(?:i|me|my|we|you|want|need|help|make|write|draft|create|build|fix|understand|decide|compare|latest|current|message|friend|feedback|without|what|how|why|when|where|please)\b/i;
+const ENGLISH_HINT_RE = /\b(?:i|me|my|we|you|want|need|help|make|write|draft|create|build|fix|understand|decide|compare|should|latest|current|message|friend|feedback|without|what|how|why|when|where|please)\b/i;
 
 function normalizeCode(value = '') {
     const code = String(value || '').trim().toLowerCase().replace('_', '-');

@@ -149,14 +149,14 @@ const whyUs = [
     ['AI-flexible', 'Use the right AI help without letting any one system define the rules.'],
 ];
 
-const architectureQuestions = [
+const deploymentQuestions = [
     ['Context', 'Where does the work live today: files, apps, browser tabs, inboxes, dashboards?'],
     ['Control', 'Who approves memory, sharing, tool use, and external actions?'],
     ['Output', 'What should the system produce: brief, memo, report, research pack, decision note, task handoff?'],
     ['Deployment', 'What belongs in the browser, on your machines, in a private server, or behind managed access?'],
 ];
 
-const architectureDiagrams = [
+const deploymentDiagrams = [
     {
         title: 'Browser pilot',
         text: 'Fastest way to prove one workflow before any rollout.',
@@ -165,7 +165,7 @@ const architectureDiagrams = [
     {
         title: 'Private server',
         text: 'For teams that need managed access, logs, and shared controls.',
-        nodes: ['Team tools', 'Private gateway', 'Allowed AI help', 'Review trail'],
+        nodes: ['Team tools', 'Private access', 'Allowed AI help', 'Review trail'],
     },
     {
         title: 'Local control',
@@ -775,7 +775,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
             const href = proofSprintFallbackHref({ workflow, timeline });
             setFallbackHref(href);
             setStatus(error.message === 'rate_limited' ? 'cooldown' : 'error');
-            setMessage(error.message === 'rate_limited' ? 'The request path is cooling down. Use the email fallback.' : 'Could not send through the gateway. Use the email fallback.');
+            setMessage(error.message === 'rate_limited' ? 'The request path is cooling down. Use the email fallback.' : 'Could not send through the service. Use the email fallback.');
             trackEvent('proof_sprint_result', { page: 'enterprise', source, workflow, timeline, status: 'fallback' });
         }
     }
@@ -1055,14 +1055,14 @@ export default function Enterprise() {
                 <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
                     <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em]">Architecture choices.</h2>
+                            <h2 className="text-2xl font-semibold tracking-[-0.04em]">Deployment choices.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                                 Start narrow. Move closer to the work only when the workflow proves it is worth scaling.
                             </p>
                         </div>
                     </div>
                     <div className="grid gap-3 lg:grid-cols-3">
-                        {architectureDiagrams.map((diagram) => (
+                        {deploymentDiagrams.map((diagram) => (
                             <ArchitectureDiagram key={diagram.title} diagram={diagram} />
                         ))}
                     </div>

@@ -11,6 +11,7 @@ const scanFiles = [
     'src/pages/About.jsx',
     'src/pages/Enterprise.jsx',
     'src/pages/Research.jsx',
+    'src/pages/Privacy.jsx',
     'src/pages/FeedbackDashboard.jsx',
     'src/components/MirrorFeedback.jsx',
     'src/components/ReflectionCardActions.jsx',
@@ -69,6 +70,11 @@ const blockedPublicLanguage = [
     { pattern: /\bunsupported claims?\b/i, label: 'internal claim-control language' },
     { pattern: /\bapproval-ready\b/i, label: 'internal approval language' },
     { pattern: /\bblind claims?\b/i, label: 'internal claim-control language' },
+    { pattern: /\bArchitecture choices\b/i, label: 'enterprise architecture wording' },
+    { pattern: /\bselected boundary\b/i, label: 'privacy settings described as internal boundary' },
+    { pattern: /\bgateway\b/i, label: 'public infrastructure language' },
+    { pattern: /\bsource-check\b/i, label: 'internal source-check wording' },
+    { pattern: /\bmarks? a claim as needing sources\b/i, label: 'internal claim-control wording' },
 ];
 
 const blockedFrontDoorLanguage = [
@@ -110,6 +116,7 @@ for (const file of scanFiles) {
     lines.forEach((line, index) => {
         if (!hasLikelyVisibleText(line)) return;
         if (/PROOF_SPRINT_URL|\/v1\/mirror\/proof-sprint/.test(line)) return;
+        if (/https:\/\/gateway\.activemirror\.ai|SOURCE_CHECK_ENDPOINT|^\s*(?:route|source):/.test(line)) return;
         for (const rule of blockedPublicLanguage) {
             if (rule.pattern.test(line)) {
                 failures.push(`${file}:${index + 1} ${rule.label}: ${line.trim()}`);

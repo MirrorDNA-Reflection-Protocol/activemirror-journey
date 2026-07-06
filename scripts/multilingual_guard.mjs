@@ -63,6 +63,11 @@ const languageCases = [
         label: 'English prompt containing the word message must stay English',
     },
     {
+        text: 'Should the glass dashboard be enterprise only?',
+        expected: 'en',
+        label: 'English decision prompt must stay English',
+    },
+    {
         text: 'Je veux écrire une réponse courte.',
         expected: 'fr',
         label: 'French prompt should resolve to French',

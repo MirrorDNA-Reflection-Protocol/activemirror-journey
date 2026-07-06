@@ -346,7 +346,7 @@ function makeAnswerFirstSourceResult(intent = '') {
                 context_used: `Only your request: "${clean}".`,
                 context_excluded: 'Private notes, saved memory, and personal history stayed out.',
                 memory_decision: 'Nothing saved unless you choose it.',
-                route: 'Source-check first because this asks for current or external information.',
+                route: 'Current-source answer because this asks for current or external information.',
             },
             visual: { kind: 'none', left: '', right: '', note: '' },
         },
