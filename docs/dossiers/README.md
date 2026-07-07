@@ -35,6 +35,7 @@ history from chat.
 - [Memory Skill Layer](./memory-skill-layer.md)
 - [Synthetic Continuity Boundary](./synthetic-continuity-boundary.md)
 - [Governed Agent OS](./governed-agent-os.md)
+- [AMOS Cognitive Mesh](./amos-cognitive-mesh.md)
 
 ## Template
 

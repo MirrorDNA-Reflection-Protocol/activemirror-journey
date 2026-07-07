@@ -108,10 +108,10 @@ function mediaFilename(title = 'active-mirror-poster', mimeType = 'image/png') {
     return `${slug || 'active-mirror-poster'}.${ext}`;
 }
 
-function downloadMedia(dataUrl, title, mimeType) {
-    if (typeof document === 'undefined' || !dataUrl) return false;
+function downloadHref(href, title, mimeType) {
+    if (typeof document === 'undefined' || !href) return false;
     const link = document.createElement('a');
-    link.href = dataUrl;
+    link.href = href;
     link.download = mediaFilename(title, mimeType);
     document.body.appendChild(link);
     link.click();
@@ -119,10 +119,24 @@ function downloadMedia(dataUrl, title, mimeType) {
     return true;
 }
 
+async function downloadMediaUrl(url, title, mimeType) {
+    const response = await fetch(url, { mode: 'cors' });
+    if (!response.ok) throw new Error('image_download_failed');
+    const blob = await response.blob();
+    const href = URL.createObjectURL(blob);
+    try {
+        downloadHref(href, title, mimeType || blob.type);
+    } finally {
+        window.setTimeout(() => URL.revokeObjectURL(href), 1200);
+    }
+}
+
 function ImageMedia({ media, title }) {
     const [status, setStatus] = useState('');
     const dataUrl = media?.data_url || media?.dataUrl || '';
-    if (!dataUrl) return null;
+    const mediaUrl = media?.url || '';
+    const imageSrc = dataUrl || mediaUrl;
+    if (!imageSrc) return null;
     const readyLabel = /\bposter\b/i.test(String(title || '')) ? 'Poster ready' : 'Image ready';
 
     function flash(nextStatus) {
@@ -130,9 +144,13 @@ function ImageMedia({ media, title }) {
         window.setTimeout(() => setStatus(''), 1600);
     }
 
-    function downloadImage() {
+    async function downloadImage() {
         try {
-            downloadMedia(dataUrl, title, media?.mime_type || media?.mimeType);
+            if (dataUrl) {
+                downloadHref(dataUrl, title, media?.mime_type || media?.mimeType);
+            } else {
+                await downloadMediaUrl(mediaUrl, title, media?.mime_type || media?.mimeType);
+            }
             flash('Downloaded');
         } catch {
             flash('Download failed');
@@ -142,7 +160,7 @@ function ImageMedia({ media, title }) {
     return (
         <div className="mb-3 overflow-hidden rounded-[1.25rem] border border-violet-200/15 bg-black/30">
             <img
-                src={dataUrl}
+                src={imageSrc}
                 alt={media?.alt || title || 'Generated visual'}
                 className="block max-h-[520px] w-full object-contain"
             />

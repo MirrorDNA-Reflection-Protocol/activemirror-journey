@@ -28,6 +28,8 @@ import { copyText } from '../lib/sendable-actions';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 const ARTIFACT_GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/artifact';
+const IMAGE_ARTIFACT_MAX_ATTEMPTS = 2;
+const IMAGE_ARTIFACT_RETRY_DELAY_MS = 900;
 
 const SAMPLE_MIRROR = {
     reflection: 'You do not need the perfect prompt. Say the messy thing, and we will make it usable.',
@@ -363,6 +365,15 @@ function artifactKindName(kind = 'draft') {
     if (kind === 'code') return 'code starter';
     if (kind === 'doc') return 'document';
     return 'draft';
+}
+
+function wait(ms = 0) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function artifactHasImageMedia(artifact = {}) {
+    const media = artifact?.media || {};
+    return Boolean(media.url || media.data_url || media.data);
 }
 
 function makeArtifactFirstResult(intent = '', kind = 'draft') {
@@ -1796,27 +1807,54 @@ export default function HomePage() {
 
         try {
             const language = languagePayloadFor(artifactIntent, { seed });
-            const response = await fetch(ARTIFACT_GATEWAY, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Active-Mirror-Session': getPrivacySessionId(),
+            const requestBody = JSON.stringify({
+                intent: artifactIntent,
+                artifactKind,
+                boundary: 'personal',
+                ...language,
+                mirror: {
+                    reflection: mirror.reflection || '',
+                    question: mirror.question || '',
+                    move: mirror.move || '',
                 },
-                body: JSON.stringify({
-                    intent: artifactIntent,
-                    artifactKind,
-                    boundary: 'personal',
-                    ...language,
-                    mirror: {
-                        reflection: mirror.reflection || '',
-                        question: mirror.question || '',
-                        move: mirror.move || '',
-                    },
-                }),
             });
-            const data = await response.json().catch(() => ({}));
-            if (!response.ok || !data?.artifact) {
-                throw new Error(data?.error || 'artifact_failed');
+            const maxAttempts = artifactKind === 'image' ? IMAGE_ARTIFACT_MAX_ATTEMPTS : 1;
+            let data = null;
+            let lastError = null;
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+                const response = await fetch(ARTIFACT_GATEWAY, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Active-Mirror-Session': getPrivacySessionId(),
+                    },
+                    body: requestBody,
+                });
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok || !payload?.artifact) {
+                    lastError = new Error(payload?.error || 'artifact_failed');
+                } else if (artifactKind === 'image' && !artifactHasImageMedia(payload.artifact) && attempt < maxAttempts) {
+                    lastError = new Error(payload?.fallback ? 'image_generation_fallback' : 'image_media_missing');
+                    trackEvent('sendable_created', {
+                        page: 'home',
+                        source: 'gateway_retry',
+                        status: 'retry',
+                        fallback: Boolean(payload?.fallback),
+                        label: artifactKind,
+                    });
+                } else {
+                    data = payload;
+                    break;
+                }
+
+                if (attempt < maxAttempts) {
+                    await wait(IMAGE_ARTIFACT_RETRY_DELAY_MS);
+                }
+            }
+
+            if (!data?.artifact) {
+                throw lastError || new Error('artifact_failed');
             }
             setSendableDraft(attachArtifactChallenge(data.artifact, {
                 intent: artifactIntent,

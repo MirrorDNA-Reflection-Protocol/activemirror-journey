@@ -149,7 +149,7 @@ For a topic that will last more than one session, create a topic packet from `do
 
 ## Topic Packets
 
-- None promoted yet after this ledger was created.
+- [AMOS Cognitive Mesh v0.1](./topic-packets/amos-cognitive-mesh-v0-1.md)
 
 ## Update Rule
 
@@ -643,3 +643,92 @@ Do not turn this into a strategy essay. Keep it operational.
   - Retry and clean-up buttons re-run generation; they are not a full image editor.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: add R2-backed signed media storage before ad traffic or heavy public image usage.
+
+### 2026-07-07: AMOS Cognitive Mesh Intake
+
+- Changed: captured the AMOS Cognitive Mesh Build Pack v0.1 as internal
+  architecture intake and separated it from the consumer front door.
+- Source files touched:
+  - `docs/dossiers/amos-cognitive-mesh.md`
+  - `docs/topic-packets/amos-cognitive-mesh-v0-1.md`
+  - `docs/dossiers/README.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - AMOS mesh language stays internal or enterprise-facing.
+  - Public Active Mirror stays chat-first, simple, and useful.
+  - No agent gets direct authority; future AMOS runtime work must pass through
+    scope, containment, receipts, and approval for consequential actions.
+- Deploy status:
+  - Not deployed; this is docs/intake unless paired with a later app bundle.
+- Tools and gates planned:
+  - `npm run guard:dossiers`
+  - `npm run guard:language`
+  - `npm run build:deploy`
+- Bad news or limits:
+  - This does not ship MirrorGateway, MirrorTruth, MirrorVec, execution
+    containers, Pixel approval, or a full agent mesh.
+  - The current public app must not claim the AMOS mesh is live.
+- Next safe move: finish the current public gateway/media hardening slice, then
+  decide the canonical AMOS runtime repo before coding mesh modules.
+
+### 2026-07-07: Signed Image URL Transport
+
+- Changed: replaced brittle inline generated-image payloads with signed gateway
+  media URLs. When R2 is not configured, the gateway now uses a short-lived
+  Cloudflare edge-cache media URL instead of putting the image inside the JSON
+  artifact response.
+- Source files touched:
+  - `index.html`
+  - `src/components/ArtifactCard.jsx`
+  - `src/pages/FeedbackDashboard.jsx`
+  - `src/pages/HomePage.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `worker/src/index.js`
+  - `worker/test/gateway-guardrails.test.mjs`
+  - `scripts/production-canary.mjs`
+  - `scripts/gateway-monitor.mjs`
+  - `scripts/app-fallbacks.mjs`
+  - `scripts/browser-smoke.mjs`
+  - `public/app/**`
+- Product decisions:
+  - Poster/image requests must produce a real image when the media route works.
+  - The browser should render a signed image URL, not a large inline base64 JSON
+    payload.
+  - `/app/feedback/` is an operator surface and must report image storage truth
+    without saying R2 is enabled.
+- Deploy status:
+  - Gateway Worker deployed: `active-mirror-site-gateway` version
+    `36e42029-8d28-4fbe-8c9f-144b4526d1b8`.
+  - Static site deployed: `active-mirror-static-site` version
+    `34dc7aa8-48a7-4d13-8c0d-298d940f3fb6`.
+- Tools and gates used:
+  - Source: `npm run guard:dossiers`, `npm run guard:language`,
+    `npm run build:deploy`
+  - Worker: `npm run worker:test`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`,
+    `npm run worker:deploy`, `npm run site:worker:deploy`
+  - Live: `ACTIVE_MIRROR_USER_QA_START=16 ACTIVE_MIRROR_USER_QA_CASES=1 ACTIVE_MIRROR_USER_QA_TIMEOUT_MS=150000 ACTIVE_MIRROR_USER_QA_DELAY_MS=1500 npm run qa:user-prompts`
+  - Live: `npm run canary:prod`, `npm run smoke:browser`,
+    `npm run redteam:prod-smoke`
+- Public routes checked:
+  - `https://activemirror.ai/app/`
+  - mobile and desktop smoke routes for home, setup aliases, enterprise, about,
+    consulting, research, device, feedback, privacy, and terms
+  - `https://gateway.activemirror.ai/health`
+- Bad news or limits:
+  - Cloudflare R2 is still not enabled for the account, so this is temporary
+    edge-cache delivery, not durable private media storage.
+  - Health currently reports `media_storage=edge_cache_ephemeral`,
+    `media_url_policy=ephemeral_signed_gateway_url`, and
+    `media_url_ttl_seconds=900`.
+  - Media signing is still `receipt_hash_fallback`; configure a real
+    `MIRROR_MEDIA_SIGNING_SECRET` plus R2 before paid traffic.
+  - A browser QA failure exposed the exact old issue:
+    `ERR_QUIC_PROTOCOL_ERROR.QUIC_TOO_MANY_RTOS` on large inline image JSON.
+    The fix was the signed URL path plus a CSP update allowing gateway-hosted
+    images.
+- Next safe move: enable R2, bind `MIRROR_MEDIA_BUCKET`, set
+  `MIRROR_MEDIA_SIGNING_SECRET`, then move from temporary edge cache to durable
+  signed media storage.
