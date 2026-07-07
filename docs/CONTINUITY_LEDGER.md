@@ -603,3 +603,43 @@ Do not turn this into a strategy essay. Keep it operational.
   - This adds poster/image generation, not video, PDF rendering, or document export beyond existing text downloads.
   - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
 - Next safe move: add one user-visible retry/regenerate control for image artifacts, then add a storage-backed media route before heavy ad traffic.
+
+### 2026-07-07: Image Media Hardening and Retry Controls
+
+- Changed: added image-specific budget enforcement, health-route truth for media storage, and user-visible retry controls for generated image artifacts.
+- Source files touched:
+  - `.mirror/PLAN.md`
+  - `src/components/ArtifactCard.jsx`
+  - `src/components/DraftActions.jsx`
+  - `src/lib/challenge-packet.js`
+  - `src/pages/HomePage.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `worker/src/index.js`
+  - `worker/wrangler.jsonc`
+  - `worker/test/gateway-guardrails.test.mjs`
+  - `public/app/**`
+- Product decisions:
+  - Keep image generation useful but bounded; media calls have stricter per-session, per-network, and daily budgets than normal chat.
+  - Keep the app language normal: `Image`, `Image prompt`, `Try again`, and `Make cleaner` instead of `visual brief`.
+  - Tell the truth in `/health`: media storage is `inline_fallback` unless an R2 bucket binding exists.
+  - Do not claim durable hosted media, signed URLs, or canvas editing yet.
+- Deploy status:
+  - Gateway Worker deployed: `active-mirror-site-gateway` version `ab37e5dc-9e12-40ca-939c-63dab4c1a3d8`.
+  - Static site deployed: `active-mirror-static-site` version `6adae9a8-d8bc-46bc-a519-7f8a4cce6a3e`.
+- Tools and gates used:
+  - Source: `npm run guard:language`, `npm run build:deploy`
+  - Worker: `npm run worker:test`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`, `npm run worker:deploy`, `npm run site:worker:deploy`
+  - Live health: `https://gateway.activemirror.ai/health` returned `image_budget: enabled`, image limits `2/12/5/80`, and `media_storage: inline_fallback`.
+  - Live direct API: poster request returned `fallback: false`, `kind: image`, `title: Poster`, `media_source: gemini_image`, `media_transport: inline`, and JPEG media data.
+  - Live browser QA: `ACTIVE_MIRROR_USER_QA_START=16 ACTIVE_MIRROR_USER_QA_CASES=1 ACTIVE_MIRROR_USER_QA_TIMEOUT_MS=120000 ACTIVE_MIRROR_USER_QA_DELAY_MS=1500 npm run qa:user-prompts`
+  - Live: `npm run smoke:interaction`, `npm run smoke:browser`, `npm run canary:prod`, `npm run redteam:prod-smoke`
+- Public routes checked:
+  - `https://activemirror.ai/app/`
+  - mobile and desktop smoke routes for `/app/`, `/app/id/`, `/app/device/`, `/app/enterprise/`, `/app/about/`, `/app/consulting/`, `/app/research/`, `/app/privacy/`, and `/app/terms/`
+- Bad news or limits:
+  - No R2/KV media bucket binding is configured in the Worker, so generated images still travel inline in the artifact response.
+  - Retry and clean-up buttons re-run generation; they are not a full image editor.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: add R2-backed signed media storage before ad traffic or heavy public image usage.

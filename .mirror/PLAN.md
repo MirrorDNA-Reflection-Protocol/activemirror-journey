@@ -19,7 +19,7 @@
    - draft;
    - document;
    - code starter;
-   - visual brief.
+   - image prompt or generated image.
 4. Add a small "use placeholders" privacy helper that never feels like a scolding block.
 5. Keep artifact challenge status quiet and useful: `Ready`, `Draft`, `Check first`, or `Needs edit`.
 6. Position Active Mirror as private-first reflective AI with online help when useful; do not sell offline AI or memory as unique.

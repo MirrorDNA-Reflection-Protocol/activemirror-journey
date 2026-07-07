@@ -6,7 +6,7 @@ import { trackEvent } from '../lib/privacy-events';
 const KIND_DOWNLOADS = {
     code: { ext: 'js', type: 'text/javascript;charset=utf-8', label: 'Download code' },
     doc: { ext: 'md', type: 'text/markdown;charset=utf-8', label: 'Download .md' },
-    image: { ext: 'md', type: 'text/markdown;charset=utf-8', label: 'Download brief' },
+    image: { ext: 'md', type: 'text/markdown;charset=utf-8', label: 'Download prompt' },
     draft: { ext: 'txt', type: 'text/plain;charset=utf-8', label: 'Download' },
 };
 

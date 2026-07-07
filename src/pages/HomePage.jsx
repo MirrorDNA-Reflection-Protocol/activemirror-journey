@@ -359,7 +359,7 @@ function makeAnswerFirstSourceResult(intent = '') {
 }
 
 function artifactKindName(kind = 'draft') {
-    if (kind === 'image') return 'visual brief';
+    if (kind === 'image') return 'image';
     if (kind === 'code') return 'code starter';
     if (kind === 'doc') return 'document';
     return 'draft';
@@ -494,7 +494,7 @@ function detectArtifactKind(intent = '', mirror = {}) {
 }
 
 function artifactActionFor(kind = 'draft') {
-    if (kind === 'image') return { label: 'Make visual brief', icon: Image };
+    if (kind === 'image') return { label: 'Make image', icon: Image };
     if (kind === 'code') return { label: 'Make code starter', icon: Code2 };
     if (kind === 'doc') return { label: 'Make doc', icon: FileText };
     return { label: 'Draft it', icon: PenLine };
@@ -502,7 +502,7 @@ function artifactActionFor(kind = 'draft') {
 
 function artifactIntentFor(kind = 'draft', mirror = {}, intent = '') {
     const base = String(intent || mirror.question || mirror.move || 'this').replace(/\s+/g, ' ').trim();
-    if (kind === 'image') return `Create a visual brief for this, using the reflection and next move: ${base}`;
+    if (kind === 'image') return `Create an image for this, using the reflection and next move: ${base}`;
     if (kind === 'code') return `Create a small code starter for this, using the reflection and next move: ${base}`;
     if (kind === 'doc') return `Create a short working document from this reflection, ready to copy: ${base}`;
     return `Draft the smallest sendable version from this reflection, ready to copy: ${base}`;
@@ -669,9 +669,9 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
     if (kind === 'image') {
         return {
             kind,
-            title: 'Visual brief',
+            title: 'Image prompt',
             body: [
-                'Visual brief',
+                'Image prompt',
                 '',
                 `Goal: ${cleanIntent || question}`,
                 `Feeling: calm, useful, warm, lightly magical, not busy.`,
@@ -1081,7 +1081,7 @@ function LoadingPanel() {
     );
 }
 
-function WorkSurface({ draft, busyKind, onClose }) {
+function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenImage }) {
     const working = Boolean(busyKind && !draft);
     if (!draft && !working) return null;
 
@@ -1118,11 +1118,7 @@ function WorkSurface({ draft, busyKind, onClose }) {
         );
     }
 
-    const note = draft?.challenge?.status === 'needs_check'
-        ? 'Check before relying on it.'
-        : draft?.challenge?.status === 'failed'
-            ? 'Edit before using it.'
-            : 'Ready to copy. Edit if needed.';
+    const note = workSurfaceNote(draft);
 
     return (
         <div className="relative min-w-0">
@@ -1134,10 +1130,28 @@ function WorkSurface({ draft, busyKind, onClose }) {
             >
                 <X size={15} />
             </button>
-            <ArtifactCard artifact={draft} surface="home" dismissInset />
+            <ArtifactCard
+                artifact={draft}
+                surface="home"
+                dismissInset
+                onRegenerate={draft?.kind === 'image' ? onRegenerateImage : undefined}
+                onSharpen={draft?.kind === 'image' ? onSharpenImage : undefined}
+            />
             <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">{note}</div>
         </div>
     );
+}
+
+function workSurfaceNote(draft) {
+    if (draft?.kind === 'image' && (draft?.media?.data_url || draft?.media?.dataUrl)) {
+        return 'Ready to download. Try again if you want a different version.';
+    }
+    if (draft?.kind === 'image') {
+        return 'Image generation is busy. Try again or use the prompt.';
+    }
+    if (draft?.challenge?.status === 'needs_check') return 'Check before relying on it.';
+    if (draft?.challenge?.status === 'failed') return 'Edit before using it.';
+    return 'Ready to copy. Edit if needed.';
 }
 
 function ReflectionField({ awake = false }) {
@@ -1477,6 +1491,7 @@ export default function HomePage() {
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(null);
     const [artifactBusy, setArtifactBusy] = useState('');
+    const [lastArtifactRequest, setLastArtifactRequest] = useState(null);
     const [workSurfaceOpen, setWorkSurfaceOpen] = useState(true);
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
@@ -1774,6 +1789,9 @@ export default function HomePage() {
         setSendableDraft(null);
         setWorkSurfaceOpen(true);
         setArtifactBusy(artifactKind);
+        if (artifactKind === 'image') {
+            setLastArtifactRequest({ intent: artifactIntent, mirror, kind: artifactKind });
+        }
         trackEvent('sendable_created', { page: 'home', source: eventSource, status: 'started', label: artifactKind });
 
         try {
@@ -1826,6 +1844,22 @@ export default function HomePage() {
         } finally {
             setArtifactBusy('');
         }
+    }
+
+    function regenerateImageArtifact(extra = '', source = 'image_retry') {
+        const request = lastArtifactRequest || {
+            intent: lastIntent || result?.mirror?.question || result?.mirror?.move || 'Make a clean useful image.',
+            mirror: result?.mirror || SAMPLE_MIRROR,
+            kind: 'image',
+        };
+        const nextIntent = extra
+            ? `${request.intent}\n\n${extra}`
+            : request.intent;
+        createArtifact('image', {
+            mirror: request.mirror,
+            intent: nextIntent,
+            source,
+        });
     }
 
     const showMirror = Boolean(result || busy || lastIntent);
@@ -2081,6 +2115,8 @@ export default function HomePage() {
                                 draft={sendableDraft}
                                 busyKind={artifactBusy}
                                 onClose={() => setWorkSurfaceOpen(false)}
+                                onRegenerateImage={() => regenerateImageArtifact('', 'image_retry')}
+                                onSharpenImage={() => regenerateImageArtifact('Make this version cleaner, simpler, more polished, and easier to read. Keep it warm and not busy.', 'image_sharpen')}
                             />
                         </div>
                     </section>

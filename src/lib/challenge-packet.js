@@ -6,7 +6,7 @@ function clean(value = '') {
     return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
-function statusFor({ intent, route, fallback }) {
+function statusFor({ intent, route, fallback, kind }) {
     const text = clean(intent);
     if (PRIVATE_PATTERN.test(text)) {
         return {
@@ -23,6 +23,15 @@ function statusFor({ intent, route, fallback }) {
             label: 'Check first',
             note: 'Use after a quick source check.',
             reason: 'The output depends on current or external facts.',
+        };
+    }
+
+    if ((fallback || route === 'local_fallback') && kind === 'image') {
+        return {
+            status: 'draft',
+            label: 'Prompt ready',
+            note: 'Image generation is busy. Try again or use the prompt.',
+            reason: 'The live image route was unavailable, so a usable prompt was made locally.',
         };
     }
 
@@ -50,7 +59,7 @@ export function buildArtifactChallenge({
     fallback = false,
     source = 'artifact',
 } = {}) {
-    const state = statusFor({ intent, route, fallback });
+    const state = statusFor({ intent, route, fallback, kind });
     const canPromote = state.status === 'passed' || state.status === 'draft';
 
     return {
@@ -106,4 +115,3 @@ export function attachArtifactChallenge(artifact, options = {}) {
         challenge,
     };
 }
-

@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Check, Code2, Copy, FileText, Image, PenLine } from 'lucide-react';
+import { Check, Code2, Copy, FileText, Image, PenLine, RefreshCw, Sparkles } from 'lucide-react';
 import DraftActions from './DraftActions';
 import { copyText } from '../lib/sendable-actions';
 
 const ARTIFACT_META = {
     code: { label: 'Code starter', icon: Code2, tone: 'text-emerald-100 border-emerald-200/20 bg-emerald-300/[0.07]' },
     doc: { label: 'Document', icon: FileText, tone: 'text-cyan-100 border-cyan-200/20 bg-cyan-300/[0.07]' },
-    image: { label: 'Visual brief', icon: Image, tone: 'text-violet-100 border-violet-200/20 bg-violet-300/[0.07]' },
+    image: { label: 'Image', icon: Image, tone: 'text-violet-100 border-violet-200/20 bg-violet-300/[0.07]' },
     draft: { label: 'Draft', icon: PenLine, tone: 'text-zinc-100 border-white/10 bg-white/[0.055]' },
 };
 
@@ -123,6 +123,7 @@ function ImageMedia({ media, title }) {
     const [status, setStatus] = useState('');
     const dataUrl = media?.data_url || media?.dataUrl || '';
     if (!dataUrl) return null;
+    const readyLabel = /\bposter\b/i.test(String(title || '')) ? 'Poster ready' : 'Image ready';
 
     function flash(nextStatus) {
         setStatus(nextStatus);
@@ -146,7 +147,7 @@ function ImageMedia({ media, title }) {
                 className="block max-h-[520px] w-full object-contain"
             />
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
-                <span className="text-xs font-semibold text-violet-100">Poster ready</span>
+                <span className="text-xs font-semibold text-violet-100">{readyLabel}</span>
                 <button
                     type="button"
                     onClick={downloadImage}
@@ -159,7 +160,29 @@ function ImageMedia({ media, title }) {
     );
 }
 
-export default function ArtifactCard({ artifact, surface = 'home', dismissInset = false }) {
+function ImageRetryActions({ onRegenerate, onSharpen }) {
+    if (!onRegenerate && !onSharpen) return null;
+    const buttonClass = 'inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white';
+
+    return (
+        <div className="mt-3 flex flex-wrap gap-2">
+            {onRegenerate ? (
+                <button type="button" onClick={onRegenerate} className={buttonClass}>
+                    <RefreshCw size={13} />
+                    Try again
+                </button>
+            ) : null}
+            {onSharpen ? (
+                <button type="button" onClick={onSharpen} className={buttonClass}>
+                    <Sparkles size={13} />
+                    Make cleaner
+                </button>
+            ) : null}
+        </div>
+    );
+}
+
+export default function ArtifactCard({ artifact, surface = 'home', dismissInset = false, onRegenerate, onSharpen }) {
     if (!artifact) return null;
 
     const kind = cleanKind(artifact.kind);
@@ -202,6 +225,7 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
             <ImageMedia media={media} title={title} />
             <ArtifactBody body={body} />
             <DraftActions title={title} text={body} kind={kind} surface={surface} />
+            {kind === 'image' ? <ImageRetryActions onRegenerate={onRegenerate} onSharpen={onSharpen} /> : null}
             {checklist.length ? (
                 <div className="mt-3 grid gap-2">
                     {checklist.map((item) => (
