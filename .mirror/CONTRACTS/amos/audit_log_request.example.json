@@ -1,0 +1,34 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_local_gates",
+    "action": "Verify AMOS local control-plane gates.",
+    "checked_scope": [
+      "contract gate",
+      "memory proposal gate",
+      "approval request gate",
+      "artifact export gate",
+      "audit log gate"
+    ],
+    "unchecked_scope": [
+      "live app runtime integration",
+      "gateway runtime integration",
+      "human approval UI",
+      "public download route"
+    ],
+    "evidence": [
+      "npm run guard:amos-contracts",
+      "npm run guard:memory-proposal",
+      "npm run guard:approval-request",
+      "npm run guard:artifact-export",
+      "npm run guard:audit-log"
+    ],
+    "bad_news": [
+      "Local audit logs do not make the public app consume AMOS contracts."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Add audit receipts to live runtime only after local gates are stable."
+    ]
+  }
+}

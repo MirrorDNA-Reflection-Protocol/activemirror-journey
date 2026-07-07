@@ -47,6 +47,10 @@ Updated: 2026-07-07
   nothing.
 - `npm run guard:artifact-export` verifies local-only artifact exports with
   path, allowed-root, content-type, secret-scan, SHA-256, and manifest checks.
+- `npm run guard:audit-log` verifies local AMOS audit-log receipts and is
+  included in `npm run prebuild`.
+- Local AMOS audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -70,6 +74,8 @@ Updated: 2026-07-07
   gateway do not yet consume these contracts at runtime.
 - The memory proposal gate writes review proposals only; it does not promote
   browser memory, canonical memory, or cross-device identity state.
+- The audit log gate writes local receipts only; it does not sign, chain,
+  publish, or enforce runtime claims.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

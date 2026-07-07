@@ -6,10 +6,10 @@
     "active_agent": "mirror_concierge",
     "allowed_memory_sources": ["session:intake", "session:draft", "project:active-mirror"],
     "forbidden_memory_sources": ["client:separate-work", "private:vault-raw", "legal:filings-private"],
-    "allowed_tools": ["local_artifact_generator", "browser_local_state", "memory_proposal_writer", "local_artifact_exporter"],
-    "pending_actions": ["draft_first_move", "memory_proposal", "artifact_export"],
+    "allowed_tools": ["local_artifact_generator", "browser_local_state", "memory_proposal_writer", "local_artifact_exporter", "local_audit_logger"],
+    "pending_actions": ["draft_first_move", "memory_proposal", "artifact_export", "audit_log"],
     "approvals_required": ["send_email", "publish_public", "memory_promote"],
-    "output_requirements": ["plain_language", "no_internal_jargon", "no_external_write", "memory_is_proposal_only", "export_receipt_required"],
+    "output_requirements": ["plain_language", "no_internal_jargon", "no_external_write", "memory_is_proposal_only", "export_receipt_required", "audit_receipt_required"],
     "state_hash": "aaaaaaaaaaaaaaaaaaaaaaaa",
     "previous_state_hash": "genesis"
   }

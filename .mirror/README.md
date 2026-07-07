@@ -49,6 +49,7 @@ with small contracts:
 - `.mirror/schemas/agent_contract.schema.json`
 - `.mirror/schemas/action_request.schema.json`
 - `.mirror/schemas/memory_proposal_request.schema.json`
+- `.mirror/schemas/audit_log_request.schema.json`
 
 These schemas do not make a runtime live. They define what a future runtime must
 validate before tools, memory, agents, or external actions are allowed.
@@ -80,6 +81,31 @@ node scripts/amos_artifact_export_gate.mjs --dry-run
 
 This is not public download infrastructure. Public or external export still
 needs approval and a separate runtime/deploy path.
+
+## Audit Log Gate
+
+Local AMOS gate checks can now leave repo-local audit receipts. The audit
+writer first runs the AMOS contract gate, then validates the audit-log request
+shape before writing under `.mirror/AUDIT_LOGS/`.
+
+```bash
+npm run guard:audit-log
+```
+
+Manual dry-run:
+
+```bash
+node scripts/amos_audit_log_gate.mjs --dry-run
+```
+
+Manual write:
+
+```bash
+node scripts/amos_audit_log_gate.mjs --write
+```
+
+Written files are local evidence only. They do not make the public app or
+gateway consume AMOS contracts at runtime.
 
 ## Approval Request Gate
 

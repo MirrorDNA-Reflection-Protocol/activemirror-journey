@@ -1,0 +1,18 @@
+{
+  "action_request": {
+    "schema_version": "action_request.v0_1",
+    "id": "audit_log",
+    "workspace": "personal",
+    "agent": "mirror_concierge",
+    "tool": "local_audit_logger",
+    "action": "audit_log",
+    "intent": "Write a local audit receipt for a completed gated check without external side effects.",
+    "reads": ["project:active-mirror"],
+    "writes": ["audit:local-log"],
+    "egress": "none",
+    "reversibility": "reversible",
+    "consent_level": "level_2",
+    "approval_token": "",
+    "output_type": "json"
+  }
+}

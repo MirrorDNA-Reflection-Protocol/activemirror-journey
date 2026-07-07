@@ -34,9 +34,13 @@
 6. Use `npm run guard:approval-request` before any action that may publish,
    send, deploy, or otherwise leave the local session.
 7. Use `npm run guard:artifact-export` before any local file export path is trusted.
-8. Add real approval request files only when a risky action is actually proposed.
-9. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-10. Only add runtime wiring after a small contract has been used by a real task.
+8. Use `npm run guard:audit-log` when a local gate check needs repo-local
+   evidence.
+9. Add real approval request files only when a risky action is actually proposed.
+10. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+11. Only add runtime wiring after a small contract has been used by a real task.
+12. Next control-plane slice: sign or chain local receipts before claiming
+   tamper-evident runtime proof.
 
 ## Do Not Do Yet
 

@@ -67,12 +67,17 @@ consent levels, and agent permissions.
 - Artifact export gate: `scripts/amos_artifact_export_gate.mjs` creates
   local-only exports only after contract, path, root, content-type,
   secret-scan, hash, and manifest checks pass.
+- Audit log gate: `scripts/amos_audit_log_gate.mjs` creates repo-local audit
+  receipts only after the contract gate allows the audit writer and the audit
+  request passes local shape checks.
 - Model or gateway: no provider routing change.
 - Local storage: proposal YAML only; no durable memory promotion.
 - Approval storage: pending approval YAML only when a real risky action needs
   review.
 - Generated artifacts: local-only export gate scaffold; no public download
   infrastructure.
+- Audit storage: local YAML receipts only; no signing, chaining, publishing, or
+  runtime enforcement.
 
 ## Leveraged Now
 
@@ -113,6 +118,12 @@ consent levels, and agent permissions.
      into `.mirror/ARTIFACT_EXPORTS/` after path traversal, absolute path,
      symlink escape, content-type, secret-scan, hash, and receipt checks pass.
 
+9. **Audit Log Request**
+   - A completed or checked local gate can write a repo-local audit receipt
+     only after an explicit audit-log action request passes the contract gate.
+     The receipt records checked scope, unchecked scope, evidence, bad news,
+     decision, and follow-up.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -139,6 +150,7 @@ bound to a runtime.
   - `npm run guard:memory-proposal`
   - `npm run guard:approval-request`
   - `npm run guard:artifact-export`
+  - `npm run guard:audit-log`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -169,10 +181,11 @@ bound to a runtime.
   the requested action or approve itself.
 - Artifact export is local-only scaffolding; it does not create a public URL,
   user-facing download route, or durable storage path.
+- Audit-log receipts are local-only scaffolding; they are not signed,
+  hash-chained, published, or consumed by the live app/gateway.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to add audit-log receipts for these local gates before any live runtime
-wiring.
+slice is to sign or chain local receipts before any live runtime proof claim.

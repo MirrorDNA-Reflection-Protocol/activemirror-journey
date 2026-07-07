@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/audit_log_request.schema.json",
+  "title": "Active Mirror Audit Log Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["audit_log_request"],
+  "properties": {
+    "audit_log_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "action",
+        "checked_scope",
+        "unchecked_scope",
+        "evidence",
+        "bad_news",
+        "decision",
+        "follow_up"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "audit_log_request.v0_1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "action": { "type": "string", "minLength": 5 },
+        "checked_scope": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "unchecked_scope": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "bad_news": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "decision": { "type": "string", "enum": ["pass", "partial", "fail"] },
+        "follow_up": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

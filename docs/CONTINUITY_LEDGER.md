@@ -983,3 +983,47 @@ Do not turn this into a strategy essay. Keep it operational.
     made live.
 - Next safe move: add audit-log receipts for the local gates before any live
   runtime wiring.
+
+### 2026-07-07: AMOS Audit Log Gate
+
+- Changed: attached the AMOS contract gate to local audit-log receipt creation.
+  A checked local gate can now write a repo-local audit receipt after an
+  explicit audit-log action request passes workspace, agent, tool, consent, and
+  output checks.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/scd_state.example.json`
+  - `.mirror/CONTRACTS/amos/workspace_boundary.personal.example.json`
+  - `.mirror/CONTRACTS/amos/agent_contract.mirror_concierge.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.audit_log.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.example.json`
+  - `.mirror/schemas/audit_log_request.schema.json`
+  - `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`
+  - `scripts/amos_audit_log_gate.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Local gate checks should leave evidence before live runtime wiring is
+    claimed.
+  - Audit logs record checked scope, unchecked scope, evidence, bad news,
+    decision, and follow-up.
+  - Audit logs are not approvals and do not execute actions.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:audit-log`
+  - `node scripts/amos_contract_gate.mjs --action .mirror/CONTRACTS/amos/action_request.audit_log.example.json --expect allow`
+  - `node scripts/amos_audit_log_gate.mjs --dry-run`
+  - `node scripts/amos_audit_log_gate.mjs --write --timestamp 20260707T130000Z`
+  - JSON parse check for the new audit schema and example contracts
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The live app and gateway do not consume these contracts at runtime.
+  - The receipt is local YAML only; it is not signed, hash-chained, published,
+    or connected to a verifier.
+- Next safe move: sign or chain local receipts before claiming tamper-evident
+  runtime proof.
