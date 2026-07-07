@@ -43,6 +43,11 @@ const checks = [
         label: 'Runtime integration gate',
         args: ['scripts/amos_runtime_integration_gate.mjs', '--self-test'],
     },
+    {
+        id: 'shadow_adapter_gate',
+        label: 'Shadow dry-run adapter gate',
+        args: ['scripts/amos_shadow_adapter_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -50,6 +55,7 @@ const localOnlyLimits = [
     'Receipt chains are SHA-256 local tamper checks only; they are not signed or externally timestamped.',
     'Approval requests, memory proposals, artifact exports, and audit receipts are scaffolds until wired into a runtime.',
     'Runtime integration is contract-only; app and gateway adapters are declared disabled.',
+    'Shadow adapter emits local dry-run receipts only; it performs no live app, gateway, model, network, or memory action.',
 ];
 
 function parseArgs(argv) {

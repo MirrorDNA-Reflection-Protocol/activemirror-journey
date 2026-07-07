@@ -1154,3 +1154,57 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `d583f5d6b312bf3f07f62c25d249c316f443261560dd0d27ae4c1d0471c28a35`
 - Next safe move: define a shadow dry-run adapter envelope that can read a
   proposed runtime request, emit a receipt, and still perform no live action.
+
+### 2026-07-07: AMOS Shadow Dry-Run Adapter
+
+- Changed: added a local-only shadow adapter that inspects a proposed runtime
+  request, runs local gates, and emits a dry-run receipt without performing any
+  live app, gateway, model, network, or memory action.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/shadow_runtime_request.consumer.example.json`
+  - `.mirror/CONTRACTS/amos/shadow_runtime_request.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.shadow_adapter.example.json`
+  - `.mirror/schemas/shadow_runtime_request.schema.json`
+  - `.mirror/schemas/shadow_runtime_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T133841Z-shadow_consumer_first_turn.json`
+  - `.mirror/AUDIT_LOGS/20260707T133841Z-amos_shadow_adapter.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_shadow_adapter_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Shadow adapter output is receipt-only.
+  - The shadow adapter must run `guard:runtime-integration`,
+    `guard:amos-contracts`, and `guard:receipt-chain`.
+  - The shadow adapter blocks requests that enable live action, network, model
+    calls, external writes, public routes, or durable memory writes.
+  - The shadow adapter is not a public app or gateway adapter.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:shadow-adapter`
+  - `node scripts/amos_shadow_adapter_gate.mjs --expect allow`
+  - `node scripts/amos_shadow_adapter_gate.mjs --request .mirror/CONTRACTS/amos/shadow_runtime_request.live_blocked.example.json --expect block`
+  - `node scripts/amos_shadow_adapter_gate.mjs --write --timestamp 20260707T133841Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.shadow_adapter.example.json --timestamp 20260707T133841Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T133841Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The shadow adapter does not call a model or test real model behavior.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The dry-run receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 5
+  - hash: `9e2f8bf4ecf6ebe98d515c3ee360c58f1f8b39bc6eaf6a09e8013b0ade9801cb`
+- Next safe move: define a read-only app adapter proposal that can inspect a
+  local request envelope without model calls, network use, memory writes, or
+  route changes.

@@ -10,6 +10,8 @@
 6. Keep source-sensitive turns marked before reliance.
 7. Read `docs/wiki/README.md` before changing copy, setup flow, deploy packaging, or repo boundaries.
 8. Pick or create a dossier in `docs/dossiers/` before a multi-file task.
+9. Treat strategy phrases as intent signals, not literal public copy, unless
+   Paul explicitly says to use exact wording.
 
 ## Next Product Slice
 
@@ -42,13 +44,16 @@
     claims.
 11. Use `npm run guard:runtime-integration` before claiming the app or gateway
     consumes AMOS gates.
-12. Add real approval request files only when a risky action is actually proposed.
-13. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-14. Only add runtime wiring after a small contract has been used by a real task.
-15. Runtime integration is now contract-only with disabled adapters.
-16. Next control-plane slice: define a shadow dry-run adapter envelope that can
-    read a proposed runtime request, emit a receipt, and still perform no live
-    action.
+12. Use `npm run guard:shadow-adapter` before claiming any runtime request has
+    been simulated through local gates.
+13. Add real approval request files only when a risky action is actually proposed.
+14. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+15. Only add runtime wiring after a small contract has been used by a real task.
+16. Runtime integration is still contract-only with disabled adapters.
+17. Shadow adapter receipts are local-only and perform no live action.
+18. Next control-plane slice: define a read-only app adapter proposal that can
+    inspect a local request envelope but still cannot call models, use network,
+    write memory, or alter the public route.
 
 ## Do Not Do Yet
 

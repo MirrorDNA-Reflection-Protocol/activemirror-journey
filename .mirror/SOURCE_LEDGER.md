@@ -34,6 +34,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | Local AMOS audit receipts are chained with deterministic SHA-256 tamper checks. | AMOS architecture | local-contract | `scripts/amos_receipt_chain_gate.mjs`, `.mirror/schemas/receipt_chain.schema.json`, `.mirror/RECEIPT_CHAINS/audit-log-chain.json`, `.mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml`, `npm run guard:receipt-chain` |
 | Local AMOS control health can be checked with one bad-news-first status command. | AMOS architecture | local-contract | `scripts/amos_status_report.mjs`, `.mirror/CONTRACTS/amos/audit_log_request.amos_status.example.json`, `.mirror/AUDIT_LOGS/20260707T132500Z-amos_status_report.yaml`, `npm run amos:status` |
 | AMOS runtime integration remains contract-only until a future app or gateway adapter is approved. | AMOS architecture | local-contract | `scripts/amos_runtime_integration_gate.mjs`, `.mirror/schemas/runtime_integration.schema.json`, `.mirror/CONTRACTS/amos/runtime_integration.contract_only.example.json`, `.mirror/AUDIT_LOGS/20260707T132730Z-amos_runtime_integration_contract.yaml`, `npm run guard:runtime-integration` |
+| AMOS shadow runtime requests can emit local dry-run receipts without performing live actions. | AMOS architecture | local-contract | `scripts/amos_shadow_adapter_gate.mjs`, `.mirror/schemas/shadow_runtime_request.schema.json`, `.mirror/schemas/shadow_runtime_receipt.schema.json`, `.mirror/CONTRACTS/amos/shadow_runtime_request.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T133841Z-shadow_consumer_first_turn.json`, `npm run guard:shadow-adapter` |
 
 ## Blocked Until Verified
 
@@ -44,6 +45,8 @@ Purpose: track public/product claims that need evidence before they appear in co
 - Claims that local receipt chains are signed, externally timestamped,
   publicly notarized, or verified by the live app/gateway.
 - Claims that the public app or gateway consumes AMOS contracts at runtime.
+- Claims that the shadow adapter performed live app, gateway, model, network,
+  or durable memory actions.
 - Claims that the consumer app implements full AMOS, Euclid Trace, MirrorGraph, or Reflective Workspace runtime.
 - Claims that Active Mirror reads hidden motives, creates consciousness, is alive,
   or runs full governed memory/evolution modules in the public app.

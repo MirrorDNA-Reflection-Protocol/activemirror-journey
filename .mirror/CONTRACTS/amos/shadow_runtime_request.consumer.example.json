@@ -1,0 +1,54 @@
+{
+  "shadow_runtime_request": {
+    "schema_version": "shadow_runtime_request.v0_1",
+    "id": "shadow_consumer_first_turn",
+    "surface": "consumer_app",
+    "mode": "shadow_dry_run",
+    "proposed_adapter": "shadow_dry_run_adapter",
+    "intent": "Simulate how a future runtime adapter would inspect a first-turn reflection request.",
+    "requested_action": "dry_run_consumer_turn",
+    "live_action_enabled": false,
+    "network_enabled": false,
+    "model_call_enabled": false,
+    "external_write_enabled": false,
+    "public_route_enabled": false,
+    "reads": [
+      ".mirror/CONTRACTS/amos/runtime_integration.contract_only.example.json",
+      ".mirror/RECEIPT_CHAINS/audit-log-chain.json"
+    ],
+    "writes": [
+      ".mirror/RUNTIME_DRY_RUNS"
+    ],
+    "egress": "none",
+    "required_gates": [
+      "guard:runtime-integration",
+      "guard:amos-contracts",
+      "guard:receipt-chain"
+    ],
+    "receipt": {
+      "enabled": true,
+      "destination": ".mirror/RUNTIME_DRY_RUNS",
+      "content": [
+        "request_id",
+        "checked_scope",
+        "gate_results",
+        "blocked_live_capabilities",
+        "performed_live_action"
+      ]
+    },
+    "output_type": "receipt_only",
+    "claim_boundary": [
+      "This is a shadow dry-run only.",
+      "It performs no live action.",
+      "It does not call a model.",
+      "It does not change the public app or gateway."
+    ],
+    "blocked_claims": [
+      "Shadow adapter performed a live action.",
+      "Shadow adapter called a model.",
+      "Shadow adapter changed the public app.",
+      "Shadow adapter changed gateway behavior.",
+      "Shadow adapter wrote durable memory."
+    ]
+  }
+}

@@ -170,6 +170,28 @@ app consumes AMOS contracts, or that the gateway consumes AMOS contracts. A
 future shadow adapter must pass this contract before any live runtime wiring is
 claimed.
 
+## Shadow Dry-Run Adapter Gate
+
+The shadow adapter simulates a future runtime request, runs the local runtime
+integration, contract, and receipt-chain gates, then emits a local receipt. It
+does not call a model, touch the network, write durable memory, change the
+public app, or change the gateway.
+
+```bash
+npm run guard:shadow-adapter
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_shadow_adapter_gate.mjs --expect allow
+node scripts/amos_shadow_adapter_gate.mjs --request .mirror/CONTRACTS/amos/shadow_runtime_request.live_blocked.example.json --expect block
+node scripts/amos_shadow_adapter_gate.mjs --write
+```
+
+Written dry-run receipts go to `.mirror/RUNTIME_DRY_RUNS/`. They are local
+evidence only and are not live runtime enforcement.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

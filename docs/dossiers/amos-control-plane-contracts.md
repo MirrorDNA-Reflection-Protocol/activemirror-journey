@@ -27,6 +27,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/consent_ladder.schema.json`
   - `.mirror/schemas/agent_contract.schema.json`
   - `.mirror/schemas/runtime_integration.schema.json`
+  - `.mirror/schemas/shadow_runtime_request.schema.json`
+  - `.mirror/schemas/shadow_runtime_receipt.schema.json`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -87,6 +89,8 @@ consent levels, and agent permissions.
   external timestamp, public notarization, or live runtime verifier.
 - Runtime integration: contract-only manifest with consumer app and gateway
   adapters declared disabled.
+- Shadow adapter: local dry-run receipt only; no live app, gateway, model,
+  network, or memory action.
 
 ## Leveraged Now
 
@@ -151,6 +155,12 @@ consent levels, and agent permissions.
      adapters, enabled surfaces, missing local gates, missing receipts, and
      unsupported claims that public runtime enforcement is live.
 
+13. **Shadow Dry-Run Adapter**
+   - `npm run guard:shadow-adapter` verifies that a proposed runtime request can
+     be inspected through local gates and produce a local receipt without
+     calling a model, using network, writing durable memory, changing the public
+     app, or changing the gateway.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -180,6 +190,7 @@ bound to a runtime.
   - `npm run guard:audit-log`
   - `npm run guard:receipt-chain`
   - `npm run guard:runtime-integration`
+  - `npm run guard:shadow-adapter`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -218,10 +229,12 @@ bound to a runtime.
 - AMOS status is a local truth surface only; it is not live runtime enforcement.
 - Runtime integration is contract-only; the app and gateway adapters are
   explicitly disabled.
+- Shadow adapter receipts are local dry-run receipts only; they do not prove
+  live app or gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define a shadow dry-run adapter envelope that can emit receipts
-without performing live app or gateway actions.
+slice is to define a read-only app adapter proposal that can inspect request
+envelopes without model calls, network use, memory writes, or route changes.

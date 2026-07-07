@@ -1,0 +1,49 @@
+{
+  "shadow_runtime_receipt": {
+    "schema_version": "shadow_runtime_receipt.v0_1",
+    "id": "shadow_receipt_20260707t133841z_shadow_consumer_first_turn",
+    "request_id": "shadow_consumer_first_turn",
+    "created_at": "2026-07-07T13:38:41Z",
+    "decision": "allow",
+    "performed_live_action": false,
+    "checked_scope": [
+      "shadow_runtime_request_shape",
+      "dry_run_only_flags",
+      "no_network",
+      "no_model_call",
+      "no_external_write",
+      "no_public_route",
+      "required_local_gates",
+      "receipt_destination"
+    ],
+    "gate_results": [
+      {
+        "id": "guard:runtime-integration",
+        "ok": true,
+        "decision": "allow"
+      },
+      {
+        "id": "guard:amos-contracts",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:receipt-chain",
+        "ok": true,
+        "decision": "pass"
+      }
+    ],
+    "blocked_live_capabilities": [
+      "live_action",
+      "network",
+      "model_call",
+      "external_write",
+      "public_route",
+      "durable_memory_write"
+    ],
+    "output": {
+      "type": "receipt_only",
+      "message": "Shadow dry-run completed without live action."
+    }
+  }
+}

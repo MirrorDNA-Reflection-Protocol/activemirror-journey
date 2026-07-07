@@ -1,0 +1,32 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_shadow_adapter",
+    "action": "Verify the AMOS shadow dry-run adapter emits a receipt without live action.",
+    "checked_scope": [
+      "shadow runtime request schema",
+      "shadow runtime receipt schema",
+      "shadow adapter gate",
+      "local dry-run receipt",
+      "blocked live request"
+    ],
+    "unchecked_scope": [
+      "live app adapter",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes"
+    ],
+    "evidence": [
+      "npm run guard:shadow-adapter",
+      "node scripts/amos_shadow_adapter_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The shadow adapter performs no live runtime action and does not prove app or gateway enforcement."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Only after repeated dry-run receipts remain stable, consider a read-only app adapter."
+    ]
+  }
+}

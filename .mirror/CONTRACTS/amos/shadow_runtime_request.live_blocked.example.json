@@ -1,0 +1,28 @@
+{
+  "shadow_runtime_request": {
+    "schema_version": "shadow_runtime_request.v0_1",
+    "id": "shadow_live_blocked",
+    "surface": "consumer_app",
+    "mode": "shadow_dry_run",
+    "proposed_adapter": "shadow_dry_run_adapter",
+    "intent": "Deliberately unsafe live request for gate self-test.",
+    "requested_action": "publish_consumer_turn",
+    "live_action_enabled": true,
+    "network_enabled": true,
+    "model_call_enabled": true,
+    "external_write_enabled": true,
+    "public_route_enabled": true,
+    "reads": ["browser_session"],
+    "writes": ["public_app"],
+    "egress": "model_route",
+    "required_gates": ["guard:runtime-integration"],
+    "receipt": {
+      "enabled": true,
+      "destination": ".mirror/RUNTIME_DRY_RUNS",
+      "content": ["request_id"]
+    },
+    "output_type": "receipt_only",
+    "claim_boundary": ["This claims live behavior."],
+    "blocked_claims": ["Shadow adapter performed a live action."]
+  }
+}
