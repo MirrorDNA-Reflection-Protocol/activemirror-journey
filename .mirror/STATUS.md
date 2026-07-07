@@ -37,7 +37,9 @@ Updated: 2026-07-07
 - `.mirror/SOURCE_LEDGER.md` tracks public claims that need local evidence or fresh verification.
 - `.mirror/SKILLS/` contains lightweight policy stubs only; it does not spawn agent teams.
 - AMOS control-plane foundation contracts exist as schemas for SCD state,
-  workspace boundary, consent ladder, and agent contract.
+  workspace boundary, consent ladder, agent contract, and action request.
+- `npm run guard:amos-contracts` runs a local AMOS contract gate and is included
+  in `npm run prebuild`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
   signed gateway URLs and secret HMAC signing.
 
@@ -52,8 +54,8 @@ Updated: 2026-07-07
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
 - Audit, rollback, skill, and source-ledger files are repo-local contracts only; they are not a runtime control plane.
 - GitHub Wiki is not canonical or mirrored; the Obsidian copy is generated reference material only.
-- The new AMOS control-plane schemas are contracts only; no runtime validator or
-  action gate consumes them yet.
+- The AMOS contract gate is local repo enforcement only; the live app and
+  gateway do not yet consume these contracts at runtime.
 
 ## Unrelated Local Dirt
 

@@ -1,0 +1,47 @@
+{
+  "consent_ladder": {
+    "schema_version": "consent_ladder.v0_1",
+    "default_level": "level_0",
+    "levels": [
+      {
+        "id": "level_0",
+        "name": "public_read",
+        "approval": "none",
+        "description": "Read public or user-submitted prompt context without side effects."
+      },
+      {
+        "id": "level_1",
+        "name": "private_read",
+        "approval": "session",
+        "description": "Read private session context only inside the active user session."
+      },
+      {
+        "id": "level_2",
+        "name": "draft_only",
+        "approval": "before_final_action",
+        "description": "Create a draft or artifact without sending, publishing, or saving durable memory."
+      },
+      {
+        "id": "level_3",
+        "name": "external_write",
+        "approval": "per_action",
+        "description": "Write outside the local session, including send, publish, deploy, or database update."
+      },
+      {
+        "id": "level_4",
+        "name": "irreversible_sensitive",
+        "approval": "explicit_plus_audit_lock",
+        "description": "Perform an irreversible, sensitive, payment, deletion, or client-data action."
+      }
+    ],
+    "actions_requiring_explicit_approval": [
+      "send_email",
+      "publish_public",
+      "deploy",
+      "delete_file",
+      "memory_promote",
+      "export_client_data",
+      "payment"
+    ]
+  }
+}

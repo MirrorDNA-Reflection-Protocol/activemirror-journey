@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/action_request.schema.json",
+  "title": "Active Mirror Action Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action_request"],
+  "properties": {
+    "action_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "workspace",
+        "agent",
+        "tool",
+        "action",
+        "intent",
+        "reads",
+        "writes",
+        "egress",
+        "reversibility",
+        "consent_level",
+        "approval_token",
+        "output_type"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "action_request.v0_1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "workspace": { "type": "string", "minLength": 2 },
+        "agent": { "type": "string", "minLength": 2 },
+        "tool": { "type": "string", "minLength": 2 },
+        "action": { "type": "string", "minLength": 2 },
+        "intent": { "type": "string", "minLength": 5 },
+        "reads": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "writes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "egress": {
+          "type": "string",
+          "enum": ["none", "metadata_only", "external_write", "client_data", "payment", "publish"]
+        },
+        "reversibility": {
+          "type": "string",
+          "enum": ["reversible", "partly_reversible", "irreversible"]
+        },
+        "consent_level": {
+          "type": "string",
+          "enum": ["level_0", "level_1", "level_2", "level_3", "level_4"]
+        },
+        "approval_token": { "type": "string" },
+        "output_type": {
+          "type": "string",
+          "enum": ["markdown", "docx", "pdf", "pptx", "html", "code", "json", "image", "csv"]
+        }
+      }
+    }
+  }
+}

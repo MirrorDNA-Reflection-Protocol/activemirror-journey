@@ -1,0 +1,16 @@
+{
+  "workspace_boundary": {
+    "schema_version": "workspace_boundary.v0_1",
+    "workspace_id": "personal",
+    "label": "Personal Active Mirror",
+    "classification": "personal",
+    "can_read": ["session:intake", "project:active-mirror"],
+    "cannot_read": ["client:separate-work", "private:vault-raw", "legal:filings-private"],
+    "can_write": ["session:draft", "project:active-mirror-note"],
+    "cannot_write": ["client:separate-work", "public:site", "private:vault-raw"],
+    "allowed_tools": ["local_artifact_generator", "browser_local_state"],
+    "forbidden_tools": ["email_send", "deploy", "payment", "production_db"],
+    "egress_policy": "metadata_only",
+    "memory_policy": "approval_before_save"
+  }
+}

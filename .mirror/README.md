@@ -47,6 +47,16 @@ with small contracts:
 - `.mirror/schemas/workspace_boundary.schema.json`
 - `.mirror/schemas/consent_ladder.schema.json`
 - `.mirror/schemas/agent_contract.schema.json`
+- `.mirror/schemas/action_request.schema.json`
 
 These schemas do not make a runtime live. They define what a future runtime must
 validate before tools, memory, agents, or external actions are allowed.
+
+Run the local contract gate with:
+
+```bash
+npm run guard:amos-contracts
+```
+
+The default examples live in `.mirror/CONTRACTS/amos/`. The gate returns
+`allow`, `approval_required`, or `block` and is now part of `npm run prebuild`.

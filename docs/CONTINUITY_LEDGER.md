@@ -812,3 +812,40 @@ Do not turn this into a strategy essay. Keep it operational.
     execution runner is made live by this intake.
 - Next safe move: build a local validator that checks an SCD state, workspace
   boundary, consent ladder, and agent contract before a future action can run.
+
+### 2026-07-07: AMOS Contract Gate
+
+- Changed: built the local validator from the AMOS control-plane contract slice.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/scd_state.example.json`
+  - `.mirror/CONTRACTS/amos/workspace_boundary.personal.example.json`
+  - `.mirror/CONTRACTS/amos/consent_ladder.default.json`
+  - `.mirror/CONTRACTS/amos/agent_contract.mirror_concierge.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.allowed.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.blocked.example.json`
+  - `.mirror/schemas/action_request.schema.json`
+  - `scripts/amos_contract_gate.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Contract gate returns `allow`, `approval_required`, or `block`.
+  - The gate checks schema versions, workspace match, agent match, pending
+    action, tool allowlist, read/write boundaries, egress, consent, approval
+    token, and output type.
+  - `npm run guard:amos-contracts` is now part of `npm run prebuild`.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:amos-contracts`
+  - explicit allowed and blocked action examples with `--expect`
+- Bad news or limits:
+  - This is local repo enforcement only.
+  - The live app and gateway do not yet consume these contracts at runtime.
+  - No external tool, memory promotion, file export, or approval queue was made
+    live.
+- Next safe move: attach this gate to one real local action, likely memory
+  proposal or artifact export, before expanding to MCP tools or external writes.

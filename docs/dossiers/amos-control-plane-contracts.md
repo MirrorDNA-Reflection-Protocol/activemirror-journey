@@ -58,6 +58,8 @@ consent levels, and agent permissions.
 
 - UI: no consumer UI change in this slice.
 - Runtime: schema-only foundation for future AMOS runtime work.
+- Runtime gate: `scripts/amos_contract_gate.mjs` validates local contract
+  examples and returns `allow`, `approval_required`, or `block`.
 - Model or gateway: no provider routing change.
 - Local storage: no new durable memory write path.
 - Generated artifacts: no new export capability.
@@ -81,6 +83,10 @@ consent levels, and agent permissions.
    - Every future agent needs role, workspace, read/write boundaries, allowed
      tools, forbidden tools, approval triggers, output types, and audit.
 
+5. **Action Request**
+   - A candidate action must name workspace, agent, tool, action, reads, writes,
+     egress, reversibility, consent level, approval token, and output type.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -102,6 +108,8 @@ bound to a runtime.
   - `npm run build:deploy`
 - Schema checks:
   - parse all `.mirror/schemas/*.schema.json` as JSON
+- Contract checks:
+  - `npm run guard:amos-contracts`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -122,7 +130,7 @@ bound to a runtime.
 
 ## Bad News / Limits
 
-- These are schemas, not enforcement yet.
+- These are local contracts and a local gate, not live app runtime enforcement.
 - The consumer app still does not implement the full AMOS control plane.
 - No private memory, external tool action, or approval workflow is made live by
   this dossier.
@@ -131,6 +139,5 @@ bound to a runtime.
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is a local validator that accepts an SCD state, a workspace boundary, a
-consent ladder, and an agent contract, then blocks any action that lacks the
-required approval level.
+slice is to connect the local contract gate to a real repo-local action, such as
+artifact export or memory proposal, before any live runtime wiring.

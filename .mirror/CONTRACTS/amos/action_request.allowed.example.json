@@ -1,0 +1,18 @@
+{
+  "action_request": {
+    "schema_version": "action_request.v0_1",
+    "id": "draft_first_move",
+    "workspace": "personal",
+    "agent": "mirror_concierge",
+    "tool": "local_artifact_generator",
+    "action": "draft_first_move",
+    "intent": "Create a small useful first move from the user's current request.",
+    "reads": ["session:intake"],
+    "writes": ["session:draft"],
+    "egress": "none",
+    "reversibility": "reversible",
+    "consent_level": "level_1",
+    "approval_token": "",
+    "output_type": "markdown"
+  }
+}
