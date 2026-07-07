@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/workspace_boundary.schema.json",
+  "title": "Active Mirror Workspace Boundary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workspace_boundary"],
+  "properties": {
+    "workspace_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "workspace_id",
+        "label",
+        "classification",
+        "can_read",
+        "cannot_read",
+        "can_write",
+        "cannot_write",
+        "allowed_tools",
+        "forbidden_tools",
+        "egress_policy",
+        "memory_policy"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "workspace_boundary.v0_1" },
+        "workspace_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{1,63}$" },
+        "label": { "type": "string", "minLength": 2 },
+        "classification": {
+          "type": "string",
+          "enum": ["personal", "public", "client", "legal", "dev", "research", "enterprise"]
+        },
+        "can_read": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "cannot_read": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "can_write": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "cannot_write": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "allowed_tools": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "forbidden_tools": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "egress_policy": {
+          "type": "string",
+          "enum": ["none", "metadata_only", "approval_required", "blocked"]
+        },
+        "memory_policy": {
+          "type": "string",
+          "enum": ["session_only", "approval_before_save", "project_memory", "canonical_memory_blocked"]
+        }
+      }
+    }
+  }
+}

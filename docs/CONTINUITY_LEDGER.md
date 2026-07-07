@@ -777,3 +777,38 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: keep the homepage minimal, then move the AMOS control-plane
   machinery into enterprise/internal surfaces instead of the consumer first
   screen.
+
+### 2026-07-07: AMOS Control-Plane Contract Intake
+
+- Changed: absorbed the leverageable pieces from the layered AMOS stack note as
+  repo-local contracts, not homepage language.
+- Source files touched:
+  - `.mirror/schemas/scd_state.schema.json`
+  - `.mirror/schemas/workspace_boundary.schema.json`
+  - `.mirror/schemas/consent_ladder.schema.json`
+  - `.mirror/schemas/agent_contract.schema.json`
+  - `.mirror/STATUS.md`
+  - `.mirror/README.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/dossiers/README.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Leverage now: state contract, workspace boundary, consent ladder, and agent
+    contract.
+  - Defer: desktop shell, Crabbox, OpenWiki, MCP bridge, graph/vector memory,
+    UX4G component library, and SWFI-specific workspace.
+  - Keep consumer first screen free of AMOS/control-plane language.
+- Deploy status:
+  - Not deployed; no public assets changed in this slice.
+- Tools and gates planned:
+  - `npm run guard:dossiers`
+  - JSON parse over `.mirror/schemas/*.schema.json`
+  - `npm run guard:language`
+  - `npm run build:deploy`
+- Bad news or limits:
+  - These schemas are not enforcement yet.
+  - The consumer app still does not implement the full AMOS control plane.
+  - No approval workflow, durable memory sync, external tool action, or safe
+    execution runner is made live by this intake.
+- Next safe move: build a local validator that checks an SCD state, workspace
+  boundary, consent ladder, and agent contract before a future action can run.

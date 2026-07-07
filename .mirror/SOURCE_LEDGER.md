@@ -26,6 +26,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | Synthetic-continuity language must block consciousness, life, and mind claims. | AMOS boundary | analogy-grade + intake | University of Minnesota SpudCell article, Biotic SpudCell page, Guardian coverage, `docs/dossiers/synthetic-continuity-boundary.md`, `/Users/mirror-pro/Documents/activemirroros-trust-kernel/docs/SYNTHETIC_CONTINUITY.md` |
 | ActiveMirrorOS should be treated as a governed persistent-state agent layer, not a chatbot memory feature. | AMOS architecture | intake | `/Users/mirror-pro/Downloads/ActiveMirrorOS_Governed_Agent_OS_Synthesis.md`, `docs/dossiers/governed-agent-os.md` |
 | AMOS Cognitive Mesh should be a governed agent control plane, not a loose autonomous swarm. | AMOS architecture | intake | `/Users/mirror-pro/Downloads/AMOS_Cognitive_Mesh_Build_Pack_v0.1.md`, `docs/dossiers/amos-cognitive-mesh.md`, `docs/topic-packets/amos-cognitive-mesh-v0-1.md` |
+| AMOS control-plane work should start with small validated contracts before tools, memory, agents, or external actions run. | AMOS architecture | intake + local-contract | `/Users/mirror-pro/.codex/attachments/83ae4042-534a-4067-906c-410a675cd0ff/pasted-text.txt`, `docs/dossiers/amos-control-plane-contracts.md`, `.mirror/schemas/scd_state.schema.json`, `.mirror/schemas/workspace_boundary.schema.json`, `.mirror/schemas/consent_ladder.schema.json`, `.mirror/schemas/agent_contract.schema.json` |
 
 ## Blocked Until Verified
 

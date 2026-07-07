@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/agent_contract.schema.json",
+  "title": "Active Mirror Agent Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["agent_contract"],
+  "properties": {
+    "agent_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "name",
+        "workspace",
+        "role",
+        "can_read",
+        "cannot_read",
+        "can_write",
+        "cannot_write",
+        "allowed_tools",
+        "forbidden_tools",
+        "requires_approval_for",
+        "output_types",
+        "audit_required"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "agent_contract.v0_1" },
+        "name": { "type": "string", "minLength": 2 },
+        "workspace": {
+          "type": "string",
+          "enum": ["personal", "public", "client", "legal", "dev", "research", "enterprise"]
+        },
+        "role": { "type": "string", "minLength": 10 },
+        "can_read": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "cannot_read": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "can_write": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "cannot_write": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "allowed_tools": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "forbidden_tools": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "requires_approval_for": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 2 },
+          "uniqueItems": true
+        },
+        "output_types": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["markdown", "docx", "pdf", "pptx", "html", "code", "json", "image", "csv"] },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "audit_required": { "type": "boolean", "const": true }
+      }
+    }
+  }
+}

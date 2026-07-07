@@ -1,14 +1,14 @@
 # Active Mirror Status
 
-Updated: 2026-07-04
+Updated: 2026-07-07
 
 ## Current State
 
 - Product source repo: `/Users/mirror-pro/repos/activemirror-journey`
 - Deploy/gateway repo: `/Users/mirror-pro/repos/active-mirror-site`
 - Live app route: `https://activemirror.ai/app/`
-- Current live app bundle verified: `index-DaAwZ3Fx.js`
-- Gateway health version verified: `2026-07-02-first-turn-source-voice-v1`
+- Current live app bundle verified: `index-BBeJ1fR5.js`
+- Gateway health version verified: `2026-07-07-media-kv-fallback-v1`
 
 ## Verified Checks
 
@@ -36,6 +36,10 @@ Updated: 2026-07-04
 - `.mirror/AUDIT_LOGS/TEMPLATE.yaml` and `.mirror/ROLLBACKS/TEMPLATE.yaml` define receipt and restore shapes.
 - `.mirror/SOURCE_LEDGER.md` tracks public claims that need local evidence or fresh verification.
 - `.mirror/SKILLS/` contains lightweight policy stubs only; it does not spawn agent teams.
+- AMOS control-plane foundation contracts exist as schemas for SCD state,
+  workspace boundary, consent ladder, and agent contract.
+- Live generated-media storage currently reports `kv_durable_free_tier` with
+  signed gateway URLs and secret HMAC signing.
 
 ## Bad News / Known Limits
 
@@ -48,6 +52,8 @@ Updated: 2026-07-04
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
 - Audit, rollback, skill, and source-ledger files are repo-local contracts only; they are not a runtime control plane.
 - GitHub Wiki is not canonical or mirrored; the Obsidian copy is generated reference material only.
+- The new AMOS control-plane schemas are contracts only; no runtime validator or
+  action gate consumes them yet.
 
 ## Unrelated Local Dirt
 

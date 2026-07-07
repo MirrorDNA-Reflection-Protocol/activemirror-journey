@@ -38,3 +38,15 @@ Not allowed here:
 6. Build and test locally.
 7. Package to `active-mirror-site/public/app` only when deploy is intended.
 
+## AMOS Contract Seeds
+
+The public app is still the simple front door. AMOS/control-plane work starts
+with small contracts:
+
+- `.mirror/schemas/scd_state.schema.json`
+- `.mirror/schemas/workspace_boundary.schema.json`
+- `.mirror/schemas/consent_ladder.schema.json`
+- `.mirror/schemas/agent_contract.schema.json`
+
+These schemas do not make a runtime live. They define what a future runtime must
+validate before tools, memory, agents, or external actions are allowed.

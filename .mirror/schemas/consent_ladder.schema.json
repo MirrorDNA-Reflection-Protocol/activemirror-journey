@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/consent_ladder.schema.json",
+  "title": "Active Mirror Consent Ladder",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["consent_ladder"],
+  "properties": {
+    "consent_ladder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "levels", "default_level", "actions_requiring_explicit_approval"],
+      "properties": {
+        "schema_version": { "type": "string", "const": "consent_ladder.v0_1" },
+        "default_level": { "type": "string", "enum": ["level_0", "level_1", "level_2", "level_3", "level_4"] },
+        "levels": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "approval", "description"],
+            "properties": {
+              "id": { "type": "string", "enum": ["level_0", "level_1", "level_2", "level_3", "level_4"] },
+              "name": { "type": "string", "minLength": 2 },
+              "approval": {
+                "type": "string",
+                "enum": ["none", "session", "before_final_action", "per_action", "explicit_plus_audit_lock"]
+              },
+              "description": { "type": "string", "minLength": 10 }
+            }
+          }
+        },
+        "actions_requiring_explicit_approval": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 2 },
+          "minItems": 5,
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

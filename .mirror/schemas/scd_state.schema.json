@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/scd_state.schema.json",
+  "title": "Active Mirror SCD State Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scd_state"],
+  "properties": {
+    "scd_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "active_workspace",
+        "active_goal",
+        "active_agent",
+        "allowed_memory_sources",
+        "forbidden_memory_sources",
+        "allowed_tools",
+        "pending_actions",
+        "approvals_required",
+        "output_requirements",
+        "state_hash",
+        "previous_state_hash"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "scd_state.v0_1" },
+        "active_workspace": { "type": "string", "minLength": 2 },
+        "active_goal": { "type": "string", "minLength": 2 },
+        "active_agent": { "type": "string", "minLength": 2 },
+        "allowed_memory_sources": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "forbidden_memory_sources": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "allowed_tools": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "pending_actions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "approvals_required": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "output_requirements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "state_hash": { "type": "string", "pattern": "^[a-f0-9]{24,128}$" },
+        "previous_state_hash": { "type": "string", "pattern": "^(genesis|[a-f0-9]{24,128})$" }
+      }
+    }
+  }
+}

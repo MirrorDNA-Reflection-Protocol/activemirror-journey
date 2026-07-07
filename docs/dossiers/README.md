@@ -36,6 +36,7 @@ history from chat.
 - [Synthetic Continuity Boundary](./synthetic-continuity-boundary.md)
 - [Governed Agent OS](./governed-agent-os.md)
 - [AMOS Cognitive Mesh](./amos-cognitive-mesh.md)
+- [AMOS Control Plane Contracts](./amos-control-plane-contracts.md)
 
 ## Template
 
