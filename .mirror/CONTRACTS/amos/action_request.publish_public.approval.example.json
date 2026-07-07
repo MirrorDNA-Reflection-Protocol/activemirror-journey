@@ -1,0 +1,18 @@
+{
+  "action_request": {
+    "schema_version": "action_request.v0_1",
+    "id": "publish_public",
+    "workspace": "personal",
+    "agent": "mirror_concierge",
+    "tool": "local_artifact_generator",
+    "action": "publish_public",
+    "intent": "Request approval before publishing a public Active Mirror change.",
+    "reads": ["session:intake", "project:active-mirror"],
+    "writes": ["session:draft"],
+    "egress": "publish",
+    "reversibility": "partly_reversible",
+    "consent_level": "level_3",
+    "approval_token": "",
+    "output_type": "html"
+  }
+}

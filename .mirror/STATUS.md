@@ -42,6 +42,9 @@ Updated: 2026-07-07
   in `npm run prebuild`.
 - `npm run guard:memory-proposal` runs the first AMOS contract-backed local
   action: creating reviewable memory proposals without durable promotion.
+- `npm run guard:approval-request` verifies approval-required actions create
+  pending approval requests in temp and that blocked/allowed actions write
+  nothing.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -56,6 +59,8 @@ Updated: 2026-07-07
 - The current UI is still a product front door, not the full ActiveMirrorOS control plane.
 - File export registry exists as a design stub only; there are no active registered exports.
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
+- Approval request creation is local repo scaffolding; no approval file was
+  created for a fake publish action.
 - Audit, rollback, skill, and source-ledger files are repo-local contracts only; they are not a runtime control plane.
 - GitHub Wiki is not canonical or mirrored; the Obsidian copy is generated reference material only.
 - The AMOS contract gate is local repo enforcement only; the live app and

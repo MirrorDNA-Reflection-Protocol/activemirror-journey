@@ -896,3 +896,42 @@ Do not turn this into a strategy essay. Keep it operational.
     workflow was made live.
 - Next safe move: connect the same contract pattern to approval request
   creation or artifact export.
+
+### 2026-07-07: AMOS Approval Request Gate
+
+- Changed: attached the AMOS contract gate to approval request creation. A
+  candidate action that passes boundaries but requires approval can become a
+  pending approval request; blocked actions and already-allowed actions write
+  nothing.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/scd_state.approval.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.publish_public.approval.example.json`
+  - `scripts/amos_approval_request_gate.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Approval requests are for real risky actions only.
+  - The self-test writes only to a temp directory.
+  - No fake pending approval file was created in `.mirror/APPROVAL_REQUESTS/`.
+  - Approval requests do not approve themselves and do not execute the target
+    action.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:approval-request`
+  - `node scripts/amos_contract_gate.mjs --state .mirror/CONTRACTS/amos/scd_state.approval.example.json --action .mirror/CONTRACTS/amos/action_request.publish_public.approval.example.json --expect approval_required`
+  - `node scripts/amos_approval_request_gate.mjs --dry-run`
+  - JSON parse check for the new approval example contracts
+  - `npm run guard:dossiers`
+  - `npm run build:deploy`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The live app and gateway do not consume these contracts at runtime.
+  - There is still no human approval UI, approval token signing flow, or
+    runtime action executor.
+- Next safe move: connect the same contract pattern to artifact export.

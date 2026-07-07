@@ -62,6 +62,25 @@ npm run guard:amos-contracts
 The default examples live in `.mirror/CONTRACTS/amos/`. The gate returns
 `allow`, `approval_required`, or `block` and is now part of `npm run prebuild`.
 
+## Approval Request Gate
+
+Consequential actions do not run directly. The local approval request writer
+first runs the AMOS contract gate, then writes a pending approval request only
+when the contract returns `approval_required`.
+
+```bash
+npm run guard:approval-request
+```
+
+Manual dry-run:
+
+```bash
+node scripts/amos_approval_request_gate.mjs --dry-run
+```
+
+Manual writes go to `.mirror/APPROVAL_REQUESTS/`. Do not create real approval
+files for fake actions; they are for actual risky work that needs review.
+
 ## Memory Proposal Gate
 
 Memory work starts as a proposal, not a hidden save. The local proposal writer

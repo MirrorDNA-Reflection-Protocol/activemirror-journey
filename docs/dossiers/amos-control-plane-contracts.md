@@ -60,10 +60,14 @@ consent levels, and agent permissions.
 - Runtime: schema-only foundation for future AMOS runtime work.
 - Runtime gate: `scripts/amos_contract_gate.mjs` validates local contract
   examples and returns `allow`, `approval_required`, or `block`.
+- Approval gate: `scripts/amos_approval_request_gate.mjs` creates a pending
+  approval request only when the contract gate returns `approval_required`.
 - First local action gate: `scripts/amos_memory_proposal_gate.mjs` creates
   reviewable memory proposals only after the contract gate returns `allow`.
 - Model or gateway: no provider routing change.
 - Local storage: proposal YAML only; no durable memory promotion.
+- Approval storage: pending approval YAML only when a real risky action needs
+  review.
 - Generated artifacts: no new export capability.
 
 ## Leveraged Now
@@ -95,6 +99,11 @@ consent levels, and agent permissions.
      only after the action request passes workspace, agent, tool, consent, and
      output checks.
 
+7. **Approval Request**
+   - A consequential action that passes boundaries but needs consent becomes a
+     pending approval request. Blocked actions write nothing. Already-allowed
+     actions write nothing because no approval queue is needed.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -119,6 +128,7 @@ bound to a runtime.
 - Contract checks:
   - `npm run guard:amos-contracts`
   - `npm run guard:memory-proposal`
+  - `npm run guard:approval-request`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -145,10 +155,12 @@ bound to a runtime.
   this dossier.
 - Memory proposal writing is local repo scaffolding only; proposal files still
   need human approval before they become memory.
+- Approval request writing is local repo scaffolding only; it does not perform
+  the requested action or approve itself.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to connect the same contract pattern to artifact export or approval
-request creation before any live runtime wiring.
+slice is to connect the same contract pattern to artifact export before any
+live runtime wiring.
