@@ -53,6 +53,9 @@ function classify(intent = '') {
     if (/\b(real secret|actual secret|password|passcode|private key|api key|access token|otp|pin|credential)\b/.test(text)) {
         return 'private_output';
     }
+    if (/\b(don'?t know what to ask|do not know what to ask|not sure what to ask|where do i start|how do i start|what should i ask|don'?t know where to start|do not know where to start)\b/.test(text)) {
+        return 'start_help';
+    }
     if (/\b(hallucinat\w*|overreach\w*|overthink\w*|drift\w*)\b/.test(text)) {
         return 'reset';
     }
@@ -110,6 +113,11 @@ const MIRRORS = {
         question: 'What output would still be useful if it were rough?',
         move: 'Draft the smallest usable version with a title, three bullets, and one ask.',
     },
+    start_help: {
+        reflection: 'Start with one thing. Make it, decide it, fix it, or understand it.',
+        question: '',
+        move: 'Pick one below, or type one messy sentence.',
+    },
     general: {
         reflection: 'This is wide enough to get heavy. Make the first version small.',
         question: 'What would make today feel a little easier?',
@@ -153,6 +161,11 @@ const LANGUAGE_MIRRORS = {
             reflection: 'Ye kisi usable cheez mein badalna chahta hai.',
             question: 'Rough hone ke baad bhi kaunsa output useful rahega?',
             move: 'Title, teen bullets, aur ek ask ke saath smallest usable version draft kijiye.',
+        },
+        start_help: {
+            reflection: 'Ek cheez se start kijiye. Banana, decide karna, fix karna, ya samajhna.',
+            question: '',
+            move: 'Make, Decide, Fix, ya Understand chuniye. Ya ek messy sentence type kijiye.',
         },
         general: {
             reflection: 'Ye abhi wide hai. Isse itna chhota kijiye ki aaj move ho sake.',

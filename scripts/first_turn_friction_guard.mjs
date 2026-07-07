@@ -18,6 +18,7 @@ const currentFactFallback = makeOfflineMirrorResult('What are the latest competi
 const tireShoppingFallback = makeOfflineMirrorResult('I am looking for tires online', 'network');
 const vagueFallback = makeOfflineMirrorResult('website', 'network');
 const resetFallback = makeOfflineMirrorResult('I keep going in circles and losing the thread.', 'network');
+const startHelpFallback = makeOfflineMirrorResult('I do not know what to ask', 'network');
 
 check(!normalSense.blocked, 'normal send/safe wording must not be locally blocked');
 check(softPrivateSense.softPrivate && !softPrivateSense.blocked, 'soft personal details should be cautioned, not blocked');
@@ -44,6 +45,10 @@ check(
 check(
     resetFallback.mirror?.reflection === 'There are too many things open. Make one of them lighter first.',
     'reset fallback should sound humane, not like internal thread management'
+);
+check(
+    startHelpFallback.mirror?.move === 'Pick one below, or type one messy sentence.',
+    'not-sure-what-to-ask fallback should offer starter choices instead of another question'
 );
 
 const explicitSecret = 'My password is examplepassword123 and I need help.';
@@ -103,8 +108,31 @@ check(
     'current info and shopping asks should route directly to answer-first source mode instead of showing a reflection questionnaire'
 );
 check(
+    homePage.includes('function isStartHelpAsk') &&
+    homePage.includes('function makeStartHelpResult') &&
+    homePage.includes('start_help_result'),
+    'not-sure-what-to-ask typed turns should route to a local start helper'
+);
+check(
+    homePage.includes(".test(`${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`)") &&
+    homePage.includes("label: 'Make'") &&
+    homePage.includes("label: 'Understand'"),
+    'starter helper follow-ups should show starter choices, not generic repair buttons'
+);
+check(
     /tires\?\|tyres\?/.test(homePage),
     'source-heavy detector should include tire/tyre shopping language'
+);
+check(
+    /poster\|flyer/.test(homePage) &&
+    homePage.includes('const needThing =') &&
+    homePage.includes('directAsk || needThing ||'),
+    'poster/flyer asks should open creation first even without a magic verb'
+);
+check(
+    homePage.includes("draft?.kind === 'image' && artifactHasImageMedia(draft)") &&
+    !homePage.includes("draft?.kind === 'image' && (draft?.media?.data_url || draft?.media?.dataUrl)"),
+    'image-ready note must work for stored media URLs, not only inline data URLs'
 );
 check(
     mirrorState.includes('continuityLedger: []') &&

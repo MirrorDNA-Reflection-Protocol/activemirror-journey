@@ -360,6 +360,31 @@ function makeAnswerFirstSourceResult(intent = '') {
     };
 }
 
+function isStartHelpAsk(intent = '') {
+    return /\b(don'?t know what to ask|do not know what to ask|not sure what to ask|where do i start|how do i start|what should i ask|don'?t know where to start|do not know where to start)\b/i
+        .test(String(intent || ''));
+}
+
+function makeStartHelpResult(intent = '') {
+    const clean = String(intent || '').replace(/\s+/g, ' ').trim().slice(0, 140);
+    return {
+        kind: 'start_help',
+        ok: true,
+        mirror: {
+            reflection: 'Start with one thing. Make it, decide it, fix it, or understand it.',
+            question: '',
+            move: 'Pick one below, or type one messy sentence.',
+            receipt: {
+                context_used: clean ? `Only your request: "${clean}".` : 'Only your request.',
+                context_excluded: 'Private notes, saved memory, and personal history stayed out.',
+                memory_decision: 'Nothing saved unless you choose it.',
+                route: 'Local start helper.',
+            },
+            visual: null,
+        },
+    };
+}
+
 function artifactKindName(kind = 'draft') {
     if (kind === 'image') return 'image';
     if (kind === 'code') return 'code starter';
@@ -497,7 +522,7 @@ function makeLocalPrivacyResult(sense = {}) {
 
 function detectArtifactKind(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
-    if (/\b(image|visual|poster|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
+    if (/\b(image|visual|poster|flyer|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
     if (/\b(code|app|component|script|function|api|html|css|javascript|react|python)\b/.test(text)) return 'code';
     if (/\b(message|email|reply|dm|text|note)\b/.test(text)) return 'draft';
     if (/\b(document|doc|pdf|memo|brief|deck|slide|report|summary|proposal|outline|post|website|web page|site|page|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
@@ -525,9 +550,10 @@ function shouldOpenWorkSurface(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const directAsk = /\b(make it sendable|something i can send|turn (this|it) into|draft it|write it|build it|create it|give me code|make a doc|make a visual|make an image)\b/i.test(text);
     const asksToMake = /\b(make|create|draft|write|generate|build|prepare|compose|turn)\b/i.test(text);
-    const asksForThing = /\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const asksForThing = /\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|flyer|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const needThing = /\b(?:i\s+)?(?:need|want|looking for|could use)\b.{0,80}\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|flyer|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
 
-    return directAsk || (asksToMake && asksForThing);
+    return directAsk || needThing || (asksToMake && asksForThing);
 }
 
 function isShortStartResult(result = {}) {
@@ -569,7 +595,8 @@ function launchPageTestIntent(mirror = {}, intent = '') {
 }
 
 function isOneDetailIntake(mirror = {}) {
-    return /\bmake,\s*decide,\s*fix,\s*or\s*understand\b/i.test(`${mirror?.question || ''} ${mirror?.move || ''}`);
+    return /\bmake(?:\s+it)?[,;]\s*decide(?:\s+it)?[,;]\s*fix(?:\s+it)?[,;]?\s*or\s*understand(?:\s+it)?\b/i
+        .test(`${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`);
 }
 
 function oneDetailTopic(intent = '') {
@@ -974,10 +1001,12 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const isPrivacyHold = result?.kind === 'privacy_hold';
     const isArtifactFirst = result?.kind === 'artifact_first';
     const isSetupReady = result?.kind === 'setup_ready';
+    const isStartHelp = result?.kind === 'start_help';
     const truthState = result?.truth_state || mirror.truth_state;
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface', 'saved_context'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
     const answerFirst = showSourceCheck && isAnswerFirstAsk(intent);
+    const focusText = String(mirror.question || '').trim();
 
     if (isLoading) {
         return <LoadingPanel />;
@@ -1053,11 +1082,19 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.08rem]">
                         {mirror.reflection}
                     </p>
-                    <div className="mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86">
-                        <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-violet-100/55">Focus</div>
-                        {mirror.question}
-                    </div>
-                    <NextMoveSurface mirror={mirror} onRemember={onRemember} remembered={remembered} allowRemember={!isPrivacyHold && !isSetupReady} allowCopy={!isSetupReady} />
+                    {focusText ? (
+                        <div className="mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86">
+                            <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-violet-100/55">Start here</div>
+                            {focusText}
+                        </div>
+                    ) : null}
+                    <NextMoveSurface
+                        mirror={mirror}
+                        onRemember={onRemember}
+                        remembered={remembered}
+                        allowRemember={!isPrivacyHold && !isSetupReady && !isStartHelp}
+                        allowCopy={!isSetupReady && !isStartHelp}
+                    />
                 </div>
             </div>
             {showSourceCheck ? (
@@ -1154,7 +1191,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
 }
 
 function workSurfaceNote(draft) {
-    if (draft?.kind === 'image' && (draft?.media?.data_url || draft?.media?.dataUrl)) {
+    if (draft?.kind === 'image' && artifactHasImageMedia(draft)) {
         return 'Ready to download. Try again if you want a different version.';
     }
     if (draft?.kind === 'image') {
@@ -1578,6 +1615,15 @@ export default function HomePage() {
             setResult(makeEcosystemResult(cleanIntent));
             setLastStarterKind('');
             trackEvent('ecosystem_result', { page: 'home', source, status: 'local' });
+            return;
+        }
+
+        if (isStartHelpAsk(cleanIntent)) {
+            const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+            setLastIntent(safeIntent);
+            setResult(makeStartHelpResult(safeIntent));
+            setLastStarterKind('');
+            trackEvent('start_help_result', { page: 'home', source, status: 'local' });
             return;
         }
 

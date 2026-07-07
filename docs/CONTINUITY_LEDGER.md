@@ -732,3 +732,48 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: enable R2, bind `MIRROR_MEDIA_BUCKET`, set
   `MIRROR_MEDIA_SIGNING_SECRET`, then move from temporary edge cache to durable
   signed media storage.
+
+### 2026-07-07: Minimal First-Turn Repair
+
+- Changed: simplified the first uncertain-user path. If a visitor says they do
+  not know what to ask, the app now answers with one plain start line and four
+  choices: Make, Decide, Fix, Understand.
+- Source files touched:
+  - `src/lib/first-turn-fallback.js`
+  - `src/pages/HomePage.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `worker/src/index.js`
+  - `worker/test/gateway-guardrails.test.mjs`
+  - `public/app/**`
+- Product decisions:
+  - Public Active Mirror stays simple, minimal, and chat-first.
+  - "I do not know what to ask" is not a failure; it is a start state.
+  - Consumer UI should not expose copy/save controls on the start-helper path.
+  - Poster, flyer, and image requests should produce artifacts directly when
+    the media route is available.
+- Deploy status:
+  - Gateway Worker deployed: `active-mirror-site-gateway` version
+    `3d2c0146-6196-4fca-9549-f67f3983d305`.
+  - Static site deployed: `active-mirror-static-site` version
+    `699e0869-80a3-47a2-b1d0-0f3dc6998223`.
+- Tools and gates used:
+  - Source: `npm run build:deploy`
+  - Worker: `npm run worker:test`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`,
+    `npm run worker:deploy`, `npm run site:worker:deploy`,
+    `npm run deploy:verify`
+  - Focused live mobile check for: `I do not know what to ask`
+- Public routes checked:
+  - `https://activemirror.ai/app/`
+  - mobile and desktop smoke routes for home, setup aliases, enterprise, about,
+    consulting, research, device, feedback, privacy, and terms
+- Bad news or limits:
+  - The truth gate remains scoped to public presentation files and does not
+    prove the whole repo, the whole machine, or external certification.
+  - This does not build the full AMOS control plane; it only improves the public
+    chat-first front door and artifact language.
+- Next safe move: keep the homepage minimal, then move the AMOS control-plane
+  machinery into enterprise/internal surfaces instead of the consumer first
+  screen.
