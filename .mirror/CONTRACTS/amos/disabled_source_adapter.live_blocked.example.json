@@ -1,0 +1,26 @@
+{
+  "disabled_source_adapter_request": {
+    "schema_version": "disabled_source_adapter_request.v0_1",
+    "id": "disabled_source_adapter_live_blocked",
+    "surface": "consumer_app",
+    "mode": "disabled_source_adapter_proposal",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "ui_harness_request": ".mirror/CONTRACTS/amos/ui_harness.consumer.example.json",
+    "expected_exports": ["DISABLED_SOURCE_ADAPTER_CONTRACT"],
+    "import_allowed": true,
+    "live_import_enabled": true,
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "durable_memory_write_enabled": true,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "arbitrary_ui_enabled": true,
+    "required_gates": ["guard:ui-harness"],
+    "output_type": "disabled_source_adapter_receipt",
+    "claim_boundary": ["This claims unsafe live source adapter behavior."],
+    "blocked_claims": ["Disabled source adapter is live in the public app."]
+  }
+}

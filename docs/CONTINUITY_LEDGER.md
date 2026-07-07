@@ -1381,3 +1381,65 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: define a disabled source adapter proposal in app code behind
   explicit gates while still blocking model calls, network use, durable memory
   writes, route changes, deploys, gateway changes, and arbitrary generated UI.
+
+### 2026-07-07: AMOS Disabled Source Adapter Proposal
+
+- Changed: added a disabled source adapter file in app source and a gate that
+  proves it keeps disabled invariants and is not imported by active app source.
+- Source files touched:
+  - `src/lib/amos-disabled-source-adapter.js`
+  - `.mirror/CONTRACTS/amos/disabled_source_adapter.consumer.example.json`
+  - `.mirror/CONTRACTS/amos/disabled_source_adapter.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.disabled_source_adapter.example.json`
+  - `.mirror/schemas/disabled_source_adapter_request.schema.json`
+  - `.mirror/schemas/disabled_source_adapter_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T141644Z-disabled_source_adapter_consumer.json`
+  - `.mirror/AUDIT_LOGS/20260707T141644Z-amos_disabled_source_adapter.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_disabled_source_adapter_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - The disabled source adapter exists as source code only.
+  - The disabled source adapter is not imported by active app source.
+  - The adapter exports disabled invariants and a projection helper, but all
+    live capabilities remain false.
+  - The disabled source adapter gate runs `guard:runtime-integration`,
+    `guard:shadow-adapter`, `guard:readonly-app-adapter`,
+    `guard:browser-runtime-adapter`, `guard:ui-harness`,
+    `guard:front-door`, and `guard:receipt-chain`.
+  - The disabled source adapter blocks model calls, network use, durable memory
+    writes, route changes, gateway changes, public deploys, arbitrary generated
+    UI execution, and active app imports.
+  - The disabled source adapter is not live runtime wiring.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:disabled-source-adapter`
+  - `node scripts/amos_disabled_source_adapter_gate.mjs --expect allow`
+  - `node scripts/amos_disabled_source_adapter_gate.mjs --request .mirror/CONTRACTS/amos/disabled_source_adapter.live_blocked.example.json --expect block`
+  - `rg -n "amos-disabled-source-adapter|DISABLED_SOURCE_ADAPTER_CONTRACT|createDisabledSourceAdapterProjection|assertDisabledSourceAdapter" src --glob '!src/lib/amos-disabled-source-adapter.js'`
+  - `node scripts/amos_disabled_source_adapter_gate.mjs --write --timestamp 20260707T141644Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.disabled_source_adapter.example.json --timestamp 20260707T141644Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T141644Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The disabled source adapter is deliberately not imported by the active app.
+  - The disabled source adapter does not call a model or test real model
+    behavior.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The disabled source adapter receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 9
+  - hash: `d2a8ff92f0dbe9fd6e2d8265c9b6f2b6c5ebe7da4822a872bf43010d505e91db`
+- Next safe move: define an explicit import proposal contract for the disabled
+  source adapter, still blocked by approval and still not live.

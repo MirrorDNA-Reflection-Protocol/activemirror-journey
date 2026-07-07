@@ -1,0 +1,95 @@
+{
+  "disabled_source_adapter_receipt": {
+    "schema_version": "disabled_source_adapter_receipt.v0_1",
+    "id": "disabled_source_adapter_receipt_20260707t141644z_disabled_source_adapter_consumer",
+    "request_id": "disabled_source_adapter_consumer",
+    "created_at": "2026-07-07T14:16:44Z",
+    "decision": "allow",
+    "performed_live_action": false,
+    "checked_scope": [
+      "disabled_source_adapter_request_shape",
+      "source_file_exists",
+      "source_disabled_invariants",
+      "active_import_scan",
+      "ui_harness_invocation",
+      "no_model_call",
+      "no_network",
+      "no_durable_memory_write",
+      "no_route_change",
+      "no_gateway_change",
+      "no_public_deploy",
+      "required_local_gates"
+    ],
+    "gate_results": [
+      {
+        "id": "guard:runtime-integration",
+        "ok": true,
+        "decision": "allow"
+      },
+      {
+        "id": "guard:shadow-adapter",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:readonly-app-adapter",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:browser-runtime-adapter",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:ui-harness",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:front-door",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:receipt-chain",
+        "ok": true,
+        "decision": "pass"
+      }
+    ],
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "source_hash": "40ccc065ce741ac10e3d0676511b8ccbb00156301ba2faeb9af1c72288f84372",
+    "import_scan": {
+      "import_allowed": false,
+      "active_import_count": 0,
+      "active_imports": []
+    },
+    "ui_harness_result": {
+      "ok": true,
+      "decision": "allow",
+      "request_id": "local_ui_consumer_turn"
+    },
+    "adapter_projection": {
+      "status": "disabled_proposal",
+      "enabled": false,
+      "route": "/app/",
+      "surface": "consumer_app",
+      "runtime_result": "project_next_move"
+    },
+    "blocked_capabilities": [
+      "model_call",
+      "network",
+      "durable_memory_write",
+      "route_change",
+      "gateway_change",
+      "public_deploy",
+      "live_runtime_action",
+      "arbitrary_generated_ui",
+      "active_app_import"
+    ],
+    "output": {
+      "type": "disabled_source_adapter_receipt",
+      "message": "Disabled source adapter exists as source-only proposal and is not imported by the public app."
+    }
+  }
+}

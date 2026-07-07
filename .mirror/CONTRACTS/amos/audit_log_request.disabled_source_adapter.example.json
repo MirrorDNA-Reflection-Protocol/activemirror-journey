@@ -1,0 +1,35 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_disabled_source_adapter",
+    "action": "Verify the AMOS disabled source adapter exists in source code without being imported or live.",
+    "checked_scope": [
+      "disabled source adapter request schema",
+      "disabled source adapter receipt schema",
+      "disabled source adapter gate",
+      "source disabled invariants",
+      "active source import scan",
+      "blocked live source adapter request"
+    ],
+    "unchecked_scope": [
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:disabled-source-adapter",
+      "node scripts/amos_disabled_source_adapter_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The disabled source adapter is source code only and is not imported by the public app."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Only after disabled source receipts remain stable, consider an explicit import proposal behind runtime and approval gates."
+    ]
+  }
+}

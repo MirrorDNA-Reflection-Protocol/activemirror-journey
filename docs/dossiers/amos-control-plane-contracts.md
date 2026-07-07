@@ -35,6 +35,9 @@ consent levels, and agent permissions.
   - `.mirror/schemas/browser_runtime_adapter_receipt.schema.json`
   - `.mirror/schemas/ui_harness_request.schema.json`
   - `.mirror/schemas/ui_harness_receipt.schema.json`
+  - `.mirror/schemas/disabled_source_adapter_request.schema.json`
+  - `.mirror/schemas/disabled_source_adapter_receipt.schema.json`
+  - `src/lib/amos-disabled-source-adapter.js`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -103,6 +106,9 @@ consent levels, and agent permissions.
   live app, gateway, model, network, route, deploy, or durable memory action.
 - Local UI harness: local projection receipt only; no live app, gateway, model,
   network, route, deploy, arbitrary UI, or durable memory action.
+- Disabled source adapter: source-only, not imported by the active app, and no
+  live app, gateway, model, network, route, deploy, arbitrary UI, or durable
+  memory action.
 
 ## Leveraged Now
 
@@ -192,6 +198,11 @@ consent levels, and agent permissions.
      live app wiring, model calls, network use, durable memory writes, route
      changes, gateway changes, public deploys, or arbitrary generated UI.
 
+17. **Disabled Source Adapter Proposal**
+   - `npm run guard:disabled-source-adapter` verifies that the disabled source
+     adapter exists in app source, keeps disabled invariants, has no active app
+     imports, and can only produce local evidence through the UI harness gate.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -225,6 +236,7 @@ validated and bound to a runtime.
   - `npm run guard:readonly-app-adapter`
   - `npm run guard:browser-runtime-adapter`
   - `npm run guard:ui-harness`
+  - `npm run guard:disabled-source-adapter`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -271,11 +283,12 @@ validated and bound to a runtime.
   receipts only; they do not prove live app or gateway enforcement.
 - Local UI harness receipts are local projection receipts only; they do not
   prove live app or gateway enforcement.
+- Disabled source adapter receipts prove source-only disabled posture; they do
+  not prove live app or gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define a disabled source adapter proposal in app code behind
-explicit gates while still blocking model calls, network use, durable memory
-writes, route changes, deploys, gateway changes, and arbitrary generated UI.
+slice is to define an explicit import proposal contract for the disabled source
+adapter, still blocked by approval and still not live.

@@ -66,6 +66,9 @@ Updated: 2026-07-07
 - `npm run guard:ui-harness` verifies a local UI harness can call the
   browser-local runtime adapter and emit a projection receipt without live
   action.
+- `npm run guard:disabled-source-adapter` verifies the disabled source adapter
+  exists in app source, keeps disabled invariants, and is not imported by the
+  active app.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -90,8 +93,12 @@ Updated: 2026-07-07
   `.mirror/RUNTIME_DRY_RUNS/20260707T140840Z-local_ui_consumer_turn.json`.
 - Local AMOS UI harness audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T140840Z-amos_ui_harness.yaml`.
+- Local AMOS disabled source adapter receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260707T141644Z-disabled_source_adapter_consumer.json`.
+- Local AMOS disabled source adapter audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T141644Z-amos_disabled_source_adapter.yaml`.
 - Current local audit receipt chain hash:
-  `fdb7bc444c795db967d665ffbf2cbe869cb86e5a7112eb46b010906a455e9a05`.
+  `d2a8ff92f0dbe9fd6e2d8265c9b6f2b6c5ebe7da4822a872bf43010d505e91db`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -135,6 +142,9 @@ Updated: 2026-07-07
 - The local UI harness emits local projection receipts only; it performs no
   live app, gateway, model, network, route, deploy, arbitrary UI, or durable
   memory action.
+- The disabled source adapter is source-only and not imported by the active
+  app; it performs no live app, gateway, model, network, route, deploy,
+  arbitrary UI, or durable memory action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

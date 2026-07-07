@@ -261,6 +261,30 @@ Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain the UI
 projection plus the browser-runtime input hash. This is still local evidence
 only.
 
+## Disabled Source Adapter Gate
+
+The disabled source adapter proposal places a guarded adapter file in app
+source while proving it is not imported by the active app. The gate checks the
+disabled invariants, active source imports, the local UI harness, and the local
+receipt chain. It performs no live app, gateway, model, network, route, deploy,
+arbitrary UI, or durable memory action.
+
+```bash
+npm run guard:disabled-source-adapter
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_disabled_source_adapter_gate.mjs --expect allow
+node scripts/amos_disabled_source_adapter_gate.mjs --request .mirror/CONTRACTS/amos/disabled_source_adapter.live_blocked.example.json --expect block
+node scripts/amos_disabled_source_adapter_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain the source hash,
+active import scan, and local UI harness result. This is still local evidence
+only.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

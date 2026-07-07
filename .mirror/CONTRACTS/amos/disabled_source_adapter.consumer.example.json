@@ -1,0 +1,57 @@
+{
+  "disabled_source_adapter_request": {
+    "schema_version": "disabled_source_adapter_request.v0_1",
+    "id": "disabled_source_adapter_consumer",
+    "surface": "consumer_app",
+    "mode": "disabled_source_adapter_proposal",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "ui_harness_request": ".mirror/CONTRACTS/amos/ui_harness.consumer.example.json",
+    "expected_exports": [
+      "DISABLED_SOURCE_ADAPTER_CONTRACT",
+      "assertDisabledSourceAdapter",
+      "createDisabledSourceAdapterProjection"
+    ],
+    "import_allowed": false,
+    "live_import_enabled": false,
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "arbitrary_ui_enabled": false,
+    "required_gates": [
+      "guard:runtime-integration",
+      "guard:shadow-adapter",
+      "guard:readonly-app-adapter",
+      "guard:browser-runtime-adapter",
+      "guard:ui-harness",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "disabled_source_adapter_receipt",
+    "claim_boundary": [
+      "This is a disabled source adapter proposal.",
+      "It is source code only and is not imported by the public app.",
+      "It performs no live app action.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write durable memory.",
+      "It does not change routes, deploy assets, or gateway behavior.",
+      "It does not execute arbitrary generated UI."
+    ],
+    "blocked_claims": [
+      "Disabled source adapter is live in the public app.",
+      "Disabled source adapter is imported by the public app.",
+      "Disabled source adapter called a model.",
+      "Disabled source adapter used the network.",
+      "Disabled source adapter wrote durable memory.",
+      "Disabled source adapter changed app routes.",
+      "Disabled source adapter changed gateway behavior.",
+      "Disabled source adapter deployed public assets.",
+      "Disabled source adapter executed arbitrary generated UI."
+    ]
+  }
+}
