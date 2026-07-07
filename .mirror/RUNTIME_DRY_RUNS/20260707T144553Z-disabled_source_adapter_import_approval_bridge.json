@@ -1,0 +1,85 @@
+{
+  "source_adapter_import_approval_receipt": {
+    "schema_version": "source_adapter_import_approval_receipt.v0_1",
+    "id": "source_adapter_import_approval_receipt_20260707t144553z_disabled_source_adapter_import_approval_bridge",
+    "request_id": "disabled_source_adapter_import_approval_bridge",
+    "created_at": "2026-07-07T14:45:53Z",
+    "decision": "approval_required",
+    "approval_required": true,
+    "approval_status": "pending",
+    "approval_written": false,
+    "performed_live_action": false,
+    "checked_scope": [
+      "source_adapter_import_approval_request_shape",
+      "source_adapter_import_proposal_receipt",
+      "source_adapter_import_gate",
+      "approval_request_dry_run",
+      "no_real_approval_file_write",
+      "no_import_apply",
+      "no_live_import",
+      "no_model_call",
+      "no_network",
+      "no_durable_memory_write",
+      "no_route_change",
+      "no_gateway_change",
+      "no_public_deploy",
+      "no_arbitrary_ui",
+      "required_local_gates"
+    ],
+    "gate_results": [
+      {
+        "id": "guard:source-adapter-import",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:approval-request",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:front-door",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:receipt-chain",
+        "ok": true,
+        "decision": "pass"
+      }
+    ],
+    "import_proposal_result": {
+      "ok": true,
+      "decision": "approval_required",
+      "request_id": "disabled_source_adapter_import_proposal",
+      "active_import_count": 0
+    },
+    "approval_request_preview": {
+      "ok": true,
+      "decision": "approval_required",
+      "would_write": ".mirror/APPROVAL_REQUESTS/20260707T144608Z-source_adapter_import.yaml",
+      "approval_required": true,
+      "status": "pending"
+    },
+    "proposed_target_files": [
+      "src/pages/HomePage.jsx"
+    ],
+    "blocked_capabilities": [
+      "write_real_approval_request",
+      "approve_import",
+      "apply_import",
+      "live_import",
+      "model_call",
+      "network",
+      "durable_memory_write",
+      "route_change",
+      "gateway_change",
+      "public_deploy",
+      "arbitrary_generated_ui"
+    ],
+    "output": {
+      "type": "source_adapter_import_approval_receipt",
+      "message": "Approval bridge preview is ready, but no approval file was written and no import was applied."
+    }
+  }
+}

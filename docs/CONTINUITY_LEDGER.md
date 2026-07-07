@@ -1499,3 +1499,62 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: define an explicit approval-request bridge for the source
   adapter import proposal, still blocked until a real approval is intentionally
   created.
+
+### 2026-07-07: AMOS Source Adapter Import Approval Bridge
+
+- Changed: added a source adapter import approval bridge that previews the
+  pending approval request without writing a real approval file or applying the
+  import.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/source_adapter_import_approval.bridge.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_approval.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/scd_state.source_adapter_import.approval.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.source_adapter_import.approval.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_approval.example.json`
+  - `.mirror/schemas/source_adapter_import_approval_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_approval_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T144553Z-disabled_source_adapter_import_approval_bridge.json`
+  - `.mirror/AUDIT_LOGS/20260707T144553Z-amos_source_adapter_import_approval_bridge.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_source_adapter_import_approval_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - The bridge runs the source adapter import proposal gate and a dry-run
+    approval request.
+  - The bridge does not write a real approval file.
+  - The bridge does not approve or apply the source import.
+  - The disabled source adapter remains not imported by active app source.
+  - The bridge blocks approval writes, applied/live imports, model calls,
+    network use, durable memory writes, route changes, gateway changes, public
+    deploys, and arbitrary generated UI execution.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:source-adapter-import-approval`
+  - `node scripts/amos_source_adapter_import_approval_gate.mjs --expect approval_required`
+  - `node scripts/amos_source_adapter_import_approval_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_approval.live_blocked.example.json --expect block`
+  - `find .mirror/APPROVAL_REQUESTS -maxdepth 1 -type f -not -name 'TEMPLATE.yaml' -print`
+  - `node scripts/amos_source_adapter_import_approval_gate.mjs --write --timestamp 20260707T144553Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_approval.example.json --timestamp 20260707T144553Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T144553Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The bridge previews approval only; it does not create a real approval file.
+  - The import remains unapplied and not live.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The approval bridge receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 11
+  - hash: `ed0eed730ada9f371589dcb9f206bd7fb801733e511e6972c35175ac3280b47c`
+- Next safe move: create a real approval-request creation contract only when
+  source import wiring is intentionally proposed for the active app.

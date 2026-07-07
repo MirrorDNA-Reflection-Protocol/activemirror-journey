@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/source_adapter_import_approval_receipt.v0_1.json",
+  "title": "AMOS Source Adapter Import Approval Receipt",
+  "type": "object",
+  "required": ["source_adapter_import_approval_receipt"],
+  "additionalProperties": false,
+  "properties": {
+    "source_adapter_import_approval_receipt": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "request_id",
+        "created_at",
+        "decision",
+        "approval_required",
+        "approval_status",
+        "approval_written",
+        "performed_live_action",
+        "checked_scope",
+        "gate_results",
+        "import_proposal_result",
+        "approval_request_preview",
+        "proposed_target_files",
+        "blocked_capabilities",
+        "output"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "source_adapter_import_approval_receipt.v0_1" },
+        "id": { "type": "string", "minLength": 1 },
+        "request_id": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "minLength": 1 },
+        "decision": { "enum": ["approval_required", "block"] },
+        "approval_required": { "const": true },
+        "approval_status": { "const": "pending" },
+        "approval_written": { "const": false },
+        "performed_live_action": { "const": false },
+        "checked_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "gate_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "ok", "decision"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "ok": { "type": "boolean" },
+              "decision": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "import_proposal_result": {
+          "type": "object",
+          "required": ["ok", "decision", "request_id", "active_import_count"],
+          "additionalProperties": false,
+          "properties": {
+            "ok": { "type": "boolean" },
+            "decision": { "const": "approval_required" },
+            "request_id": { "type": "string", "minLength": 1 },
+            "active_import_count": { "const": 0 }
+          }
+        },
+        "approval_request_preview": {
+          "type": "object",
+          "required": ["ok", "decision", "would_write", "approval_required", "status"],
+          "additionalProperties": false,
+          "properties": {
+            "ok": { "type": "boolean" },
+            "decision": { "const": "approval_required" },
+            "would_write": { "type": "string", "minLength": 1 },
+            "approval_required": { "const": true },
+            "status": { "const": "pending" }
+          }
+        },
+        "proposed_target_files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "blocked_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "output": {
+          "type": "object",
+          "required": ["type", "message"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "source_adapter_import_approval_receipt" },
+            "message": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

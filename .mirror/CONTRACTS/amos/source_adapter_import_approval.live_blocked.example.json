@@ -1,0 +1,28 @@
+{
+  "source_adapter_import_approval_request": {
+    "schema_version": "source_adapter_import_approval_request.v0_1",
+    "id": "disabled_source_adapter_import_approval_live_blocked",
+    "surface": "consumer_app",
+    "mode": "approval_request_bridge",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "import_proposal_request": ".mirror/CONTRACTS/amos/source_adapter_import.proposal.example.json",
+    "import_proposal_receipt": ".mirror/RUNTIME_DRY_RUNS/20260707T143217Z-disabled_source_adapter_import_proposal.json",
+    "approval_state": ".mirror/CONTRACTS/amos/scd_state.source_adapter_import.approval.example.json",
+    "action_request": ".mirror/CONTRACTS/amos/action_request.source_adapter_import.approval.example.json",
+    "approval_write_enabled": true,
+    "apply_import_enabled": true,
+    "live_import_enabled": true,
+    "approval_status": "approved",
+    "required_gates": [
+      "guard:source-adapter-import"
+    ],
+    "output_type": "source_adapter_import_approval_receipt",
+    "claim_boundary": [
+      "This claims unsafe live approval and import behavior."
+    ],
+    "blocked_claims": [
+      "Source adapter import was approved."
+    ]
+  }
+}

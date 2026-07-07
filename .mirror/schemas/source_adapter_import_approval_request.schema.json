@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/source_adapter_import_approval_request.v0_1.json",
+  "title": "AMOS Source Adapter Import Approval Request",
+  "type": "object",
+  "required": ["source_adapter_import_approval_request"],
+  "additionalProperties": false,
+  "properties": {
+    "source_adapter_import_approval_request": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "surface",
+        "mode",
+        "adapter",
+        "route",
+        "import_proposal_request",
+        "import_proposal_receipt",
+        "approval_state",
+        "action_request",
+        "approval_write_enabled",
+        "apply_import_enabled",
+        "live_import_enabled",
+        "approval_status",
+        "required_gates",
+        "output_type",
+        "claim_boundary",
+        "blocked_claims"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "source_adapter_import_approval_request.v0_1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "surface": { "const": "consumer_app" },
+        "mode": { "const": "approval_request_bridge" },
+        "adapter": { "const": "amos_disabled_source_adapter" },
+        "route": { "const": "/app/" },
+        "import_proposal_request": { "type": "string", "minLength": 1 },
+        "import_proposal_receipt": { "type": "string", "minLength": 1 },
+        "approval_state": { "type": "string", "minLength": 1 },
+        "action_request": { "type": "string", "minLength": 1 },
+        "approval_write_enabled": { "const": false },
+        "apply_import_enabled": { "const": false },
+        "live_import_enabled": { "const": false },
+        "approval_status": { "const": "pending" },
+        "required_gates": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "output_type": { "const": "source_adapter_import_approval_receipt" },
+        "claim_boundary": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "blocked_claims": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

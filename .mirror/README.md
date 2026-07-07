@@ -309,6 +309,31 @@ approval-required, not applied, and not live. This performs no source import,
 live app action, gateway change, model call, network call, route change,
 deploy, arbitrary UI execution, or durable memory write.
 
+## Source Adapter Import Approval Bridge
+
+The source adapter import approval bridge previews the pending approval request
+for the import proposal without writing a real approval file. It verifies the
+source import proposal receipt, runs the approval request gate in dry-run mode,
+and keeps the import unapplied.
+
+```bash
+npm run guard:source-adapter-import-approval
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_import_approval_gate.mjs --expect approval_required
+node scripts/amos_source_adapter_import_approval_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_approval.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_import_approval_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/`. They prove only that a
+pending approval request can be previewed. They do not write a real approval
+file, approve the import, import source, call a model, use the network, change
+routes, change the gateway, deploy assets, execute arbitrary UI, or write
+durable memory.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

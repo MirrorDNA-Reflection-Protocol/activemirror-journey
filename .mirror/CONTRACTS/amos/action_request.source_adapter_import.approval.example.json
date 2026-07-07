@@ -1,0 +1,18 @@
+{
+  "action_request": {
+    "schema_version": "action_request.v0_1",
+    "id": "source_adapter_import",
+    "workspace": "personal",
+    "agent": "mirror_concierge",
+    "tool": "local_artifact_generator",
+    "action": "source_adapter_import",
+    "intent": "Request approval before preparing the source import diff for the disabled AMOS source adapter.",
+    "reads": ["session:intake", "project:active-mirror"],
+    "writes": ["session:draft"],
+    "egress": "none",
+    "reversibility": "partly_reversible",
+    "consent_level": "level_3",
+    "approval_token": "",
+    "output_type": "json"
+  }
+}

@@ -39,6 +39,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/disabled_source_adapter_receipt.schema.json`
   - `.mirror/schemas/source_adapter_import_request.schema.json`
   - `.mirror/schemas/source_adapter_import_receipt.schema.json`
+  - `.mirror/schemas/source_adapter_import_approval_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_approval_receipt.schema.json`
   - `src/lib/amos-disabled-source-adapter.js`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
@@ -114,6 +116,9 @@ consent levels, and agent permissions.
 - Source adapter import proposal: approval-required, pending, not applied, not
   imported by the active app, and no live app, gateway, model, network, route,
   deploy, arbitrary UI, or durable memory action.
+- Source adapter import approval bridge: pending approval preview only, no real
+  approval file, no source import, and no live app, gateway, model, network,
+  route, deploy, arbitrary UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -214,6 +219,11 @@ consent levels, and agent permissions.
      active app source. It scans app imports, target files, the disabled adapter
      gate, and the required local gates before writing a local receipt.
 
+19. **Source Adapter Import Approval Bridge**
+   - `npm run guard:source-adapter-import-approval` verifies that the source
+     adapter import can produce a pending approval preview without writing a
+     real approval file, approving the import, or applying the import.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -249,6 +259,7 @@ validated and bound to a runtime.
   - `npm run guard:ui-harness`
   - `npm run guard:disabled-source-adapter`
   - `npm run guard:source-adapter-import`
+  - `npm run guard:source-adapter-import-approval`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -300,10 +311,13 @@ validated and bound to a runtime.
 - Source adapter import proposal receipts prove only a pending local proposal;
   they do not approve or apply the import and do not prove live app or gateway
   enforcement.
+- Source adapter import approval bridge receipts prove only a pending approval
+  preview; they do not write a real approval file, approve the import, apply the
+  import, or prove live app/gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define an explicit approval-request bridge for the source adapter
-import proposal, still blocked until a real approval is intentionally created.
+slice is to create a real approval-request creation contract only when source
+import wiring is intentionally proposed for the active app.

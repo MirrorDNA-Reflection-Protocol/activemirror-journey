@@ -56,19 +56,22 @@
     adapter exists or is safely disabled.
 17. Use `npm run guard:source-adapter-import` before claiming a source adapter
     import has even been proposed safely.
-18. Add real approval request files only when a risky action is actually proposed.
-19. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-20. Only add runtime wiring after a small contract has been used by a real task.
-21. Runtime integration is still contract-only with disabled adapters.
-22. Shadow adapter receipts are local-only and perform no live action.
-23. Read-only app adapter receipts are source-hash evidence only.
-24. Browser-local runtime adapter receipts are input-hash projections only.
-25. Local UI harness receipts are projection evidence only.
-26. Disabled source adapter is source-only and not imported by the active app.
-27. Source adapter import remains approval-required, pending, and not live.
-28. Next control-plane slice: define an explicit approval-request bridge for
-    the source adapter import proposal, still blocked until a real approval is
-    intentionally created.
+18. Use `npm run guard:source-adapter-import-approval` before claiming a source
+    adapter import approval request can be previewed.
+19. Add real approval request files only when a risky action is actually proposed.
+20. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+21. Only add runtime wiring after a small contract has been used by a real task.
+22. Runtime integration is still contract-only with disabled adapters.
+23. Shadow adapter receipts are local-only and perform no live action.
+24. Read-only app adapter receipts are source-hash evidence only.
+25. Browser-local runtime adapter receipts are input-hash projections only.
+26. Local UI harness receipts are projection evidence only.
+27. Disabled source adapter is source-only and not imported by the active app.
+28. Source adapter import remains approval-required, pending, and not live.
+29. Source adapter import approval bridge previews only; it writes no real
+    approval file and grants no approval.
+30. Next control-plane slice: add a real approval-request creation contract only
+    when source import wiring is intentionally proposed for the active app.
 
 ## Do Not Do Yet
 

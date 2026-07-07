@@ -1,0 +1,38 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_source_adapter_import_approval_bridge",
+    "action": "Verify the AMOS source adapter import approval bridge previews a pending approval request without approving or applying the import.",
+    "checked_scope": [
+      "source adapter import approval request schema",
+      "source adapter import approval receipt schema",
+      "source adapter import approval gate",
+      "source adapter import proposal gate",
+      "approval request dry-run",
+      "blocked live approval request"
+    ],
+    "unchecked_scope": [
+      "real approval file creation",
+      "approved source import",
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:source-adapter-import-approval",
+      "node scripts/amos_source_adapter_import_approval_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The approval bridge previews a pending approval request only.",
+      "No real approval file was written and the source import remains unapplied."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Create a real approval request only if source import wiring is intentionally proposed for the active app."
+    ]
+  }
+}

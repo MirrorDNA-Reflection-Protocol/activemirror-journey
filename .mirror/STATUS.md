@@ -72,6 +72,9 @@ Updated: 2026-07-07
 - `npm run guard:source-adapter-import` verifies the disabled source adapter
   import remains a pending approval-required proposal and is not applied to the
   active app.
+- `npm run guard:source-adapter-import-approval` verifies the source adapter
+  import approval bridge can preview a pending approval request without writing
+  a real approval file or applying the import.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -104,8 +107,12 @@ Updated: 2026-07-07
   `.mirror/RUNTIME_DRY_RUNS/20260707T143217Z-disabled_source_adapter_import_proposal.json`.
 - Local AMOS source adapter import proposal audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T143217Z-amos_source_adapter_import_proposal.yaml`.
+- Local AMOS source adapter import approval bridge receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260707T144553Z-disabled_source_adapter_import_approval_bridge.json`.
+- Local AMOS source adapter import approval bridge audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T144553Z-amos_source_adapter_import_approval_bridge.yaml`.
 - Current local audit receipt chain hash:
-  `8040b756a40d5dd15d136ac539cac614dea73bae63237e244af18b2f9780d7e6`.
+  `ed0eed730ada9f371589dcb9f206bd7fb801733e511e6972c35175ac3280b47c`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -155,6 +162,10 @@ Updated: 2026-07-07
 - The source adapter import is only a pending approval-required proposal; it
   performs no source import, live app, gateway, model, network, route, deploy,
   arbitrary UI, or durable memory action.
+- The source adapter import approval bridge previews a pending approval request
+  only; it writes no real approval file and performs no source import, live
+  app, gateway, model, network, route, deploy, arbitrary UI, or durable memory
+  action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

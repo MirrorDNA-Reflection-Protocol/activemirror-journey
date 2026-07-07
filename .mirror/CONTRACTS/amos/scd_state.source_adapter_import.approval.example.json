@@ -1,0 +1,16 @@
+{
+  "scd_state": {
+    "schema_version": "scd_state.v0_1",
+    "active_workspace": "personal",
+    "active_goal": "prepare an approval request before importing a disabled source adapter",
+    "active_agent": "mirror_concierge",
+    "allowed_memory_sources": ["session:intake", "project:active-mirror"],
+    "forbidden_memory_sources": ["client:separate-work", "private:vault-raw", "legal:filings-private"],
+    "allowed_tools": ["local_artifact_generator", "browser_local_state", "memory_proposal_writer"],
+    "pending_actions": ["source_adapter_import"],
+    "approvals_required": ["source_adapter_import"],
+    "output_requirements": ["plain_language", "no_internal_jargon", "approval_before_source_import"],
+    "state_hash": "cccccccccccccccccccccccc",
+    "previous_state_hash": "bbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}
