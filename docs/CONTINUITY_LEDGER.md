@@ -567,3 +567,39 @@ Do not turn this into a strategy essay. Keep it operational.
   - The first saved-context smoke failed because the test navigated away before old follow-up/artifact assertions; the smoke order was fixed and rerun clean.
   - This is browser-local continuity only. It is not account sync, a remote vault, or cross-device memory.
   - Continue uses the same reflection route; no new backend memory authority was added.
+
+### 2026-07-07: Poster Requests Generate Real Images
+
+- Changed: fixed the media artifact route so user requests like `make me a poster` produce an actual downloadable image instead of only a visual brief.
+- Source files touched:
+  - `src/components/ArtifactCard.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy files touched in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `worker/src/index.js`
+  - `worker/test/gateway-guardrails.test.mjs`
+  - `scripts/user-prompt-qa.mjs`
+  - `public/app/**`
+- Product decisions:
+  - Keep chat primary; only open the artifact surface when the user asks for a thing.
+  - Use Gemini for image generation because it is the media lane, not the reflection/personality lane.
+  - Do not show model names to users.
+  - If image generation fails, fall back to a clear visual brief instead of claiming a poster exists.
+- Deploy status:
+  - Gateway Worker deployed after the Gemini image fix: `active-mirror-site-gateway` version `10188660-0654-45aa-af33-d13d35c808cf`.
+  - Static site already deployed with the image renderer: `active-mirror-static-site` version `1bb7c409-b8f7-4411-96bc-ccce7c7186ac`.
+- Tools and gates used:
+  - Source: `npm run guard:language`, `npm run build:deploy`
+  - Worker: `npm run worker:test`
+  - Live direct API: poster request returned `fallback: false`, `kind: image`, and JPEG media data.
+  - Live browser QA: `ACTIVE_MIRROR_USER_QA_START=16 ACTIVE_MIRROR_USER_QA_CASES=1 ACTIVE_MIRROR_USER_QA_TIMEOUT_MS=120000 ACTIVE_MIRROR_USER_QA_DELAY_MS=1500 npm run qa:user-prompts`
+  - Live: `npm run smoke:interaction`, `npm run smoke:browser`, `npm run canary:prod`, `npm run redteam:prod-smoke`
+- QA fix:
+  - Added a `poster_image` user-prompt case.
+  - Removed the bare `Save` readiness marker because `Saved only if you choose` could make the harness sample before the artifact finished.
+  - The poster case now requires visible `Poster ready` or `Download image`.
+- Bad news or limits:
+  - Generated images are returned as inline media in the artifact payload; long-term production should move media to object storage or a signed URL path.
+  - Browser QA needed a longer timeout because real image generation is slower than text.
+  - This adds poster/image generation, not video, PDF rendering, or document export beyond existing text downloads.
+  - The deploy repo still has unrelated dirty file `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it unless separately owned.
+- Next safe move: add one user-visible retry/regenerate control for image artifacts, then add a storage-backed media route before heavy ad traffic.

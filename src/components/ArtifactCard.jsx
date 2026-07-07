@@ -94,6 +94,71 @@ function ArtifactBody({ body }) {
     );
 }
 
+function mediaFilename(title = 'active-mirror-poster', mimeType = 'image/png') {
+    const slug = String(title || 'active-mirror-poster')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 48);
+    const ext = String(mimeType || '').includes('jpeg')
+        ? 'jpg'
+        : String(mimeType || '').includes('webp')
+            ? 'webp'
+            : 'png';
+    return `${slug || 'active-mirror-poster'}.${ext}`;
+}
+
+function downloadMedia(dataUrl, title, mimeType) {
+    if (typeof document === 'undefined' || !dataUrl) return false;
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = mediaFilename(title, mimeType);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return true;
+}
+
+function ImageMedia({ media, title }) {
+    const [status, setStatus] = useState('');
+    const dataUrl = media?.data_url || media?.dataUrl || '';
+    if (!dataUrl) return null;
+
+    function flash(nextStatus) {
+        setStatus(nextStatus);
+        window.setTimeout(() => setStatus(''), 1600);
+    }
+
+    function downloadImage() {
+        try {
+            downloadMedia(dataUrl, title, media?.mime_type || media?.mimeType);
+            flash('Downloaded');
+        } catch {
+            flash('Download failed');
+        }
+    }
+
+    return (
+        <div className="mb-3 overflow-hidden rounded-[1.25rem] border border-violet-200/15 bg-black/30">
+            <img
+                src={dataUrl}
+                alt={media?.alt || title || 'Generated visual'}
+                className="block max-h-[520px] w-full object-contain"
+            />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
+                <span className="text-xs font-semibold text-violet-100">Poster ready</span>
+                <button
+                    type="button"
+                    onClick={downloadImage}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white"
+                >
+                    {status || 'Download image'}
+                </button>
+            </div>
+        </div>
+    );
+}
+
 export default function ArtifactCard({ artifact, surface = 'home', dismissInset = false }) {
     if (!artifact) return null;
 
@@ -107,6 +172,7 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
             : [];
     const title = artifact.title || meta.label;
     const body = artifact.body || '';
+    const media = artifact.media || null;
     const challenge = artifact.challenge || {};
     const challengeTone = CHALLENGE_META[challenge.status] || CHALLENGE_META.draft;
     const challengeLabel = challenge.label || 'Draft';
@@ -133,6 +199,7 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
                     {challengeNote}
                 </div>
             ) : null}
+            <ImageMedia media={media} title={title} />
             <ArtifactBody body={body} />
             <DraftActions title={title} text={body} kind={kind} surface={surface} />
             {checklist.length ? (
