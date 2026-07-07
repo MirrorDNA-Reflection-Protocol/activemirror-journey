@@ -31,6 +31,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | Approval-required actions should create a pending approval request before any external or public action runs. | AMOS architecture | local-contract | `scripts/amos_approval_request_gate.mjs`, `.mirror/schemas/approval_request.schema.json`, `.mirror/CONTRACTS/amos/scd_state.approval.example.json`, `.mirror/CONTRACTS/amos/action_request.publish_public.approval.example.json` |
 | Artifact export should be local-only unless path, root, content-type, secret-scan, hash, and manifest checks pass. | AMOS architecture | local-contract | `scripts/amos_artifact_export_gate.mjs`, `.mirror/schemas/artifact_export_request.schema.json`, `.mirror/CONTRACTS/amos/action_request.artifact_export.example.json`, `.mirror/CONTRACTS/amos/artifact_export_request.example.json`, `.mirror/FILE_EXPORT_REGISTRY.md` |
 | Local AMOS gate checks should leave audit receipts before any live runtime wiring is claimed. | AMOS architecture | local-contract | `scripts/amos_audit_log_gate.mjs`, `.mirror/schemas/audit_log_request.schema.json`, `.mirror/CONTRACTS/amos/action_request.audit_log.example.json`, `.mirror/CONTRACTS/amos/audit_log_request.example.json`, `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml` |
+| Local AMOS audit receipts are chained with deterministic SHA-256 tamper checks. | AMOS architecture | local-contract | `scripts/amos_receipt_chain_gate.mjs`, `.mirror/schemas/receipt_chain.schema.json`, `.mirror/RECEIPT_CHAINS/audit-log-chain.json`, `.mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml`, `npm run guard:receipt-chain` |
 
 ## Blocked Until Verified
 
@@ -38,6 +39,8 @@ Purpose: track public/product claims that need evidence before they appear in co
 - Claims that competitors do not offer memory, privacy, or reflection.
 - Claims that local models are trained, personalized, or user-owned.
 - Claims that cryptographic proof, ZKP, or enterprise audit is implemented in the consumer app.
+- Claims that local receipt chains are signed, externally timestamped,
+  publicly notarized, or verified by the live app/gateway.
 - Claims that the consumer app implements full AMOS, Euclid Trace, MirrorGraph, or Reflective Workspace runtime.
 - Claims that Active Mirror reads hidden motives, creates consciousness, is alive,
   or runs full governed memory/evolution modules in the public app.

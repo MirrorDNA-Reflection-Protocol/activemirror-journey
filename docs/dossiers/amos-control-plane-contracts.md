@@ -70,14 +70,18 @@ consent levels, and agent permissions.
 - Audit log gate: `scripts/amos_audit_log_gate.mjs` creates repo-local audit
   receipts only after the contract gate allows the audit writer and the audit
   request passes local shape checks.
+- Receipt chain gate: `scripts/amos_receipt_chain_gate.mjs` verifies
+  repo-local audit receipts against a deterministic SHA-256 chain file.
 - Model or gateway: no provider routing change.
 - Local storage: proposal YAML only; no durable memory promotion.
 - Approval storage: pending approval YAML only when a real risky action needs
   review.
 - Generated artifacts: local-only export gate scaffold; no public download
   infrastructure.
-- Audit storage: local YAML receipts only; no signing, chaining, publishing, or
-  runtime enforcement.
+- Audit storage: local YAML receipts only; hash-chained locally, but no
+  signing, publishing, or runtime enforcement.
+- Receipt chain storage: local JSON chain root only; no asymmetric signature,
+  external timestamp, public notarization, or live runtime verifier.
 
 ## Leveraged Now
 
@@ -124,6 +128,11 @@ consent levels, and agent permissions.
      The receipt records checked scope, unchecked scope, evidence, bad news,
      decision, and follow-up.
 
+10. **Receipt Chain**
+   - Local audit receipts are hashed as file bytes and linked in sorted file
+     order. `npm run guard:receipt-chain` fails if a receipt changes, disappears,
+     or is added without updating the chain.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -151,6 +160,7 @@ bound to a runtime.
   - `npm run guard:approval-request`
   - `npm run guard:artifact-export`
   - `npm run guard:audit-log`
+  - `npm run guard:receipt-chain`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -181,11 +191,14 @@ bound to a runtime.
   the requested action or approve itself.
 - Artifact export is local-only scaffolding; it does not create a public URL,
   user-facing download route, or durable storage path.
-- Audit-log receipts are local-only scaffolding; they are not signed,
-  hash-chained, published, or consumed by the live app/gateway.
+- Audit-log receipts are local-only scaffolding; they are hash-chained locally
+  but are not signed, published, or consumed by the live app/gateway.
+- Receipt chains are local-only tamper checks; they are not signatures,
+  external timestamps, public notarization, or enterprise audit.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to sign or chain local receipts before any live runtime proof claim.
+slice is to add asymmetric signing or external anchoring only if local receipt
+chains stay useful and stable.

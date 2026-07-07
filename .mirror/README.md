@@ -50,6 +50,7 @@ with small contracts:
 - `.mirror/schemas/action_request.schema.json`
 - `.mirror/schemas/memory_proposal_request.schema.json`
 - `.mirror/schemas/audit_log_request.schema.json`
+- `.mirror/schemas/receipt_chain.schema.json`
 
 These schemas do not make a runtime live. They define what a future runtime must
 validate before tools, memory, agents, or external actions are allowed.
@@ -106,6 +107,33 @@ node scripts/amos_audit_log_gate.mjs --write
 
 Written files are local evidence only. They do not make the public app or
 gateway consume AMOS contracts at runtime.
+
+## Receipt Chain Gate
+
+Repo-local audit receipts are chained with deterministic SHA-256 checks. The
+chain verifier hashes each audit receipt file, then links those hashes in sorted
+file order. Any edited, deleted, or unchained audit receipt fails the local
+guard.
+
+```bash
+npm run guard:receipt-chain
+```
+
+Manual dry-run:
+
+```bash
+node scripts/amos_receipt_chain_gate.mjs --dry-run
+```
+
+Manual write:
+
+```bash
+node scripts/amos_receipt_chain_gate.mjs --write
+```
+
+The current chain lives at `.mirror/RECEIPT_CHAINS/audit-log-chain.json`.
+This is local tamper detection only. It is not an asymmetric signature,
+external timestamp, public notarization, or live runtime verifier.
 
 ## Approval Request Gate
 

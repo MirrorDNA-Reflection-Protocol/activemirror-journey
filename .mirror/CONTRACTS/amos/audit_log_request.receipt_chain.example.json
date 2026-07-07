@@ -1,0 +1,31 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_receipt_chain",
+    "action": "Verify AMOS local audit receipts as a deterministic local hash chain.",
+    "checked_scope": [
+      "audit log receipt files",
+      "receipt chain writer",
+      "receipt chain verifier",
+      "local SHA-256 chain root"
+    ],
+    "unchecked_scope": [
+      "external timestamp authority",
+      "asymmetric signature",
+      "live app runtime integration",
+      "gateway runtime integration"
+    ],
+    "evidence": [
+      "npm run guard:audit-log",
+      "npm run guard:receipt-chain",
+      "node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T131500Z"
+    ],
+    "bad_news": [
+      "The receipt chain is local SHA-256 verification only; it is not a public notarization or signed proof."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Add signing or external anchoring only after the local chain stays stable."
+    ]
+  }
+}

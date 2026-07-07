@@ -49,8 +49,15 @@ Updated: 2026-07-07
   path, allowed-root, content-type, secret-scan, SHA-256, and manifest checks.
 - `npm run guard:audit-log` verifies local AMOS audit-log receipts and is
   included in `npm run prebuild`.
+- `npm run guard:receipt-chain` verifies local audit receipts against
+  `.mirror/RECEIPT_CHAINS/audit-log-chain.json` and is included in
+  `npm run prebuild`.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
+- Local AMOS receipt-chain audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml`.
+- Current local audit receipt chain hash:
+  `0c26e3c9cfb6e13cd2d9fd9a657f3a913f0d91afc5d3f69cf1f9c6364c88e8b8`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -74,8 +81,12 @@ Updated: 2026-07-07
   gateway do not yet consume these contracts at runtime.
 - The memory proposal gate writes review proposals only; it does not promote
   browser memory, canonical memory, or cross-device identity state.
-- The audit log gate writes local receipts only; it does not sign, chain,
-  publish, or enforce runtime claims.
+- The audit log gate writes local receipts only; the receipt-chain gate can
+  hash-chain them locally, but they are not signed, published, or runtime
+  enforced.
+- The receipt-chain gate detects local audit receipt edits, deletes, or
+  unchained additions; it is not an asymmetric signature, external timestamp,
+  public notarization, or live app/gateway verifier.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

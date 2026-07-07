@@ -1023,7 +1023,47 @@ Do not turn this into a strategy essay. Keep it operational.
 - Bad news or limits:
   - This is still local repo scaffolding only.
   - The live app and gateway do not consume these contracts at runtime.
-  - The receipt is local YAML only; it is not signed, hash-chained, published,
-    or connected to a verifier.
+  - The receipt is local YAML only; at that point it was not signed,
+    hash-chained, published, or connected to a verifier.
 - Next safe move: sign or chain local receipts before claiming tamper-evident
   runtime proof.
+
+### 2026-07-07: AMOS Receipt Chain Gate
+
+- Changed: added deterministic local hash-chain verification for AMOS audit
+  receipts.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/audit_log_request.receipt_chain.example.json`
+  - `.mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml`
+  - `.mirror/RECEIPT_CHAINS/.gitkeep`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `.mirror/schemas/receipt_chain.schema.json`
+  - `scripts/amos_receipt_chain_gate.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Local audit receipts are hashed as file bytes, then linked in sorted file
+    order.
+  - `npm run guard:receipt-chain` fails if an audit receipt is edited, deleted,
+    or added without updating `.mirror/RECEIPT_CHAINS/audit-log-chain.json`.
+  - This makes local tamper detection stronger, but it is still not a signed or
+    public proof system.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `node scripts/amos_receipt_chain_gate.mjs --self-test`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.receipt_chain.example.json --timestamp 20260707T131500Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T131500Z`
+  - `npm run guard:receipt-chain`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The chain is local SHA-256 verification only.
+  - There is no asymmetric signature, external timestamp authority, public
+    notarization, live app verifier, or gateway verifier.
+- Next safe move: add asymmetric signing or external anchoring only if local
+  receipt chains remain useful and stable.
