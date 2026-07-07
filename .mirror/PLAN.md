@@ -33,9 +33,10 @@
 5. Use `npm run guard:memory-proposal` as the first contract-backed local memory action.
 6. Use `npm run guard:approval-request` before any action that may publish,
    send, deploy, or otherwise leave the local session.
-7. Add real approval request files only when a risky action is actually proposed.
-8. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-9. Only add runtime wiring after a small contract has been used by a real task.
+7. Use `npm run guard:artifact-export` before any local file export path is trusted.
+8. Add real approval request files only when a risky action is actually proposed.
+9. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+10. Only add runtime wiring after a small contract has been used by a real task.
 
 ## Do Not Do Yet
 

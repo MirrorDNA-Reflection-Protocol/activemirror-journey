@@ -45,6 +45,8 @@ Updated: 2026-07-07
 - `npm run guard:approval-request` verifies approval-required actions create
   pending approval requests in temp and that blocked/allowed actions write
   nothing.
+- `npm run guard:artifact-export` verifies local-only artifact exports with
+  path, allowed-root, content-type, secret-scan, SHA-256, and manifest checks.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -57,7 +59,8 @@ Updated: 2026-07-07
 - Browser-local state is useful, but not a full owned identity/memory sync layer yet.
 - Generated artifacts are useful text/brief/code outputs today; they are not yet a fully sandboxed file-export system.
 - The current UI is still a product front door, not the full ActiveMirrorOS control plane.
-- File export registry exists as a design stub only; there are no active registered exports.
+- File export registry has a local gate scaffold only; there are no public
+  registered exports.
 - Approval requests are scaffolded, but no real approval workflow is wired into the app yet.
 - Approval request creation is local repo scaffolding; no approval file was
   created for a fake publish action.

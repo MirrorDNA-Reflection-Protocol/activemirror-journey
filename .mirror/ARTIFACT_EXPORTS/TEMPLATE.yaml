@@ -1,0 +1,11 @@
+artifact_export:
+  artifact_id: art_YYYYMMDD_001
+  source_path: ".mirror/ARTIFACT_SOURCES/example.md"
+  export_path: ".mirror/ARTIFACT_EXPORTS/example.md"
+  public_name: "example.md"
+  content_type: "text/markdown"
+  hash: "sha256:pending"
+  signed_url: false
+  expires_after_minutes: 60
+  audited: true
+  status: "local_only"

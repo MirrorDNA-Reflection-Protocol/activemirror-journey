@@ -1,0 +1,15 @@
+{
+  "artifact_export_request": {
+    "schema_version": "artifact_export_request.v0_1",
+    "artifact_id": "example_first_move",
+    "source_path": ".mirror/ARTIFACT_SOURCES/example-first-move.md",
+    "allowed_root": ".mirror/ARTIFACT_SOURCES",
+    "export_root": ".mirror/ARTIFACT_EXPORTS",
+    "public_name": "example-first-move.md",
+    "content_type": "text/markdown",
+    "expires_after_minutes": 60,
+    "signed_url": false,
+    "audited": true,
+    "source_classification": "session_draft"
+  }
+}

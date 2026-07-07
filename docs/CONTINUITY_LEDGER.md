@@ -935,3 +935,51 @@ Do not turn this into a strategy essay. Keep it operational.
   - There is still no human approval UI, approval token signing flow, or
     runtime action executor.
 - Next safe move: connect the same contract pattern to artifact export.
+
+### 2026-07-07: AMOS Artifact Export Gate
+
+- Changed: attached the AMOS contract gate to local-only artifact export.
+  A draft artifact can be copied only from an allowed repo-local source root
+  into `.mirror/ARTIFACT_EXPORTS/` after path, root, content-type,
+  secret-scan, SHA-256, and manifest checks pass.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/scd_state.example.json`
+  - `.mirror/CONTRACTS/amos/workspace_boundary.personal.example.json`
+  - `.mirror/CONTRACTS/amos/agent_contract.mirror_concierge.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.artifact_export.example.json`
+  - `.mirror/CONTRACTS/amos/artifact_export_request.example.json`
+  - `.mirror/schemas/artifact_export_request.schema.json`
+  - `.mirror/ARTIFACT_SOURCES/example-first-move.md`
+  - `.mirror/ARTIFACT_EXPORTS/.gitkeep`
+  - `.mirror/ARTIFACT_EXPORTS/TEMPLATE.yaml`
+  - `scripts/amos_artifact_export_gate.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `.mirror/FILE_EXPORT_REGISTRY.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - No model gets raw download authority.
+  - Export remains local-only and receipt-backed.
+  - Public download routes, signed URLs, durable storage, and UI wiring remain
+    out of scope for this slice.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:artifact-export`
+  - `node scripts/amos_contract_gate.mjs --action .mirror/CONTRACTS/amos/action_request.artifact_export.example.json --expect allow`
+  - `node scripts/amos_artifact_export_gate.mjs --dry-run`
+  - JSON parse check for the new artifact schema and examples
+  - `npm run guard:dossiers`
+  - `npm run guard:mirror`
+  - `npm run build:deploy`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The live app and gateway do not consume these contracts at runtime.
+  - No public file URL, browser download button, R2 object, or approval UI was
+    made live.
+- Next safe move: add audit-log receipts for the local gates before any live
+  runtime wiring.

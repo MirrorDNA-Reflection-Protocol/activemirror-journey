@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/artifact_export_request.schema.json",
+  "title": "Active Mirror Artifact Export Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_export_request"],
+  "properties": {
+    "artifact_export_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "source_path",
+        "allowed_root",
+        "export_root",
+        "public_name",
+        "content_type",
+        "expires_after_minutes",
+        "signed_url",
+        "audited",
+        "source_classification"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "artifact_export_request.v0_1" },
+        "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "source_path": { "type": "string", "minLength": 3 },
+        "allowed_root": { "type": "string", "minLength": 3 },
+        "export_root": { "type": "string", "minLength": 3 },
+        "public_name": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._ -]{0,120}$" },
+        "content_type": {
+          "type": "string",
+          "enum": ["text/markdown", "text/plain", "application/json"]
+        },
+        "expires_after_minutes": { "type": "integer", "minimum": 1, "maximum": 1440 },
+        "signed_url": { "type": "boolean", "const": false },
+        "audited": { "type": "boolean", "const": true },
+        "source_classification": {
+          "type": "string",
+          "enum": ["session_draft", "project_note", "public_reference"]
+        }
+      }
+    }
+  }
+}

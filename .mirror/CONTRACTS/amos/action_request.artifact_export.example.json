@@ -1,0 +1,18 @@
+{
+  "action_request": {
+    "schema_version": "action_request.v0_1",
+    "id": "artifact_export",
+    "workspace": "personal",
+    "agent": "mirror_concierge",
+    "tool": "local_artifact_exporter",
+    "action": "artifact_export",
+    "intent": "Export a local draft artifact only after path, content, and receipt checks pass.",
+    "reads": ["session:draft"],
+    "writes": ["artifact:local-export"],
+    "egress": "none",
+    "reversibility": "reversible",
+    "consent_level": "level_2",
+    "approval_token": "",
+    "output_type": "json"
+  }
+}

@@ -62,6 +62,25 @@ npm run guard:amos-contracts
 The default examples live in `.mirror/CONTRACTS/amos/`. The gate returns
 `allow`, `approval_required`, or `block` and is now part of `npm run prebuild`.
 
+## Artifact Export Gate
+
+Local artifact export is gated. The export writer first runs the AMOS contract
+gate, then checks the source path, allowed root, content type, secret patterns,
+and SHA-256 before writing a local-only artifact plus manifest.
+
+```bash
+npm run guard:artifact-export
+```
+
+Manual dry-run:
+
+```bash
+node scripts/amos_artifact_export_gate.mjs --dry-run
+```
+
+This is not public download infrastructure. Public or external export still
+needs approval and a separate runtime/deploy path.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

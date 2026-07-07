@@ -4,12 +4,12 @@
     "active_workspace": "personal",
     "active_goal": "turn a messy user request into a small useful artifact without external action",
     "active_agent": "mirror_concierge",
-    "allowed_memory_sources": ["session:intake", "project:active-mirror"],
+    "allowed_memory_sources": ["session:intake", "session:draft", "project:active-mirror"],
     "forbidden_memory_sources": ["client:separate-work", "private:vault-raw", "legal:filings-private"],
-    "allowed_tools": ["local_artifact_generator", "browser_local_state", "memory_proposal_writer"],
-    "pending_actions": ["draft_first_move", "memory_proposal"],
+    "allowed_tools": ["local_artifact_generator", "browser_local_state", "memory_proposal_writer", "local_artifact_exporter"],
+    "pending_actions": ["draft_first_move", "memory_proposal", "artifact_export"],
     "approvals_required": ["send_email", "publish_public", "memory_promote"],
-    "output_requirements": ["plain_language", "no_internal_jargon", "no_external_write", "memory_is_proposal_only"],
+    "output_requirements": ["plain_language", "no_internal_jargon", "no_external_write", "memory_is_proposal_only", "export_receipt_required"],
     "state_hash": "aaaaaaaaaaaaaaaaaaaaaaaa",
     "previous_state_hash": "genesis"
   }

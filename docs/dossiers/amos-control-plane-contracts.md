@@ -64,11 +64,15 @@ consent levels, and agent permissions.
   approval request only when the contract gate returns `approval_required`.
 - First local action gate: `scripts/amos_memory_proposal_gate.mjs` creates
   reviewable memory proposals only after the contract gate returns `allow`.
+- Artifact export gate: `scripts/amos_artifact_export_gate.mjs` creates
+  local-only exports only after contract, path, root, content-type,
+  secret-scan, hash, and manifest checks pass.
 - Model or gateway: no provider routing change.
 - Local storage: proposal YAML only; no durable memory promotion.
 - Approval storage: pending approval YAML only when a real risky action needs
   review.
-- Generated artifacts: no new export capability.
+- Generated artifacts: local-only export gate scaffold; no public download
+  infrastructure.
 
 ## Leveraged Now
 
@@ -104,6 +108,11 @@ consent levels, and agent permissions.
      pending approval request. Blocked actions write nothing. Already-allowed
      actions write nothing because no approval queue is needed.
 
+8. **Artifact Export Request**
+   - A draft artifact can be copied only from an allowed repo-local source root
+     into `.mirror/ARTIFACT_EXPORTS/` after path traversal, absolute path,
+     symlink escape, content-type, secret-scan, hash, and receipt checks pass.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -129,6 +138,7 @@ bound to a runtime.
   - `npm run guard:amos-contracts`
   - `npm run guard:memory-proposal`
   - `npm run guard:approval-request`
+  - `npm run guard:artifact-export`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -157,10 +167,12 @@ bound to a runtime.
   need human approval before they become memory.
 - Approval request writing is local repo scaffolding only; it does not perform
   the requested action or approve itself.
+- Artifact export is local-only scaffolding; it does not create a public URL,
+  user-facing download route, or durable storage path.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to connect the same contract pattern to artifact export before any
-live runtime wiring.
+slice is to add audit-log receipts for these local gates before any live runtime
+wiring.

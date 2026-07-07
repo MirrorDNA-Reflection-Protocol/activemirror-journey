@@ -1,10 +1,19 @@
 # File Export Registry
 
-Status: design stub. No public downloadable file export is active from this registry.
+Status: local gate scaffold. No public downloadable file export is active from this registry.
 
 ## Rule
 
 Active Mirror must not let a model create raw download authority.
+
+Local gate:
+
+```bash
+npm run guard:artifact-export
+```
+
+The gate verifies local-only export requests before a file can be copied into
+`.mirror/ARTIFACT_EXPORTS/`.
 
 Allowed future export shape:
 
@@ -37,3 +46,5 @@ artifact_export:
 
 None.
 
+The self-test writes only to a temp directory. The default manual path is a
+dry-run unless `--write` is explicitly passed.
