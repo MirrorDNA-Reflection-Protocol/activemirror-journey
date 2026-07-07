@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/runtime_integration.schema.json",
+  "title": "Active Mirror Runtime Integration Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runtime_integration"],
+  "properties": {
+    "runtime_integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "mode",
+        "live_wiring_enabled",
+        "surfaces",
+        "required_local_gates",
+        "required_receipts",
+        "claim_boundary",
+        "blocked_claims",
+        "next_allowed_step"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "runtime_integration.v0_1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "mode": { "type": "string", "enum": ["contract_only", "shadow_dry_run", "live"] },
+        "live_wiring_enabled": { "type": "boolean" },
+        "surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "repo",
+              "route",
+              "adapter",
+              "enabled",
+              "reads",
+              "writes",
+              "egress",
+              "required_gates"
+            ],
+            "properties": {
+              "name": { "type": "string" },
+              "repo": { "type": "string" },
+              "route": { "type": "string" },
+              "adapter": { "type": "string" },
+              "enabled": { "type": "boolean" },
+              "reads": { "type": "array", "items": { "type": "string" } },
+              "writes": { "type": "array", "items": { "type": "string" } },
+              "egress": { "type": "string" },
+              "required_gates": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+            }
+          }
+        },
+        "required_local_gates": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "required_receipts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "claim_boundary": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "blocked_claims": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "next_allowed_step": { "type": "string" }
+      }
+    }
+  }
+}

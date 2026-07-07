@@ -148,6 +148,28 @@ then prints bad news, checked gates, current chain hash, working-tree state, and
 the next safe action. A green command still reports `decision: partial` because
 these controls are local-only until the app or gateway consumes them.
 
+## Runtime Integration Gate
+
+The runtime integration contract declares how the consumer app and gateway
+would consume AMOS gates later. It is intentionally contract-only today:
+all surfaces stay disabled and all adapters stay `none`.
+
+```bash
+npm run guard:runtime-integration
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_runtime_integration_gate.mjs --expect allow
+node scripts/amos_runtime_integration_gate.mjs --manifest .mirror/CONTRACTS/amos/runtime_integration.live_blocked.example.json --expect block
+```
+
+This gate blocks claims that AMOS runtime enforcement is live, that the public
+app consumes AMOS contracts, or that the gateway consumes AMOS contracts. A
+future shadow adapter must pass this contract before any live runtime wiring is
+claimed.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

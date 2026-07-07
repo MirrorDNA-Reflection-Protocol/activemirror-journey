@@ -40,11 +40,15 @@
    local audit receipts.
 10. Use `npm run amos:status` before live runtime wiring or public proof
     claims.
-11. Add real approval request files only when a risky action is actually proposed.
-12. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-13. Only add runtime wiring after a small contract has been used by a real task.
-14. Next control-plane slice: define the runtime integration contract for how
-    the app or gateway would consume these local gates without making it live.
+11. Use `npm run guard:runtime-integration` before claiming the app or gateway
+    consumes AMOS gates.
+12. Add real approval request files only when a risky action is actually proposed.
+13. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+14. Only add runtime wiring after a small contract has been used by a real task.
+15. Runtime integration is now contract-only with disabled adapters.
+16. Next control-plane slice: define a shadow dry-run adapter envelope that can
+    read a proposed runtime request, emit a receipt, and still perform no live
+    action.
 
 ## Do Not Do Yet
 

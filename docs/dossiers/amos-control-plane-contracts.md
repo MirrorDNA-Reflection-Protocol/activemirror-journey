@@ -26,6 +26,7 @@ consent levels, and agent permissions.
   - `.mirror/schemas/workspace_boundary.schema.json`
   - `.mirror/schemas/consent_ladder.schema.json`
   - `.mirror/schemas/agent_contract.schema.json`
+  - `.mirror/schemas/runtime_integration.schema.json`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -84,6 +85,8 @@ consent levels, and agent permissions.
   signing, publishing, or runtime enforcement.
 - Receipt chain storage: local JSON chain root only; no asymmetric signature,
   external timestamp, public notarization, or live runtime verifier.
+- Runtime integration: contract-only manifest with consumer app and gateway
+  adapters declared disabled.
 
 ## Leveraged Now
 
@@ -142,6 +145,12 @@ consent levels, and agent permissions.
      `partial` because the public app and gateway do not consume these controls
      yet.
 
+12. **Runtime Integration Contract**
+   - `npm run guard:runtime-integration` verifies that the consumer app and
+     gateway integration manifest remains contract-only. It blocks live
+     adapters, enabled surfaces, missing local gates, missing receipts, and
+     unsupported claims that public runtime enforcement is live.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -170,6 +179,7 @@ bound to a runtime.
   - `npm run guard:artifact-export`
   - `npm run guard:audit-log`
   - `npm run guard:receipt-chain`
+  - `npm run guard:runtime-integration`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -206,10 +216,12 @@ bound to a runtime.
 - Receipt chains are local-only tamper checks; they are not signatures,
   external timestamps, public notarization, or enterprise audit.
 - AMOS status is a local truth surface only; it is not live runtime enforcement.
+- Runtime integration is contract-only; the app and gateway adapters are
+  explicitly disabled.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define the runtime integration contract for how the app or gateway
-would consume these local gates without making it live yet.
+slice is to define a shadow dry-run adapter envelope that can emit receipts
+without performing live app or gateway actions.

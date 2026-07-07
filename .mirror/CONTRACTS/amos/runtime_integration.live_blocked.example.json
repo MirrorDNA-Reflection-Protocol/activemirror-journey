@@ -1,0 +1,26 @@
+{
+  "runtime_integration": {
+    "schema_version": "runtime_integration.v0_1",
+    "id": "amos_runtime_live_blocked",
+    "mode": "live",
+    "live_wiring_enabled": true,
+    "surfaces": [
+      {
+        "name": "consumer_app",
+        "repo": "/Users/mirror-pro/repos/activemirror-journey",
+        "route": "/app/",
+        "adapter": "amos_runtime_adapter",
+        "enabled": true,
+        "reads": ["browser_session", "local_draft"],
+        "writes": ["local_ui_state", "audit_log"],
+        "egress": "none",
+        "required_gates": ["guard:amos-contracts"]
+      }
+    ],
+    "required_local_gates": ["guard:amos-contracts"],
+    "required_receipts": [".mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml"],
+    "claim_boundary": ["AMOS runtime enforcement is live."],
+    "blocked_claims": ["none"],
+    "next_allowed_step": "Ship live adapter."
+  }
+}

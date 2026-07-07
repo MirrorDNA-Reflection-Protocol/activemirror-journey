@@ -38,12 +38,18 @@ const checks = [
         label: 'Receipt chain gate',
         args: ['scripts/amos_receipt_chain_gate.mjs', '--verify'],
     },
+    {
+        id: 'runtime_integration_gate',
+        label: 'Runtime integration gate',
+        args: ['scripts/amos_runtime_integration_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
     'Local repo controls only; the live app and gateway do not consume AMOS contracts yet.',
     'Receipt chains are SHA-256 local tamper checks only; they are not signed or externally timestamped.',
     'Approval requests, memory proposals, artifact exports, and audit receipts are scaffolds until wired into a runtime.',
+    'Runtime integration is contract-only; app and gateway adapters are declared disabled.',
 ];
 
 function parseArgs(argv) {

@@ -1,0 +1,30 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_runtime_integration_contract",
+    "action": "Verify the AMOS runtime integration contract remains contract-only.",
+    "checked_scope": [
+      "runtime integration schema",
+      "contract-only runtime manifest",
+      "blocked live manifest",
+      "runtime integration gate"
+    ],
+    "unchecked_scope": [
+      "live app adapter",
+      "gateway adapter",
+      "runtime enforcement",
+      "external verifier"
+    ],
+    "evidence": [
+      "npm run guard:runtime-integration",
+      "node scripts/amos_runtime_integration_gate.mjs --self-test"
+    ],
+    "bad_news": [
+      "The runtime integration contract is intentionally not live wiring."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Build a shadow dry-run adapter only after the contract remains stable."
+    ]
+  }
+}

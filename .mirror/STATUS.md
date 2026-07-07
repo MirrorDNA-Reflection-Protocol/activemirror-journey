@@ -55,14 +55,18 @@ Updated: 2026-07-07
 - `npm run amos:status` runs the local AMOS control-plane checks and reports
   bad news, checked gates, receipt-chain state, working-tree state, and next
   safe action.
+- `npm run guard:runtime-integration` verifies the AMOS runtime integration
+  contract stays contract-only with app and gateway adapters disabled.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml`.
 - Local AMOS status-report audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T132500Z-amos_status_report.yaml`.
+- Local AMOS runtime-integration audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T132730Z-amos_runtime_integration_contract.yaml`.
 - Current local audit receipt chain hash:
-  `a11548331fc0f56024e92a0d0174cfa483b50cd3e7db5f7a6cad8032f82de6ce`.
+  `d583f5d6b312bf3f07f62c25d249c316f443261560dd0d27ae4c1d0471c28a35`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -94,6 +98,8 @@ Updated: 2026-07-07
   public notarization, or live app/gateway verifier.
 - The AMOS status report is a local truth surface, not a runtime health proof
   for the public app or gateway.
+- The runtime integration contract is intentionally not live wiring; the public
+  app and gateway adapters are declared disabled.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

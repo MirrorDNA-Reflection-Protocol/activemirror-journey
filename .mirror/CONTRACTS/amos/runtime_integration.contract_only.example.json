@@ -1,0 +1,69 @@
+{
+  "runtime_integration": {
+    "schema_version": "runtime_integration.v0_1",
+    "id": "amos_runtime_contract_only",
+    "mode": "contract_only",
+    "live_wiring_enabled": false,
+    "surfaces": [
+      {
+        "name": "consumer_app",
+        "repo": "/Users/mirror-pro/repos/activemirror-journey",
+        "route": "/app/",
+        "adapter": "none",
+        "enabled": false,
+        "reads": ["browser_session", "local_draft"],
+        "writes": ["local_ui_state"],
+        "egress": "none",
+        "required_gates": [
+          "guard:amos-contracts",
+          "guard:audit-log",
+          "guard:receipt-chain"
+        ]
+      },
+      {
+        "name": "gateway_worker",
+        "repo": "/Users/mirror-pro/repos/active-mirror-site",
+        "route": "gateway.activemirror.ai",
+        "adapter": "none",
+        "enabled": false,
+        "reads": ["request_metadata"],
+        "writes": ["gateway_response"],
+        "egress": "model_route",
+        "required_gates": [
+          "worker:test",
+          "canary:prod",
+          "runtime_adapter_receipt"
+        ]
+      }
+    ],
+    "required_local_gates": [
+      "guard:amos-contracts",
+      "guard:memory-proposal",
+      "guard:approval-request",
+      "guard:artifact-export",
+      "guard:audit-log",
+      "guard:receipt-chain",
+      "amos:status"
+    ],
+    "required_receipts": [
+      ".mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml",
+      ".mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml",
+      ".mirror/AUDIT_LOGS/20260707T132500Z-amos_status_report.yaml",
+      ".mirror/RECEIPT_CHAINS/audit-log-chain.json"
+    ],
+    "claim_boundary": [
+      "Local AMOS contracts exist.",
+      "Local AMOS gates pass.",
+      "Local audit receipts are hash-chained.",
+      "The public app and gateway do not consume AMOS gates yet."
+    ],
+    "blocked_claims": [
+      "AMOS runtime enforcement is live.",
+      "The public app consumes AMOS contracts.",
+      "The gateway consumes AMOS contracts.",
+      "Receipt chains are signed or externally timestamped.",
+      "Local gates are enterprise audit proof."
+    ],
+    "next_allowed_step": "Build a shadow dry-run adapter only after this contract passes."
+  }
+}

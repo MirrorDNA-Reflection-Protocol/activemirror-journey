@@ -1105,3 +1105,52 @@ Do not turn this into a strategy essay. Keep it operational.
     receipts, or receipt chains.
 - Next safe move: define the runtime integration contract for how the app or
   gateway would consume these local gates without making it live yet.
+
+### 2026-07-07: AMOS Runtime Integration Contract
+
+- Changed: added a fail-closed runtime integration contract that describes how
+  the consumer app and gateway would consume AMOS gates later, while explicitly
+  keeping both adapters disabled today.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/runtime_integration.contract_only.example.json`
+  - `.mirror/CONTRACTS/amos/runtime_integration.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.runtime_integration.example.json`
+  - `.mirror/schemas/runtime_integration.schema.json`
+  - `.mirror/AUDIT_LOGS/20260707T132730Z-amos_runtime_integration_contract.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_runtime_integration_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Runtime integration starts as a contract, not a live adapter.
+  - The public app and gateway must not be described as consuming AMOS gates
+    until a future adapter is built and verified.
+  - The local gate blocks enabled surfaces, non-`none` adapters, missing local
+    gates, missing receipts, and unsupported public-runtime claims.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `node scripts/amos_runtime_integration_gate.mjs --self-test`
+  - `node scripts/amos_runtime_integration_gate.mjs --expect allow`
+  - `node scripts/amos_runtime_integration_gate.mjs --manifest .mirror/CONTRACTS/amos/runtime_integration.live_blocked.example.json --expect block`
+  - `npm run guard:runtime-integration`
+  - `npm run amos:status`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.runtime_integration.example.json --timestamp 20260707T132730Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T132730Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The receipt chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 4
+  - hash: `d583f5d6b312bf3f07f62c25d249c316f443261560dd0d27ae4c1d0471c28a35`
+- Next safe move: define a shadow dry-run adapter envelope that can read a
+  proposed runtime request, emit a receipt, and still perform no live action.
