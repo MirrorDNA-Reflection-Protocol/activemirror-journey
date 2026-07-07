@@ -1,0 +1,30 @@
+{
+  "ui_harness_request": {
+    "schema_version": "ui_harness_request.v0_1",
+    "id": "local_ui_live_blocked",
+    "surface": "consumer_app",
+    "mode": "local_ui_harness_proposal",
+    "harness": "chat_first_local_ui_harness",
+    "route": "/app/",
+    "runtime_adapter_request": ".mirror/CONTRACTS/amos/browser_runtime_adapter.consumer.example.json",
+    "ui_intent": {
+      "entry_question": "What do you want?",
+      "primary_action": "local_chat_turn",
+      "response_surface": "small_canvas",
+      "secondary_surface": "receipt_status",
+      "copy_mode": "plain_user_language"
+    },
+    "allowed_ui_actions": ["render_local_projection"],
+    "blocked_ui_actions": ["call_model"],
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "durable_memory_write_enabled": true,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "required_gates": ["guard:browser-runtime-adapter"],
+    "output_type": "ui_harness_projection_receipt",
+    "claim_boundary": ["This claims unsafe live UI behavior."],
+    "blocked_claims": ["UI harness is live in the public app."]
+  }
+}

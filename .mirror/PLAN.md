@@ -50,17 +50,20 @@
     inspection evidence exists.
 14. Use `npm run guard:browser-runtime-adapter` before claiming browser-local
     request projection evidence exists.
-15. Add real approval request files only when a risky action is actually proposed.
-16. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-17. Only add runtime wiring after a small contract has been used by a real task.
-18. Runtime integration is still contract-only with disabled adapters.
-19. Shadow adapter receipts are local-only and perform no live action.
-20. Read-only app adapter receipts are source-hash evidence only.
-21. Browser-local runtime adapter receipts are input-hash projections only.
-22. Next control-plane slice: define a local-only UI harness proposal that can
-    call the browser-local runtime adapter behind explicit gates while still
-    blocking model calls, network, durable memory writes, route changes,
-    deploys, and gateway changes.
+15. Use `npm run guard:ui-harness` before claiming local UI projection
+    evidence exists.
+16. Add real approval request files only when a risky action is actually proposed.
+17. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+18. Only add runtime wiring after a small contract has been used by a real task.
+19. Runtime integration is still contract-only with disabled adapters.
+20. Shadow adapter receipts are local-only and perform no live action.
+21. Read-only app adapter receipts are source-hash evidence only.
+22. Browser-local runtime adapter receipts are input-hash projections only.
+23. Local UI harness receipts are projection evidence only.
+24. Next control-plane slice: define a disabled source adapter proposal in
+    app code behind explicit gates while still blocking model calls, network,
+    durable memory writes, route changes, deploys, gateway changes, and
+    arbitrary generated UI.
 
 ## Do Not Do Yet
 

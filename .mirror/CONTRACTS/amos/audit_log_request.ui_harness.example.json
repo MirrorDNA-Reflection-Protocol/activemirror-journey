@@ -1,0 +1,34 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_ui_harness",
+    "action": "Verify the AMOS local UI harness proposal can call the browser-local runtime adapter without live action.",
+    "checked_scope": [
+      "ui harness request schema",
+      "ui harness receipt schema",
+      "ui harness gate",
+      "browser-local runtime adapter call",
+      "blocked live UI request"
+    ],
+    "unchecked_scope": [
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:ui-harness",
+      "node scripts/amos_ui_harness_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The local UI harness proposal performs no live runtime action and does not prove public app or gateway enforcement."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Only after local UI harness receipts remain stable, consider a disabled source adapter in app code behind explicit gates."
+    ]
+  }
+}

@@ -237,6 +237,30 @@ Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain an input hash,
 requested output type, allowed local actions, and blocked capabilities. This is
 still local evidence only.
 
+## Local UI Harness Gate
+
+The local UI harness proposal calls the browser-local runtime adapter and emits
+a UI projection receipt. It keeps the consumer frame chat-first while proving
+the proposed UI path is still local-only and cannot call models, use network,
+write durable memory, change routes, change the gateway, deploy public assets,
+or execute arbitrary generated UI.
+
+```bash
+npm run guard:ui-harness
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_ui_harness_gate.mjs --expect allow
+node scripts/amos_ui_harness_gate.mjs --request .mirror/CONTRACTS/amos/ui_harness.live_blocked.example.json --expect block
+node scripts/amos_ui_harness_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain the UI
+projection plus the browser-runtime input hash. This is still local evidence
+only.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

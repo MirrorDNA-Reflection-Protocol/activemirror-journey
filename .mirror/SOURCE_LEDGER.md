@@ -37,6 +37,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | AMOS shadow runtime requests can emit local dry-run receipts without performing live actions. | AMOS architecture | local-contract | `scripts/amos_shadow_adapter_gate.mjs`, `.mirror/schemas/shadow_runtime_request.schema.json`, `.mirror/schemas/shadow_runtime_receipt.schema.json`, `.mirror/CONTRACTS/amos/shadow_runtime_request.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T133841Z-shadow_consumer_first_turn.json`, `npm run guard:shadow-adapter` |
 | AMOS read-only app adapter proposals can emit source-hash receipts without live runtime behavior. | AMOS architecture | local-contract | `scripts/amos_readonly_app_adapter_gate.mjs`, `.mirror/schemas/readonly_app_adapter_request.schema.json`, `.mirror/schemas/readonly_app_adapter_receipt.schema.json`, `.mirror/CONTRACTS/amos/readonly_app_adapter.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T134909Z-readonly_consumer_app_surface.json`, `npm run guard:readonly-app-adapter` |
 | AMOS browser-local runtime adapter proposals can emit in-memory request projection receipts without live runtime behavior. | AMOS architecture | local-contract | `scripts/amos_browser_runtime_adapter_gate.mjs`, `.mirror/schemas/browser_runtime_adapter_request.schema.json`, `.mirror/schemas/browser_runtime_adapter_receipt.schema.json`, `.mirror/CONTRACTS/amos/browser_runtime_adapter.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T140008Z-browser_local_consumer_turn.json`, `npm run guard:browser-runtime-adapter` |
+| AMOS local UI harness proposals can call the browser-local runtime adapter and emit UI projection receipts without live runtime behavior. | AMOS architecture | local-contract | `scripts/amos_ui_harness_gate.mjs`, `.mirror/schemas/ui_harness_request.schema.json`, `.mirror/schemas/ui_harness_receipt.schema.json`, `.mirror/CONTRACTS/amos/ui_harness.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T140840Z-local_ui_consumer_turn.json`, `npm run guard:ui-harness` |
 
 ## Blocked Until Verified
 
@@ -53,6 +54,8 @@ Purpose: track public/product claims that need evidence before they appear in co
   network, route, deploy, or durable memory actions.
 - Claims that the browser-local runtime adapter performed live app, gateway,
   model, network, route, deploy, or durable memory actions.
+- Claims that the local UI harness performed live app, gateway, model, network,
+  route, deploy, arbitrary UI, or durable memory actions.
 - Claims that the consumer app implements full AMOS, Euclid Trace, MirrorGraph, or Reflective Workspace runtime.
 - Claims that Active Mirror reads hidden motives, creates consciousness, is alive,
   or runs full governed memory/evolution modules in the public app.

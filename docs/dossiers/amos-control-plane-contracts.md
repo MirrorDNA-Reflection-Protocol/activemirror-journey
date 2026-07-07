@@ -33,6 +33,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/readonly_app_adapter_receipt.schema.json`
   - `.mirror/schemas/browser_runtime_adapter_request.schema.json`
   - `.mirror/schemas/browser_runtime_adapter_receipt.schema.json`
+  - `.mirror/schemas/ui_harness_request.schema.json`
+  - `.mirror/schemas/ui_harness_receipt.schema.json`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -99,6 +101,8 @@ consent levels, and agent permissions.
   model, network, route, deploy, or memory action.
 - Browser-local runtime adapter: local in-memory projection receipt only; no
   live app, gateway, model, network, route, deploy, or durable memory action.
+- Local UI harness: local projection receipt only; no live app, gateway, model,
+  network, route, deploy, arbitrary UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -182,6 +186,12 @@ consent levels, and agent permissions.
      network, writing durable memory, changing routes, changing the gateway, or
      deploying public assets.
 
+16. **Local UI Harness Proposal**
+   - `npm run guard:ui-harness` verifies that a local UI harness can call the
+     browser-local runtime adapter and emit a UI projection receipt without
+     live app wiring, model calls, network use, durable memory writes, route
+     changes, gateway changes, public deploys, or arbitrary generated UI.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -214,6 +224,7 @@ validated and bound to a runtime.
   - `npm run guard:shadow-adapter`
   - `npm run guard:readonly-app-adapter`
   - `npm run guard:browser-runtime-adapter`
+  - `npm run guard:ui-harness`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -258,12 +269,13 @@ validated and bound to a runtime.
   not prove live app or gateway enforcement.
 - Browser-local runtime adapter receipts are local input-hash projection
   receipts only; they do not prove live app or gateway enforcement.
+- Local UI harness receipts are local projection receipts only; they do not
+  prove live app or gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define a local-only UI harness proposal that can call the
-browser-local runtime adapter behind explicit gates while still blocking model
-calls, network use, durable memory writes, route changes, deploys, and gateway
-changes.
+slice is to define a disabled source adapter proposal in app code behind
+explicit gates while still blocking model calls, network use, durable memory
+writes, route changes, deploys, gateway changes, and arbitrary generated UI.

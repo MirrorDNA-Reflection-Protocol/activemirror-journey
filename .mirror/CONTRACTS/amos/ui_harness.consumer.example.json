@@ -1,0 +1,62 @@
+{
+  "ui_harness_request": {
+    "schema_version": "ui_harness_request.v0_1",
+    "id": "local_ui_consumer_turn",
+    "surface": "consumer_app",
+    "mode": "local_ui_harness_proposal",
+    "harness": "chat_first_local_ui_harness",
+    "route": "/app/",
+    "runtime_adapter_request": ".mirror/CONTRACTS/amos/browser_runtime_adapter.consumer.example.json",
+    "ui_intent": {
+      "entry_question": "What do you want?",
+      "primary_action": "local_chat_turn",
+      "response_surface": "inline_answer",
+      "secondary_surface": "receipt_status",
+      "copy_mode": "plain_user_language"
+    },
+    "allowed_ui_actions": ["render_local_projection", "show_local_receipt_status"],
+    "blocked_ui_actions": [
+      "call_model",
+      "fetch_network",
+      "write_durable_memory",
+      "change_route",
+      "change_gateway",
+      "deploy_public_asset",
+      "execute_arbitrary_ui"
+    ],
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "required_gates": [
+      "guard:runtime-integration",
+      "guard:shadow-adapter",
+      "guard:readonly-app-adapter",
+      "guard:browser-runtime-adapter",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "ui_harness_projection_receipt",
+    "claim_boundary": [
+      "This is a local-only UI harness proposal.",
+      "It calls the browser-local runtime adapter in dry-run mode only.",
+      "It performs no live app action.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write durable memory.",
+      "It does not change routes, deploy assets, or gateway behavior."
+    ],
+    "blocked_claims": [
+      "UI harness is live in the public app.",
+      "UI harness called a model.",
+      "UI harness used the network.",
+      "UI harness wrote durable memory.",
+      "UI harness changed app routes.",
+      "UI harness changed gateway behavior.",
+      "UI harness deployed public assets.",
+      "UI harness executed arbitrary generated UI."
+    ]
+  }
+}

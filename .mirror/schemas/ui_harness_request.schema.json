@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/ui_harness_request.v0_1.json",
+  "title": "AMOS Local UI Harness Request",
+  "type": "object",
+  "required": ["ui_harness_request"],
+  "additionalProperties": false,
+  "properties": {
+    "ui_harness_request": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "surface",
+        "mode",
+        "harness",
+        "route",
+        "runtime_adapter_request",
+        "ui_intent",
+        "allowed_ui_actions",
+        "blocked_ui_actions",
+        "model_call_enabled",
+        "network_enabled",
+        "durable_memory_write_enabled",
+        "route_change_enabled",
+        "gateway_change_enabled",
+        "public_deploy_enabled",
+        "required_gates",
+        "output_type",
+        "claim_boundary",
+        "blocked_claims"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "ui_harness_request.v0_1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "surface": { "const": "consumer_app" },
+        "mode": { "const": "local_ui_harness_proposal" },
+        "harness": { "const": "chat_first_local_ui_harness" },
+        "route": { "const": "/app/" },
+        "runtime_adapter_request": { "type": "string", "minLength": 1 },
+        "ui_intent": {
+          "type": "object",
+          "required": ["entry_question", "primary_action", "response_surface", "secondary_surface", "copy_mode"],
+          "additionalProperties": false,
+          "properties": {
+            "entry_question": { "type": "string", "minLength": 1, "maxLength": 80 },
+            "primary_action": { "enum": ["local_chat_turn"] },
+            "response_surface": { "enum": ["inline_answer", "small_canvas"] },
+            "secondary_surface": { "enum": ["none", "receipt_status"] },
+            "copy_mode": { "enum": ["plain_user_language"] }
+          }
+        },
+        "allowed_ui_actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": ["render_local_projection", "show_local_receipt_status"] }
+        },
+        "blocked_ui_actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "call_model",
+              "fetch_network",
+              "write_durable_memory",
+              "change_route",
+              "change_gateway",
+              "deploy_public_asset",
+              "execute_arbitrary_ui"
+            ]
+          }
+        },
+        "model_call_enabled": { "const": false },
+        "network_enabled": { "const": false },
+        "durable_memory_write_enabled": { "const": false },
+        "route_change_enabled": { "const": false },
+        "gateway_change_enabled": { "const": false },
+        "public_deploy_enabled": { "const": false },
+        "required_gates": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "output_type": { "const": "ui_harness_projection_receipt" },
+        "claim_boundary": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "blocked_claims": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

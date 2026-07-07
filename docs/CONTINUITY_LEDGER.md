@@ -1321,3 +1321,63 @@ Do not turn this into a strategy essay. Keep it operational.
   browser-local runtime adapter behind explicit gates while still blocking
   model calls, network use, durable memory writes, route changes, deploys, and
   gateway changes.
+
+### 2026-07-07: AMOS Local UI Harness Proposal
+
+- Changed: added a local-only UI harness proposal that calls the browser-local
+  runtime adapter and emits a UI projection receipt without live app wiring.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/ui_harness.consumer.example.json`
+  - `.mirror/CONTRACTS/amos/ui_harness.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.ui_harness.example.json`
+  - `.mirror/schemas/ui_harness_request.schema.json`
+  - `.mirror/schemas/ui_harness_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T140840Z-local_ui_consumer_turn.json`
+  - `.mirror/AUDIT_LOGS/20260707T140840Z-amos_ui_harness.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_ui_harness_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Local UI harness output is projection-receipt only.
+  - The harness calls the browser-local runtime adapter and carries the runtime
+    input hash forward.
+  - The harness preserves the consumer entry question, `What do you want?`, as
+    a UI projection, not a public UI change.
+  - The local UI harness must run `guard:runtime-integration`,
+    `guard:shadow-adapter`, `guard:readonly-app-adapter`,
+    `guard:browser-runtime-adapter`, `guard:front-door`, and
+    `guard:receipt-chain`.
+  - The local UI harness blocks model calls, network use, durable memory
+    writes, route changes, gateway changes, public deploys, and arbitrary
+    generated UI execution.
+  - The local UI harness is not a public app or gateway adapter.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:ui-harness`
+  - `node scripts/amos_ui_harness_gate.mjs --expect allow`
+  - `node scripts/amos_ui_harness_gate.mjs --request .mirror/CONTRACTS/amos/ui_harness.live_blocked.example.json --expect block`
+  - `node scripts/amos_ui_harness_gate.mjs --write --timestamp 20260707T140840Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.ui_harness.example.json --timestamp 20260707T140840Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T140840Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The local UI harness does not call a model or test real model behavior.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The UI projection receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 8
+  - hash: `fdb7bc444c795db967d665ffbf2cbe869cb86e5a7112eb46b010906a455e9a05`
+- Next safe move: define a disabled source adapter proposal in app code behind
+  explicit gates while still blocking model calls, network use, durable memory
+  writes, route changes, deploys, gateway changes, and arbitrary generated UI.
