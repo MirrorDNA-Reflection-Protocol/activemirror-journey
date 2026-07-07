@@ -1558,3 +1558,61 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `ed0eed730ada9f371589dcb9f206bd7fb801733e511e6972c35175ac3280b47c`
 - Next safe move: create a real approval-request creation contract only when
   source import wiring is intentionally proposed for the active app.
+
+### 2026-07-07: AMOS Source Adapter Import Approval Request Creation
+
+- Changed: added a source adapter import approval request creation gate that
+  writes the real pending approval request file while still proving the import
+  is not approved, not applied, and not live.
+- Source files touched:
+  - `.mirror/APPROVAL_REQUESTS/20260707T153055Z-source_adapter_import.yaml`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_approval_create.request.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_approval_create.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_approval_create.example.json`
+  - `.mirror/schemas/source_adapter_import_approval_create_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_approval_create_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T153055Z-disabled_source_adapter_import_approval_create.json`
+  - `.mirror/AUDIT_LOGS/20260707T153055Z-amos_source_adapter_import_approval_create.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_source_adapter_import_approval_create_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - A pending approval request now exists for the disabled source adapter import.
+  - Pending approval is not approval and grants no authority.
+  - The disabled source adapter remains not imported by active app source.
+  - The creation gate validates the previous approval bridge receipt and uses
+    the generic approval request gate for the actual pending-file write.
+  - The gate blocks approval overclaims, applied/live imports, model calls,
+    network use, durable memory writes, route changes, gateway changes, public
+    deploys, and arbitrary generated UI execution.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:source-adapter-import-approval-create`
+  - `node scripts/amos_source_adapter_import_approval_create_gate.mjs --expect approval_required`
+  - `node scripts/amos_source_adapter_import_approval_create_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_approval_create.live_blocked.example.json --expect block`
+  - `find .mirror/APPROVAL_REQUESTS -maxdepth 1 -type f -not -name 'TEMPLATE.yaml' -not -name '.gitkeep' -print`
+  - `node scripts/amos_source_adapter_import_approval_create_gate.mjs --write --timestamp 20260707T153055Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_approval_create.example.json --timestamp 20260707T153055Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T153055Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The pending approval request is not approval and does not approve itself.
+  - The import remains unapplied and not live.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The approval creation receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 12
+  - hash: `dbaf7b305fe68457a96a918db0aa84f93b584332214461eb65f6c7643b803d29`
+- Next safe move: prepare an import patch contract only after Paul explicitly
+  approves the pending source adapter import request.

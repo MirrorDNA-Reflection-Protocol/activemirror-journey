@@ -78,6 +78,11 @@ const checks = [
         label: 'Source adapter import approval bridge',
         args: ['scripts/amos_source_adapter_import_approval_gate.mjs', '--self-test'],
     },
+    {
+        id: 'source_adapter_import_approval_create_gate',
+        label: 'Source adapter import approval creation gate',
+        args: ['scripts/amos_source_adapter_import_approval_create_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -92,6 +97,7 @@ const localOnlyLimits = [
     'Disabled source adapter is source-only and not imported by the active app; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Source adapter import proposal is approval-required and writes local receipts only; it performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Source adapter import approval bridge previews pending approval only; it writes no real approval file and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
+    'Source adapter import approval creation writes only a pending local approval request; it grants no approval and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
 ];
 
 function parseArgs(argv) {

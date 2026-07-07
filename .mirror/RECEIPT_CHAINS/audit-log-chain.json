@@ -1,11 +1,11 @@
 {
   "schema_version": "receipt_chain.v0_1",
   "chain_id": "active_mirror_audit_logs",
-  "created_at": "2026-07-07T14:45:53Z",
+  "created_at": "2026-07-07T15:30:55Z",
   "receipt_root": ".mirror/AUDIT_LOGS",
   "algorithm": "sha256:audit_file_bytes_then_previous_hash_chain",
-  "entry_count": 11,
-  "chain_hash": "ed0eed730ada9f371589dcb9f206bd7fb801733e511e6972c35175ac3280b47c",
+  "entry_count": 12,
+  "chain_hash": "dbaf7b305fe68457a96a918db0aa84f93b584332214461eb65f6c7643b803d29",
   "entries": [
     {
       "index": 0,
@@ -127,6 +127,17 @@
       "entry_hash": "53d8f2e4bee1f958ce5e6d7723cba8cea3ac2263d5847ab8e3e05c183945ca92",
       "previous_chain_hash": "8040b756a40d5dd15d136ac539cac614dea73bae63237e244af18b2f9780d7e6",
       "chain_hash": "ed0eed730ada9f371589dcb9f206bd7fb801733e511e6972c35175ac3280b47c"
+    },
+    {
+      "index": 11,
+      "file": ".mirror/AUDIT_LOGS/20260707T153055Z-amos_source_adapter_import_approval_create.yaml",
+      "audit_id": "audit_20260707t153055z_amos_source_adapter_import_approval_create",
+      "created_at": "2026-07-07T15:30:55Z",
+      "decision": "partial",
+      "content_hash": "d5f259dd96c12b167378ae19c21ca9230c2b78da3eb9fb67ae4168b12dca30dd",
+      "entry_hash": "e1d9d01174658a040952aef369ecc960b522a92f4ae53ef6f145bd8be2229fd7",
+      "previous_chain_hash": "ed0eed730ada9f371589dcb9f206bd7fb801733e511e6972c35175ac3280b47c",
+      "chain_hash": "dbaf7b305fe68457a96a918db0aa84f93b584332214461eb65f6c7643b803d29"
     }
   ],
   "unchecked_scope": [

@@ -58,20 +58,24 @@
     import has even been proposed safely.
 18. Use `npm run guard:source-adapter-import-approval` before claiming a source
     adapter import approval request can be previewed.
-19. Add real approval request files only when a risky action is actually proposed.
-20. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-21. Only add runtime wiring after a small contract has been used by a real task.
-22. Runtime integration is still contract-only with disabled adapters.
-23. Shadow adapter receipts are local-only and perform no live action.
-24. Read-only app adapter receipts are source-hash evidence only.
-25. Browser-local runtime adapter receipts are input-hash projections only.
-26. Local UI harness receipts are projection evidence only.
-27. Disabled source adapter is source-only and not imported by the active app.
-28. Source adapter import remains approval-required, pending, and not live.
-29. Source adapter import approval bridge previews only; it writes no real
+19. Use `npm run guard:source-adapter-import-approval-create` before claiming a
+    real pending approval request file exists for the source adapter import.
+20. Add real approval request files only when a risky action is actually proposed.
+21. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+22. Only add runtime wiring after a small contract has been used by a real task.
+23. Runtime integration is still contract-only with disabled adapters.
+24. Shadow adapter receipts are local-only and perform no live action.
+25. Read-only app adapter receipts are source-hash evidence only.
+26. Browser-local runtime adapter receipts are input-hash projections only.
+27. Local UI harness receipts are projection evidence only.
+28. Disabled source adapter is source-only and not imported by the active app.
+29. Source adapter import remains approval-required, pending, and not live.
+30. Source adapter import approval bridge previews only; it writes no real
     approval file and grants no approval.
-30. Next control-plane slice: add a real approval-request creation contract only
-    when source import wiring is intentionally proposed for the active app.
+31. Source adapter import approval request exists as a pending file only; it is
+    not approval and grants no authority.
+32. Next control-plane slice: prepare an import patch contract only after Paul
+    explicitly approves the pending source adapter import request.
 
 ## Do Not Do Yet
 

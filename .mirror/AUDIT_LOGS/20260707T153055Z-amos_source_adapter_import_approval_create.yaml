@@ -1,0 +1,33 @@
+audit_log:
+  id: "audit_20260707t153055z_amos_source_adapter_import_approval_create"
+  task_id: "active_mirror_front_door_v1"
+  created_at: "2026-07-07T15:30:55Z"
+  actor: "codex"
+  action: "Verify the AMOS source adapter import approval request was created as pending without approving or applying the import."
+  checked_scope:
+    - "source adapter import approval create request schema"
+    - "source adapter import approval create receipt schema"
+    - "source adapter import approval create gate"
+    - "source adapter import approval bridge gate"
+    - "approval request write"
+    - "blocked live approval create request"
+  unchecked_scope:
+    - "human approval"
+    - "approved source import"
+    - "source import diff"
+    - "live app UI integration"
+    - "gateway adapter"
+    - "model calls"
+    - "network calls"
+    - "durable memory writes"
+    - "route changes"
+    - "public deploy"
+  evidence:
+    - "npm run guard:source-adapter-import-approval-create"
+    - "node scripts/amos_source_adapter_import_approval_create_gate.mjs --write"
+  bad_news:
+    - "A pending approval request file now exists, but it is not approval."
+    - "The source import remains unapplied and not live."
+  decision: "partial"
+  follow_up:
+    - "Do not apply the source import unless the pending approval is explicitly approved and a separate import patch is reviewed."

@@ -1,0 +1,43 @@
+approval_request:
+  id: "approval_20260707t153055z_source_adapter_import"
+  task_id: "active_mirror_front_door_v1"
+  requested_by: "codex"
+  requested_at: "2026-07-07T15:30:55Z"
+  action: "source_adapter_import: Request approval before preparing the source import diff for the disabled AMOS source adapter."
+  reason: "reversibility partly_reversible requires approval; consent level level_3 requires approval; active state requires approval for this action"
+  required_approval_from: "Paul"
+  risk_level: "medium"
+  affected_paths:
+    - "session:draft"
+  checks:
+    tests_run: false
+    diff_reviewed: false
+    secrets_scan: false
+    rollback_plan: false
+  checked_scope:
+    - "schema_version"
+    - "workspace_match"
+    - "agent_match"
+    - "pending_action"
+    - "tool_allowlist"
+    - "read_boundary"
+    - "write_boundary"
+    - "egress_policy"
+    - "consent_ladder"
+    - "approval_token"
+    - "output_type"
+  unchecked_scope:
+    - "human approval"
+    - "final diff"
+    - "target environment"
+    - "rollback verification"
+  allowed_only_if:
+    - "human_approval_received"
+    - "required_checks_passed"
+    - "rollback_plan_attached"
+  rollback:
+    - "Do not execute the action while this request is pending."
+    - "If an approved public change is later applied and fails, revert the changed artifact and record a rollback receipt."
+  human_summary: "Review required before source_adapter_import; no external action has been performed."
+  approval_required: true
+  status: "pending"

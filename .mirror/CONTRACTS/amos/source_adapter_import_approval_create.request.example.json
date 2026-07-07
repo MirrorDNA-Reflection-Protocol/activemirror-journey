@@ -1,0 +1,45 @@
+{
+  "source_adapter_import_approval_create_request": {
+    "schema_version": "source_adapter_import_approval_create_request.v0_1",
+    "id": "disabled_source_adapter_import_approval_create",
+    "surface": "consumer_app",
+    "mode": "real_approval_request_creation",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "approval_bridge_request": ".mirror/CONTRACTS/amos/source_adapter_import_approval.bridge.example.json",
+    "approval_bridge_receipt": ".mirror/RUNTIME_DRY_RUNS/20260707T144553Z-disabled_source_adapter_import_approval_bridge.json",
+    "approval_state": ".mirror/CONTRACTS/amos/scd_state.source_adapter_import.approval.example.json",
+    "action_request": ".mirror/CONTRACTS/amos/action_request.source_adapter_import.approval.example.json",
+    "approval_write_enabled": true,
+    "apply_import_enabled": false,
+    "live_import_enabled": false,
+    "approval_status": "pending",
+    "required_gates": [
+      "guard:source-adapter-import-approval",
+      "guard:approval-request",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_adapter_import_approval_create_receipt",
+    "claim_boundary": [
+      "This creates a pending approval request file only.",
+      "It does not approve the source adapter import.",
+      "It does not apply the source adapter import.",
+      "It does not import the disabled source adapter into the active app.",
+      "It performs no live app action.",
+      "It performs no gateway, model, network, route, deploy, arbitrary UI, or durable memory action."
+    ],
+    "blocked_claims": [
+      "Source adapter import was approved.",
+      "Source adapter import was applied.",
+      "Source adapter import is live in the public app.",
+      "Source adapter import changed app routes.",
+      "Source adapter import changed gateway behavior.",
+      "Source adapter import called a model.",
+      "Source adapter import used the network.",
+      "Source adapter import wrote durable memory.",
+      "Source adapter import deployed public assets.",
+      "Source adapter import executed arbitrary generated UI."
+    ]
+  }
+}

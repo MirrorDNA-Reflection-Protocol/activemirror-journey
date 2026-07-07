@@ -334,6 +334,32 @@ file, approve the import, import source, call a model, use the network, change
 routes, change the gateway, deploy assets, execute arbitrary UI, or write
 durable memory.
 
+## Source Adapter Import Approval Creation Gate
+
+The source adapter import approval creation gate creates the real pending
+approval request file for the import proposal, while still proving that no
+approval was granted and no source import was applied. It verifies the approval
+bridge receipt, writes through the generic approval request gate, validates the
+pending file shape, and records a local receipt.
+
+```bash
+npm run guard:source-adapter-import-approval-create
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_import_approval_create_gate.mjs --expect approval_required
+node scripts/amos_source_adapter_import_approval_create_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_approval_create.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_import_approval_create_gate.mjs --write
+```
+
+Written approval requests go to `.mirror/APPROVAL_REQUESTS/`. Written receipts
+go to `.mirror/RUNTIME_DRY_RUNS/`. They prove only that a pending approval
+request exists. They do not grant approval, import source, call a model, use
+the network, change routes, change the gateway, deploy assets, execute
+arbitrary UI, or write durable memory.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer
