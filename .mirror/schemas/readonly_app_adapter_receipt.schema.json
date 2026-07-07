@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/readonly_app_adapter_receipt.v0_1.json",
+  "title": "AMOS Read-Only App Adapter Receipt",
+  "type": "object",
+  "required": ["readonly_app_adapter_receipt"],
+  "additionalProperties": false,
+  "properties": {
+    "readonly_app_adapter_receipt": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "request_id",
+        "created_at",
+        "decision",
+        "performed_live_action",
+        "checked_scope",
+        "gate_results",
+        "source_evidence",
+        "blocked_capabilities",
+        "output"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "readonly_app_adapter_receipt.v0_1" },
+        "id": { "type": "string", "minLength": 1 },
+        "request_id": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "minLength": 1 },
+        "decision": { "enum": ["allow", "block"] },
+        "performed_live_action": { "const": false },
+        "checked_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "gate_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "ok", "decision"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "ok": { "type": "boolean" },
+              "decision": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "source_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["path", "sha256", "bytes"],
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "bytes": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "blocked_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "output": {
+          "type": "object",
+          "required": ["type", "message"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "source_hash_receipt" },
+            "message": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

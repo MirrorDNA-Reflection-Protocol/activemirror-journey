@@ -1,0 +1,84 @@
+{
+  "readonly_app_adapter_receipt": {
+    "schema_version": "readonly_app_adapter_receipt.v0_1",
+    "id": "readonly_receipt_20260707t134909z_readonly_consumer_app_surface",
+    "request_id": "readonly_consumer_app_surface",
+    "created_at": "2026-07-07T13:49:09Z",
+    "decision": "allow",
+    "performed_live_action": false,
+    "checked_scope": [
+      "readonly_app_adapter_request_shape",
+      "source_file_hashes",
+      "request_envelope_hash",
+      "no_model_call",
+      "no_network",
+      "no_memory_write",
+      "no_route_change",
+      "no_gateway_change",
+      "no_public_deploy",
+      "required_local_gates"
+    ],
+    "gate_results": [
+      {
+        "id": "guard:runtime-integration",
+        "ok": true,
+        "decision": "allow"
+      },
+      {
+        "id": "guard:shadow-adapter",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:front-door",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:receipt-chain",
+        "ok": true,
+        "decision": "pass"
+      }
+    ],
+    "source_evidence": [
+      {
+        "path": "src/App.jsx",
+        "sha256": "82d87740c6b842934f6d3d8e2e634a7a1023805b1722e8259a19bc9487da5f94",
+        "bytes": 3542
+      },
+      {
+        "path": "src/pages/HomePage.jsx",
+        "sha256": "0fe9e47709c5d1f7603cde4d6e1ef9ffb3b50d689da8e0bb1bac4f86fc320dc7",
+        "bytes": 110023
+      },
+      {
+        "path": "src/lib/first-turn-fallback.js",
+        "sha256": "8adbeaca4014dc930bcd5b561a0af52884a878c2c1c3ac8f6c436f105254abe5",
+        "bytes": 13032
+      },
+      {
+        "path": "src/lib/local-mirror-sense.js",
+        "sha256": "dc59ed1d820c1563bdd7aba4316fc76c97e35060fa2f223f6b3bca93f1d7216c",
+        "bytes": 6019
+      },
+      {
+        "path": ".mirror/CONTRACTS/amos/shadow_runtime_request.consumer.example.json",
+        "sha256": "a7f3a7bc8cb28149dcc5507f30727231b602b8f4278549fc57dc992de38d9c97",
+        "bytes": 1674
+      }
+    ],
+    "blocked_capabilities": [
+      "model_call",
+      "network",
+      "memory_write",
+      "route_change",
+      "gateway_change",
+      "public_deploy",
+      "live_runtime_action"
+    ],
+    "output": {
+      "type": "source_hash_receipt",
+      "message": "Read-only app adapter proposal emitted source hashes without live action."
+    }
+  }
+}

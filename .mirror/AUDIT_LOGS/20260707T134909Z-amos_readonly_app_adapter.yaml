@@ -1,0 +1,27 @@
+audit_log:
+  id: "audit_20260707t134909z_amos_readonly_app_adapter"
+  task_id: "active_mirror_front_door_v1"
+  created_at: "2026-07-07T13:49:09Z"
+  actor: "codex"
+  action: "Verify the AMOS read-only app adapter proposal emits source evidence without live action."
+  checked_scope:
+    - "read-only app adapter request schema"
+    - "read-only app adapter receipt schema"
+    - "read-only adapter gate"
+    - "source hash receipt"
+    - "blocked live request"
+  unchecked_scope:
+    - "live app adapter"
+    - "gateway adapter"
+    - "model calls"
+    - "network calls"
+    - "durable memory writes"
+    - "public deploy"
+  evidence:
+    - "npm run guard:readonly-app-adapter"
+    - "node scripts/amos_readonly_app_adapter_gate.mjs --write"
+  bad_news:
+    - "The read-only app adapter proposal performs no live runtime action and does not prove public app or gateway enforcement."
+  decision: "partial"
+  follow_up:
+    - "Only after read-only receipts remain stable, consider a browser-local runtime adapter behind explicit gates."

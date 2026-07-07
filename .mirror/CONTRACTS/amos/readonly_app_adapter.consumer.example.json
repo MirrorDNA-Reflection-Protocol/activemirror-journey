@@ -1,0 +1,50 @@
+{
+  "readonly_app_adapter_request": {
+    "schema_version": "readonly_app_adapter_request.v0_1",
+    "id": "readonly_consumer_app_surface",
+    "surface": "consumer_app",
+    "mode": "read_only_proposal",
+    "adapter": "readonly_app_adapter",
+    "route": "/app/",
+    "intent": "Inspect the local consumer app surface and emit a source-hash receipt without changing runtime behavior.",
+    "source_files": [
+      "src/App.jsx",
+      "src/pages/HomePage.jsx",
+      "src/lib/first-turn-fallback.js",
+      "src/lib/local-mirror-sense.js"
+    ],
+    "request_envelope": ".mirror/CONTRACTS/amos/shadow_runtime_request.consumer.example.json",
+    "write_destination": ".mirror/RUNTIME_DRY_RUNS",
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "required_gates": [
+      "guard:runtime-integration",
+      "guard:shadow-adapter",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_hash_receipt",
+    "claim_boundary": [
+      "This is a read-only local proposal.",
+      "It inspects source files only.",
+      "It performs no live action.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write memory.",
+      "It does not change app routes or gateway behavior."
+    ],
+    "blocked_claims": [
+      "Read-only adapter is live in the public app.",
+      "Read-only adapter called a model.",
+      "Read-only adapter used the network.",
+      "Read-only adapter wrote memory.",
+      "Read-only adapter changed app routes.",
+      "Read-only adapter changed gateway behavior.",
+      "Read-only adapter deployed public assets."
+    ]
+  }
+}

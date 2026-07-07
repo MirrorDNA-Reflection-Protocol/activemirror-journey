@@ -1,0 +1,32 @@
+{
+  "readonly_app_adapter_request": {
+    "schema_version": "readonly_app_adapter_request.v0_1",
+    "id": "readonly_live_blocked",
+    "surface": "consumer_app",
+    "mode": "read_only_proposal",
+    "adapter": "readonly_app_adapter",
+    "route": "/app/",
+    "intent": "Deliberately unsafe read-only adapter request for self-test.",
+    "source_files": [
+      "src/App.jsx"
+    ],
+    "request_envelope": ".mirror/CONTRACTS/amos/shadow_runtime_request.consumer.example.json",
+    "write_destination": ".mirror/RUNTIME_DRY_RUNS",
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "memory_write_enabled": true,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "required_gates": [
+      "guard:runtime-integration"
+    ],
+    "output_type": "source_hash_receipt",
+    "claim_boundary": [
+      "This claims unsafe live behavior."
+    ],
+    "blocked_claims": [
+      "Read-only adapter is live in the public app."
+    ]
+  }
+}

@@ -1208,3 +1208,58 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: define a read-only app adapter proposal that can inspect a
   local request envelope without model calls, network use, memory writes, or
   route changes.
+
+### 2026-07-07: AMOS Read-Only App Adapter Proposal
+
+- Changed: added a local-only read-only app adapter proposal that hashes
+  selected consumer app source files and a request envelope into a receipt
+  without performing any live runtime action.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/readonly_app_adapter.consumer.example.json`
+  - `.mirror/CONTRACTS/amos/readonly_app_adapter.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.readonly_app_adapter.example.json`
+  - `.mirror/schemas/readonly_app_adapter_request.schema.json`
+  - `.mirror/schemas/readonly_app_adapter_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T134909Z-readonly_consumer_app_surface.json`
+  - `.mirror/AUDIT_LOGS/20260707T134909Z-amos_readonly_app_adapter.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_readonly_app_adapter_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Read-only app adapter output is source-hash evidence only.
+  - The read-only app adapter must run `guard:runtime-integration`,
+    `guard:shadow-adapter`, `guard:front-door`, and `guard:receipt-chain`.
+  - The read-only app adapter blocks model calls, network use, memory writes,
+    route changes, gateway changes, and public deploys.
+  - The read-only app adapter does not copy app source into receipts; it records
+    file paths, SHA-256 hashes, and byte counts.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:readonly-app-adapter`
+  - `node scripts/amos_readonly_app_adapter_gate.mjs --expect allow`
+  - `node scripts/amos_readonly_app_adapter_gate.mjs --request .mirror/CONTRACTS/amos/readonly_app_adapter.live_blocked.example.json --expect block`
+  - `node scripts/amos_readonly_app_adapter_gate.mjs --write --timestamp 20260707T134909Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.readonly_app_adapter.example.json --timestamp 20260707T134909Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T134909Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The read-only app adapter does not call a model or test real model behavior.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The source-hash receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 6
+  - hash: `7bca410af476af84bc8379d663c9ac879cce6d393ae0a161b03c639e27fbf52a`
+- Next safe move: define a browser-local runtime adapter proposal that can
+  process an in-memory request object while still blocking model calls, network
+  use, durable memory writes, route changes, deploys, and gateway changes.

@@ -48,6 +48,11 @@ const checks = [
         label: 'Shadow dry-run adapter gate',
         args: ['scripts/amos_shadow_adapter_gate.mjs', '--self-test'],
     },
+    {
+        id: 'readonly_app_adapter_gate',
+        label: 'Read-only app adapter gate',
+        args: ['scripts/amos_readonly_app_adapter_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -56,6 +61,7 @@ const localOnlyLimits = [
     'Approval requests, memory proposals, artifact exports, and audit receipts are scaffolds until wired into a runtime.',
     'Runtime integration is contract-only; app and gateway adapters are declared disabled.',
     'Shadow adapter emits local dry-run receipts only; it performs no live app, gateway, model, network, or memory action.',
+    'Read-only app adapter emits local source-hash receipts only; it performs no live app, gateway, model, network, route, deploy, or memory action.',
 ];
 
 function parseArgs(argv) {

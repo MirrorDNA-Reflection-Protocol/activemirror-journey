@@ -46,14 +46,18 @@
     consumes AMOS gates.
 12. Use `npm run guard:shadow-adapter` before claiming any runtime request has
     been simulated through local gates.
-13. Add real approval request files only when a risky action is actually proposed.
-14. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-15. Only add runtime wiring after a small contract has been used by a real task.
-16. Runtime integration is still contract-only with disabled adapters.
-17. Shadow adapter receipts are local-only and perform no live action.
-18. Next control-plane slice: define a read-only app adapter proposal that can
-    inspect a local request envelope but still cannot call models, use network,
-    write memory, or alter the public route.
+13. Use `npm run guard:readonly-app-adapter` before claiming app-source
+    inspection evidence exists.
+14. Add real approval request files only when a risky action is actually proposed.
+15. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+16. Only add runtime wiring after a small contract has been used by a real task.
+17. Runtime integration is still contract-only with disabled adapters.
+18. Shadow adapter receipts are local-only and perform no live action.
+19. Read-only app adapter receipts are source-hash evidence only.
+20. Next control-plane slice: define a browser-local runtime adapter proposal
+    that can process an in-memory request object while still blocking model
+    calls, network, durable memory writes, route changes, deploys, and gateway
+    changes.
 
 ## Do Not Do Yet
 

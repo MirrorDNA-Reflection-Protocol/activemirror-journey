@@ -29,6 +29,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/runtime_integration.schema.json`
   - `.mirror/schemas/shadow_runtime_request.schema.json`
   - `.mirror/schemas/shadow_runtime_receipt.schema.json`
+  - `.mirror/schemas/readonly_app_adapter_request.schema.json`
+  - `.mirror/schemas/readonly_app_adapter_receipt.schema.json`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -91,6 +93,8 @@ consent levels, and agent permissions.
   adapters declared disabled.
 - Shadow adapter: local dry-run receipt only; no live app, gateway, model,
   network, or memory action.
+- Read-only app adapter: local source-hash receipt only; no live app, gateway,
+  model, network, route, deploy, or memory action.
 
 ## Leveraged Now
 
@@ -161,6 +165,12 @@ consent levels, and agent permissions.
      calling a model, using network, writing durable memory, changing the public
      app, or changing the gateway.
 
+14. **Read-Only App Adapter Proposal**
+   - `npm run guard:readonly-app-adapter` verifies that selected consumer app
+     source files and a request envelope can be hashed into a local receipt
+     without calling a model, using network, writing durable memory, changing
+     routes, changing the gateway, or deploying public assets.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -191,6 +201,7 @@ bound to a runtime.
   - `npm run guard:receipt-chain`
   - `npm run guard:runtime-integration`
   - `npm run guard:shadow-adapter`
+  - `npm run guard:readonly-app-adapter`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -231,10 +242,13 @@ bound to a runtime.
   explicitly disabled.
 - Shadow adapter receipts are local dry-run receipts only; they do not prove
   live app or gateway enforcement.
+- Read-only app adapter receipts are local source-hash receipts only; they do
+  not prove live app or gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define a read-only app adapter proposal that can inspect request
-envelopes without model calls, network use, memory writes, or route changes.
+slice is to define a browser-local runtime adapter proposal that can process an
+in-memory request object while still blocking model calls, network use, durable
+memory writes, route changes, deploys, and gateway changes.

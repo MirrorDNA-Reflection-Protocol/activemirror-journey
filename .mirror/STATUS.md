@@ -59,6 +59,8 @@ Updated: 2026-07-07
   contract stays contract-only with app and gateway adapters disabled.
 - `npm run guard:shadow-adapter` verifies a future runtime request can be
   dry-run through local gates and emit a receipt without live action.
+- `npm run guard:readonly-app-adapter` verifies selected app source files can
+  be hashed into a local read-only adapter receipt without live action.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -71,8 +73,12 @@ Updated: 2026-07-07
   `.mirror/RUNTIME_DRY_RUNS/20260707T133841Z-shadow_consumer_first_turn.json`.
 - Local AMOS shadow-adapter audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T133841Z-amos_shadow_adapter.yaml`.
+- Local AMOS read-only app adapter receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260707T134909Z-readonly_consumer_app_surface.json`.
+- Local AMOS read-only app adapter audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T134909Z-amos_readonly_app_adapter.yaml`.
 - Current local audit receipt chain hash:
-  `9e2f8bf4ecf6ebe98d515c3ee360c58f1f8b39bc6eaf6a09e8013b0ade9801cb`.
+  `7bca410af476af84bc8379d663c9ac879cce6d393ae0a161b03c639e27fbf52a`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -108,6 +114,8 @@ Updated: 2026-07-07
   app and gateway adapters are declared disabled.
 - The shadow adapter emits local dry-run receipts only; it performs no live
   app, gateway, model, network, or memory action.
+- The read-only app adapter emits local source-hash receipts only; it performs
+  no live app, gateway, model, network, route, deploy, or memory action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

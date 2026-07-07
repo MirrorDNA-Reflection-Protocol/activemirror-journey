@@ -192,6 +192,28 @@ node scripts/amos_shadow_adapter_gate.mjs --write
 Written dry-run receipts go to `.mirror/RUNTIME_DRY_RUNS/`. They are local
 evidence only and are not live runtime enforcement.
 
+## Read-Only App Adapter Gate
+
+The read-only app adapter proposal inspects selected local app source files and
+the request envelope, then emits source hashes as a local receipt. It does not
+call a model, use the network, write memory, change routes, change the gateway,
+or deploy public assets.
+
+```bash
+npm run guard:readonly-app-adapter
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_readonly_app_adapter_gate.mjs --expect allow
+node scripts/amos_readonly_app_adapter_gate.mjs --request .mirror/CONTRACTS/amos/readonly_app_adapter.live_blocked.example.json --expect block
+node scripts/amos_readonly_app_adapter_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain source file
+hashes, not copied app content. This is still local evidence only.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer
