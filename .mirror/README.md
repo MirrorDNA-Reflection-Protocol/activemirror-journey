@@ -285,6 +285,30 @@ Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain the source hash,
 active import scan, and local UI harness result. This is still local evidence
 only.
 
+## Source Adapter Import Proposal Gate
+
+The source adapter import proposal gate checks whether importing the disabled
+source adapter is merely proposed, still pending approval, and still not active
+in app source. It scans active imports, target files, the disabled adapter gate,
+and required local gates before emitting a local receipt.
+
+```bash
+npm run guard:source-adapter-import
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_import_gate.mjs --expect approval_required
+node scripts/amos_source_adapter_import_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_import_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and confirm the import is
+approval-required, not applied, and not live. This performs no source import,
+live app action, gateway change, model call, network call, route change,
+deploy, arbitrary UI execution, or durable memory write.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

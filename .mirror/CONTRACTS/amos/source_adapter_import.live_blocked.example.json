@@ -1,0 +1,36 @@
+{
+  "source_adapter_import_request": {
+    "schema_version": "source_adapter_import_request.v0_1",
+    "id": "disabled_source_adapter_import_live_blocked",
+    "surface": "consumer_app",
+    "mode": "approval_required_import_proposal",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_files": [
+      "src/pages/HomePage.jsx"
+    ],
+    "disabled_source_adapter_request": ".mirror/CONTRACTS/amos/disabled_source_adapter.consumer.example.json",
+    "approval_required": false,
+    "approval_status": "approved",
+    "apply_import_enabled": true,
+    "live_import_enabled": true,
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "durable_memory_write_enabled": true,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "arbitrary_ui_enabled": true,
+    "required_gates": [
+      "guard:disabled-source-adapter"
+    ],
+    "output_type": "source_adapter_import_receipt",
+    "claim_boundary": [
+      "This claims unsafe live import behavior."
+    ],
+    "blocked_claims": [
+      "Source adapter import is live in the public app."
+    ]
+  }
+}

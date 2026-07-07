@@ -68,6 +68,11 @@ const checks = [
         label: 'Disabled source adapter gate',
         args: ['scripts/amos_disabled_source_adapter_gate.mjs', '--self-test'],
     },
+    {
+        id: 'source_adapter_import_gate',
+        label: 'Source adapter import proposal gate',
+        args: ['scripts/amos_source_adapter_import_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -80,6 +85,7 @@ const localOnlyLimits = [
     'Browser-local runtime adapter emits local in-memory projection receipts only; it performs no live app, gateway, model, network, route, deploy, or durable memory action.',
     'Local UI harness emits local projection receipts only; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Disabled source adapter is source-only and not imported by the active app; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
+    'Source adapter import proposal is approval-required and writes local receipts only; it performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
 ];
 
 function parseArgs(argv) {

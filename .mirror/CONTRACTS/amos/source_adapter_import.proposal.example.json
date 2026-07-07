@@ -1,0 +1,57 @@
+{
+  "source_adapter_import_request": {
+    "schema_version": "source_adapter_import_request.v0_1",
+    "id": "disabled_source_adapter_import_proposal",
+    "surface": "consumer_app",
+    "mode": "approval_required_import_proposal",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_files": [
+      "src/pages/HomePage.jsx"
+    ],
+    "disabled_source_adapter_request": ".mirror/CONTRACTS/amos/disabled_source_adapter.consumer.example.json",
+    "approval_required": true,
+    "approval_status": "pending",
+    "apply_import_enabled": false,
+    "live_import_enabled": false,
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "arbitrary_ui_enabled": false,
+    "required_gates": [
+      "guard:runtime-integration",
+      "guard:disabled-source-adapter",
+      "guard:ui-harness",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_adapter_import_receipt",
+    "claim_boundary": [
+      "This is an import proposal only.",
+      "It does not import the disabled source adapter into the active app.",
+      "It requires explicit approval before source code can import the adapter.",
+      "It performs no live app action.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write durable memory.",
+      "It does not change routes, deploy assets, or gateway behavior.",
+      "It does not execute arbitrary generated UI."
+    ],
+    "blocked_claims": [
+      "Source adapter import is live in the public app.",
+      "Source adapter import was applied.",
+      "Source adapter import was approved.",
+      "Source adapter import called a model.",
+      "Source adapter import used the network.",
+      "Source adapter import wrote durable memory.",
+      "Source adapter import changed app routes.",
+      "Source adapter import changed gateway behavior.",
+      "Source adapter import deployed public assets.",
+      "Source adapter import executed arbitrary generated UI."
+    ]
+  }
+}

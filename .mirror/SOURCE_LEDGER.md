@@ -39,6 +39,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | AMOS browser-local runtime adapter proposals can emit in-memory request projection receipts without live runtime behavior. | AMOS architecture | local-contract | `scripts/amos_browser_runtime_adapter_gate.mjs`, `.mirror/schemas/browser_runtime_adapter_request.schema.json`, `.mirror/schemas/browser_runtime_adapter_receipt.schema.json`, `.mirror/CONTRACTS/amos/browser_runtime_adapter.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T140008Z-browser_local_consumer_turn.json`, `npm run guard:browser-runtime-adapter` |
 | AMOS local UI harness proposals can call the browser-local runtime adapter and emit UI projection receipts without live runtime behavior. | AMOS architecture | local-contract | `scripts/amos_ui_harness_gate.mjs`, `.mirror/schemas/ui_harness_request.schema.json`, `.mirror/schemas/ui_harness_receipt.schema.json`, `.mirror/CONTRACTS/amos/ui_harness.consumer.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T140840Z-local_ui_consumer_turn.json`, `npm run guard:ui-harness` |
 | AMOS disabled source adapter exists in app source without being imported or live. | AMOS architecture | local-contract | `src/lib/amos-disabled-source-adapter.js`, `scripts/amos_disabled_source_adapter_gate.mjs`, `.mirror/schemas/disabled_source_adapter_request.schema.json`, `.mirror/schemas/disabled_source_adapter_receipt.schema.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T141644Z-disabled_source_adapter_consumer.json`, `npm run guard:disabled-source-adapter` |
+| AMOS source adapter import remains a pending approval-required proposal and is not applied to the active app. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_gate.mjs`, `.mirror/schemas/source_adapter_import_request.schema.json`, `.mirror/schemas/source_adapter_import_receipt.schema.json`, `.mirror/CONTRACTS/amos/source_adapter_import.proposal.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T143217Z-disabled_source_adapter_import_proposal.json`, `npm run guard:source-adapter-import` |
 
 ## Blocked Until Verified
 
@@ -60,6 +61,8 @@ Purpose: track public/product claims that need evidence before they appear in co
 - Claims that the disabled source adapter is imported by the active app or
   performs live app, gateway, model, network, route, deploy, arbitrary UI, or
   durable memory actions.
+- Claims that the source adapter import was approved, applied, or made live in
+  the active app.
 - Claims that the consumer app implements full AMOS, Euclid Trace, MirrorGraph, or Reflective Workspace runtime.
 - Claims that Active Mirror reads hidden motives, creates consciousness, is alive,
   or runs full governed memory/evolution modules in the public app.

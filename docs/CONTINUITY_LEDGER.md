@@ -1443,3 +1443,59 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `d2a8ff92f0dbe9fd6e2d8265c9b6f2b6c5ebe7da4822a872bf43010d505e91db`
 - Next safe move: define an explicit import proposal contract for the disabled
   source adapter, still blocked by approval and still not live.
+
+### 2026-07-07: AMOS Source Adapter Import Proposal Gate
+
+- Changed: added an explicit source adapter import proposal gate that proves
+  the disabled source adapter import is pending approval and not applied to the
+  active app.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/source_adapter_import.proposal.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.source_adapter_import.example.json`
+  - `.mirror/schemas/source_adapter_import_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T143217Z-disabled_source_adapter_import_proposal.json`
+  - `.mirror/AUDIT_LOGS/20260707T143217Z-amos_source_adapter_import_proposal.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_source_adapter_import_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Source adapter import is approval-required and pending.
+  - The disabled source adapter remains not imported by active app source.
+  - The import proposal gate blocks applied/live imports, model calls, network
+    use, durable memory writes, route changes, gateway changes, public deploys,
+    and arbitrary generated UI execution.
+  - The import proposal writes local evidence only; it does not create a real
+    approval request yet.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:source-adapter-import`
+  - `node scripts/amos_source_adapter_import_gate.mjs --expect approval_required`
+  - `node scripts/amos_source_adapter_import_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import.live_blocked.example.json --expect block`
+  - `rg -n "amos-disabled-source-adapter|DISABLED_SOURCE_ADAPTER_CONTRACT|createDisabledSourceAdapterProjection|assertDisabledSourceAdapter" src --glob '!src/lib/amos-disabled-source-adapter.js'`
+  - `node scripts/amos_source_adapter_import_gate.mjs --write --timestamp 20260707T143217Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.source_adapter_import.example.json --timestamp 20260707T143217Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T143217Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The import proposal is not an approval and did not import anything.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The source adapter import receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 10
+  - hash: `8040b756a40d5dd15d136ac539cac614dea73bae63237e244af18b2f9780d7e6`
+- Next safe move: define an explicit approval-request bridge for the source
+  adapter import proposal, still blocked until a real approval is intentionally
+  created.

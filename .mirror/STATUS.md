@@ -69,6 +69,9 @@ Updated: 2026-07-07
 - `npm run guard:disabled-source-adapter` verifies the disabled source adapter
   exists in app source, keeps disabled invariants, and is not imported by the
   active app.
+- `npm run guard:source-adapter-import` verifies the disabled source adapter
+  import remains a pending approval-required proposal and is not applied to the
+  active app.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -97,8 +100,12 @@ Updated: 2026-07-07
   `.mirror/RUNTIME_DRY_RUNS/20260707T141644Z-disabled_source_adapter_consumer.json`.
 - Local AMOS disabled source adapter audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T141644Z-amos_disabled_source_adapter.yaml`.
+- Local AMOS source adapter import proposal receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260707T143217Z-disabled_source_adapter_import_proposal.json`.
+- Local AMOS source adapter import proposal audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T143217Z-amos_source_adapter_import_proposal.yaml`.
 - Current local audit receipt chain hash:
-  `d2a8ff92f0dbe9fd6e2d8265c9b6f2b6c5ebe7da4822a872bf43010d505e91db`.
+  `8040b756a40d5dd15d136ac539cac614dea73bae63237e244af18b2f9780d7e6`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -144,6 +151,9 @@ Updated: 2026-07-07
   memory action.
 - The disabled source adapter is source-only and not imported by the active
   app; it performs no live app, gateway, model, network, route, deploy,
+  arbitrary UI, or durable memory action.
+- The source adapter import is only a pending approval-required proposal; it
+  performs no source import, live app, gateway, model, network, route, deploy,
   arbitrary UI, or durable memory action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.

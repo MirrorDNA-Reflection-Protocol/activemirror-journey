@@ -1,0 +1,38 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_source_adapter_import_proposal",
+    "action": "Verify the AMOS source adapter import remains a pending proposal and is not applied to the active app.",
+    "checked_scope": [
+      "source adapter import request schema",
+      "source adapter import receipt schema",
+      "source adapter import gate",
+      "disabled source adapter gate",
+      "active source import scan",
+      "target file import scan",
+      "blocked live source adapter import request"
+    ],
+    "unchecked_scope": [
+      "approved source import",
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:source-adapter-import",
+      "node scripts/amos_source_adapter_import_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The source adapter import is only proposed and remains pending approval.",
+      "The disabled source adapter is still not imported by the active app."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Create an explicit approval request only if source import wiring is actually proposed for the active app."
+    ]
+  }
+}

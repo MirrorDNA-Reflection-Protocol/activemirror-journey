@@ -37,6 +37,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/ui_harness_receipt.schema.json`
   - `.mirror/schemas/disabled_source_adapter_request.schema.json`
   - `.mirror/schemas/disabled_source_adapter_receipt.schema.json`
+  - `.mirror/schemas/source_adapter_import_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_receipt.schema.json`
   - `src/lib/amos-disabled-source-adapter.js`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
@@ -109,6 +111,9 @@ consent levels, and agent permissions.
 - Disabled source adapter: source-only, not imported by the active app, and no
   live app, gateway, model, network, route, deploy, arbitrary UI, or durable
   memory action.
+- Source adapter import proposal: approval-required, pending, not applied, not
+  imported by the active app, and no live app, gateway, model, network, route,
+  deploy, arbitrary UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -203,6 +208,12 @@ consent levels, and agent permissions.
      adapter exists in app source, keeps disabled invariants, has no active app
      imports, and can only produce local evidence through the UI harness gate.
 
+18. **Source Adapter Import Proposal**
+   - `npm run guard:source-adapter-import` verifies that importing the disabled
+     source adapter is only proposed, still pending approval, and not applied to
+     active app source. It scans app imports, target files, the disabled adapter
+     gate, and the required local gates before writing a local receipt.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -237,6 +248,7 @@ validated and bound to a runtime.
   - `npm run guard:browser-runtime-adapter`
   - `npm run guard:ui-harness`
   - `npm run guard:disabled-source-adapter`
+  - `npm run guard:source-adapter-import`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -285,10 +297,13 @@ validated and bound to a runtime.
   prove live app or gateway enforcement.
 - Disabled source adapter receipts prove source-only disabled posture; they do
   not prove live app or gateway enforcement.
+- Source adapter import proposal receipts prove only a pending local proposal;
+  they do not approve or apply the import and do not prove live app or gateway
+  enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define an explicit import proposal contract for the disabled source
-adapter, still blocked by approval and still not live.
+slice is to define an explicit approval-request bridge for the source adapter
+import proposal, still blocked until a real approval is intentionally created.
