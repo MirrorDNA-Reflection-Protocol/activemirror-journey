@@ -61,6 +61,8 @@ Updated: 2026-07-07
   dry-run through local gates and emit a receipt without live action.
 - `npm run guard:readonly-app-adapter` verifies selected app source files can
   be hashed into a local read-only adapter receipt without live action.
+- `npm run guard:browser-runtime-adapter` verifies an in-memory browser-local
+  runtime request can be projected into a local receipt without live action.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -77,8 +79,12 @@ Updated: 2026-07-07
   `.mirror/RUNTIME_DRY_RUNS/20260707T134909Z-readonly_consumer_app_surface.json`.
 - Local AMOS read-only app adapter audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T134909Z-amos_readonly_app_adapter.yaml`.
+- Local AMOS browser-local runtime adapter receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260707T140008Z-browser_local_consumer_turn.json`.
+- Local AMOS browser-local runtime adapter audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T140008Z-amos_browser_runtime_adapter.yaml`.
 - Current local audit receipt chain hash:
-  `7bca410af476af84bc8379d663c9ac879cce6d393ae0a161b03c639e27fbf52a`.
+  `ea6577c2990bbe8c28ca7fe21f56e873b973d49c922165c39414eca8e5fb9eed`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -116,6 +122,9 @@ Updated: 2026-07-07
   app, gateway, model, network, or memory action.
 - The read-only app adapter emits local source-hash receipts only; it performs
   no live app, gateway, model, network, route, deploy, or memory action.
+- The browser-local runtime adapter emits local in-memory projection receipts
+  only; it performs no live app, gateway, model, network, route, deploy, or
+  durable memory action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

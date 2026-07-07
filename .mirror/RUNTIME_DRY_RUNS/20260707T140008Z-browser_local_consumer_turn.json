@@ -1,0 +1,73 @@
+{
+  "browser_runtime_adapter_receipt": {
+    "schema_version": "browser_runtime_adapter_receipt.v0_1",
+    "id": "browser_receipt_20260707t140008z_browser_local_consumer_turn",
+    "request_id": "browser_local_consumer_turn",
+    "created_at": "2026-07-07T14:00:08Z",
+    "decision": "allow",
+    "performed_live_action": false,
+    "checked_scope": [
+      "browser_runtime_adapter_request_shape",
+      "in_memory_request_projection",
+      "input_hash_only",
+      "no_model_call",
+      "no_network",
+      "no_durable_memory_write",
+      "no_route_change",
+      "no_gateway_change",
+      "no_public_deploy",
+      "required_local_gates"
+    ],
+    "gate_results": [
+      {
+        "id": "guard:runtime-integration",
+        "ok": true,
+        "decision": "allow"
+      },
+      {
+        "id": "guard:shadow-adapter",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:readonly-app-adapter",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:front-door",
+        "ok": true,
+        "decision": "pass"
+      },
+      {
+        "id": "guard:receipt-chain",
+        "ok": true,
+        "decision": "pass"
+      }
+    ],
+    "runtime_projection": {
+      "turn_id": "local_turn_001",
+      "input_hash": "b4c145b54aeb4b546a3b01214e94cdca859c81b9f33ad3d233190db8852715ee",
+      "boundary": "private_first",
+      "requested_output": "next_move",
+      "allowed_actions": [
+        "local_response_projection",
+        "local_receipt"
+      ],
+      "result": "project_next_move"
+    },
+    "blocked_capabilities": [
+      "model_call",
+      "network",
+      "durable_memory_write",
+      "route_change",
+      "gateway_change",
+      "public_deploy",
+      "live_runtime_action"
+    ],
+    "output": {
+      "type": "runtime_projection_receipt",
+      "message": "Browser-local runtime proposal projected the request without live action."
+    }
+  }
+}

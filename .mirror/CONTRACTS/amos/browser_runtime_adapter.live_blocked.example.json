@@ -1,0 +1,28 @@
+{
+  "browser_runtime_adapter_request": {
+    "schema_version": "browser_runtime_adapter_request.v0_1",
+    "id": "browser_runtime_live_blocked",
+    "surface": "consumer_app",
+    "mode": "browser_local_proposal",
+    "adapter": "browser_local_runtime_adapter",
+    "route": "/app/",
+    "runtime_request": {
+      "turn_id": "local_turn_bad",
+      "input": "Send this to a live model and save it.",
+      "boundary": "private_first",
+      "requested_output": "next_move",
+      "allowed_actions": ["local_response_projection"]
+    },
+    "write_destination": ".mirror/RUNTIME_DRY_RUNS",
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "durable_memory_write_enabled": true,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "required_gates": ["guard:runtime-integration"],
+    "output_type": "runtime_projection_receipt",
+    "claim_boundary": ["This claims unsafe live behavior."],
+    "blocked_claims": ["Browser runtime adapter is live in the public app."]
+  }
+}

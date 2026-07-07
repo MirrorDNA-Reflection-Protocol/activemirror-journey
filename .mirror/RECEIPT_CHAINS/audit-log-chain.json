@@ -1,11 +1,11 @@
 {
   "schema_version": "receipt_chain.v0_1",
   "chain_id": "active_mirror_audit_logs",
-  "created_at": "2026-07-07T13:49:09Z",
+  "created_at": "2026-07-07T14:00:08Z",
   "receipt_root": ".mirror/AUDIT_LOGS",
   "algorithm": "sha256:audit_file_bytes_then_previous_hash_chain",
-  "entry_count": 6,
-  "chain_hash": "7bca410af476af84bc8379d663c9ac879cce6d393ae0a161b03c639e27fbf52a",
+  "entry_count": 7,
+  "chain_hash": "ea6577c2990bbe8c28ca7fe21f56e873b973d49c922165c39414eca8e5fb9eed",
   "entries": [
     {
       "index": 0,
@@ -72,6 +72,17 @@
       "entry_hash": "b97010772e66b4c2bcf82fbc37c738cb020414d4ebddb9f1cbc1c1d61d636d79",
       "previous_chain_hash": "9e2f8bf4ecf6ebe98d515c3ee360c58f1f8b39bc6eaf6a09e8013b0ade9801cb",
       "chain_hash": "7bca410af476af84bc8379d663c9ac879cce6d393ae0a161b03c639e27fbf52a"
+    },
+    {
+      "index": 6,
+      "file": ".mirror/AUDIT_LOGS/20260707T140008Z-amos_browser_runtime_adapter.yaml",
+      "audit_id": "audit_20260707t140008z_amos_browser_runtime_adapter",
+      "created_at": "2026-07-07T14:00:08Z",
+      "decision": "partial",
+      "content_hash": "469819aabdc0680193583cb31f5dfb8bcb3492a78fa5e4306daa06cad3c0bdc4",
+      "entry_hash": "fe293ea36bbe6303786b0d3bd18d757a2b51e615bdc6aff8c2bc660017e45a52",
+      "previous_chain_hash": "7bca410af476af84bc8379d663c9ac879cce6d393ae0a161b03c639e27fbf52a",
+      "chain_hash": "ea6577c2990bbe8c28ca7fe21f56e873b973d49c922165c39414eca8e5fb9eed"
     }
   ],
   "unchecked_scope": [

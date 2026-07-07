@@ -214,6 +214,29 @@ node scripts/amos_readonly_app_adapter_gate.mjs --write
 Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain source file
 hashes, not copied app content. This is still local evidence only.
 
+## Browser-Local Runtime Adapter Gate
+
+The browser-local runtime adapter proposal processes an in-memory request
+object and emits a projection receipt. It stores only an input hash in the
+receipt and performs no live app, gateway, model, network, route, deploy, or
+durable memory action.
+
+```bash
+npm run guard:browser-runtime-adapter
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_browser_runtime_adapter_gate.mjs --expect allow
+node scripts/amos_browser_runtime_adapter_gate.mjs --request .mirror/CONTRACTS/amos/browser_runtime_adapter.live_blocked.example.json --expect block
+node scripts/amos_browser_runtime_adapter_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain an input hash,
+requested output type, allowed local actions, and blocked capabilities. This is
+still local evidence only.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

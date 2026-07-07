@@ -31,6 +31,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/shadow_runtime_receipt.schema.json`
   - `.mirror/schemas/readonly_app_adapter_request.schema.json`
   - `.mirror/schemas/readonly_app_adapter_receipt.schema.json`
+  - `.mirror/schemas/browser_runtime_adapter_request.schema.json`
+  - `.mirror/schemas/browser_runtime_adapter_receipt.schema.json`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -95,6 +97,8 @@ consent levels, and agent permissions.
   network, or memory action.
 - Read-only app adapter: local source-hash receipt only; no live app, gateway,
   model, network, route, deploy, or memory action.
+- Browser-local runtime adapter: local in-memory projection receipt only; no
+  live app, gateway, model, network, route, deploy, or durable memory action.
 
 ## Leveraged Now
 
@@ -171,6 +175,13 @@ consent levels, and agent permissions.
      without calling a model, using network, writing durable memory, changing
      routes, changing the gateway, or deploying public assets.
 
+15. **Browser-Local Runtime Adapter Proposal**
+   - `npm run guard:browser-runtime-adapter` verifies that a browser-local
+     in-memory request object can be projected into a local receipt without
+     copying raw input into the receipt and without calling a model, using the
+     network, writing durable memory, changing routes, changing the gateway, or
+     deploying public assets.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -181,8 +192,8 @@ consent levels, and agent permissions.
 - SWFI-specific enterprise workspace.
 - UX4G trust component library.
 
-These are useful, but only after the four contracts above can be validated and
-bound to a runtime.
+These are useful, but only after the local contracts and gates above can be
+validated and bound to a runtime.
 
 ## Checks
 
@@ -202,6 +213,7 @@ bound to a runtime.
   - `npm run guard:runtime-integration`
   - `npm run guard:shadow-adapter`
   - `npm run guard:readonly-app-adapter`
+  - `npm run guard:browser-runtime-adapter`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -244,11 +256,14 @@ bound to a runtime.
   live app or gateway enforcement.
 - Read-only app adapter receipts are local source-hash receipts only; they do
   not prove live app or gateway enforcement.
+- Browser-local runtime adapter receipts are local input-hash projection
+  receipts only; they do not prove live app or gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to define a browser-local runtime adapter proposal that can process an
-in-memory request object while still blocking model calls, network use, durable
-memory writes, route changes, deploys, and gateway changes.
+slice is to define a local-only UI harness proposal that can call the
+browser-local runtime adapter behind explicit gates while still blocking model
+calls, network use, durable memory writes, route changes, deploys, and gateway
+changes.

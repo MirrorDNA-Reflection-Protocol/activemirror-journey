@@ -1263,3 +1263,61 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: define a browser-local runtime adapter proposal that can
   process an in-memory request object while still blocking model calls, network
   use, durable memory writes, route changes, deploys, and gateway changes.
+
+### 2026-07-07: AMOS Browser-Local Runtime Adapter Proposal
+
+- Changed: added a local-only browser runtime adapter proposal that processes
+  an in-memory request object into a projection receipt without copying raw
+  input into the receipt.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/browser_runtime_adapter.consumer.example.json`
+  - `.mirror/CONTRACTS/amos/browser_runtime_adapter.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.browser_runtime_adapter.example.json`
+  - `.mirror/schemas/browser_runtime_adapter_request.schema.json`
+  - `.mirror/schemas/browser_runtime_adapter_receipt.schema.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T140008Z-browser_local_consumer_turn.json`
+  - `.mirror/AUDIT_LOGS/20260707T140008Z-amos_browser_runtime_adapter.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_browser_runtime_adapter_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Browser-local runtime adapter output is projection-receipt only.
+  - The receipt stores an input hash, not raw input text.
+  - The browser-local runtime adapter must run `guard:runtime-integration`,
+    `guard:shadow-adapter`, `guard:readonly-app-adapter`,
+    `guard:front-door`, and `guard:receipt-chain`.
+  - The browser-local runtime adapter blocks model calls, network use, durable
+    memory writes, route changes, gateway changes, and public deploys.
+  - The browser-local runtime adapter is not a public app or gateway adapter.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `node scripts/amos_browser_runtime_adapter_gate.mjs --self-test`
+  - `node scripts/amos_browser_runtime_adapter_gate.mjs --expect allow`
+  - `node scripts/amos_browser_runtime_adapter_gate.mjs --request .mirror/CONTRACTS/amos/browser_runtime_adapter.live_blocked.example.json --expect block`
+  - `node scripts/amos_browser_runtime_adapter_gate.mjs --write --timestamp 20260707T140008Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.browser_runtime_adapter.example.json --timestamp 20260707T140008Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T140008Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The browser-local runtime adapter does not call a model or test real model
+    behavior.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The projection receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 7
+  - hash: `ea6577c2990bbe8c28ca7fe21f56e873b973d49c922165c39414eca8e5fb9eed`
+- Next safe move: define a local-only UI harness proposal that can call the
+  browser-local runtime adapter behind explicit gates while still blocking
+  model calls, network use, durable memory writes, route changes, deploys, and
+  gateway changes.

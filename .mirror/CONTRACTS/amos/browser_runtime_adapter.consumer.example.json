@@ -1,0 +1,50 @@
+{
+  "browser_runtime_adapter_request": {
+    "schema_version": "browser_runtime_adapter_request.v0_1",
+    "id": "browser_local_consumer_turn",
+    "surface": "consumer_app",
+    "mode": "browser_local_proposal",
+    "adapter": "browser_local_runtime_adapter",
+    "route": "/app/",
+    "runtime_request": {
+      "turn_id": "local_turn_001",
+      "input": "Help me turn this messy idea into one next move.",
+      "boundary": "private_first",
+      "requested_output": "next_move",
+      "allowed_actions": ["local_response_projection", "local_receipt"]
+    },
+    "write_destination": ".mirror/RUNTIME_DRY_RUNS",
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "required_gates": [
+      "guard:runtime-integration",
+      "guard:shadow-adapter",
+      "guard:readonly-app-adapter",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "runtime_projection_receipt",
+    "claim_boundary": [
+      "This is a browser-local proposal.",
+      "It processes an in-memory request object only.",
+      "It performs no live action.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write durable memory.",
+      "It does not change app routes, deploy assets, or gateway behavior."
+    ],
+    "blocked_claims": [
+      "Browser runtime adapter is live in the public app.",
+      "Browser runtime adapter called a model.",
+      "Browser runtime adapter used the network.",
+      "Browser runtime adapter wrote durable memory.",
+      "Browser runtime adapter changed app routes.",
+      "Browser runtime adapter changed gateway behavior.",
+      "Browser runtime adapter deployed public assets."
+    ]
+  }
+}

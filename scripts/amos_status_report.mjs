@@ -53,6 +53,11 @@ const checks = [
         label: 'Read-only app adapter gate',
         args: ['scripts/amos_readonly_app_adapter_gate.mjs', '--self-test'],
     },
+    {
+        id: 'browser_runtime_adapter_gate',
+        label: 'Browser-local runtime adapter gate',
+        args: ['scripts/amos_browser_runtime_adapter_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -62,6 +67,7 @@ const localOnlyLimits = [
     'Runtime integration is contract-only; app and gateway adapters are declared disabled.',
     'Shadow adapter emits local dry-run receipts only; it performs no live app, gateway, model, network, or memory action.',
     'Read-only app adapter emits local source-hash receipts only; it performs no live app, gateway, model, network, route, deploy, or memory action.',
+    'Browser-local runtime adapter emits local in-memory projection receipts only; it performs no live app, gateway, model, network, route, deploy, or durable memory action.',
 ];
 
 function parseArgs(argv) {
