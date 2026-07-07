@@ -1,0 +1,36 @@
+{
+  "source_adapter_import_patch_request": {
+    "schema_version": "source_adapter_import_patch_request.v0_1",
+    "id": "disabled_source_adapter_import_patch_live_blocked",
+    "surface": "consumer_app",
+    "mode": "patch_proposal_only",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_file": "src/pages/HomePage.jsx",
+    "pending_approval_request": ".mirror/APPROVAL_REQUESTS/20260707T153055Z-source_adapter_import.yaml",
+    "approval_create_receipt": ".mirror/RUNTIME_DRY_RUNS/20260707T153055Z-disabled_source_adapter_import_approval_create.json",
+    "approval_basis": "unsafe_live_claim",
+    "approval_scope": "patch_proposal_only",
+    "write_patch_enabled": true,
+    "apply_import_enabled": true,
+    "live_import_enabled": true,
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "arbitrary_ui_enabled": true,
+    "required_gates": [
+      "guard:source-adapter-import-approval-create"
+    ],
+    "output_type": "source_adapter_import_patch_receipt",
+    "claim_boundary": [
+      "This claims unsafe live import behavior."
+    ],
+    "blocked_claims": [
+      "Source adapter import patch was applied."
+    ]
+  }
+}

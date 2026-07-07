@@ -78,6 +78,9 @@ Updated: 2026-07-07
 - `npm run guard:source-adapter-import-approval-create` verifies the source
   adapter import approval request can be created as a pending local file
   without granting approval or applying the import.
+- `npm run guard:source-adapter-import-patch` verifies the source adapter
+  import patch can be created as a local diff proposal without editing active
+  source or applying the import.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -121,8 +124,14 @@ Updated: 2026-07-07
 - Local AMOS source adapter import approval request creation audit receipt
   exists at
   `.mirror/AUDIT_LOGS/20260707T153055Z-amos_source_adapter_import_approval_create.yaml`.
+- Local AMOS source adapter import patch proposal exists at
+  `.mirror/PATCH_PROPOSALS/20260707T160235Z-disabled_source_adapter_import_patch.diff`.
+- Local AMOS source adapter import patch proposal receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260707T160235Z-disabled_source_adapter_import_patch.json`.
+- Local AMOS source adapter import patch proposal audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T160235Z-amos_source_adapter_import_patch.yaml`.
 - Current local audit receipt chain hash:
-  `dbaf7b305fe68457a96a918db0aa84f93b584332214461eb65f6c7643b803d29`.
+  `4be41f0ffde47801a7c2095c937841a1fbd62e2b285037d7e4e6607ee808ec68`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -180,6 +189,9 @@ Updated: 2026-07-07
   only; it is not approval, does not approve itself, and performs no source
   import, live app, gateway, model, network, route, deploy, arbitrary UI, or
   durable memory action.
+- The source adapter import patch proposal now exists as a local diff file
+  only; it is not applied and performs no source import, live app, gateway,
+  model, network, route, deploy, arbitrary UI, or durable memory action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

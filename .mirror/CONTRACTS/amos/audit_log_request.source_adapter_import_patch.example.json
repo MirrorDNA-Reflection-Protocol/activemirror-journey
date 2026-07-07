@@ -1,0 +1,39 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_source_adapter_import_patch",
+    "action": "Verify the AMOS source adapter import patch proposal was created without applying it.",
+    "checked_scope": [
+      "source adapter import patch request schema",
+      "source adapter import patch receipt schema",
+      "source adapter import patch gate",
+      "pending approval request file",
+      "approval creation receipt",
+      "target source hash unchanged",
+      "blocked live patch request"
+    ],
+    "unchecked_scope": [
+      "applied source import",
+      "active app source edit",
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:source-adapter-import-patch",
+      "node scripts/amos_source_adapter_import_patch_gate.mjs --write"
+    ],
+    "bad_news": [
+      "A patch proposal file exists, but it is not applied.",
+      "The source import remains unapplied and not live."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Review the patch proposal before any source file is changed."
+    ]
+  }
+}

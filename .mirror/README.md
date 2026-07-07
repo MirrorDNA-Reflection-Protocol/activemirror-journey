@@ -360,6 +360,31 @@ request exists. They do not grant approval, import source, call a model, use
 the network, change routes, change the gateway, deploy assets, execute
 arbitrary UI, or write durable memory.
 
+## Source Adapter Import Patch Proposal Gate
+
+The source adapter import patch proposal gate creates a local `.diff` file for
+review without editing active source. It verifies the pending approval request,
+the approval creation receipt, the target source hash, and local gates, then
+writes a patch proposal plus receipt only when `--write` is used.
+
+```bash
+npm run guard:source-adapter-import-patch
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_import_patch_gate.mjs --expect patch_prepared
+node scripts/amos_source_adapter_import_patch_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_patch.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_import_patch_gate.mjs --write
+```
+
+Written patch proposals go to `.mirror/PATCH_PROPOSALS/`. Written receipts go
+to `.mirror/RUNTIME_DRY_RUNS/`. They prove only that a patch proposal exists.
+They do not apply the patch, import source, change the live app, call a model,
+use the network, change routes, change the gateway, deploy assets, execute
+arbitrary UI, or write durable memory.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer

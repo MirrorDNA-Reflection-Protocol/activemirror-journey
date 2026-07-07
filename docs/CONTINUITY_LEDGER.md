@@ -1616,3 +1616,59 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `dbaf7b305fe68457a96a918db0aa84f93b584332214461eb65f6c7643b803d29`
 - Next safe move: prepare an import patch contract only after Paul explicitly
   approves the pending source adapter import request.
+
+### 2026-07-07: AMOS Source Adapter Import Patch Proposal
+
+- Changed: added a source adapter import patch proposal gate that writes a
+  local diff proposal while proving the active source file is unchanged.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/source_adapter_import_patch.request.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_patch.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_patch.example.json`
+  - `.mirror/schemas/source_adapter_import_patch_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_patch_receipt.schema.json`
+  - `.mirror/PATCH_PROPOSALS/20260707T160235Z-disabled_source_adapter_import_patch.diff`
+  - `.mirror/RUNTIME_DRY_RUNS/20260707T160235Z-disabled_source_adapter_import_patch.json`
+  - `.mirror/AUDIT_LOGS/20260707T160235Z-amos_source_adapter_import_patch.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_source_adapter_import_patch_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Patch proposal generation is allowed as a local review artifact only.
+  - The patch proposal adds only an import line for the disabled source adapter.
+  - `src/pages/HomePage.jsx` was not edited; the receipt records identical
+    before/after target hashes.
+  - The source adapter remains unapplied and not live.
+  - The gate blocks live import, source edit, model calls, network use, durable
+    memory writes, route changes, gateway changes, public deploys, and
+    arbitrary generated UI execution.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:source-adapter-import-patch`
+  - `node scripts/amos_source_adapter_import_patch_gate.mjs --expect patch_prepared`
+  - `node scripts/amos_source_adapter_import_patch_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_patch.live_blocked.example.json --expect block`
+  - `node scripts/amos_source_adapter_import_patch_gate.mjs --write --timestamp 20260707T160235Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_patch.example.json --timestamp 20260707T160235Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T160235Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The patch proposal is not applied.
+  - The import remains unapplied and not live.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The patch proposal receipt is local JSON only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 13
+  - hash: `4be41f0ffde47801a7c2095c937841a1fbd62e2b285037d7e4e6607ee808ec68`
+- Next safe move: review the patch proposal and create an apply gate with
+  rollback before any active source file is changed.

@@ -74,8 +74,12 @@
     approval file and grants no approval.
 31. Source adapter import approval request exists as a pending file only; it is
     not approval and grants no authority.
-32. Next control-plane slice: prepare an import patch contract only after Paul
-    explicitly approves the pending source adapter import request.
+32. Use `npm run guard:source-adapter-import-patch` before claiming a local
+    source import patch proposal exists.
+33. Source adapter import patch proposal exists as a local diff only; it is not
+    applied and not live.
+34. Next control-plane slice: review the patch proposal and create an apply
+    gate with rollback before any active source file is changed.
 
 ## Do Not Do Yet
 

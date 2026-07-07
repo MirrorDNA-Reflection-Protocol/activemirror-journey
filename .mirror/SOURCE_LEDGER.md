@@ -42,6 +42,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | AMOS source adapter import remains a pending approval-required proposal and is not applied to the active app. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_gate.mjs`, `.mirror/schemas/source_adapter_import_request.schema.json`, `.mirror/schemas/source_adapter_import_receipt.schema.json`, `.mirror/CONTRACTS/amos/source_adapter_import.proposal.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T143217Z-disabled_source_adapter_import_proposal.json`, `npm run guard:source-adapter-import` |
 | AMOS source adapter import approval can be previewed without approving or applying the import. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_approval_gate.mjs`, `.mirror/schemas/source_adapter_import_approval_request.schema.json`, `.mirror/schemas/source_adapter_import_approval_receipt.schema.json`, `.mirror/CONTRACTS/amos/source_adapter_import_approval.bridge.example.json`, `.mirror/RUNTIME_DRY_RUNS/20260707T144553Z-disabled_source_adapter_import_approval_bridge.json`, `npm run guard:source-adapter-import-approval` |
 | AMOS source adapter import approval request can be created as a pending local file without granting approval. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_approval_create_gate.mjs`, `.mirror/schemas/source_adapter_import_approval_create_request.schema.json`, `.mirror/schemas/source_adapter_import_approval_create_receipt.schema.json`, `.mirror/APPROVAL_REQUESTS/20260707T153055Z-source_adapter_import.yaml`, `.mirror/RUNTIME_DRY_RUNS/20260707T153055Z-disabled_source_adapter_import_approval_create.json`, `npm run guard:source-adapter-import-approval-create` |
+| AMOS source adapter import patch can be prepared as a local diff proposal without applying it. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_patch_gate.mjs`, `.mirror/schemas/source_adapter_import_patch_request.schema.json`, `.mirror/schemas/source_adapter_import_patch_receipt.schema.json`, `.mirror/PATCH_PROPOSALS/20260707T160235Z-disabled_source_adapter_import_patch.diff`, `.mirror/RUNTIME_DRY_RUNS/20260707T160235Z-disabled_source_adapter_import_patch.json`, `npm run guard:source-adapter-import-patch` |
 
 ## Blocked Until Verified
 
@@ -69,6 +70,8 @@ Purpose: track public/product claims that need evidence before they appear in co
   file or granted approval.
 - Claims that the pending source adapter import approval request is approval,
   grants approval, applies the import, or makes the import live.
+- Claims that the source adapter import patch proposal was applied, changed
+  active source, or made the import live.
 - Claims that the consumer app implements full AMOS, Euclid Trace, MirrorGraph, or Reflective Workspace runtime.
 - Claims that Active Mirror reads hidden motives, creates consciousness, is alive,
   or runs full governed memory/evolution modules in the public app.

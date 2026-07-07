@@ -1,0 +1,9 @@
+diff --git a/src/pages/HomePage.jsx b/src/pages/HomePage.jsx
+--- a/src/pages/HomePage.jsx
++++ b/src/pages/HomePage.jsx
+@@ -25,4 +25,5 @@
+ } from '../lib/mirror-state';
+ import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
+ import { copyText } from '../lib/sendable-actions';
++import { createDisabledSourceAdapterProjection } from '../lib/amos-disabled-source-adapter';
+ 

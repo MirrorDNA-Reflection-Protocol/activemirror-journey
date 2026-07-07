@@ -1,0 +1,51 @@
+{
+  "source_adapter_import_patch_request": {
+    "schema_version": "source_adapter_import_patch_request.v0_1",
+    "id": "disabled_source_adapter_import_patch",
+    "surface": "consumer_app",
+    "mode": "patch_proposal_only",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_file": "src/pages/HomePage.jsx",
+    "pending_approval_request": ".mirror/APPROVAL_REQUESTS/20260707T153055Z-source_adapter_import.yaml",
+    "approval_create_receipt": ".mirror/RUNTIME_DRY_RUNS/20260707T153055Z-disabled_source_adapter_import_approval_create.json",
+    "approval_basis": "user_chat_go_after_pending_request",
+    "approval_scope": "patch_proposal_only",
+    "write_patch_enabled": true,
+    "apply_import_enabled": false,
+    "live_import_enabled": false,
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "arbitrary_ui_enabled": false,
+    "required_gates": [
+      "guard:source-adapter-import-approval-create",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_adapter_import_patch_receipt",
+    "claim_boundary": [
+      "This creates a local patch proposal file only.",
+      "It does not apply the patch.",
+      "It does not import the disabled source adapter into the active app.",
+      "It does not grant approval to ship or deploy.",
+      "It performs no live app action.",
+      "It performs no gateway, model, network, route, deploy, arbitrary UI, or durable memory action."
+    ],
+    "blocked_claims": [
+      "Source adapter import patch was applied.",
+      "Source adapter import is live in the public app.",
+      "Source adapter import changed app routes.",
+      "Source adapter import changed gateway behavior.",
+      "Source adapter import called a model.",
+      "Source adapter import used the network.",
+      "Source adapter import wrote durable memory.",
+      "Source adapter import deployed public assets.",
+      "Source adapter import executed arbitrary generated UI."
+    ]
+  }
+}

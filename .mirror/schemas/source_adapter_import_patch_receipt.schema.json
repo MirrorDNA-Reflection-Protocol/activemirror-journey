@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/source_adapter_import_patch_receipt.v0_1.json",
+  "title": "AMOS Source Adapter Import Patch Receipt",
+  "type": "object",
+  "required": ["source_adapter_import_patch_receipt"],
+  "additionalProperties": false,
+  "properties": {
+    "source_adapter_import_patch_receipt": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "request_id",
+        "created_at",
+        "decision",
+        "approval_scope",
+        "patch_written",
+        "patch_file",
+        "patch_file_hash",
+        "target_file",
+        "target_hash_before",
+        "target_hash_after",
+        "target_modified",
+        "source_file",
+        "source_hash",
+        "performed_live_action",
+        "checked_scope",
+        "gate_results",
+        "approval_request_result",
+        "approval_create_result",
+        "patch_summary",
+        "blocked_capabilities",
+        "output"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "source_adapter_import_patch_receipt.v0_1" },
+        "id": { "type": "string", "minLength": 1 },
+        "request_id": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "minLength": 1 },
+        "decision": { "enum": ["patch_prepared", "block"] },
+        "approval_scope": { "const": "patch_proposal_only" },
+        "patch_written": { "type": "boolean" },
+        "patch_file": { "type": "string" },
+        "patch_file_hash": { "type": "string", "pattern": "^(|[a-f0-9]{64})$" },
+        "target_file": { "const": "src/pages/HomePage.jsx" },
+        "target_hash_before": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "target_hash_after": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "target_modified": { "const": false },
+        "source_file": { "const": "src/lib/amos-disabled-source-adapter.js" },
+        "source_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "performed_live_action": { "const": false },
+        "checked_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "gate_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "ok", "decision"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "ok": { "type": "boolean" },
+              "decision": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "approval_request_result": {
+          "type": "object",
+          "required": ["ok", "status", "approval_required", "file"],
+          "additionalProperties": false,
+          "properties": {
+            "ok": { "type": "boolean" },
+            "status": { "const": "pending" },
+            "approval_required": { "const": true },
+            "file": { "type": "string", "minLength": 1 }
+          }
+        },
+        "approval_create_result": {
+          "type": "object",
+          "required": ["ok", "decision", "approval_written", "performed_live_action", "file"],
+          "additionalProperties": false,
+          "properties": {
+            "ok": { "type": "boolean" },
+            "decision": { "const": "approval_required" },
+            "approval_written": { "const": true },
+            "performed_live_action": { "const": false },
+            "file": { "type": "string", "minLength": 1 }
+          }
+        },
+        "patch_summary": {
+          "type": "object",
+          "required": ["kind", "adds_import", "applies_patch"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "import_line_only" },
+            "adds_import": { "const": true },
+            "applies_patch": { "const": false }
+          }
+        },
+        "blocked_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "output": {
+          "type": "object",
+          "required": ["type", "message"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "source_adapter_import_patch_receipt" },
+            "message": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

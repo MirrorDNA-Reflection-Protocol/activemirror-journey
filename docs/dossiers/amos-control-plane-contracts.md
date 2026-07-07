@@ -43,6 +43,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/source_adapter_import_approval_receipt.schema.json`
   - `.mirror/schemas/source_adapter_import_approval_create_request.schema.json`
   - `.mirror/schemas/source_adapter_import_approval_create_receipt.schema.json`
+  - `.mirror/schemas/source_adapter_import_patch_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_patch_receipt.schema.json`
   - `src/lib/amos-disabled-source-adapter.js`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
@@ -124,6 +126,9 @@ consent levels, and agent permissions.
 - Source adapter import approval creation: pending approval request file only,
   no granted approval, no source import, and no live app, gateway, model,
   network, route, deploy, arbitrary UI, or durable memory action.
+- Source adapter import patch proposal: local diff file only, no source edit,
+  no source import, and no live app, gateway, model, network, route, deploy,
+  arbitrary UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -234,6 +239,11 @@ consent levels, and agent permissions.
      source adapter import can create a real pending approval request file while
      still blocking any claim that the import is approved, applied, or live.
 
+21. **Source Adapter Import Patch Proposal**
+   - `npm run guard:source-adapter-import-patch` verifies that a local diff
+     proposal can be created for review while the active app source remains
+     unchanged and the import stays unapplied.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -271,6 +281,7 @@ validated and bound to a runtime.
   - `npm run guard:source-adapter-import`
   - `npm run guard:source-adapter-import-approval`
   - `npm run guard:source-adapter-import-approval-create`
+  - `npm run guard:source-adapter-import-patch`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -328,10 +339,13 @@ validated and bound to a runtime.
 - Source adapter import approval request creation receipts prove only that a
   pending approval request file exists; they do not grant approval, apply the
   import, or prove live app/gateway enforcement.
+- Source adapter import patch proposal receipts prove only that a local diff
+  proposal exists; they do not edit active source, apply the import, or prove
+  live app/gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to prepare an import patch contract only after Paul explicitly approves
-the pending source adapter import request.
+slice is to review the patch proposal and create an apply gate with rollback
+before any active source file is changed.
