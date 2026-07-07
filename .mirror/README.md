@@ -48,6 +48,7 @@ with small contracts:
 - `.mirror/schemas/consent_ladder.schema.json`
 - `.mirror/schemas/agent_contract.schema.json`
 - `.mirror/schemas/action_request.schema.json`
+- `.mirror/schemas/memory_proposal_request.schema.json`
 
 These schemas do not make a runtime live. They define what a future runtime must
 validate before tools, memory, agents, or external actions are allowed.
@@ -60,3 +61,28 @@ npm run guard:amos-contracts
 
 The default examples live in `.mirror/CONTRACTS/amos/`. The gate returns
 `allow`, `approval_required`, or `block` and is now part of `npm run prebuild`.
+
+## Memory Proposal Gate
+
+Memory work starts as a proposal, not a hidden save. The local proposal writer
+first runs the AMOS contract gate, then writes a YAML proposal only when the
+contract returns `allow`.
+
+```bash
+npm run guard:memory-proposal
+```
+
+Manual dry-run:
+
+```bash
+node scripts/amos_memory_proposal_gate.mjs --dry-run
+```
+
+Manual write:
+
+```bash
+node scripts/amos_memory_proposal_gate.mjs --write
+```
+
+Written files go to `.mirror/MEMORY_UPDATE_PROPOSALS/` and still require human
+approval before becoming durable memory.

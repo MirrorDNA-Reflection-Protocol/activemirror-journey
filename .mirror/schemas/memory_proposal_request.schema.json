@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/memory_proposal_request.schema.json",
+  "title": "Active Mirror Memory Proposal Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["memory_proposal_request"],
+  "properties": {
+    "memory_proposal_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "project",
+        "proposal",
+        "source",
+        "confidence",
+        "timescale",
+        "human_summary"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "memory_proposal_request.v0_1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,80}$" },
+        "project": { "type": "string", "minLength": 2 },
+        "proposal": { "type": "string", "minLength": 10 },
+        "source": { "type": "string", "minLength": 3 },
+        "confidence": {
+          "type": "string",
+          "enum": ["confirmed", "likely", "provisional"]
+        },
+        "timescale": {
+          "type": "string",
+          "enum": ["session", "project", "durable"]
+        },
+        "human_summary": { "type": "string", "minLength": 10 }
+      }
+    }
+  }
+}

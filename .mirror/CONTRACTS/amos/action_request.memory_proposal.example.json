@@ -1,0 +1,18 @@
+{
+  "action_request": {
+    "schema_version": "action_request.v0_1",
+    "id": "memory_proposal",
+    "workspace": "personal",
+    "agent": "mirror_concierge",
+    "tool": "memory_proposal_writer",
+    "action": "memory_proposal",
+    "intent": "Create a reviewable memory update proposal without promoting durable memory.",
+    "reads": ["session:intake", "project:active-mirror"],
+    "writes": ["project:active-mirror-note"],
+    "egress": "none",
+    "reversibility": "reversible",
+    "consent_level": "level_2",
+    "approval_token": "",
+    "output_type": "json"
+  }
+}

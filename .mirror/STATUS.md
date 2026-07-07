@@ -40,6 +40,10 @@ Updated: 2026-07-07
   workspace boundary, consent ladder, agent contract, and action request.
 - `npm run guard:amos-contracts` runs a local AMOS contract gate and is included
   in `npm run prebuild`.
+- `npm run guard:memory-proposal` runs the first AMOS contract-backed local
+  action: creating reviewable memory proposals without durable promotion.
+- Pending review proposal exists at
+  `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
   signed gateway URLs and secret HMAC signing.
 
@@ -56,6 +60,10 @@ Updated: 2026-07-07
 - GitHub Wiki is not canonical or mirrored; the Obsidian copy is generated reference material only.
 - The AMOS contract gate is local repo enforcement only; the live app and
   gateway do not yet consume these contracts at runtime.
+- The memory proposal gate writes review proposals only; it does not promote
+  browser memory, canonical memory, or cross-device identity state.
+- The pending front-door proposal is not accepted memory until a human approves
+  it.
 
 ## Unrelated Local Dirt
 

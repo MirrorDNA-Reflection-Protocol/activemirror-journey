@@ -1,0 +1,10 @@
+memory_update_proposal:
+  id: "mem_prop_20260707t123500z_front_door_start_state"
+  glyph: "proposal"
+  project: "Active Mirror"
+  proposal: "The consumer front door should stay chat-first: What do you want? with setup and import as secondary doorways."
+  source: "docs/CONTINUITY_LEDGER.md#2026-07-07-minimal-first-turn-repair"
+  confidence: "confirmed"
+  timescale: "project"
+  approval_required: true
+  human_summary: "Keep the first screen simple and user-led until real user evidence says otherwise."

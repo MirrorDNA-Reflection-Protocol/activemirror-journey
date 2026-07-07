@@ -30,9 +30,10 @@
 2. Keep `npm run mirror:context` as the context source instead of chat memory; it now includes `docs/wiki/` and `docs/dossiers/`.
 3. Keep `npm run wiki:obsidian` as a generated reference mirror, not the source of truth.
 4. Use the Model Challenge Contract for tasks that need model accountability.
-5. Add real approval request files only when a risky action is actually proposed.
-6. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-7. Only add runtime wiring after a small contract has been used by a real task.
+5. Use `npm run guard:memory-proposal` as the first contract-backed local memory action.
+6. Add real approval request files only when a risky action is actually proposed.
+7. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+8. Only add runtime wiring after a small contract has been used by a real task.
 
 ## Do Not Do Yet
 

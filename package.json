@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:continuity && npm run guard:amos-contracts && npm run guard:front-door && npm run guard:language && npm run guard:multilingual && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
+        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:continuity && npm run guard:amos-contracts && npm run guard:memory-proposal && npm run guard:front-door && npm run guard:language && npm run guard:multilingual && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
         "prebuild:deploy": "npm run prebuild",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
@@ -22,6 +22,7 @@
         "guard:challenge": "node scripts/challenge_packet_guard.mjs",
         "guard:dossiers": "node scripts/dossier_guard.mjs",
         "guard:amos-contracts": "node scripts/amos_contract_gate.mjs --self-test",
+        "guard:memory-proposal": "node scripts/amos_memory_proposal_gate.mjs --self-test",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "truth": "python3 scripts/active_mirror_truth_gate.py --out outputs/active-mirror-truth-gate.json",
         "mirror:report": "node scripts/mirror_control_report.mjs",

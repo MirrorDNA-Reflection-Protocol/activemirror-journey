@@ -60,8 +60,10 @@ consent levels, and agent permissions.
 - Runtime: schema-only foundation for future AMOS runtime work.
 - Runtime gate: `scripts/amos_contract_gate.mjs` validates local contract
   examples and returns `allow`, `approval_required`, or `block`.
+- First local action gate: `scripts/amos_memory_proposal_gate.mjs` creates
+  reviewable memory proposals only after the contract gate returns `allow`.
 - Model or gateway: no provider routing change.
-- Local storage: no new durable memory write path.
+- Local storage: proposal YAML only; no durable memory promotion.
 - Generated artifacts: no new export capability.
 
 ## Leveraged Now
@@ -87,6 +89,12 @@ consent levels, and agent permissions.
    - A candidate action must name workspace, agent, tool, action, reads, writes,
      egress, reversibility, consent level, approval token, and output type.
 
+6. **Memory Proposal Request**
+   - A candidate memory update must become a reviewable proposal first. The
+     proposal writer is allowed to write `.mirror/MEMORY_UPDATE_PROPOSALS/`
+     only after the action request passes workspace, agent, tool, consent, and
+     output checks.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -110,6 +118,7 @@ bound to a runtime.
   - parse all `.mirror/schemas/*.schema.json` as JSON
 - Contract checks:
   - `npm run guard:amos-contracts`
+  - `npm run guard:memory-proposal`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -134,10 +143,12 @@ bound to a runtime.
 - The consumer app still does not implement the full AMOS control plane.
 - No private memory, external tool action, or approval workflow is made live by
   this dossier.
+- Memory proposal writing is local repo scaffolding only; proposal files still
+  need human approval before they become memory.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to connect the local contract gate to a real repo-local action, such as
-artifact export or memory proposal, before any live runtime wiring.
+slice is to connect the same contract pattern to artifact export or approval
+request creation before any live runtime wiring.

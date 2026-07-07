@@ -849,3 +849,50 @@ Do not turn this into a strategy essay. Keep it operational.
     live.
 - Next safe move: attach this gate to one real local action, likely memory
   proposal or artifact export, before expanding to MCP tools or external writes.
+
+### 2026-07-07: AMOS Memory Proposal Gate
+
+- Changed: attached the AMOS contract gate to the first real repo-local action:
+  creating a reviewable memory proposal.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/scd_state.example.json`
+  - `.mirror/CONTRACTS/amos/workspace_boundary.personal.example.json`
+  - `.mirror/CONTRACTS/amos/agent_contract.mirror_concierge.example.json`
+  - `.mirror/CONTRACTS/amos/action_request.memory_proposal.example.json`
+  - `.mirror/CONTRACTS/amos/memory_proposal_request.example.json`
+  - `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`
+  - `.mirror/schemas/memory_proposal_request.schema.json`
+  - `scripts/amos_memory_proposal_gate.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Memory starts as a proposal, not a hidden save.
+  - The proposal writer runs the existing contract gate first and writes
+    nothing when the action is blocked or approval-required.
+  - Durable memory promotion remains approval-required and is not implemented
+    by this slice.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run guard:amos-contracts`
+  - `npm run guard:memory-proposal`
+  - `node scripts/amos_memory_proposal_gate.mjs --dry-run`
+  - `node scripts/amos_memory_proposal_gate.mjs --write --timestamp 20260707T123500Z`
+  - blocked-action probe with `action_request.blocked.example.json` returned
+    `block` and wrote nothing
+  - `npm run guard:dossiers`
+  - JSON parse check for the new schema and example contracts
+  - `npm run build:deploy`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The written proposal is pending review, not accepted memory.
+  - The live app and gateway do not consume these contracts at runtime.
+  - No browser memory, canonical memory, cross-device identity, or approval
+    workflow was made live.
+- Next safe move: connect the same contract pattern to approval request
+  creation or artifact export.

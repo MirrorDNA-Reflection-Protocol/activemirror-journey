@@ -8,7 +8,7 @@
     "cannot_read": ["client:separate-work", "private:vault-raw", "legal:filings-private"],
     "can_write": ["session:draft", "project:active-mirror-note"],
     "cannot_write": ["client:separate-work", "public:site", "private:vault-raw"],
-    "allowed_tools": ["local_artifact_generator", "browser_local_state"],
+    "allowed_tools": ["local_artifact_generator", "browser_local_state", "memory_proposal_writer"],
     "forbidden_tools": ["email_send", "deploy", "payment", "production_db"],
     "egress_policy": "metadata_only",
     "memory_policy": "approval_before_save"
