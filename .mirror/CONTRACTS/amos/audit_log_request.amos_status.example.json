@@ -1,0 +1,32 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_status_report",
+    "action": "Run the AMOS local control-plane status report.",
+    "checked_scope": [
+      "contract gate",
+      "memory proposal gate",
+      "approval request gate",
+      "artifact export gate",
+      "audit log gate",
+      "receipt chain gate"
+    ],
+    "unchecked_scope": [
+      "live app runtime integration",
+      "gateway runtime integration",
+      "external timestamp authority",
+      "asymmetric signature"
+    ],
+    "evidence": [
+      "npm run amos:status",
+      "npm run guard:receipt-chain"
+    ],
+    "bad_news": [
+      "The AMOS status report checks local gates only; it does not prove live runtime enforcement."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Use the status report before any live runtime wiring or public proof claim."
+    ]
+  }
+}

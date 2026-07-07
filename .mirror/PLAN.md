@@ -38,11 +38,13 @@
    evidence.
 9. Use `npm run guard:receipt-chain` to catch edited, deleted, or unchained
    local audit receipts.
-10. Add real approval request files only when a risky action is actually proposed.
-11. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-12. Only add runtime wiring after a small contract has been used by a real task.
-13. Next control-plane slice: add asymmetric signing or external anchoring only
-   if local receipt chains keep proving useful.
+10. Use `npm run amos:status` before live runtime wiring or public proof
+    claims.
+11. Add real approval request files only when a risky action is actually proposed.
+12. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+13. Only add runtime wiring after a small contract has been used by a real task.
+14. Next control-plane slice: define the runtime integration contract for how
+    the app or gateway would consume these local gates without making it live.
 
 ## Do Not Do Yet
 

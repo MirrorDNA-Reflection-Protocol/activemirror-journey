@@ -1067,3 +1067,41 @@ Do not turn this into a strategy essay. Keep it operational.
     notarization, live app verifier, or gateway verifier.
 - Next safe move: add asymmetric signing or external anchoring only if local
   receipt chains remain useful and stable.
+
+### 2026-07-07: AMOS Status Report
+
+- Changed: added a single bad-news-first local status command for AMOS
+  control-plane checks.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/audit_log_request.amos_status.example.json`
+  - `.mirror/AUDIT_LOGS/20260707T132500Z-amos_status_report.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - `npm run amos:status` runs the local AMOS gates and receipt-chain verifier.
+  - The report prints bad news first, then checked gates, chain state,
+    working-tree state, and next safe action.
+  - A green report still says `decision: partial` because these gates are
+    local-only and not consumed by the live app or gateway.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `npm run amos:status`
+  - `npm run amos:status -- --json`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.amos_status.example.json --timestamp 20260707T132500Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260707T132500Z`
+  - `npm run guard:receipt-chain`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The status report does not prove live runtime enforcement.
+  - The public app and gateway still do not consume AMOS contracts, audit
+    receipts, or receipt chains.
+- Next safe move: define the runtime integration contract for how the app or
+  gateway would consume these local gates without making it live yet.

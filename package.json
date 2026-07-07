@@ -29,6 +29,7 @@
         "guard:receipt-chain": "node scripts/amos_receipt_chain_gate.mjs --verify",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "truth": "python3 scripts/active_mirror_truth_gate.py --out outputs/active-mirror-truth-gate.json",
+        "amos:status": "node scripts/amos_status_report.mjs",
         "mirror:report": "node scripts/mirror_control_report.mjs",
         "mirror:context": "node scripts/mirror_context_pack_builder.mjs",
         "mirror:context:bundle": "node scripts/mirror_context_pack_builder.mjs --bundle --out outputs/active-mirror-context-bundle.md",

@@ -52,12 +52,17 @@ Updated: 2026-07-07
 - `npm run guard:receipt-chain` verifies local audit receipts against
   `.mirror/RECEIPT_CHAINS/audit-log-chain.json` and is included in
   `npm run prebuild`.
+- `npm run amos:status` runs the local AMOS control-plane checks and reports
+  bad news, checked gates, receipt-chain state, working-tree state, and next
+  safe action.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T131500Z-amos_receipt_chain.yaml`.
+- Local AMOS status-report audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260707T132500Z-amos_status_report.yaml`.
 - Current local audit receipt chain hash:
-  `0c26e3c9cfb6e13cd2d9fd9a657f3a913f0d91afc5d3f69cf1f9c6364c88e8b8`.
+  `a11548331fc0f56024e92a0d0174cfa483b50cd3e7db5f7a6cad8032f82de6ce`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -87,6 +92,8 @@ Updated: 2026-07-07
 - The receipt-chain gate detects local audit receipt edits, deletes, or
   unchained additions; it is not an asymmetric signature, external timestamp,
   public notarization, or live app/gateway verifier.
+- The AMOS status report is a local truth surface, not a runtime health proof
+  for the public app or gateway.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

@@ -1,0 +1,26 @@
+audit_log:
+  id: "audit_20260707t132500z_amos_status_report"
+  task_id: "active_mirror_front_door_v1"
+  created_at: "2026-07-07T13:25:00Z"
+  actor: "codex"
+  action: "Run the AMOS local control-plane status report."
+  checked_scope:
+    - "contract gate"
+    - "memory proposal gate"
+    - "approval request gate"
+    - "artifact export gate"
+    - "audit log gate"
+    - "receipt chain gate"
+  unchecked_scope:
+    - "live app runtime integration"
+    - "gateway runtime integration"
+    - "external timestamp authority"
+    - "asymmetric signature"
+  evidence:
+    - "npm run amos:status"
+    - "npm run guard:receipt-chain"
+  bad_news:
+    - "The AMOS status report checks local gates only; it does not prove live runtime enforcement."
+  decision: "partial"
+  follow_up:
+    - "Use the status report before any live runtime wiring or public proof claim."

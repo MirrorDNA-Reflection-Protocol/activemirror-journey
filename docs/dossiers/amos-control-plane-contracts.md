@@ -72,6 +72,8 @@ consent levels, and agent permissions.
   request passes local shape checks.
 - Receipt chain gate: `scripts/amos_receipt_chain_gate.mjs` verifies
   repo-local audit receipts against a deterministic SHA-256 chain file.
+- AMOS status report: `scripts/amos_status_report.mjs` runs the local gates and
+  receipt-chain verifier, then prints a bad-news-first local control report.
 - Model or gateway: no provider routing change.
 - Local storage: proposal YAML only; no durable memory promotion.
 - Approval storage: pending approval YAML only when a real risky action needs
@@ -133,6 +135,13 @@ consent levels, and agent permissions.
      order. `npm run guard:receipt-chain` fails if a receipt changes, disappears,
      or is added without updating the chain.
 
+11. **AMOS Status Report**
+   - `npm run amos:status` runs the local AMOS gates and reports bad news,
+     checked gates, receipt-chain state, working-tree state, and next safe
+     action. It exits green only when the local gates pass, but still reports
+     `partial` because the public app and gateway do not consume these controls
+     yet.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -161,6 +170,7 @@ bound to a runtime.
   - `npm run guard:artifact-export`
   - `npm run guard:audit-log`
   - `npm run guard:receipt-chain`
+  - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
 - Deploy checks:
@@ -195,10 +205,11 @@ bound to a runtime.
   but are not signed, published, or consumed by the live app/gateway.
 - Receipt chains are local-only tamper checks; they are not signatures,
   external timestamps, public notarization, or enterprise audit.
+- AMOS status is a local truth surface only; it is not live runtime enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to add asymmetric signing or external anchoring only if local receipt
-chains stay useful and stable.
+slice is to define the runtime integration contract for how the app or gateway
+would consume these local gates without making it live yet.

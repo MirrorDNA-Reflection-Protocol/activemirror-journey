@@ -135,6 +135,19 @@ The current chain lives at `.mirror/RECEIPT_CHAINS/audit-log-chain.json`.
 This is local tamper detection only. It is not an asymmetric signature,
 external timestamp, public notarization, or live runtime verifier.
 
+## AMOS Status Report
+
+Use one command before live runtime wiring or public proof claims:
+
+```bash
+npm run amos:status
+```
+
+The status report runs the local AMOS gates and the receipt-chain verifier,
+then prints bad news, checked gates, current chain hash, working-tree state, and
+the next safe action. A green command still reports `decision: partial` because
+these controls are local-only until the app or gateway consumes them.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer
