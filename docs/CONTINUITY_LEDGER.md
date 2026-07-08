@@ -236,6 +236,43 @@ Do not turn this into a strategy essay. Keep it operational.
   - The bundle is generated under `outputs/`; it is evidence and runtime context, not source truth.
 - Next safe move: use topic packets for active long-running topics, then regenerate the bundle before handing work to another model or session.
 
+### 2026-07-08: Keep-Chat Nudge Added
+
+- Changed: added a post-answer nudge so users can keep the current chat on this browser before they leave or refresh.
+- Also fixed: automatic canvas/artifact opening now depends on the user's request, not on generated next-move text.
+- Product reason:
+  - A tester lost a chat after walking away and the page refreshed.
+  - The existing `Keep chat` control worked but could be missed before the first useful answer.
+  - The nudge appears only after there is an answer worth keeping.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `scripts/chat_continuity_guard.mjs`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run guard:chat-continuity`
+  - `npm run guard:friction`
+  - `npm run guard:continuity`
+  - `npm run build:deploy`
+  - mobile Playwright source refresh check
+  - mobile Playwright live refresh check
+  - `/Users/mirror-pro/repos/active-mirror-site`: `npm run deploy:preflight`
+  - `/Users/mirror-pro/repos/active-mirror-site`: `npm run site:worker:deploy`
+  - `/Users/mirror-pro/repos/active-mirror-site`: `npm run deploy:verify`
+- Additional guard:
+  - `npm run guard:friction` now blocks auto canvas/artifact routing based on generated next-move copy.
+- Deploy status:
+  - Live on `https://activemirror.ai/app/`.
+  - Current Worker version: `e11f2f71-53d7-43dc-b191-e2568e267d19`.
+  - Current app bundle: `index-Dr6Q8xMO.js`.
+  - Live Playwright check passed for nudge, no accidental canvas, enable, reload restore.
+- Bad news or limits:
+  - This is still browser-local current-chat continuity only.
+  - It is not cross-device sync, account memory, or durable profile learning.
+  - It still requires an explicit tap before saving the chat.
+  - An in-flight model request is still not resumed if the tab refreshes before the answer returns.
+- Next safe move: add a tiny saved-chat list only if real users need more than current-chat recovery; do not add accounts or sync until the product pull is proven.
+
 ### 2026-07-05: Experimental Multilingual Reflection
 
 - Changed: added experimental reply-language detection and payload routing so Active Mirror can answer in the user's message/browser language without adding another setup step.

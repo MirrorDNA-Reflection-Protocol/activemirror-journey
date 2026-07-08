@@ -1939,7 +1939,7 @@ export default function HomePage() {
             const nextResult = data.ok ? data : makeBlockedResult(data);
             setResult(nextResult);
 
-            if (data.ok && shouldOpenWorkSurface(cleanIntent, nextResult.mirror)) {
+            if (data.ok && shouldOpenWorkSurface(cleanIntent, {})) {
                 createArtifact(detectArtifactKind(cleanIntent, nextResult.mirror), {
                     mirror: nextResult.mirror,
                     intent: cleanIntent,
@@ -1951,7 +1951,7 @@ export default function HomePage() {
             const fallbackResult = makeOfflineMirrorResult(cleanIntent, 'network', languagePayloadFor(cleanIntent, { seed }));
             setResult(fallbackResult);
 
-            if (shouldOpenWorkSurface(cleanIntent, fallbackResult.mirror)) {
+            if (shouldOpenWorkSurface(cleanIntent, {})) {
                 createArtifact(detectArtifactKind(cleanIntent, fallbackResult.mirror), {
                     mirror: fallbackResult.mirror,
                     intent: cleanIntent,
@@ -2266,6 +2266,11 @@ export default function HomePage() {
     const fieldAwake = showMirror || text.trim().length > 0;
     const savedCount = mirrorDefaults.length + continuityLedger.length;
     const isLight = theme === 'light';
+    const showKeepChatNudge = showMirror
+        && Boolean(result)
+        && !busy
+        && !chatMemoryEnabled
+        && !['privacy_hold', 'setup_ready', 'start_help'].includes(result?.kind);
     const ctaClass = canSubmit && !busy
         ? 'from-emerald-400 via-cyan-400 to-violet-500 text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] hover:scale-[1.015]'
         : isLight
@@ -2523,6 +2528,21 @@ export default function HomePage() {
                                     reflect(nextIntent, source);
                                 }}
                             />
+                            {showKeepChatNudge ? (
+                                <div className={`grid gap-3 rounded-[1.35rem] border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600 shadow-[0_16px_34px_rgba(77,65,50,0.08)]' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400 shadow-[0_0_30px_rgba(34,211,238,0.05)]'}`}>
+                                    <div className="min-w-0 text-sm leading-6">
+                                        Leaving for a bit? Keep this chat on this browser.
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={toggleChatMemory}
+                                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition hover:-translate-y-0.5 ${isLight ? 'border-cyan-500/24 bg-cyan-50 text-cyan-800 hover:border-cyan-500/45 hover:bg-white' : 'border-cyan-200/24 bg-cyan-200/[0.08] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.12]'}`}
+                                    >
+                                        <Save size={15} />
+                                        Keep it
+                                    </button>
+                                </div>
+                            ) : null}
                             {!busy && result && !['privacy_hold', 'setup_ready', 'artifact_first'].includes(result.kind) ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">

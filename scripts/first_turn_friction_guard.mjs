@@ -130,6 +130,12 @@ check(
     'poster/flyer asks should open creation first even without a magic verb'
 );
 check(
+    !homePage.includes('shouldOpenWorkSurface(cleanIntent, nextResult.mirror)') &&
+    !homePage.includes('shouldOpenWorkSurface(cleanIntent, fallbackResult.mirror)') &&
+    homePage.includes('shouldOpenWorkSurface(cleanIntent, {})'),
+    'auto canvas/artifact opening must depend on the user request, not generated next-move text'
+);
+check(
     homePage.includes("draft?.kind === 'image' && artifactHasImageMedia(draft)") &&
     !homePage.includes("draft?.kind === 'image' && (draft?.media?.data_url || draft?.media?.dataUrl)"),
     'image-ready note must work for stored media URLs, not only inline data URLs'

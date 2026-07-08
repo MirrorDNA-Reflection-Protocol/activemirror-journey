@@ -7,7 +7,7 @@ Updated: 2026-07-08
 - Product source repo: `/Users/mirror-pro/repos/activemirror-journey`
 - Deploy/gateway repo: `/Users/mirror-pro/repos/active-mirror-site`
 - Live app route: `https://activemirror.ai/app/`
-- Current live app bundle verified: `index-BBeJ1fR5.js`
+- Current live app bundle verified: `index-Dr6Q8xMO.js`
 - Gateway health version verified: `2026-07-07-media-kv-fallback-v1`
 
 ## Verified Checks
@@ -25,6 +25,8 @@ Updated: 2026-07-08
 - Obsidian reference sync is available through `npm run wiki:obsidian`.
 - Repo-local dossiers are available at `docs/dossiers/` and checked with `npm run guard:dossiers`.
 - Artifact outputs carry runtime challenge packets checked by `npm run guard:challenge`.
+- Optional keep-chat continuity is deployed: post-answer nudge, explicit `Keep it` enable path, browser-local reload restore, and clear control.
+- Plain reflection prompts no longer open the canvas/artifact surface just because the generated next move says to write something.
 - Offline/online owned-AI positioning and AMOS proof-layer intake are captured as dossiers, not consumer homepage copy.
 - Production mobile and desktop privacy smoke passed.
 - Production artifact route returned a usable draft, not advice about making one.
