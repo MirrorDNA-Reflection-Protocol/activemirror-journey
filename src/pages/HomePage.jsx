@@ -84,8 +84,8 @@ const STARTER_ACTIONS = [
     },
     {
         kind: 'understand',
-        label: 'Learn',
-        caption: 'Understand',
+        label: 'Understand',
+        caption: 'Plain English',
         icon: Sparkles,
         intent: 'I need to understand this better.',
     },
@@ -2336,7 +2336,7 @@ export default function HomePage() {
                                             <span className={`grid h-7 w-7 place-items-center rounded-full border transition sm:h-8 sm:w-8 ${isLight ? 'border-cyan-500/15 bg-cyan-100/60 text-cyan-700 group-hover:border-cyan-600/25 group-hover:bg-cyan-100' : 'border-cyan-200/15 bg-cyan-200/[0.07] text-cyan-100/85 group-hover:border-cyan-100/30 group-hover:bg-cyan-200/[0.1]'}`}>
                                                 <Icon size={15} />
                                             </span>
-                                            <span className="whitespace-nowrap text-[11px] font-bold leading-4 min-[380px]:text-[12px] sm:text-sm">{item.label}</span>
+                                            <span className="whitespace-nowrap text-[9px] font-bold leading-4 min-[380px]:text-[10px] sm:text-sm">{item.label}</span>
                                             <span className={`hidden text-[11px] font-medium leading-4 transition sm:block ${isLight ? 'text-stone-500 group-hover:text-cyan-700' : 'text-zinc-500 group-hover:text-cyan-100/75'}`}>{item.caption}</span>
                                         </button>
                                     );
