@@ -1348,6 +1348,8 @@ function LoadingPanel() {
 }
 
 function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenImage }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const working = Boolean(busyKind && !draft);
     if (!draft && !working) return null;
 
@@ -1355,30 +1357,30 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
         const { icon: Icon } = artifactActionFor(busyKind);
 
         return (
-            <section className="min-w-0 overflow-hidden rounded-[1.7rem] border border-cyan-300/15 bg-cyan-300/[0.055] px-4 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
+            <section className={`min-w-0 overflow-hidden rounded-[1.7rem] border px-4 py-4 ${isLight ? 'border-stone-300/70 bg-white/72 shadow-[0_20px_50px_rgba(77,65,50,0.10)]' : 'border-cyan-300/15 bg-cyan-300/[0.055] shadow-[0_0_40px_rgba(34,211,238,0.08)]'}`}>
                 <div className="mb-4 flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-2">
-                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-2xl border border-cyan-200/20 bg-cyan-300/[0.07] text-cyan-100">
+                        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-2xl border ${isLight ? 'border-cyan-500/18 bg-cyan-50 text-cyan-700' : 'border-cyan-200/20 bg-cyan-300/[0.07] text-cyan-100'}`}>
                             <Icon size={15} />
                         </span>
                         <div className="min-w-0">
-                            <div className="text-sm font-semibold text-cyan-50">Making it useful</div>
-                            <div className="text-xs text-zinc-500">Almost there.</div>
+                            <div className={`text-sm font-semibold ${isLight ? 'text-stone-900' : 'text-cyan-50'}`}>Making it useful</div>
+                            <div className={`text-xs ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Almost there.</div>
                         </div>
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-white/25 hover:text-white"
+                        className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-500 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-white/25 hover:text-white'}`}
                         aria-label="Close"
                     >
                         <X size={15} />
                     </button>
                 </div>
                 <div className="grid gap-2">
-                    <div className="h-3 w-4/5 animate-pulse rounded-full bg-white/10" />
-                    <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/10" />
-                    <div className="h-24 animate-pulse rounded-2xl border border-white/10 bg-black/20" />
+                    <div className={`h-3 w-4/5 animate-pulse rounded-full ${isLight ? 'bg-stone-200/80' : 'bg-white/10'}`} />
+                    <div className={`h-3 w-2/3 animate-pulse rounded-full ${isLight ? 'bg-stone-200/70' : 'bg-white/10'}`} />
+                    <div className={`h-24 animate-pulse rounded-2xl border ${isLight ? 'border-stone-300/65 bg-stone-100/70' : 'border-white/10 bg-black/20'}`} />
                 </div>
             </section>
         );
@@ -1391,7 +1393,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
             <button
                 type="button"
                 onClick={onClose}
-                className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/40 text-zinc-400 backdrop-blur transition hover:border-white/25 hover:text-white"
+                className={`absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full border backdrop-blur transition ${isLight ? 'border-stone-300/70 bg-white/74 text-stone-500 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/40 text-zinc-400 hover:border-white/25 hover:text-white'}`}
                 aria-label="Close"
             >
                 <X size={15} />
@@ -1403,7 +1405,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
                 onRegenerate={draft?.kind === 'image' ? onRegenerateImage : undefined}
                 onSharpen={draft?.kind === 'image' ? onSharpenImage : undefined}
             />
-            <div className="mt-2 px-1 text-xs leading-5 text-zinc-500">{note}</div>
+            <div className={`mt-2 px-1 text-xs leading-5 ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>{note}</div>
         </div>
     );
 }

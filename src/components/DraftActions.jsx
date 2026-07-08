@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Check, Copy, Download, Share2 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 import { copyText, downloadTextFile, shareText } from '../lib/sendable-actions';
 import { trackEvent } from '../lib/privacy-events';
 
@@ -60,6 +61,8 @@ function filenameFromTitle(title = 'active-mirror-draft', kind = 'draft') {
 }
 
 export default function DraftActions({ title = 'Sendable draft', text = '', kind = 'draft', surface = 'home' }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [status, setStatus] = useState('');
     const download = downloadInfo(kind, text);
 
@@ -102,7 +105,7 @@ export default function DraftActions({ title = 'Sendable draft', text = '', kind
         }
     }
 
-    const buttonClass = 'inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300 transition hover:border-cyan-200/30 hover:bg-cyan-300/[0.075] hover:text-white';
+    const buttonClass = `inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-300/[0.075] hover:text-white'}`;
 
     return (
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -119,7 +122,7 @@ export default function DraftActions({ title = 'Sendable draft', text = '', kind
                 {download.label}
             </button>
             {status ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-100">
+                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${isLight ? 'text-cyan-700' : 'text-cyan-100'}`}>
                     <Check size={13} />
                     {status}
                 </span>
