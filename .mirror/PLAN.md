@@ -56,21 +56,25 @@
     adapter exists, is imported, or is safely disabled.
 17. Use `npm run guard:source-adapter-import-applied` before claiming the
     disabled source adapter import is present and inert.
-18. Add real approval request files only when a risky action is actually proposed.
-19. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-20. Only add runtime wiring after a small contract has been used by a real task.
-21. Runtime integration is still contract-only with disabled adapters.
-22. Shadow adapter receipts are local-only and perform no live action.
-23. Read-only app adapter receipts are source-hash evidence only.
-24. Browser-local runtime adapter receipts are input-hash projections only.
-25. Local UI harness receipts are projection evidence only.
-26. Disabled source adapter is imported by active app source but remains inert.
-27. Source adapter import applied gate verifies the import is present once and
+18. Use `npm run guard:source-adapter-invocation-contract` before claiming an
+    invocation path has been declared.
+19. Add real approval request files only when a risky action is actually proposed.
+20. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+21. Only add runtime wiring after a small contract has been used by a real task.
+22. Runtime integration is still contract-only with disabled adapters.
+23. Shadow adapter receipts are local-only and perform no live action.
+24. Read-only app adapter receipts are source-hash evidence only.
+25. Browser-local runtime adapter receipts are input-hash projections only.
+26. Local UI harness receipts are projection evidence only.
+27. Disabled source adapter is imported by active app source but remains inert.
+28. Source adapter import applied gate verifies the import is present once and
     not invoked; it is not live AMOS runtime enforcement.
-28. Historical proposal, approval, patch, and apply-readiness gates remain as
+29. Source adapter invocation contract gate declares only the future invocation
+    path; it does not invoke the adapter.
+30. Historical proposal, approval, patch, and apply-readiness gates remain as
     evidence of the path to this state, not the active build health check.
-29. Next control-plane slice: create the tiny invocation contract before any
-    real runtime call, model call, memory write, gateway change, or UI behavior.
+31. Next control-plane slice: create a call-site proof gate before any actual
+    runtime call, model call, memory write, gateway change, or UI behavior.
 
 ## Do Not Do Yet
 

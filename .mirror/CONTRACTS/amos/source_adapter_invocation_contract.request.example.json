@@ -1,0 +1,51 @@
+{
+  "source_adapter_invocation_contract_request": {
+    "schema_version": "source_adapter_invocation_contract_request.v0_1",
+    "id": "disabled_source_adapter_invocation_contract",
+    "surface": "consumer_app",
+    "mode": "invocation_contract_declared_only",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_file": "src/pages/HomePage.jsx",
+    "allowed_invoker": "src/pages/HomePage.jsx",
+    "allowed_input_receipt": "ui_harness_receipt",
+    "allowed_output": "disabled_source_adapter_projection",
+    "invocation_enabled": false,
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "arbitrary_ui_enabled": false,
+    "required_gates": [
+      "guard:source-adapter-import-applied",
+      "guard:ui-harness",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_adapter_invocation_contract_receipt",
+    "claim_boundary": [
+      "This declares a future invocation contract only.",
+      "The adapter is not invoked by HomePage.jsx.",
+      "Only a UI harness receipt may be used as future input.",
+      "Only a disabled source adapter projection may be future output.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write durable memory.",
+      "It does not change routes, deploy assets, or gateway behavior.",
+      "It does not execute arbitrary generated UI."
+    ],
+    "blocked_claims": [
+      "Source adapter invocation is live.",
+      "Source adapter invocation called a model.",
+      "Source adapter invocation used the network.",
+      "Source adapter invocation wrote durable memory.",
+      "Source adapter invocation changed app routes.",
+      "Source adapter invocation changed gateway behavior.",
+      "Source adapter invocation deployed public assets.",
+      "Source adapter invocation executed arbitrary generated UI."
+    ]
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://activemirror.ai/schemas/source_adapter_invocation_contract_receipt.v0_1.json",
+  "title": "AMOS Source Adapter Invocation Contract Receipt",
+  "type": "object",
+  "required": ["source_adapter_invocation_contract_receipt"],
+  "additionalProperties": false,
+  "properties": {
+    "source_adapter_invocation_contract_receipt": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "request_id",
+        "created_at",
+        "decision",
+        "source_file",
+        "source_hash",
+        "target_file",
+        "target_hash",
+        "contract",
+        "import_scan",
+        "source_invariants",
+        "performed_live_action",
+        "checked_scope",
+        "gate_results",
+        "blocked_capabilities",
+        "output"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "source_adapter_invocation_contract_receipt.v0_1" },
+        "id": { "type": "string", "minLength": 1 },
+        "request_id": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "minLength": 1 },
+        "decision": { "enum": ["contract_declared", "block"] },
+        "source_file": { "const": "src/lib/amos-disabled-source-adapter.js" },
+        "source_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "target_file": { "const": "src/pages/HomePage.jsx" },
+        "target_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "contract": {
+          "type": "object",
+          "required": [
+            "allowed_invoker",
+            "allowed_input_receipt",
+            "allowed_output",
+            "invocation_enabled"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "allowed_invoker": { "const": "src/pages/HomePage.jsx" },
+            "allowed_input_receipt": { "const": "ui_harness_receipt" },
+            "allowed_output": { "const": "disabled_source_adapter_projection" },
+            "invocation_enabled": { "const": false }
+          }
+        },
+        "import_scan": {
+          "type": "object",
+          "required": ["import_line_count", "adapter_invocation_count"],
+          "additionalProperties": false,
+          "properties": {
+            "import_line_count": { "const": 1 },
+            "adapter_invocation_count": { "const": 0 }
+          }
+        },
+        "source_invariants": {
+          "type": "object",
+          "required": ["disabled_flags_ok", "runtime_primitives_absent"],
+          "additionalProperties": false,
+          "properties": {
+            "disabled_flags_ok": { "const": true },
+            "runtime_primitives_absent": { "const": true }
+          }
+        },
+        "performed_live_action": { "const": false },
+        "checked_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "gate_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "ok", "decision"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "ok": { "type": "boolean" },
+              "decision": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "blocked_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "output": {
+          "type": "object",
+          "required": ["type", "message"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "source_adapter_invocation_contract_receipt" },
+            "message": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

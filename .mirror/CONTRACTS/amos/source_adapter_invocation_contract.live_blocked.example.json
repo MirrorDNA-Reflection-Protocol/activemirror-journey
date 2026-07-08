@@ -1,0 +1,27 @@
+{
+  "source_adapter_invocation_contract_request": {
+    "schema_version": "source_adapter_invocation_contract_request.v0_1",
+    "id": "disabled_source_adapter_invocation_contract_live_blocked",
+    "surface": "consumer_app",
+    "mode": "invocation_contract_declared_only",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_file": "src/pages/HomePage.jsx",
+    "allowed_invoker": "src/pages/HomePage.jsx",
+    "allowed_input_receipt": "ui_harness_receipt",
+    "allowed_output": "disabled_source_adapter_projection",
+    "invocation_enabled": true,
+    "model_call_enabled": true,
+    "network_enabled": true,
+    "durable_memory_write_enabled": true,
+    "route_change_enabled": true,
+    "gateway_change_enabled": true,
+    "public_deploy_enabled": true,
+    "arbitrary_ui_enabled": true,
+    "required_gates": ["guard:front-door"],
+    "output_type": "source_adapter_invocation_contract_receipt",
+    "claim_boundary": ["This claims unsafe live invocation behavior."],
+    "blocked_claims": ["Source adapter invocation is live."]
+  }
+}

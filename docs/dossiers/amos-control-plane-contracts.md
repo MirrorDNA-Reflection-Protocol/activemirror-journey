@@ -49,6 +49,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/source_adapter_import_apply_receipt.schema.json`
   - `.mirror/schemas/source_adapter_import_applied_request.schema.json`
   - `.mirror/schemas/source_adapter_import_applied_receipt.schema.json`
+  - `.mirror/schemas/source_adapter_invocation_contract_request.schema.json`
+  - `.mirror/schemas/source_adapter_invocation_contract_receipt.schema.json`
   - `src/lib/amos-disabled-source-adapter.js`
   - `src/pages/HomePage.jsx`
   - `docs/dossiers/amos-control-plane-contracts.md`
@@ -141,6 +143,9 @@ consent levels, and agent permissions.
 - Source adapter import applied: active source import present once, adapter not
   invoked, and no live app, gateway, model, network, route, deploy, arbitrary
   UI, or durable memory action.
+- Source adapter invocation contract: future invocation path declared only,
+  adapter still not invoked, and no live app, gateway, model, network, route,
+  deploy, arbitrary UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -268,6 +273,12 @@ consent levels, and agent permissions.
      the adapter still performs no live app, gateway, model, network, route,
      deploy, arbitrary UI, or durable memory action.
 
+24. **Source Adapter Invocation Contract**
+   - `npm run guard:source-adapter-invocation-contract` verifies that a future
+     invocation path is declared while `src/pages/HomePage.jsx` still does not
+     call the adapter. The only future input/output shape allowed by the
+     contract is `ui_harness_receipt` to `disabled_source_adapter_projection`.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -308,6 +319,7 @@ validated and bound to a runtime.
   - `npm run guard:source-adapter-import-patch`
   - `npm run guard:source-adapter-import-apply`
   - `npm run guard:source-adapter-import-applied`
+  - `npm run guard:source-adapter-invocation-contract`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -375,10 +387,13 @@ validated and bound to a runtime.
 - Source adapter import applied receipts prove only that the source import is
   present once and inert; they do not invoke the adapter or prove live
   app/gateway enforcement.
+- Source adapter invocation contract receipts prove only that a future
+  invocation path is declared; they do not invoke the adapter or prove live
+  app/gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is a tiny invocation contract that proves what may call the imported
-adapter before any runtime behavior changes.
+slice is a call-site proof gate that must pass before the imported adapter is
+actually invoked.

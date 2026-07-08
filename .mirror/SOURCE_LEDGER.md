@@ -45,6 +45,7 @@ Purpose: track public/product claims that need evidence before they appear in co
 | AMOS source adapter import patch can be prepared as a local diff proposal without applying it. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_patch_gate.mjs`, `.mirror/schemas/source_adapter_import_patch_request.schema.json`, `.mirror/schemas/source_adapter_import_patch_receipt.schema.json`, `.mirror/PATCH_PROPOSALS/20260707T160235Z-disabled_source_adapter_import_patch.diff`, `.mirror/RUNTIME_DRY_RUNS/20260707T160235Z-disabled_source_adapter_import_patch.json`, `npm run guard:source-adapter-import-patch` |
 | AMOS source adapter import patch can be checked as apply-ready with a rollback plan without applying it. | AMOS architecture | local-contract | `scripts/amos_source_adapter_import_apply_gate.mjs`, `.mirror/schemas/source_adapter_import_apply_request.schema.json`, `.mirror/schemas/source_adapter_import_apply_receipt.schema.json`, `.mirror/ROLLBACKS/20260708T084032Z-disabled_source_adapter_import_apply_rollback.yaml`, `.mirror/RUNTIME_DRY_RUNS/20260708T084032Z-disabled_source_adapter_import_apply.json`, `npm run guard:source-adapter-import-apply` |
 | AMOS source adapter import is present once in active app source and is not invoked. | AMOS architecture | local-contract | `src/pages/HomePage.jsx`, `scripts/amos_source_adapter_import_applied_gate.mjs`, `.mirror/schemas/source_adapter_import_applied_request.schema.json`, `.mirror/schemas/source_adapter_import_applied_receipt.schema.json`, `.mirror/RUNTIME_DRY_RUNS/20260708T091526Z-disabled_source_adapter_import_applied.json`, `npm run guard:source-adapter-import-applied` |
+| AMOS source adapter invocation path is declared but not invoked. | AMOS architecture | local-contract | `scripts/amos_source_adapter_invocation_contract_gate.mjs`, `.mirror/schemas/source_adapter_invocation_contract_request.schema.json`, `.mirror/schemas/source_adapter_invocation_contract_receipt.schema.json`, `.mirror/RUNTIME_DRY_RUNS/20260708T093336Z-disabled_source_adapter_invocation_contract.json`, `npm run guard:source-adapter-invocation-contract` |
 
 ## Blocked Until Verified
 
@@ -68,6 +69,9 @@ Purpose: track public/product claims that need evidence before they appear in co
   durable memory actions.
 - Claims that the source adapter import was approved as live runtime wiring,
   invoked, or made live in the active app.
+- Claims that the source adapter invocation is live, called a model, used the
+  network, wrote memory, changed routes, changed the gateway, deployed assets,
+  or executed generated UI.
 - Claims that the source adapter import approval bridge wrote a real approval
   file or granted approval.
 - Claims that the pending source adapter import approval request is approval,

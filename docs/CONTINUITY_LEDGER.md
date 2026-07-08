@@ -1770,3 +1770,44 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `2e6d9a76d59f987575230781bb8e8f094a4f6744dd44fe07505779dfc9afa2cc`
 - Next safe move: create a tiny invocation contract before any actual runtime
   call, model call, memory write, route change, gateway change, or UI behavior.
+
+### 2026-07-08: Disabled AMOS Source Adapter Invocation Contract
+
+- Changed: added a source adapter invocation contract gate that declares the
+  future call path while proving `HomePage.jsx` still does not invoke the
+  adapter.
+- Files touched:
+  - `scripts/amos_source_adapter_invocation_contract_gate.mjs`
+  - `.mirror/schemas/source_adapter_invocation_contract_request.schema.json`
+  - `.mirror/schemas/source_adapter_invocation_contract_receipt.schema.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_invocation_contract.request.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_invocation_contract.live_blocked.example.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260708T093336Z-disabled_source_adapter_invocation_contract.json`
+  - `.mirror/AUDIT_LOGS/20260708T093336Z-amos_source_adapter_invocation_contract.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `.mirror/PLAN.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/README.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+  - `package.json`
+  - `scripts/amos_status_report.mjs`
+- Tools and gates used:
+  - `npm run guard:source-adapter-invocation-contract`
+  - `node scripts/amos_source_adapter_invocation_contract_gate.mjs --expect contract_declared`
+  - `node scripts/amos_source_adapter_invocation_contract_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_invocation_contract.live_blocked.example.json --expect block`
+  - `node scripts/amos_source_adapter_invocation_contract_gate.mjs --write --timestamp 20260708T093336Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260708T093336Z`
+- Deploy status: not deployed; this is a local source/control-plane slice.
+- Public routes checked: none.
+- Bad news or limits:
+  - The invocation contract is declared, but the adapter is intentionally not
+    invoked.
+  - This is not live AMOS runtime enforcement, not a model route, and not a
+    gateway change.
+- Current chain:
+  - entries: 16
+  - hash: `96c7c25aa99f775204d88b4b69313133e385b4b81c61f17f5956e1f637736320`
+- Next safe move: create a call-site proof gate before any actual adapter
+  invocation changes runtime behavior.

@@ -1,0 +1,33 @@
+audit_log:
+  id: "audit_20260708t093336z_amos_source_adapter_invocation_contract"
+  task_id: "active_mirror_front_door_v1"
+  created_at: "2026-07-08T09:33:36Z"
+  actor: "codex"
+  action: "Record the disabled AMOS source adapter invocation contract before any invocation is wired."
+  checked_scope:
+    - "source adapter invocation contract request schema"
+    - "source adapter invocation contract receipt schema"
+    - "source adapter invocation contract gate"
+    - "HomePage.jsx import scan"
+    - "HomePage.jsx invocation scan"
+    - "disabled adapter invariant scan"
+    - "blocked live invocation request"
+  unchecked_scope:
+    - "actual adapter invocation"
+    - "live app UI integration"
+    - "gateway adapter"
+    - "model calls"
+    - "network calls"
+    - "durable memory writes"
+    - "route changes"
+    - "public deploy"
+  evidence:
+    - "npm run guard:source-adapter-invocation-contract"
+    - "node scripts/amos_source_adapter_invocation_contract_gate.mjs --write --timestamp 20260708T093336Z"
+  bad_news:
+    - "The invocation contract is declared, but the adapter is intentionally not invoked."
+    - "This is still not live AMOS runtime enforcement in the public app."
+    - "No deploy was performed in this slice."
+  decision: "partial"
+  follow_up:
+    - "Only add an invocation after a separate gate proves the call site, input receipt, and output projection."

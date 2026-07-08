@@ -73,6 +73,11 @@ const checks = [
         label: 'Source adapter import applied gate',
         args: ['scripts/amos_source_adapter_import_applied_gate.mjs', '--self-test'],
     },
+    {
+        id: 'source_adapter_invocation_contract_gate',
+        label: 'Source adapter invocation contract gate',
+        args: ['scripts/amos_source_adapter_invocation_contract_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -86,6 +91,7 @@ const localOnlyLimits = [
     'Local UI harness emits local projection receipts only; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Disabled source adapter is imported in active source as an inert adapter; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Source adapter import applied gate checks only that the source import is present once and is not invoked; it is not live AMOS runtime enforcement.',
+    'Source adapter invocation contract gate declares only a future invocation contract; the adapter remains uninvoked and not live runtime enforcement.',
 ];
 
 function parseArgs(argv) {

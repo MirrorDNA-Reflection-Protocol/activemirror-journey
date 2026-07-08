@@ -74,6 +74,8 @@ Updated: 2026-07-08
   state; they are no longer the active build health check.
 - `npm run guard:source-adapter-import-applied` verifies the disabled source
   adapter import is present once in `HomePage.jsx` and is not invoked.
+- `npm run guard:source-adapter-invocation-contract` verifies a future
+  invocation path is declared while the adapter remains uninvoked.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -133,8 +135,12 @@ Updated: 2026-07-08
   `.mirror/RUNTIME_DRY_RUNS/20260708T091526Z-disabled_source_adapter_import_applied.json`.
 - Local AMOS source adapter import applied audit receipt exists at
   `.mirror/AUDIT_LOGS/20260708T091526Z-amos_source_adapter_import_applied.yaml`.
+- Local AMOS source adapter invocation contract receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260708T093336Z-disabled_source_adapter_invocation_contract.json`.
+- Local AMOS source adapter invocation contract audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260708T093336Z-amos_source_adapter_invocation_contract.yaml`.
 - Current local audit receipt chain hash:
-  `2e6d9a76d59f987575230781bb8e8f094a4f6744dd44fe07505779dfc9afa2cc`.
+  `96c7c25aa99f775204d88b4b69313133e385b4b81c61f17f5956e1f637736320`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -186,6 +192,9 @@ Updated: 2026-07-08
   current active source state.
 - The source adapter import applied gate proves only that the import is present
   once and inert; it is not live AMOS runtime enforcement.
+- The source adapter invocation contract gate proves only that a future
+  invocation path is declared; the adapter is still not invoked and no runtime
+  behavior changes.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

@@ -310,6 +310,31 @@ source import is present once and inert. They do not wire runtime behavior,
 invoke the adapter, call a model, use the network, change routes, change the
 gateway, deploy assets, execute arbitrary UI, or write durable memory.
 
+## Source Adapter Invocation Contract Gate
+
+The source adapter invocation contract gate declares the future invocation path
+before any call site is wired. It proves `HomePage.jsx` still does not invoke
+the adapter, the disabled adapter source still has no runtime primitives, and
+the only future input/output shape allowed by the contract is
+`ui_harness_receipt` to `disabled_source_adapter_projection`.
+
+```bash
+npm run guard:source-adapter-invocation-contract
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_invocation_contract_gate.mjs --expect contract_declared
+node scripts/amos_source_adapter_invocation_contract_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_invocation_contract.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_invocation_contract_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/`. They prove only that a
+future invocation contract exists. They do not invoke the adapter, call a
+model, use the network, change routes, change the gateway, deploy assets,
+execute arbitrary UI, or write durable memory.
+
 ## Source Adapter Import Proposal Gate
 
 Historical path gate. The current build health check is
