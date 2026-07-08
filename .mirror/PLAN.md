@@ -78,8 +78,12 @@
     source import patch proposal exists.
 33. Source adapter import patch proposal exists as a local diff only; it is not
     applied and not live.
-34. Next control-plane slice: review the patch proposal and create an apply
-    gate with rollback before any active source file is changed.
+34. Use `npm run guard:source-adapter-import-apply` before claiming the local
+    patch is apply-ready or that a rollback plan exists.
+35. Source adapter import apply readiness exists as a local check only; it is
+    not approval, not an active source edit, and not live.
+36. Next control-plane slice: apply the import only after explicit approval and
+    another clean readiness run.
 
 ## Do Not Do Yet
 

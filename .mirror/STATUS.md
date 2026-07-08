@@ -1,6 +1,6 @@
 # Active Mirror Status
 
-Updated: 2026-07-07
+Updated: 2026-07-08
 
 ## Current State
 
@@ -81,6 +81,9 @@ Updated: 2026-07-07
 - `npm run guard:source-adapter-import-patch` verifies the source adapter
   import patch can be created as a local diff proposal without editing active
   source or applying the import.
+- `npm run guard:source-adapter-import-apply` verifies the source adapter
+  import patch can pass `git apply --check` and have a rollback plan without
+  editing active source or applying the import.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -130,8 +133,14 @@ Updated: 2026-07-07
   `.mirror/RUNTIME_DRY_RUNS/20260707T160235Z-disabled_source_adapter_import_patch.json`.
 - Local AMOS source adapter import patch proposal audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T160235Z-amos_source_adapter_import_patch.yaml`.
+- Local AMOS source adapter import apply rollback plan exists at
+  `.mirror/ROLLBACKS/20260708T084032Z-disabled_source_adapter_import_apply_rollback.yaml`.
+- Local AMOS source adapter import apply readiness receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260708T084032Z-disabled_source_adapter_import_apply.json`.
+- Local AMOS source adapter import apply readiness audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260708T084032Z-amos_source_adapter_import_apply.yaml`.
 - Current local audit receipt chain hash:
-  `4be41f0ffde47801a7c2095c937841a1fbd62e2b285037d7e4e6607ee808ec68`.
+  `381676fa0ea7564ed59c90b6983a582a2c49305712515ea1f7ff9b83364515a6`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -192,6 +201,10 @@ Updated: 2026-07-07
 - The source adapter import patch proposal now exists as a local diff file
   only; it is not applied and performs no source import, live app, gateway,
   model, network, route, deploy, arbitrary UI, or durable memory action.
+- The source adapter import apply readiness gate proves only `git apply --check`
+  and rollback-plan readiness; it is not approval, does not apply the patch,
+  and performs no source import, live app, gateway, model, network, route,
+  deploy, arbitrary UI, or durable memory action.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

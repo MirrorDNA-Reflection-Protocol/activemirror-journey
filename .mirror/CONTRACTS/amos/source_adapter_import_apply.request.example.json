@@ -1,0 +1,51 @@
+{
+  "source_adapter_import_apply_request": {
+    "schema_version": "source_adapter_import_apply_request.v0_1",
+    "id": "disabled_source_adapter_import_apply",
+    "surface": "consumer_app",
+    "mode": "apply_readiness_with_rollback",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_file": "src/pages/HomePage.jsx",
+    "patch_file": ".mirror/PATCH_PROPOSALS/20260707T160235Z-disabled_source_adapter_import_patch.diff",
+    "patch_receipt": ".mirror/RUNTIME_DRY_RUNS/20260707T160235Z-disabled_source_adapter_import_patch.json",
+    "approval_request": ".mirror/APPROVAL_REQUESTS/20260707T153055Z-source_adapter_import.yaml",
+    "approval_scope": "apply_readiness_only",
+    "write_rollback_enabled": true,
+    "apply_patch_enabled": false,
+    "live_import_enabled": false,
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "arbitrary_ui_enabled": false,
+    "required_gates": [
+      "guard:source-adapter-import-patch",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_adapter_import_apply_receipt",
+    "claim_boundary": [
+      "This verifies the patch can apply cleanly.",
+      "It writes a rollback plan only when explicitly run with --write.",
+      "It does not apply the patch.",
+      "It does not import the disabled source adapter into the active app.",
+      "It performs no live app action.",
+      "It performs no gateway, model, network, route, deploy, arbitrary UI, or durable memory action."
+    ],
+    "blocked_claims": [
+      "Source adapter import was applied.",
+      "Source adapter import is live in the public app.",
+      "Source adapter import changed app routes.",
+      "Source adapter import changed gateway behavior.",
+      "Source adapter import called a model.",
+      "Source adapter import used the network.",
+      "Source adapter import wrote durable memory.",
+      "Source adapter import deployed public assets.",
+      "Source adapter import executed arbitrary generated UI."
+    ]
+  }
+}

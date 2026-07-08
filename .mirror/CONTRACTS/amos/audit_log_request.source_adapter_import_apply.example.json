@@ -1,0 +1,42 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "amos_source_adapter_import_apply",
+    "action": "Verify the AMOS source adapter import patch is apply-ready and has a rollback plan without applying it.",
+    "checked_scope": [
+      "source adapter import apply request schema",
+      "source adapter import apply receipt schema",
+      "source adapter import apply gate",
+      "existing patch proposal file",
+      "existing patch proposal receipt",
+      "pending approval request file",
+      "git apply --check",
+      "rollback plan write",
+      "target source hash unchanged",
+      "blocked live apply request"
+    ],
+    "unchecked_scope": [
+      "applied source import",
+      "active app source edit",
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:source-adapter-import-apply",
+      "node scripts/amos_source_adapter_import_apply_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The patch is apply-ready, but it is still not applied.",
+      "The rollback plan is local-only and only becomes useful after a future explicit apply step."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Apply the patch only after explicit approval and another clean gate run."
+    ]
+  }
+}

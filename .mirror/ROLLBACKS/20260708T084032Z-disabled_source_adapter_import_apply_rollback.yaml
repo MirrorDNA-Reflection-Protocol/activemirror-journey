@@ -1,0 +1,32 @@
+rollback_plan:
+  id: "rollback_20260708T084032Z_disabled_source_adapter_import_apply"
+  task_id: "active_mirror_front_door_v1"
+  created_at: "2026-07-08T08:40:32Z"
+  change: "Future application of disabled source adapter import to HomePage.jsx."
+  affected_paths:
+    - "src/pages/HomePage.jsx"
+  restore_steps:
+    - "If the future apply step imports the disabled source adapter, remove that import using the inverse_patch below."
+    - "Run git apply --check against the inverse patch before using it."
+    - "Run npm run guard:source-adapter-import-apply after restore to confirm the active source is back to the pending state."
+  verification_after_restore:
+    - "git diff -- src/pages/HomePage.jsx"
+    - "npm run guard:source-adapter-import-apply"
+    - "npm run guard:front-door"
+  risk_if_not_restored:
+    - "The disabled source adapter import may stay in active source without an explicit apply receipt."
+    - "Future agents may mistake readiness for a live integration."
+  evidence:
+    - "patch_file=.mirror/PATCH_PROPOSALS/20260707T160235Z-disabled_source_adapter_import_patch.diff"
+    - "patch_file_hash=5fe8fd281f8ee454a97296f64bd7111327fae5c4a3cad29c337f8cf8b19fe01d"
+    - "target_hash_before=0fe9e47709c5d1f7603cde4d6e1ef9ffb3b50d689da8e0bb1bac4f86fc320dc7"
+  inverse_patch: |
+    diff --git a/src/pages/HomePage.jsx b/src/pages/HomePage.jsx
+    --- a/src/pages/HomePage.jsx
+    +++ b/src/pages/HomePage.jsx
+    @@ -25,4 +25,3 @@
+     } from '../lib/mirror-state';
+     import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
+     import { copyText } from '../lib/sendable-actions';
+    -import { createDisabledSourceAdapterProjection } from '../lib/amos-disabled-source-adapter';
+  owner: "codex"

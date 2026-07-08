@@ -1672,3 +1672,61 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `4be41f0ffde47801a7c2095c937841a1fbd62e2b285037d7e4e6607ee808ec68`
 - Next safe move: review the patch proposal and create an apply gate with
   rollback before any active source file is changed.
+
+### 2026-07-08: AMOS Source Adapter Import Apply Readiness
+
+- Changed: added a source adapter import apply-readiness gate that verifies the
+  prepared patch with `git apply --check`, writes a rollback plan, and proves
+  the active source file is still unchanged.
+- Source files touched:
+  - `.mirror/CONTRACTS/amos/source_adapter_import_apply.request.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_apply.live_blocked.example.json`
+  - `.mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_apply.example.json`
+  - `.mirror/schemas/source_adapter_import_apply_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_apply_receipt.schema.json`
+  - `.mirror/ROLLBACKS/20260708T084032Z-disabled_source_adapter_import_apply_rollback.yaml`
+  - `.mirror/RUNTIME_DRY_RUNS/20260708T084032Z-disabled_source_adapter_import_apply.json`
+  - `.mirror/AUDIT_LOGS/20260708T084032Z-amos_source_adapter_import_apply.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `scripts/amos_source_adapter_import_apply_gate.mjs`
+  - `scripts/amos_status_report.mjs`
+  - `package.json`
+  - `.mirror/README.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/PLAN.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Product decisions:
+  - Apply readiness is not approval and does not apply the import.
+  - The gate runs `git apply --check` only; it never runs `git apply`.
+  - The rollback plan is preparatory and only useful after a future explicit
+    apply step.
+  - `src/pages/HomePage.jsx` was not edited; the receipt records identical
+    before/after target hashes.
+  - The source adapter remains unapplied and not live.
+- Deploy status:
+  - Not deployed; no public app assets changed in this slice.
+- Tools and gates used:
+  - `node --check scripts/amos_source_adapter_import_apply_gate.mjs`
+  - `node scripts/amos_source_adapter_import_apply_gate.mjs --self-test`
+  - `node scripts/amos_source_adapter_import_apply_gate.mjs --expect apply_ready`
+  - `node scripts/amos_source_adapter_import_apply_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_apply.live_blocked.example.json --expect block`
+  - `git diff -- src/pages/HomePage.jsx`
+  - `node scripts/amos_source_adapter_import_apply_gate.mjs --write --timestamp 20260708T084032Z`
+  - `node scripts/amos_audit_log_gate.mjs --write --request .mirror/CONTRACTS/amos/audit_log_request.source_adapter_import_apply.example.json --timestamp 20260708T084032Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260708T084032Z`
+- Bad news or limits:
+  - This is still local repo scaffolding only.
+  - The patch is apply-ready, but it is still not applied.
+  - The import remains unapplied and not live.
+  - The public app and gateway still do not consume AMOS contracts at runtime.
+  - The rollback plan is local YAML only.
+  - The audit chain is local SHA-256 verification only; it is not signed,
+    externally timestamped, publicly notarized, or verified by the live app or
+    gateway.
+- Current chain:
+  - entries: 14
+  - hash: `381676fa0ea7564ed59c90b6983a582a2c49305712515ea1f7ff9b83364515a6`
+- Next safe move: apply the import only after explicit approval and another
+  clean readiness run.

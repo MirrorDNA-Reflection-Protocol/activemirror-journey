@@ -88,6 +88,11 @@ const checks = [
         label: 'Source adapter import patch proposal gate',
         args: ['scripts/amos_source_adapter_import_patch_gate.mjs', '--self-test'],
     },
+    {
+        id: 'source_adapter_import_apply_gate',
+        label: 'Source adapter import apply readiness gate',
+        args: ['scripts/amos_source_adapter_import_apply_gate.mjs', '--self-test'],
+    },
 ];
 
 const localOnlyLimits = [
@@ -104,6 +109,7 @@ const localOnlyLimits = [
     'Source adapter import approval bridge previews pending approval only; it writes no real approval file and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Source adapter import approval creation writes only a pending local approval request; it grants no approval and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
     'Source adapter import patch proposal writes only a local diff proposal; it applies no patch and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
+    'Source adapter import apply readiness writes only a rollback plan and receipt; it applies no patch and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
 ];
 
 function parseArgs(argv) {

@@ -1,7 +1,7 @@
 # Dossier: AMOS Control Plane Contracts
 
 Status: draft
-Updated: 2026-07-07
+Updated: 2026-07-08
 Owner: Active Mirror / AMOS
 
 ## Objective
@@ -45,6 +45,8 @@ consent levels, and agent permissions.
   - `.mirror/schemas/source_adapter_import_approval_create_receipt.schema.json`
   - `.mirror/schemas/source_adapter_import_patch_request.schema.json`
   - `.mirror/schemas/source_adapter_import_patch_receipt.schema.json`
+  - `.mirror/schemas/source_adapter_import_apply_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_apply_receipt.schema.json`
   - `src/lib/amos-disabled-source-adapter.js`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
@@ -66,6 +68,7 @@ consent levels, and agent permissions.
 
 - Source docs:
   - `/Users/mirror-pro/.codex/attachments/83ae4042-534a-4067-906c-410a675cd0ff/pasted-text.txt`
+  - `/Users/mirror-pro/.codex/attachments/24ec0c17-ca4b-4145-9006-13224be27a33/pasted-text.txt`
 - Existing local context:
   - `docs/dossiers/amos-cognitive-mesh.md`
   - `docs/topic-packets/amos-cognitive-mesh-v0-1.md`
@@ -129,6 +132,9 @@ consent levels, and agent permissions.
 - Source adapter import patch proposal: local diff file only, no source edit,
   no source import, and no live app, gateway, model, network, route, deploy,
   arbitrary UI, or durable memory action.
+- Source adapter import apply readiness: local `git apply --check` and rollback
+  plan only, no source edit, no source import, and no live app, gateway, model,
+  network, route, deploy, arbitrary UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -244,6 +250,11 @@ consent levels, and agent permissions.
      proposal can be created for review while the active app source remains
      unchanged and the import stays unapplied.
 
+22. **Source Adapter Import Apply Readiness**
+   - `npm run guard:source-adapter-import-apply` verifies that the local diff
+     can pass `git apply --check` and that a rollback plan can be written while
+     the active app source remains unchanged and the import stays unapplied.
+
 ## Deferred
 
 - OpenWiki repo cognition.
@@ -282,6 +293,7 @@ validated and bound to a runtime.
   - `npm run guard:source-adapter-import-approval`
   - `npm run guard:source-adapter-import-approval-create`
   - `npm run guard:source-adapter-import-patch`
+  - `npm run guard:source-adapter-import-apply`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -342,10 +354,14 @@ validated and bound to a runtime.
 - Source adapter import patch proposal receipts prove only that a local diff
   proposal exists; they do not edit active source, apply the import, or prove
   live app/gateway enforcement.
+- Source adapter import apply readiness receipts prove only that the local diff
+  passes `git apply --check` and has a rollback plan; they do not edit active
+  source, apply the import, grant approval, or prove live app/gateway
+  enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to review the patch proposal and create an apply gate with rollback
-before any active source file is changed.
+slice is to apply the import only after explicit approval and another clean
+readiness run.

@@ -385,6 +385,30 @@ They do not apply the patch, import source, change the live app, call a model,
 use the network, change routes, change the gateway, deploy assets, execute
 arbitrary UI, or write durable memory.
 
+## Source Adapter Import Apply Readiness Gate
+
+The source adapter import apply readiness gate verifies the prepared patch can
+apply cleanly with `git apply --check`, writes a rollback plan only when
+`--write` is used, and keeps the active app source unchanged.
+
+```bash
+npm run guard:source-adapter-import-apply
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_import_apply_gate.mjs --expect apply_ready
+node scripts/amos_source_adapter_import_apply_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_apply.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_import_apply_gate.mjs --write
+```
+
+Written rollback plans go to `.mirror/ROLLBACKS/`. Written receipts go to
+`.mirror/RUNTIME_DRY_RUNS/`. They prove only that the patch is apply-ready and
+that a rollback plan exists. They do not apply the patch, import source, change
+the live app, call a model, use the network, change routes, change the gateway,
+deploy assets, execute arbitrary UI, or write durable memory.
+
 ## Approval Request Gate
 
 Consequential actions do not run directly. The local approval request writer
