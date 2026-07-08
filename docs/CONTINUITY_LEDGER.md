@@ -2115,3 +2115,46 @@ Do not turn this into a strategy essay. Keep it operational.
   - It is optional because the public promise remains `Saved only if you choose`.
 - Next safe move: package to the deploy repo, run deploy checks, deploy, and
   verify the same refresh flow on `https://activemirror.ai/app/`.
+
+### 2026-07-08: Explicit Saved Chats
+
+- Feedback: keep-chat recovery is useful, but a real user may want to preserve
+  more than the current visible chat before trying another prompt.
+- Product decision: add a tiny browser-local saved-chat list. This remains
+  explicit, local, and removable; it is not account memory, hidden profiling,
+  cross-device sync, or permanent identity storage.
+- Changed:
+  - Added `Save chat` after a useful answer.
+  - Added `Saved chats` inside `Saved here` with `Open chat` and delete.
+  - Saved chats restore the prior answer, last intent, draft state, and any open
+    work surface on the same browser.
+  - Saved chats are normalized through the state layer, capped to eight, and use
+    the existing soft redaction path.
+  - Clear-current-chat no longer deletes explicitly saved chats.
+- Files touched:
+  - `src/lib/mirror-state.js`
+  - `src/pages/HomePage.jsx`
+  - `scripts/chat_continuity_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run guard:friction`
+  - `npm run guard:front-door`
+  - `npm run guard:chat-continuity`
+  - `npm run build:deploy`
+  - Playwright local saved-chat flow at `http://127.0.0.1:8976/`
+- Verification results:
+  - Local mobile flow passed: create decision answer, save chat, clear current
+    chat, reopen from `Saved here`, restore answer, then delete saved chat.
+  - Screenshot review passed for the saved-chat list and empty saved-chat drawer.
+  - In-app Browser route was attempted for rendered QA, but its DOM snapshot
+    API failed in this environment; Playwright remained the verified browser
+    path for this slice.
+- Bad news or limits:
+  - This is still browser-local only.
+  - It is not a login system, cloud sync, mobile-to-desktop sync, or durable
+    MirrorDNA memory.
+  - It does not resume an in-flight model request after refresh.
+  - User testing is still needed because this is automated QA plus one reported
+    friend failure pattern, not broad behavior validation.
+- Next safe move: package to the deploy repo, deploy only `public/app`, and run
+  the same saved-chat flow on `https://activemirror.ai/app/`.

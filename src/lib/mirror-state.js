@@ -42,6 +42,7 @@ const DEFAULT_STATE = {
     homeChat: {
         enabled: false,     // Explicit opt-in: keep the current chat on this browser
         thread: null,       // Latest home-page chat state, not promoted to memory
+        savedThreads: [],    // Explicitly saved browser-local chats, newest first
     },
 
     // Timestamps
@@ -314,6 +315,50 @@ function normalizeHomeChatThread(thread = {}) {
     };
 }
 
+function savedChatTitle(thread = {}) {
+    const mirror = thread.result?.mirror || {};
+    return cleanChatText(
+        thread.title
+        || thread.lastIntent
+        || mirror.question
+        || mirror.move
+        || 'Saved chat',
+        80
+    ) || 'Saved chat';
+}
+
+function normalizeSavedHomeChat(entry = {}) {
+    const thread = normalizeHomeChatThread(entry.thread || entry);
+    if (!thread) return null;
+    const savedAt = entry.savedAt || new Date().toISOString();
+    return {
+        id: cleanChatText(entry.id || savedAt, 80),
+        title: savedChatTitle({ ...thread, title: entry.title }),
+        savedAt,
+        thread,
+    };
+}
+
+function normalizeSavedHomeChats(entries = []) {
+    if (!Array.isArray(entries)) return [];
+    return entries
+        .map(normalizeSavedHomeChat)
+        .filter(Boolean)
+        .slice(0, 8);
+}
+
+function currentHomeChatState() {
+    const current = _read();
+    const homeChat = current.homeChat && typeof current.homeChat === 'object'
+        ? current.homeChat
+        : DEFAULT_STATE.homeChat;
+    return {
+        enabled: Boolean(homeChat.enabled),
+        thread: normalizeHomeChatThread(homeChat.thread || {}),
+        savedThreads: normalizeSavedHomeChats(homeChat.savedThreads || []),
+    };
+}
+
 /** Get the current approved browser-local default, if any. */
 export function getActiveMirrorDefault() {
     return _read().activeDefault || null;
@@ -385,33 +430,26 @@ export function clearContinuityLedger() {
 
 /** Get the explicit browser-local home chat continuity setting and thread. */
 export function getHomeChatContinuity() {
-    const current = _read();
-    const homeChat = current.homeChat && typeof current.homeChat === 'object'
-        ? current.homeChat
-        : DEFAULT_STATE.homeChat;
-    return {
-        enabled: Boolean(homeChat.enabled),
-        thread: normalizeHomeChatThread(homeChat.thread || {}),
-    };
+    return currentHomeChatState();
 }
 
 /** Enable or disable browser-local chat continuity. Disabling clears the thread. */
 export function setHomeChatContinuityEnabled(enabled, thread = {}) {
-    const current = _read();
+    const current = currentHomeChatState();
     const nextEnabled = Boolean(enabled);
-    const currentThread = current.homeChat?.thread || null;
     return setState({
         homeChat: {
             enabled: nextEnabled,
-            thread: nextEnabled ? normalizeHomeChatThread(thread || currentThread || {}) : null,
+            thread: nextEnabled ? normalizeHomeChatThread(thread || current.thread || {}) : null,
+            savedThreads: current.savedThreads,
         },
     }).homeChat;
 }
 
 /** Save the current home chat only after the user has enabled browser-local continuity. */
 export function saveHomeChatContinuity(thread = {}) {
-    const current = _read();
-    if (!current.homeChat?.enabled) return current.homeChat || DEFAULT_STATE.homeChat;
+    const current = currentHomeChatState();
+    if (!current.enabled) return current;
     return setState({
         homeChat: {
             enabled: true,
@@ -419,18 +457,73 @@ export function saveHomeChatContinuity(thread = {}) {
                 ...thread,
                 updatedAt: new Date().toISOString(),
             }),
+            savedThreads: current.savedThreads,
         },
     }).homeChat;
 }
 
 /** Clear the current home chat without touching saved setup choices or approved notes. */
 export function clearHomeChatContinuity({ keepEnabled = false } = {}) {
+    const current = currentHomeChatState();
     return setState({
         homeChat: {
             enabled: Boolean(keepEnabled),
             thread: null,
+            savedThreads: current.savedThreads,
         },
     }).homeChat;
+}
+
+/** Save the current home chat as an explicit browser-local checkpoint. */
+export function saveHomeChatThread(thread = {}) {
+    const current = currentHomeChatState();
+    const normalizedThread = normalizeHomeChatThread(thread);
+    if (!normalizedThread) return current.savedThreads;
+    const savedAt = new Date().toISOString();
+    const item = normalizeSavedHomeChat({
+        id: savedAt,
+        savedAt,
+        thread: normalizedThread,
+    });
+    const nextSavedThreads = [
+        item,
+        ...current.savedThreads.filter((saved) => (
+            saved.title !== item.title || saved.thread?.lastIntent !== item.thread?.lastIntent
+        )),
+    ].slice(0, 8);
+    return setState({
+        homeChat: {
+            enabled: current.enabled,
+            thread: current.thread,
+            savedThreads: nextSavedThreads,
+        },
+    }).homeChat.savedThreads;
+}
+
+/** Restore an explicitly saved browser-local chat into the current chat slot. */
+export function restoreHomeChatThread(key) {
+    const current = currentHomeChatState();
+    const match = current.savedThreads.find((saved) => saved.id === key || saved.savedAt === key);
+    if (!match?.thread) return current;
+    return setState({
+        homeChat: {
+            enabled: true,
+            thread: normalizeHomeChatThread(match.thread),
+            savedThreads: current.savedThreads,
+        },
+    }).homeChat;
+}
+
+/** Delete one explicitly saved browser-local chat. */
+export function deleteHomeChatThread(key) {
+    const current = currentHomeChatState();
+    return setState({
+        homeChat: {
+            enabled: current.enabled,
+            thread: current.thread,
+            savedThreads: current.savedThreads.filter((saved) => saved.id !== key && saved.savedAt !== key),
+        },
+    }).homeChat.savedThreads;
 }
 
 /** Make an existing approved default active again. */

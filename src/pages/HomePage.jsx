@@ -12,6 +12,7 @@ import {
     clearHomeChatContinuity,
     clearContinuityLedger,
     clearMirrorDefault,
+    deleteHomeChatThread,
     deleteContinuityEntry,
     deleteMirrorDefault,
     getActiveMirrorDefault,
@@ -21,8 +22,10 @@ import {
     getHomeChatContinuity,
     getMirrorDefaults,
     importMirrorSettings,
+    restoreHomeChatThread,
     saveContinuityEntry,
     saveHomeChatContinuity,
+    saveHomeChatThread,
     saveMirrorDefault,
     setHomeChatContinuityEnabled,
     updateMirrorDefault,
@@ -1475,12 +1478,15 @@ function MemoryDrawer({
     open,
     items,
     continuity = [],
+    savedChats = [],
     activeDefault,
     onClose,
     onUse,
     onPause,
     onDelete,
     onEdit,
+    onUseSavedChat,
+    onDeleteSavedChat,
     onUseContinuity,
     onDeleteContinuity,
     onClearContinuity,
@@ -1495,7 +1501,7 @@ function MemoryDrawer({
 
     const activeCardIndex = items.length ? Math.min(cardIndex, items.length - 1) : 0;
     const activeCard = items[activeCardIndex] || null;
-    const hasSavedContext = items.length > 0 || continuity.length > 0;
+    const hasSavedContext = savedChats.length > 0 || items.length > 0 || continuity.length > 0;
 
     function changeCard(delta) {
         if (!items.length) return;
@@ -1519,18 +1525,18 @@ function MemoryDrawer({
     }
 
     return (
-        <div className="fixed inset-0 z-30 bg-black/65 px-3 py-4 backdrop-blur-md sm:px-6" role="dialog" aria-modal="true" aria-label="Saved notes">
+        <div className="fixed inset-0 z-30 bg-black/65 px-3 py-4 backdrop-blur-md sm:px-6" role="dialog" aria-modal="true" aria-label="Saved here">
             <button
                 type="button"
                 className="absolute inset-0 cursor-default"
-                aria-label="Close saved notes"
+                aria-label="Close saved"
                 onClick={onClose}
             />
             <div className="relative mx-auto flex max-h-[88dvh] max-w-3xl flex-col overflow-hidden rounded-[2rem] border border-white/12 bg-[#0d0d11]/95 shadow-[0_0_80px_rgba(124,58,237,0.2)] ring-1 ring-white/[0.04]">
                 <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
                     <div>
-                        <div className="text-lg font-semibold tracking-[-0.03em] text-white">Saved notes</div>
-                        <div className="mt-1 text-sm leading-6 text-zinc-400">Saved on this browser. Edit or remove anything.</div>
+                        <div className="text-lg font-semibold tracking-[-0.03em] text-white">Saved here</div>
+                        <div className="mt-1 text-sm leading-6 text-zinc-400">Only on this browser. Reopen, edit, or remove anything.</div>
                         {items.length ? (
                             <button
                                 type="button"
@@ -1545,7 +1551,7 @@ function MemoryDrawer({
                         type="button"
                         onClick={onClose}
                         className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
-                        aria-label="Close saved notes"
+                        aria-label="Close saved"
                     >
                         <X size={18} />
                     </button>
@@ -1608,6 +1614,45 @@ function MemoryDrawer({
                         </div>
                     ) : (
                         <div className="grid gap-3">
+                            {savedChats.length ? (
+                                <section className="rounded-[1.45rem] border border-violet-300/12 bg-violet-300/[0.045] p-3">
+                                    <div className="mb-3">
+                                        <div className="text-sm font-semibold text-violet-50">Saved chats</div>
+                                        <div className="mt-1 text-xs leading-5 text-zinc-500">Only on this browser. Reopen or delete anytime.</div>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        {savedChats.map((entry) => (
+                                            <div key={entry.id || entry.savedAt} className="rounded-[1.15rem] border border-white/10 bg-black/16 p-3">
+                                                <div className="mb-2 flex items-center justify-between gap-3">
+                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">{formatSavedDate(entry.savedAt)}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => onDeleteSavedChat?.(entry.id || entry.savedAt)}
+                                                        className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                        aria-label="Delete saved chat"
+                                                    >
+                                                        <Trash2 size={13} />
+                                                    </button>
+                                                </div>
+                                                <div className="text-sm font-semibold leading-6 text-zinc-100">{entry.title || 'Saved chat'}</div>
+                                                {entry.thread?.result?.mirror?.move ? (
+                                                    <div className="mt-2 max-h-16 overflow-hidden rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-sm leading-6 text-cyan-50">
+                                                        {entry.thread.result.mirror.move}
+                                                    </div>
+                                                ) : null}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onUseSavedChat?.(entry)}
+                                                    className="mt-3 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-violet-200/18 bg-violet-200/[0.06] px-3.5 text-xs font-semibold text-violet-50 transition hover:border-violet-100/35"
+                                                >
+                                                    Open chat
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            ) : null}
+
                             {continuity.length ? (
                                 <section className="rounded-[1.45rem] border border-cyan-300/12 bg-cyan-300/[0.045] p-3">
                                     <div className="mb-3 flex items-start justify-between gap-3">
@@ -1759,6 +1804,7 @@ export default function HomePage() {
     const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
     const [continuityLedger, setContinuityLedger] = useState(() => getContinuityLedger());
     const [chatMemoryEnabled, setChatMemoryEnabled] = useState(() => Boolean(initialChatRef.current?.enabled));
+    const [savedHomeChats, setSavedHomeChats] = useState(() => initialChatRef.current?.savedThreads || []);
     const [chatMemoryFlash, setChatMemoryFlash] = useState(() => restoredThread ? 'Chat restored.' : '');
     const [text, setText] = useState(() => restoredThread?.draftText || '');
     const [busy, setBusy] = useState(false);
@@ -2049,17 +2095,58 @@ export default function HomePage() {
         };
     }
 
+    function loadChatSnapshot(thread = {}) {
+        setText(thread.draftText || '');
+        setBusy(false);
+        setResult(thread.result || null);
+        setLastIntent(thread.lastIntent || '');
+        setLastSource(thread.lastSource || 'typed');
+        setLastStarterKind(thread.lastStarterKind || '');
+        setLastSense(null);
+        setLoopCount(0);
+        setSendableDraft(thread.sendableDraft || null);
+        setArtifactBusy('');
+        setLastArtifactRequest(null);
+        setWorkSurfaceOpen(Boolean(thread.workSurfaceOpen));
+    }
+
+    function saveCurrentChat() {
+        const snapshot = currentChatSnapshot();
+        if (!snapshot.result && !snapshot.lastIntent && !snapshot.sendableDraft) return;
+        const saved = saveHomeChatThread(snapshot);
+        setSavedHomeChats(saved || []);
+        setChatMemoryFlash('Chat saved.');
+        trackEvent('home_chat_saved', { page: 'home', source: 'explicit_save' });
+    }
+
+    function openSavedChat(entry = {}) {
+        const nextHomeChat = restoreHomeChatThread(entry.id || entry.savedAt);
+        setChatMemoryEnabled(Boolean(nextHomeChat?.enabled));
+        setSavedHomeChats(nextHomeChat?.savedThreads || []);
+        loadChatSnapshot(nextHomeChat?.thread || entry.thread || {});
+        setMemoryOpen(false);
+        setChatMemoryFlash('Chat restored.');
+        trackEvent('home_chat_restored', { page: 'home', source: 'saved_chat' });
+    }
+
+    function removeSavedChat(key) {
+        setSavedHomeChats(deleteHomeChatThread(key) || []);
+        trackEvent('home_chat_saved_deleted', { page: 'home', source: 'memory_drawer' });
+    }
+
     function toggleChatMemory() {
         const nextEnabled = !chatMemoryEnabled;
         setChatMemoryEnabled(nextEnabled);
         if (nextEnabled) {
-            setHomeChatContinuityEnabled(true, currentChatSnapshot());
+            const nextHomeChat = setHomeChatContinuityEnabled(true, currentChatSnapshot());
+            setSavedHomeChats(nextHomeChat?.savedThreads || []);
             setChatMemoryFlash('Chat will stay here.');
             trackEvent('home_chat_memory_enabled', { page: 'home', source: 'toggle' });
             return;
         }
 
-        clearHomeChatContinuity();
+        const nextHomeChat = clearHomeChatContinuity();
+        setSavedHomeChats(nextHomeChat?.savedThreads || []);
         setChatMemoryFlash('Chat cleared.');
         trackEvent('home_chat_memory_disabled', { page: 'home', source: 'toggle' });
     }
@@ -2077,7 +2164,8 @@ export default function HomePage() {
         setArtifactBusy('');
         setLastArtifactRequest(null);
         setWorkSurfaceOpen(true);
-        clearHomeChatContinuity({ keepEnabled: chatMemoryEnabled });
+        const nextHomeChat = clearHomeChatContinuity({ keepEnabled: chatMemoryEnabled });
+        setSavedHomeChats(nextHomeChat?.savedThreads || []);
         setChatMemoryFlash(chatMemoryEnabled ? 'Cleared here.' : 'Chat cleared.');
         trackEvent('home_chat_cleared', { page: 'home', source: chatMemoryEnabled ? 'kept_enabled' : 'manual' });
         window.setTimeout(() => inputRef.current?.focus(), 60);
@@ -2264,8 +2352,12 @@ export default function HomePage() {
     const hasWorkSurface = workSurfaceOpen && Boolean(sendableDraft || artifactBusy);
     const canSubmit = text.trim().length >= 4;
     const fieldAwake = showMirror || text.trim().length > 0;
-    const savedCount = mirrorDefaults.length + continuityLedger.length;
+    const savedCount = savedHomeChats.length + mirrorDefaults.length + continuityLedger.length;
     const isLight = theme === 'light';
+    const canSaveCurrentChat = showMirror
+        && Boolean(result)
+        && !busy
+        && !['privacy_hold', 'setup_ready', 'start_help'].includes(result?.kind);
     const showKeepChatNudge = showMirror
         && Boolean(result)
         && !busy
@@ -2485,6 +2577,16 @@ export default function HomePage() {
                                     Saved: {savedCount}
                                 </button>
                             ) : null}
+                            {canSaveCurrentChat ? (
+                                <button
+                                    type="button"
+                                    onClick={saveCurrentChat}
+                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-violet-200/30 hover:text-white'}`}
+                                >
+                                    <BookmarkPlus size={13} />
+                                    Save chat
+                                </button>
+                            ) : null}
                             <button
                                 type="button"
                                 onClick={toggleChatMemory}
@@ -2602,11 +2704,14 @@ export default function HomePage() {
                 items={mirrorDefaults}
                 continuity={continuityLedger}
                 activeDefault={activeDefault}
+                savedChats={savedHomeChats}
                 onClose={() => setMemoryOpen(false)}
                 onUse={useSavedMemory}
                 onPause={pauseMemory}
                 onDelete={removeMemory}
                 onEdit={editMemory}
+                onUseSavedChat={openSavedChat}
+                onDeleteSavedChat={removeSavedChat}
                 onUseContinuity={useContinuity}
                 onDeleteContinuity={removeContinuity}
                 onClearContinuity={clearContinuity}
