@@ -1892,3 +1892,68 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: test the live page with one real first-time human. If they
   still hesitate, change only the first-screen wording or chip density, not the
   model/gateway route.
+
+### 2026-07-08: Response Surface Contrast and Artifact Wording
+
+- Changed: made first-response source-check panels, artifact cards, draft
+  action rows, image media cards, and work-surface loading states readable in
+  light mode while preserving dark mode.
+- Changed: removed artifact rubber-stamp wording from displayed generated
+  outputs by replacing high-risk praise words before render and changing the
+  promotion note to `Ready. Review once before sending.`
+- Files touched:
+  - `src/components/ArtifactCard.jsx`
+  - `src/components/DraftActions.jsx`
+  - `src/components/TruthStateNotice.jsx`
+  - `src/lib/challenge-packet.js`
+  - `src/pages/HomePage.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Source commits:
+  - `73d52eb Improve response surface contrast`
+  - `9f13ba1 Scrub artifact rubber-stamp wording`
+- Deploy commits in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `12def97 Deploy response surface contrast polish`
+  - `001e2ad Deploy artifact wording scrub`
+- Deploy status:
+  - Static Worker deployed: `active-mirror-static-site` version
+    `27a8b697-1f03-447c-b8a1-797fd9f665e7`.
+  - Live app assets verified:
+    - `index-q0NlVGjc.js`
+    - `index-DEiWBYjB.css`
+- Tools and gates used:
+  - Source: `npm run build:deploy`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`
+  - Local Playwright first-response screenshots:
+    - `/tmp/active-mirror-first-response-light-vague.png`
+    - `/tmp/active-mirror-first-response-light-poster.png`
+    - `/tmp/active-mirror-first-response-light-current.png`
+    - `/tmp/active-mirror-first-response-dark-poster.png`
+  - Local targeted QA:
+    - `ACTIVE_MIRROR_BASE_URL=http://127.0.0.1:8976 ACTIVE_MIRROR_USER_QA_START=17 ACTIVE_MIRROR_USER_QA_CASES=1 node scripts/user-prompt-qa.mjs`
+  - Live: `npm run deploy:verify`
+- Verification results:
+  - Local first-response mobile sweep had zero console warnings/errors and no
+    horizontal overflow for vague, poster/image, and current-source prompts.
+  - Poster/image route returned a generated image with `Download image` in both
+    light and dark checks.
+  - Browser smoke passed on mobile and desktop with zero ignored console errors.
+  - Production canary passed `20/20`.
+  - Red-team production smoke passed `20/20`, `failed=0`, `fallback=0`.
+  - User-prompt QA passed `23/23`; the previously failing `practical_room`
+    case passed after the wording scrub.
+- Bad news or limits:
+  - An intermediate live deploy version
+    `b51be2b9-1735-4a01-a3d8-db2ca3879c12` failed `deploy:verify` because
+    `practical_room` triggered `flattery_or_rubber_stamp`. That failure was
+    fixed before this entry was marked green.
+  - The scrub is display-layer protection, not proof the model will never
+    generate praise language upstream.
+  - The truth gate remains scoped verification only; it is not whole-repo,
+    whole-computer, external certification, asymmetric signing, or live runtime
+    proof.
+  - Deploy repo still has unrelated dirty file
+    `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it
+    unless separately owned.
+- Next safe move: have a real user ask for one artifact and one source-backed
+  answer on mobile. If they hesitate, tune the response copy; do not expand the
+  homepage or add internal terminology.
