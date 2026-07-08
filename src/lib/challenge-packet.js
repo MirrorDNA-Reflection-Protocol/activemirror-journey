@@ -6,6 +6,28 @@ function clean(value = '') {
     return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
+function scrubRubberStampCopy(value = '') {
+    return String(value || '')
+        .replace(/\bperfect\b/gi, 'complete')
+        .replace(/\bbrilliant\b/gi, 'clear')
+        .replace(/\bgenius\b/gi, 'clever')
+        .replace(/\bamazing\b/gi, 'strong');
+}
+
+function scrubArtifactCopy(artifact = {}) {
+    return {
+        ...artifact,
+        title: scrubRubberStampCopy(artifact.title),
+        body: scrubRubberStampCopy(artifact.body),
+        checklist: Array.isArray(artifact.checklist)
+            ? artifact.checklist.map((item) => scrubRubberStampCopy(item))
+            : artifact.checklist,
+        checks: Array.isArray(artifact.checks)
+            ? artifact.checks.map((item) => scrubRubberStampCopy(item))
+            : artifact.checks,
+    };
+}
+
 function statusFor({ intent, route, fallback, kind }) {
     const text = clean(intent);
     if (PRIVATE_PATTERN.test(text)) {
@@ -39,7 +61,7 @@ function statusFor({ intent, route, fallback, kind }) {
         return {
             status: 'draft',
             label: 'Draft',
-            note: 'Rough, but usable as a starting point.',
+            note: 'Rough first pass. Edit before sending.',
             reason: 'The live route was unavailable, so this was made locally.',
         };
     }
@@ -47,7 +69,7 @@ function statusFor({ intent, route, fallback, kind }) {
     return {
         status: 'passed',
         label: 'Ready',
-        note: 'Looks usable.',
+        note: 'Ready. Review once before sending.',
         reason: 'The output passed the local promotion checks for this task.',
     };
 }
@@ -106,12 +128,13 @@ export function buildArtifactChallenge({
 
 export function attachArtifactChallenge(artifact, options = {}) {
     if (!artifact) return artifact;
+    const safeArtifact = scrubArtifactCopy(artifact);
     const challenge = artifact.challenge || buildArtifactChallenge({
         ...options,
-        kind: artifact.kind || options.kind || 'draft',
+        kind: safeArtifact.kind || options.kind || 'draft',
     });
     return {
-        ...artifact,
+        ...safeArtifact,
         challenge,
     };
 }
