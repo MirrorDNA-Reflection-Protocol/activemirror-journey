@@ -25,6 +25,7 @@ import {
 } from '../lib/mirror-state';
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 import { copyText } from '../lib/sendable-actions';
+import { createDisabledSourceAdapterProjection } from '../lib/amos-disabled-source-adapter';
 
 const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
 const ARTIFACT_GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/artifact';

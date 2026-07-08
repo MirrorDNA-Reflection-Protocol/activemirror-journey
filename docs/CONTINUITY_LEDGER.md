@@ -258,6 +258,7 @@ Do not turn this into a strategy essay. Keep it operational.
 - Tools and gates planned:
   - `npm run guard:multilingual`
   - `npm run build:deploy`
+
   - `/Users/mirror-pro/repos/active-mirror-site`: `npm run worker:test`
   - Live smoke with non-English prompt after worker deploy.
 - Deploy status: not deployed at the time of this ledger entry.
@@ -1730,3 +1731,42 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `381676fa0ea7564ed59c90b6983a582a2c49305712515ea1f7ff9b83364515a6`
 - Next safe move: apply the import only after explicit approval and another
   clean readiness run.
+
+### 2026-07-08: Disabled AMOS Source Adapter Imported Inertly
+
+- Changed: imported the disabled AMOS source adapter into `HomePage.jsx` as
+  source only, then added the applied-state gate proving the import is present
+  once and not invoked.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `scripts/amos_disabled_source_adapter_gate.mjs`
+  - `scripts/amos_source_adapter_import_applied_gate.mjs`
+  - `.mirror/schemas/source_adapter_import_applied_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_applied_receipt.schema.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_applied.request.example.json`
+  - `.mirror/CONTRACTS/amos/source_adapter_import_applied.live_blocked.example.json`
+  - `.mirror/RUNTIME_DRY_RUNS/20260708T091526Z-disabled_source_adapter_import_applied.json`
+  - `.mirror/AUDIT_LOGS/20260708T091526Z-amos_source_adapter_import_applied.yaml`
+  - `.mirror/RECEIPT_CHAINS/audit-log-chain.json`
+  - `.mirror/PLAN.md`
+  - `.mirror/STATUS.md`
+  - `.mirror/SOURCE_LEDGER.md`
+  - `.mirror/README.md`
+  - `docs/dossiers/amos-control-plane-contracts.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run guard:disabled-source-adapter`
+  - `npm run guard:source-adapter-import-applied`
+  - `node scripts/amos_source_adapter_import_applied_gate.mjs --write --timestamp 20260708T091526Z`
+  - `node scripts/amos_receipt_chain_gate.mjs --write --timestamp 20260708T091526Z`
+- Deploy status: not deployed; this is a local source/control-plane slice.
+- Public routes checked: none.
+- Bad news or limits:
+  - The adapter is imported but intentionally not invoked.
+  - This is not live AMOS runtime enforcement, not a model route, and not a
+    gateway change.
+- Current chain:
+  - entries: 15
+  - hash: `2e6d9a76d59f987575230781bb8e8f094a4f6744dd44fe07505779dfc9afa2cc`
+- Next safe move: create a tiny invocation contract before any actual runtime
+  call, model call, memory write, route change, gateway change, or UI behavior.

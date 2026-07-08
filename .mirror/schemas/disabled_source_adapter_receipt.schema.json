@@ -59,7 +59,7 @@
           "required": ["import_allowed", "active_import_count", "active_imports"],
           "additionalProperties": false,
           "properties": {
-            "import_allowed": { "const": false },
+            "import_allowed": { "type": "boolean" },
             "active_import_count": { "type": "integer", "minimum": 0 },
             "active_imports": {
               "type": "array",
@@ -82,7 +82,9 @@
           "required": ["status", "enabled", "route", "surface", "runtime_result"],
           "additionalProperties": false,
           "properties": {
-            "status": { "const": "disabled_proposal" },
+            "status": {
+              "enum": ["disabled_proposal", "disabled_source_imported"]
+            },
             "enabled": { "const": false },
             "route": { "type": "string", "minLength": 1 },
             "surface": { "type": "string", "minLength": 1 },

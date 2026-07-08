@@ -44,7 +44,7 @@ const gateCommands = {
 
 const requiredBlockedClaims = [
   'Disabled source adapter is live in the public app.',
-  'Disabled source adapter is imported by the public app.',
+  'Disabled source adapter performed live runtime work.',
   'Disabled source adapter called a model.',
   'Disabled source adapter used the network.',
   'Disabled source adapter wrote durable memory.',
@@ -63,7 +63,6 @@ const blockedCapabilities = [
   'public_deploy',
   'live_runtime_action',
   'arbitrary_generated_ui',
-  'active_app_import',
 ];
 
 function resolvePath(value) {
@@ -244,22 +243,24 @@ function listSourceFiles(dir) {
   return files;
 }
 
-function scanActiveImports(sourceFile) {
+function scanActiveImports(sourceFile, importAllowed) {
   const relativeSource = path.relative(srcRoot, sourceFile);
   const sourceBase = path.basename(sourceFile);
+  const relativeSourceNoExt = relativeSource.replace(/\.[^.]+$/, '');
+  const sourceBaseNoExt = sourceBase.replace(/\.[^.]+$/, '');
   const activeImports = [];
   for (const file of listSourceFiles(srcRoot)) {
     if (file === sourceFile) continue;
     const text = fs.readFileSync(file, 'utf8');
     const importLines = text.split(/\r?\n/).filter((line) => /\bimport\b/.test(line));
     for (const line of importLines) {
-      if (line.includes(sourceBase) || line.includes(relativeSource)) {
+      if (line.includes(sourceBase) || line.includes(relativeSource) || line.includes(sourceBaseNoExt) || line.includes(relativeSourceNoExt)) {
         activeImports.push(`${path.relative(repoRoot, file)}: ${line.trim()}`);
       }
     }
   }
   return {
-    import_allowed: false,
+    import_allowed: importAllowed,
     active_import_count: activeImports.length,
     active_imports: activeImports,
   };
@@ -290,11 +291,10 @@ function validateSourceInvariants(sourceText, request) {
 function validateRequest(request) {
   const failures = [];
   if (request.surface !== 'consumer_app') failures.push(`surface must be consumer_app; got ${request.surface}`);
-  if (request.mode !== 'disabled_source_adapter_proposal') failures.push(`mode must be disabled_source_adapter_proposal; got ${request.mode}`);
+  if (!['disabled_source_adapter_proposal', 'disabled_source_adapter_source_imported'].includes(request.mode)) failures.push(`mode must be disabled_source_adapter_proposal or disabled_source_adapter_source_imported; got ${request.mode}`);
   if (request.adapter !== 'amos_disabled_source_adapter') failures.push(`adapter must be amos_disabled_source_adapter; got ${request.adapter}`);
   if (request.route !== '/app/') failures.push(`route must be /app/; got ${request.route}`);
   if (request.source_file !== 'src/lib/amos-disabled-source-adapter.js') failures.push('source_file must be src/lib/amos-disabled-source-adapter.js');
-  if (request.import_allowed !== false) failures.push('import_allowed must be false');
   if (request.live_import_enabled !== false) failures.push('live_import_enabled must be false');
   if (request.model_call_enabled !== false) failures.push('model_call_enabled must be false');
   if (request.network_enabled !== false) failures.push('network_enabled must be false');
@@ -307,17 +307,22 @@ function validateRequest(request) {
   for (const missing of missingFrom(request.required_gates, requiredGates)) failures.push(`missing required gate ${missing}`);
   for (const missing of missingFrom(request.blocked_claims, requiredBlockedClaims)) failures.push(`missing blocked claim ${missing}`);
   if (!request.claim_boundary.some((claim) => /disabled source adapter proposal/i.test(claim))) failures.push('claim_boundary must state this is a disabled source adapter proposal');
-  if (!request.claim_boundary.some((claim) => /not imported by the public app/i.test(claim))) failures.push('claim_boundary must state this is not imported by the public app');
+  if (request.import_allowed === true) {
+    if (!request.claim_boundary.some((claim) => /source-only import/i.test(claim))) failures.push('claim_boundary must state this is a source-only import');
+    if (!request.claim_boundary.some((claim) => /does not activate/i.test(claim))) failures.push('claim_boundary must state this import does not activate runtime behavior');
+  } else if (!request.claim_boundary.some((claim) => /not imported by the public app/i.test(claim))) {
+    failures.push('claim_boundary must state this is not imported by the public app');
+  }
   if (!request.claim_boundary.some((claim) => /does not call a model/i.test(claim))) failures.push('claim_boundary must state this does not call a model');
   if (!request.claim_boundary.some((claim) => /does not use the network/i.test(claim))) failures.push('claim_boundary must state this does not use the network');
   return failures;
 }
 
-function buildAdapterProjection(uiHarnessResult) {
+function buildAdapterProjection(uiHarnessResult, request) {
   const uiReceipt = uiHarnessResult.receipt?.ui_harness_receipt || {};
   const projection = uiReceipt.ui_projection || {};
   return {
-    status: 'disabled_proposal',
+    status: request.import_allowed ? 'disabled_source_imported' : 'disabled_proposal',
     enabled: false,
     route: projection.route || '/app/',
     surface: projection.surface || 'consumer_app',
@@ -358,12 +363,12 @@ function buildReceipt(request, sourceHash, importScan, uiHarnessResult, gateResu
         decision: uiHarnessResult.decision,
         request_id: uiHarnessResult.request_id,
       },
-      adapter_projection: buildAdapterProjection(uiHarnessResult),
+      adapter_projection: buildAdapterProjection(uiHarnessResult, request),
       blocked_capabilities: blockedCapabilities,
       output: {
         type: 'disabled_source_adapter_receipt',
         message: decision === 'allow'
-          ? 'Disabled source adapter exists as source-only proposal and is not imported by the public app.'
+          ? 'Disabled source adapter exists in app source as an imported but inert source-only adapter.'
           : 'Disabled source adapter proposal blocked without live action.',
       },
     },
@@ -410,9 +415,10 @@ function gateDisabledSourceAdapter(payload, args) {
     if (!failures.length) {
       const sourceText = fs.readFileSync(sourcePath, 'utf8');
       sourceHash = hashFile(sourcePath);
-      importScan = scanActiveImports(sourcePath);
+      importScan = scanActiveImports(sourcePath, request.import_allowed);
       failures.push(...validateSourceInvariants(sourceText, request));
-      if (importScan.active_import_count > 0) failures.push('disabled source adapter is imported by active app source');
+      if (importScan.active_import_count > 0 && request.import_allowed !== true) failures.push('disabled source adapter is imported by active app source');
+      if (importScan.active_import_count === 0 && request.import_allowed === true) failures.push('disabled source adapter import was expected but not found in active app source');
     }
     if (!failures.length) {
       uiHarnessResult = runUiHarness(uiHarnessPath);
@@ -447,7 +453,9 @@ function gateDisabledSourceAdapter(payload, args) {
     file,
     failures,
     warnings: decision === 'allow' ? [
-      'disabled source adapter is source-only and not imported by active app source',
+      request.import_allowed
+        ? 'disabled source adapter is imported by active app source as an inert source-only adapter'
+        : 'disabled source adapter is source-only and not imported by active app source',
       'no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action was performed',
     ] : [],
     request_id: request.id || '',
@@ -472,7 +480,8 @@ function selfTest() {
   const allowed = gateDisabledSourceAdapter(readJson(defaults.request, 'disabled source adapter request'), { ...defaults, timestamp: '20260707T000400Z' });
   assert(allowed.ok, 'disabled source adapter request should pass');
   assert(allowed.decision === 'allow', 'disabled source adapter request should allow');
-  assert(allowed.import_scan.active_import_count === 0, 'disabled source adapter should not be imported');
+  assert(allowed.import_scan.import_allowed === true, 'disabled source adapter import should be explicitly allowed in current state');
+  assert(allowed.import_scan.active_import_count >= 1, 'disabled source adapter should be imported by active source in current state');
 
   const blocked = gateDisabledSourceAdapter(readJson(path.join(contractDir, 'disabled_source_adapter.live_blocked.example.json'), 'blocked disabled source adapter request'), { ...defaults, timestamp: '20260707T000401Z' });
   assert(!blocked.ok, 'live disabled source adapter request should block');

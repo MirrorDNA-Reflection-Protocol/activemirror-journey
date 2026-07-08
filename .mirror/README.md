@@ -264,10 +264,10 @@ only.
 ## Disabled Source Adapter Gate
 
 The disabled source adapter proposal places a guarded adapter file in app
-source while proving it is not imported by the active app. The gate checks the
-disabled invariants, active source imports, the local UI harness, and the local
-receipt chain. It performs no live app, gateway, model, network, route, deploy,
-arbitrary UI, or durable memory action.
+source and now verifies it is imported only as inert source. The gate checks
+the disabled invariants, active source imports, the local UI harness, and the
+local receipt chain. It performs no live app, gateway, model, network, route,
+deploy, arbitrary UI, or durable memory action.
 
 ```bash
 npm run guard:disabled-source-adapter
@@ -285,7 +285,35 @@ Written receipts go to `.mirror/RUNTIME_DRY_RUNS/` and contain the source hash,
 active import scan, and local UI harness result. This is still local evidence
 only.
 
+## Source Adapter Import Applied Gate
+
+The source adapter import applied gate verifies the disabled source adapter
+import is present once in `src/pages/HomePage.jsx` and is not invoked. This is
+the current build-chain check. The earlier proposal, approval, patch, and
+apply-readiness gates remain as historical evidence for how this state was
+reached.
+
+```bash
+npm run guard:source-adapter-import-applied
+```
+
+Manual checks:
+
+```bash
+node scripts/amos_source_adapter_import_applied_gate.mjs --expect imported_disabled
+node scripts/amos_source_adapter_import_applied_gate.mjs --request .mirror/CONTRACTS/amos/source_adapter_import_applied.live_blocked.example.json --expect block
+node scripts/amos_source_adapter_import_applied_gate.mjs --write
+```
+
+Written receipts go to `.mirror/RUNTIME_DRY_RUNS/`. They prove only that the
+source import is present once and inert. They do not wire runtime behavior,
+invoke the adapter, call a model, use the network, change routes, change the
+gateway, deploy assets, execute arbitrary UI, or write durable memory.
+
 ## Source Adapter Import Proposal Gate
+
+Historical path gate. The current build health check is
+`npm run guard:source-adapter-import-applied`.
 
 The source adapter import proposal gate checks whether importing the disabled
 source adapter is merely proposed, still pending approval, and still not active
@@ -311,6 +339,9 @@ deploy, arbitrary UI execution, or durable memory write.
 
 ## Source Adapter Import Approval Bridge
 
+Historical path gate. The current build health check is
+`npm run guard:source-adapter-import-applied`.
+
 The source adapter import approval bridge previews the pending approval request
 for the import proposal without writing a real approval file. It verifies the
 source import proposal receipt, runs the approval request gate in dry-run mode,
@@ -335,6 +366,9 @@ routes, change the gateway, deploy assets, execute arbitrary UI, or write
 durable memory.
 
 ## Source Adapter Import Approval Creation Gate
+
+Historical path gate. The current build health check is
+`npm run guard:source-adapter-import-applied`.
 
 The source adapter import approval creation gate creates the real pending
 approval request file for the import proposal, while still proving that no
@@ -362,6 +396,9 @@ arbitrary UI, or write durable memory.
 
 ## Source Adapter Import Patch Proposal Gate
 
+Historical path gate. The current build health check is
+`npm run guard:source-adapter-import-applied`.
+
 The source adapter import patch proposal gate creates a local `.diff` file for
 review without editing active source. It verifies the pending approval request,
 the approval creation receipt, the target source hash, and local gates, then
@@ -386,6 +423,9 @@ use the network, change routes, change the gateway, deploy assets, execute
 arbitrary UI, or write durable memory.
 
 ## Source Adapter Import Apply Readiness Gate
+
+Historical path gate. The current build health check is
+`npm run guard:source-adapter-import-applied`.
 
 The source adapter import apply readiness gate verifies the prepared patch can
 apply cleanly with `git apply --check`, writes a rollback plan only when

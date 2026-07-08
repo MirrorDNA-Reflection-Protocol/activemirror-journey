@@ -3,7 +3,7 @@
     "schema_version": "disabled_source_adapter_request.v0_1",
     "id": "disabled_source_adapter_consumer",
     "surface": "consumer_app",
-    "mode": "disabled_source_adapter_proposal",
+    "mode": "disabled_source_adapter_source_imported",
     "adapter": "amos_disabled_source_adapter",
     "route": "/app/",
     "source_file": "src/lib/amos-disabled-source-adapter.js",
@@ -13,7 +13,7 @@
       "assertDisabledSourceAdapter",
       "createDisabledSourceAdapterProjection"
     ],
-    "import_allowed": false,
+    "import_allowed": true,
     "live_import_enabled": false,
     "model_call_enabled": false,
     "network_enabled": false,
@@ -34,7 +34,8 @@
     "output_type": "disabled_source_adapter_receipt",
     "claim_boundary": [
       "This is a disabled source adapter proposal.",
-      "It is source code only and is not imported by the public app.",
+      "It is a source-only import in the public app.",
+      "The import does not activate runtime behavior.",
       "It performs no live app action.",
       "It does not call a model.",
       "It does not use the network.",
@@ -44,7 +45,7 @@
     ],
     "blocked_claims": [
       "Disabled source adapter is live in the public app.",
-      "Disabled source adapter is imported by the public app.",
+      "Disabled source adapter performed live runtime work.",
       "Disabled source adapter called a model.",
       "Disabled source adapter used the network.",
       "Disabled source adapter wrote durable memory.",

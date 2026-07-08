@@ -47,7 +47,10 @@ consent levels, and agent permissions.
   - `.mirror/schemas/source_adapter_import_patch_receipt.schema.json`
   - `.mirror/schemas/source_adapter_import_apply_request.schema.json`
   - `.mirror/schemas/source_adapter_import_apply_receipt.schema.json`
+  - `.mirror/schemas/source_adapter_import_applied_request.schema.json`
+  - `.mirror/schemas/source_adapter_import_applied_receipt.schema.json`
   - `src/lib/amos-disabled-source-adapter.js`
+  - `src/pages/HomePage.jsx`
   - `docs/dossiers/amos-control-plane-contracts.md`
   - `docs/dossiers/README.md`
   - `docs/CONTINUITY_LEDGER.md`
@@ -117,9 +120,9 @@ consent levels, and agent permissions.
   live app, gateway, model, network, route, deploy, or durable memory action.
 - Local UI harness: local projection receipt only; no live app, gateway, model,
   network, route, deploy, arbitrary UI, or durable memory action.
-- Disabled source adapter: source-only, not imported by the active app, and no
-  live app, gateway, model, network, route, deploy, arbitrary UI, or durable
-  memory action.
+- Disabled source adapter: imported by active app source as inert source, not
+  invoked, and no live app, gateway, model, network, route, deploy, arbitrary
+  UI, or durable memory action.
 - Source adapter import proposal: approval-required, pending, not applied, not
   imported by the active app, and no live app, gateway, model, network, route,
   deploy, arbitrary UI, or durable memory action.
@@ -135,6 +138,9 @@ consent levels, and agent permissions.
 - Source adapter import apply readiness: local `git apply --check` and rollback
   plan only, no source edit, no source import, and no live app, gateway, model,
   network, route, deploy, arbitrary UI, or durable memory action.
+- Source adapter import applied: active source import present once, adapter not
+  invoked, and no live app, gateway, model, network, route, deploy, arbitrary
+  UI, or durable memory action.
 
 ## Leveraged Now
 
@@ -226,8 +232,9 @@ consent levels, and agent permissions.
 
 17. **Disabled Source Adapter Proposal**
    - `npm run guard:disabled-source-adapter` verifies that the disabled source
-     adapter exists in app source, keeps disabled invariants, has no active app
-     imports, and can only produce local evidence through the UI harness gate.
+     adapter exists in app source, keeps disabled invariants, is imported only
+     as inert source, and can only produce local evidence through the UI
+     harness gate.
 
 18. **Source Adapter Import Proposal**
    - `npm run guard:source-adapter-import` verifies that importing the disabled
@@ -254,6 +261,12 @@ consent levels, and agent permissions.
    - `npm run guard:source-adapter-import-apply` verifies that the local diff
      can pass `git apply --check` and that a rollback plan can be written while
      the active app source remains unchanged and the import stays unapplied.
+
+23. **Source Adapter Import Applied State**
+   - `npm run guard:source-adapter-import-applied` verifies that the import is
+     present once in `src/pages/HomePage.jsx`, the adapter is not invoked, and
+     the adapter still performs no live app, gateway, model, network, route,
+     deploy, arbitrary UI, or durable memory action.
 
 ## Deferred
 
@@ -294,6 +307,7 @@ validated and bound to a runtime.
   - `npm run guard:source-adapter-import-approval-create`
   - `npm run guard:source-adapter-import-patch`
   - `npm run guard:source-adapter-import-apply`
+  - `npm run guard:source-adapter-import-applied`
   - `npm run amos:status`
 - Browser QA:
   - not required unless public UI changes
@@ -358,10 +372,13 @@ validated and bound to a runtime.
   passes `git apply --check` and has a rollback plan; they do not edit active
   source, apply the import, grant approval, or prove live app/gateway
   enforcement.
+- Source adapter import applied receipts prove only that the source import is
+  present once and inert; they do not invoke the adapter or prove live
+  app/gateway enforcement.
 - SWFI remains separate and is not touched.
 
 ## Handoff
 
 Use this dossier when AMOS/control-plane ideas come up. The next practical build
-slice is to apply the import only after explicit approval and another clean
-readiness run.
+slice is a tiny invocation contract that proves what may call the imported
+adapter before any runtime behavior changes.

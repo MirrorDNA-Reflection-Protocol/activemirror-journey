@@ -67,23 +67,13 @@ Updated: 2026-07-08
   browser-local runtime adapter and emit a projection receipt without live
   action.
 - `npm run guard:disabled-source-adapter` verifies the disabled source adapter
-  exists in app source, keeps disabled invariants, and is not imported by the
-  active app.
-- `npm run guard:source-adapter-import` verifies the disabled source adapter
-  import remains a pending approval-required proposal and is not applied to the
-  active app.
-- `npm run guard:source-adapter-import-approval` verifies the source adapter
-  import approval bridge can preview a pending approval request without writing
-  a real approval file or applying the import.
-- `npm run guard:source-adapter-import-approval-create` verifies the source
-  adapter import approval request can be created as a pending local file
-  without granting approval or applying the import.
-- `npm run guard:source-adapter-import-patch` verifies the source adapter
-  import patch can be created as a local diff proposal without editing active
-  source or applying the import.
-- `npm run guard:source-adapter-import-apply` verifies the source adapter
-  import patch can pass `git apply --check` and have a rollback plan without
-  editing active source or applying the import.
+  exists in app source, keeps disabled invariants, and is imported only as an
+  inert source-only adapter.
+- Historical source-adapter import proposal, approval, approval-create, patch,
+  and apply-readiness gates exist as receipts for the path to the current
+  state; they are no longer the active build health check.
+- `npm run guard:source-adapter-import-applied` verifies the disabled source
+  adapter import is present once in `HomePage.jsx` and is not invoked.
 - Local AMOS audit receipt exists at
   `.mirror/AUDIT_LOGS/20260707T130000Z-amos_local_gates.yaml`.
 - Local AMOS receipt-chain audit receipt exists at
@@ -139,8 +129,12 @@ Updated: 2026-07-08
   `.mirror/RUNTIME_DRY_RUNS/20260708T084032Z-disabled_source_adapter_import_apply.json`.
 - Local AMOS source adapter import apply readiness audit receipt exists at
   `.mirror/AUDIT_LOGS/20260708T084032Z-amos_source_adapter_import_apply.yaml`.
+- Local AMOS source adapter import applied receipt exists at
+  `.mirror/RUNTIME_DRY_RUNS/20260708T091526Z-disabled_source_adapter_import_applied.json`.
+- Local AMOS source adapter import applied audit receipt exists at
+  `.mirror/AUDIT_LOGS/20260708T091526Z-amos_source_adapter_import_applied.yaml`.
 - Current local audit receipt chain hash:
-  `381676fa0ea7564ed59c90b6983a582a2c49305712515ea1f7ff9b83364515a6`.
+  `2e6d9a76d59f987575230781bb8e8f094a4f6744dd44fe07505779dfc9afa2cc`.
 - Pending review proposal exists at
   `.mirror/MEMORY_UPDATE_PROPOSALS/20260707T123500Z-front_door_start_state.yaml`.
 - Live generated-media storage currently reports `kv_durable_free_tier` with
@@ -184,27 +178,14 @@ Updated: 2026-07-08
 - The local UI harness emits local projection receipts only; it performs no
   live app, gateway, model, network, route, deploy, arbitrary UI, or durable
   memory action.
-- The disabled source adapter is source-only and not imported by the active
-  app; it performs no live app, gateway, model, network, route, deploy,
+- The disabled source adapter is imported by the active app source but is not
+  invoked; it performs no live app, gateway, model, network, route, deploy,
   arbitrary UI, or durable memory action.
-- The source adapter import is only a pending approval-required proposal; it
-  performs no source import, live app, gateway, model, network, route, deploy,
-  arbitrary UI, or durable memory action.
-- The source adapter import approval bridge previews a pending approval request
-  only; it writes no real approval file and performs no source import, live
-  app, gateway, model, network, route, deploy, arbitrary UI, or durable memory
-  action.
-- The source adapter import approval request now exists as a pending local file
-  only; it is not approval, does not approve itself, and performs no source
-  import, live app, gateway, model, network, route, deploy, arbitrary UI, or
-  durable memory action.
-- The source adapter import patch proposal now exists as a local diff file
-  only; it is not applied and performs no source import, live app, gateway,
-  model, network, route, deploy, arbitrary UI, or durable memory action.
-- The source adapter import apply readiness gate proves only `git apply --check`
-  and rollback-plan readiness; it is not approval, does not apply the patch,
-  and performs no source import, live app, gateway, model, network, route,
-  deploy, arbitrary UI, or durable memory action.
+- Historical source-adapter import proposal, approval, approval-create, patch,
+  and apply-readiness receipts prove the previous path only; they are not the
+  current active source state.
+- The source adapter import applied gate proves only that the import is present
+  once and inert; it is not live AMOS runtime enforcement.
 - The pending front-door proposal is not accepted memory until a human approves
   it.
 

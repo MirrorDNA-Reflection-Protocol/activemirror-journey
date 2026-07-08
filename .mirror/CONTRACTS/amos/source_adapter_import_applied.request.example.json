@@ -1,0 +1,51 @@
+{
+  "source_adapter_import_applied_request": {
+    "schema_version": "source_adapter_import_applied_request.v0_1",
+    "id": "disabled_source_adapter_import_applied",
+    "surface": "consumer_app",
+    "mode": "source_imported_inert",
+    "adapter": "amos_disabled_source_adapter",
+    "route": "/app/",
+    "source_file": "src/lib/amos-disabled-source-adapter.js",
+    "target_file": "src/pages/HomePage.jsx",
+    "approval_evidence": "user_chat_approval_20260708_lets_do_it",
+    "approval_request": ".mirror/APPROVAL_REQUESTS/20260707T153055Z-source_adapter_import.yaml",
+    "import_present_required": true,
+    "adapter_invocation_enabled": false,
+    "live_import_enabled": false,
+    "model_call_enabled": false,
+    "network_enabled": false,
+    "durable_memory_write_enabled": false,
+    "route_change_enabled": false,
+    "gateway_change_enabled": false,
+    "public_deploy_enabled": false,
+    "arbitrary_ui_enabled": false,
+    "required_gates": [
+      "guard:disabled-source-adapter",
+      "guard:front-door",
+      "guard:receipt-chain"
+    ],
+    "output_type": "source_adapter_import_applied_receipt",
+    "claim_boundary": [
+      "The disabled source adapter source import is present in HomePage.jsx.",
+      "The adapter is not invoked by HomePage.jsx.",
+      "It does not activate runtime behavior.",
+      "It performs no live app action.",
+      "It does not call a model.",
+      "It does not use the network.",
+      "It does not write durable memory.",
+      "It does not change routes, deploy assets, or gateway behavior.",
+      "It does not execute arbitrary generated UI."
+    ],
+    "blocked_claims": [
+      "Source adapter import performed live runtime work.",
+      "Source adapter import called a model.",
+      "Source adapter import used the network.",
+      "Source adapter import wrote durable memory.",
+      "Source adapter import changed app routes.",
+      "Source adapter import changed gateway behavior.",
+      "Source adapter import deployed public assets.",
+      "Source adapter import executed arbitrary generated UI."
+    ]
+  }
+}

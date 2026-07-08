@@ -52,38 +52,25 @@
     request projection evidence exists.
 15. Use `npm run guard:ui-harness` before claiming local UI projection
     evidence exists.
-16. Use `npm run guard:disabled-source-adapter` before claiming a source-code
-    adapter exists or is safely disabled.
-17. Use `npm run guard:source-adapter-import` before claiming a source adapter
-    import has even been proposed safely.
-18. Use `npm run guard:source-adapter-import-approval` before claiming a source
-    adapter import approval request can be previewed.
-19. Use `npm run guard:source-adapter-import-approval-create` before claiming a
-    real pending approval request file exists for the source adapter import.
-20. Add real approval request files only when a risky action is actually proposed.
-21. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
-22. Only add runtime wiring after a small contract has been used by a real task.
-23. Runtime integration is still contract-only with disabled adapters.
-24. Shadow adapter receipts are local-only and perform no live action.
-25. Read-only app adapter receipts are source-hash evidence only.
-26. Browser-local runtime adapter receipts are input-hash projections only.
-27. Local UI harness receipts are projection evidence only.
-28. Disabled source adapter is source-only and not imported by the active app.
-29. Source adapter import remains approval-required, pending, and not live.
-30. Source adapter import approval bridge previews only; it writes no real
-    approval file and grants no approval.
-31. Source adapter import approval request exists as a pending file only; it is
-    not approval and grants no authority.
-32. Use `npm run guard:source-adapter-import-patch` before claiming a local
-    source import patch proposal exists.
-33. Source adapter import patch proposal exists as a local diff only; it is not
-    applied and not live.
-34. Use `npm run guard:source-adapter-import-apply` before claiming the local
-    patch is apply-ready or that a rollback plan exists.
-35. Source adapter import apply readiness exists as a local check only; it is
-    not approval, not an active source edit, and not live.
-36. Next control-plane slice: apply the import only after explicit approval and
-    another clean readiness run.
+16. Use `npm run guard:disabled-source-adapter` before claiming the source-code
+    adapter exists, is imported, or is safely disabled.
+17. Use `npm run guard:source-adapter-import-applied` before claiming the
+    disabled source adapter import is present and inert.
+18. Add real approval request files only when a risky action is actually proposed.
+19. Promote repeated report output into `.mirror/STATUS.md` only after checks pass.
+20. Only add runtime wiring after a small contract has been used by a real task.
+21. Runtime integration is still contract-only with disabled adapters.
+22. Shadow adapter receipts are local-only and perform no live action.
+23. Read-only app adapter receipts are source-hash evidence only.
+24. Browser-local runtime adapter receipts are input-hash projections only.
+25. Local UI harness receipts are projection evidence only.
+26. Disabled source adapter is imported by active app source but remains inert.
+27. Source adapter import applied gate verifies the import is present once and
+    not invoked; it is not live AMOS runtime enforcement.
+28. Historical proposal, approval, patch, and apply-readiness gates remain as
+    evidence of the path to this state, not the active build health check.
+29. Next control-plane slice: create the tiny invocation contract before any
+    real runtime call, model call, memory write, gateway change, or UI behavior.
 
 ## Do Not Do Yet
 

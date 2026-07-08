@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:continuity && npm run guard:amos-contracts && npm run guard:memory-proposal && npm run guard:approval-request && npm run guard:artifact-export && npm run guard:audit-log && npm run guard:receipt-chain && npm run guard:runtime-integration && npm run guard:shadow-adapter && npm run guard:readonly-app-adapter && npm run guard:browser-runtime-adapter && npm run guard:ui-harness && npm run guard:disabled-source-adapter && npm run guard:source-adapter-import && npm run guard:source-adapter-import-approval && npm run guard:source-adapter-import-approval-create && npm run guard:source-adapter-import-patch && npm run guard:source-adapter-import-apply && npm run guard:front-door && npm run guard:language && npm run guard:multilingual && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
+        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:continuity && npm run guard:amos-contracts && npm run guard:memory-proposal && npm run guard:approval-request && npm run guard:artifact-export && npm run guard:audit-log && npm run guard:receipt-chain && npm run guard:runtime-integration && npm run guard:shadow-adapter && npm run guard:readonly-app-adapter && npm run guard:browser-runtime-adapter && npm run guard:ui-harness && npm run guard:disabled-source-adapter && npm run guard:source-adapter-import-applied && npm run guard:front-door && npm run guard:language && npm run guard:multilingual && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
         "prebuild:deploy": "npm run prebuild",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
@@ -38,6 +38,7 @@
         "guard:source-adapter-import-approval-create": "node scripts/amos_source_adapter_import_approval_create_gate.mjs --self-test",
         "guard:source-adapter-import-patch": "node scripts/amos_source_adapter_import_patch_gate.mjs --self-test",
         "guard:source-adapter-import-apply": "node scripts/amos_source_adapter_import_apply_gate.mjs --self-test",
+        "guard:source-adapter-import-applied": "node scripts/amos_source_adapter_import_applied_gate.mjs --self-test",
         "guard:redaction": "bash scripts/redaction_guard.sh",
         "truth": "python3 scripts/active_mirror_truth_gate.py --out outputs/active-mirror-truth-gate.json",
         "amos:status": "node scripts/amos_status_report.mjs",

@@ -1,0 +1,38 @@
+{
+  "audit_log_request": {
+    "schema_version": "audit_log_request.v0_1",
+    "id": "audit_source_adapter_import_applied",
+    "task_id": "active_mirror_front_door_v1",
+    "actor": "codex",
+    "action": "Record that the disabled AMOS source adapter import is present but inert.",
+    "checked_scope": [
+      "source adapter import applied request schema",
+      "source adapter import applied receipt schema",
+      "source adapter import applied gate",
+      "HomePage.jsx import scan",
+      "disabled adapter invariant scan",
+      "blocked live applied request"
+    ],
+    "unchecked_scope": [
+      "live app UI integration",
+      "gateway adapter",
+      "model calls",
+      "network calls",
+      "durable memory writes",
+      "route changes",
+      "public deploy"
+    ],
+    "evidence": [
+      "npm run guard:source-adapter-import-applied",
+      "node scripts/amos_source_adapter_import_applied_gate.mjs --write"
+    ],
+    "bad_news": [
+      "The import is present in source, but the adapter is intentionally not invoked.",
+      "This is still not live AMOS runtime enforcement in the public app."
+    ],
+    "decision": "partial",
+    "follow_up": [
+      "Only wire invocation after a separate tiny contract and local browser proof."
+    ]
+  }
+}

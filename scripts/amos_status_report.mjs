@@ -69,29 +69,9 @@ const checks = [
         args: ['scripts/amos_disabled_source_adapter_gate.mjs', '--self-test'],
     },
     {
-        id: 'source_adapter_import_gate',
-        label: 'Source adapter import proposal gate',
-        args: ['scripts/amos_source_adapter_import_gate.mjs', '--self-test'],
-    },
-    {
-        id: 'source_adapter_import_approval_gate',
-        label: 'Source adapter import approval bridge',
-        args: ['scripts/amos_source_adapter_import_approval_gate.mjs', '--self-test'],
-    },
-    {
-        id: 'source_adapter_import_approval_create_gate',
-        label: 'Source adapter import approval creation gate',
-        args: ['scripts/amos_source_adapter_import_approval_create_gate.mjs', '--self-test'],
-    },
-    {
-        id: 'source_adapter_import_patch_gate',
-        label: 'Source adapter import patch proposal gate',
-        args: ['scripts/amos_source_adapter_import_patch_gate.mjs', '--self-test'],
-    },
-    {
-        id: 'source_adapter_import_apply_gate',
-        label: 'Source adapter import apply readiness gate',
-        args: ['scripts/amos_source_adapter_import_apply_gate.mjs', '--self-test'],
+        id: 'source_adapter_import_applied_gate',
+        label: 'Source adapter import applied gate',
+        args: ['scripts/amos_source_adapter_import_applied_gate.mjs', '--self-test'],
     },
 ];
 
@@ -104,12 +84,8 @@ const localOnlyLimits = [
     'Read-only app adapter emits local source-hash receipts only; it performs no live app, gateway, model, network, route, deploy, or memory action.',
     'Browser-local runtime adapter emits local in-memory projection receipts only; it performs no live app, gateway, model, network, route, deploy, or durable memory action.',
     'Local UI harness emits local projection receipts only; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
-    'Disabled source adapter is source-only and not imported by the active app; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
-    'Source adapter import proposal is approval-required and writes local receipts only; it performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
-    'Source adapter import approval bridge previews pending approval only; it writes no real approval file and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
-    'Source adapter import approval creation writes only a pending local approval request; it grants no approval and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
-    'Source adapter import patch proposal writes only a local diff proposal; it applies no patch and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
-    'Source adapter import apply readiness writes only a rollback plan and receipt; it applies no patch and performs no active import, live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
+    'Disabled source adapter is imported in active source as an inert adapter; it performs no live app, gateway, model, network, route, deploy, arbitrary UI, or durable memory action.',
+    'Source adapter import applied gate checks only that the source import is present once and is not invoked; it is not live AMOS runtime enforcement.',
 ];
 
 function parseArgs(argv) {

@@ -1,0 +1,33 @@
+audit_log:
+  id: "audit_20260708t091526z_amos_source_adapter_import_applied"
+  task_id: "active_mirror_front_door_v1"
+  created_at: "2026-07-08T09:15:26Z"
+  actor: "codex"
+  action: "Record that the disabled AMOS source adapter import is present in source but inert."
+  checked_scope:
+    - "source adapter import applied request schema"
+    - "source adapter import applied receipt schema"
+    - "source adapter import applied gate"
+    - "HomePage.jsx import scan"
+    - "disabled adapter invariant scan"
+    - "blocked live applied request"
+    - "front-door guard"
+  unchecked_scope:
+    - "live app UI integration"
+    - "gateway adapter"
+    - "model calls"
+    - "network calls"
+    - "durable memory writes"
+    - "route changes"
+    - "public deploy"
+  evidence:
+    - "npm run guard:disabled-source-adapter"
+    - "npm run guard:source-adapter-import-applied"
+    - "node scripts/amos_source_adapter_import_applied_gate.mjs --write --timestamp 20260708T091526Z"
+  bad_news:
+    - "The import is present in source, but the adapter is intentionally not invoked."
+    - "This is still not live AMOS runtime enforcement in the public app."
+    - "No deploy was performed in this slice."
+  decision: "partial"
+  follow_up:
+    - "Only wire invocation after a separate tiny contract and local browser proof."
