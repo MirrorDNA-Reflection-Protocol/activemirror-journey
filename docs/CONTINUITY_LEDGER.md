@@ -99,20 +99,14 @@ Recent deploy commits:
 
 ## Current Local Dirt To Preserve
 
-Do not revert or stage without a separate reason:
+As of the 2026-07-08 cleanup pass, no product-source local dirt is expected in
+this repo. If new dirt appears, inspect and preserve ownership before staging,
+deleting, or rewriting it.
 
-- `.mirror/CONTEXT_PACK.yaml`
-- `.mirror/SOURCE_LEDGER.md`
-- `docs/dossiers/README.md`
-- `docs/wiki/current-product-map.md`
-- `docs/wiki/language-guide.md`
-- `scripts/sync_wiki_to_obsidian.mjs`
+The hardening resolution contracts have been promoted into tracked internal
+documentation:
+
 - `docs/ACTIVE_MIRROR_HARDENING_RESOLUTION_CONTRACTS.md`
-- `docs/dossiers/context-coordination-layer.md`
-- `docs/dossiers/decision-reason-mapper.md`
-- `docs/dossiers/evolution-control-plane.md`
-- `docs/dossiers/memory-skill-layer.md`
-- `docs/dossiers/synthetic-continuity-boundary.md`
 
 Deploy repo dirt to preserve:
 
