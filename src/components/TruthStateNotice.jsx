@@ -203,7 +203,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                             onPrompt(makeNarrowClaimPrompt(intent, mirror, result.research));
                         }}
                         disabled={disabled}
-                        className={`mt-3 inline-flex items-center justify-center rounded-full border px-3 py-2 text-xs font-semibold text-current transition disabled:cursor-not-allowed disabled:opacity-50 ${isLight ? 'border-stone-300/80 bg-stone-100/75 hover:border-stone-400 hover:bg-white' : 'border-white/10 bg-black/20 hover:border-white/25 hover:bg-white/[0.08]'}`}
+                        className={`mt-3 inline-flex min-h-10 items-center justify-center rounded-full border px-3.5 text-xs font-semibold text-current transition disabled:cursor-not-allowed disabled:opacity-50 ${isLight ? 'border-stone-300/80 bg-stone-100/75 hover:border-stone-400 hover:bg-white' : 'border-white/10 bg-black/20 hover:border-white/25 hover:bg-white/[0.08]'}`}
                     >
                         Narrow the claim
                     </button>
@@ -235,7 +235,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                                         href={source.url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="mt-2 inline-flex items-center gap-1.5 font-semibold text-current underline decoration-current/30 underline-offset-4 transition hover:decoration-current"
+                                        className="mt-2 inline-flex min-h-9 items-center gap-1.5 font-semibold text-current underline decoration-current/30 underline-offset-4 transition hover:decoration-current"
                                     >
                                         Open source
                                         <ExternalLink size={12} />
@@ -294,7 +294,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                     type="button"
                     onClick={checkSources}
                     disabled={busy || disabled}
-                    className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${isLight ? 'border-amber-500/25 bg-white/72 text-amber-950 hover:border-amber-500/45 hover:bg-white' : 'border-amber-200/25 bg-black/20 text-amber-50 hover:border-amber-200/45 hover:bg-amber-200/[0.10]'}`}
+                    className={`inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border px-3.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${isLight ? 'border-amber-500/25 bg-white/72 text-amber-950 hover:border-amber-500/45 hover:bg-white' : 'border-amber-200/25 bg-black/20 text-amber-50 hover:border-amber-200/45 hover:bg-amber-200/[0.10]'}`}
                 >
                     {busy ? <Loader2 size={14} className="animate-spin" /> : <SearchCheck size={14} />}
                     {busy ? 'Checking' : 'Check now'}
@@ -347,7 +347,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
                                 href={firstSource.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className={`mt-2 inline-flex max-w-full items-center gap-1.5 font-semibold underline underline-offset-4 transition ${isLight ? 'text-stone-700 decoration-stone-400/55 hover:text-stone-950 hover:decoration-stone-700' : 'text-zinc-300 decoration-zinc-500/40 hover:text-white hover:decoration-white'}`}
+                                className={`mt-2 inline-flex min-h-9 max-w-full items-center gap-1.5 font-semibold underline underline-offset-4 transition ${isLight ? 'text-stone-700 decoration-stone-400/55 hover:text-stone-950 hover:decoration-stone-700' : 'text-zinc-300 decoration-zinc-500/40 hover:text-white hover:decoration-white'}`}
                             >
                                 <span className="truncate">{firstSource.quality_label || 'Source'} - {firstSource.title || firstSource.url}</span>
                                 <ExternalLink size={12} className="shrink-0" />
@@ -357,7 +357,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
                             <button
                                 type="button"
                                 onClick={onClearSourceCheck}
-                                className={`mt-3 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/20 text-zinc-400 hover:border-white/20 hover:text-white'}`}
+                                className={`mt-3 min-h-10 rounded-full border px-3.5 text-[11px] font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/20 text-zinc-400 hover:border-white/20 hover:text-white'}`}
                             >
                                 Clear check
                             </button>

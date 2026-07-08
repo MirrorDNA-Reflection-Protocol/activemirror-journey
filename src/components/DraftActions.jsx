@@ -105,7 +105,7 @@ export default function DraftActions({ title = 'Sendable draft', text = '', kind
         }
     }
 
-    const buttonClass = `inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-300/[0.075] hover:text-white'}`;
+    const buttonClass = `inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-300/[0.075] hover:text-white'}`;
 
     return (
         <div className="mt-3 flex flex-wrap items-center gap-2">

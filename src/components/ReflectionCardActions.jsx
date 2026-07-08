@@ -69,7 +69,7 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                         <button
                             type="button"
                             onClick={copyCard}
-                            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300 transition hover:border-purple-300/30 hover:text-white"
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-purple-300/30 hover:text-white"
                         >
                             <Copy size={13} />
                             Copy
@@ -77,7 +77,7 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                         <button
                             type="button"
                             onClick={shareCard}
-                            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-semibold text-zinc-300 transition hover:border-cyan-300/30 hover:text-white"
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-cyan-300/30 hover:text-white"
                         >
                             <Share2 size={13} />
                             Share
@@ -85,7 +85,7 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                         <button
                             type="button"
                             onClick={saveImage}
-                            className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12]"
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/[0.08] px-3.5 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/[0.12]"
                         >
                             {status === 'Saved' ? <Check size={13} /> : <ImageDown size={13} />}
                             Image

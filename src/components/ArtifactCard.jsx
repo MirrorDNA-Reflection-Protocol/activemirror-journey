@@ -90,7 +90,7 @@ function CodeSegment({ lang, text, isLight }) {
                 <button
                     type="button"
                     onClick={copyCode}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600 hover:border-emerald-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-emerald-200/30 hover:bg-emerald-300/[0.075] hover:text-white'}`}
+                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600 hover:border-emerald-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-emerald-200/30 hover:bg-emerald-300/[0.075] hover:text-white'}`}
                 >
                     {copied ? <Check size={12} /> : <Copy size={12} />}
                     {copied ? 'Copied' : 'Copy code'}
@@ -197,7 +197,7 @@ function ImageMedia({ media, title, isLight }) {
                 <button
                     type="button"
                     onClick={downloadImage}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600 hover:border-violet-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white'}`}
+                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600 hover:border-violet-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white'}`}
                 >
                     {status || 'Download image'}
                 </button>
@@ -208,7 +208,7 @@ function ImageMedia({ media, title, isLight }) {
 
 function ImageRetryActions({ onRegenerate, onSharpen, isLight }) {
     if (!onRegenerate && !onSharpen) return null;
-    const buttonClass = `inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-violet-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white'}`;
+    const buttonClass = `inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-violet-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white'}`;
 
     return (
         <div className="mt-3 flex flex-wrap gap-2">

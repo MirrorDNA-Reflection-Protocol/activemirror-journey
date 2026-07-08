@@ -1188,7 +1188,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
                     type="button"
                     onClick={() => onRemember?.(mirror)}
                     disabled={remembered}
-                    className={`inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-violet-400/35 hover:text-stone-950 disabled:border-emerald-500/20 disabled:text-emerald-700' : 'border-white/10 bg-white/[0.028] text-zinc-400 hover:border-violet-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100'}`}
+                    className={`inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-violet-400/35 hover:text-stone-950 disabled:border-emerald-500/20 disabled:text-emerald-700' : 'border-white/10 bg-white/[0.028] text-zinc-400 hover:border-violet-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100'}`}
                 >
                     {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
                     {remembered ? 'Saved' : 'Save'}
@@ -1371,7 +1371,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
                     <button
                         type="button"
                         onClick={onClose}
-                        className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-500 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-white/25 hover:text-white'}`}
+                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-500 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-white/25 hover:text-white'}`}
                         aria-label="Close"
                     >
                         <X size={15} />
@@ -1393,7 +1393,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
             <button
                 type="button"
                 onClick={onClose}
-                className={`absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full border backdrop-blur transition ${isLight ? 'border-stone-300/70 bg-white/74 text-stone-500 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/40 text-zinc-400 hover:border-white/25 hover:text-white'}`}
+                className={`absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border backdrop-blur transition ${isLight ? 'border-stone-300/70 bg-white/74 text-stone-500 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/40 text-zinc-400 hover:border-white/25 hover:text-white'}`}
                 aria-label="Close"
             >
                 <X size={15} />
@@ -1531,7 +1531,7 @@ function MemoryDrawer({
                             <button
                                 type="button"
                                 onClick={() => setMode((current) => current === 'cards' ? 'list' : 'cards')}
-                                className="mt-3 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/35"
+                                className="mt-3 min-h-10 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/35"
                             >
                                 {mode === 'cards' ? 'Show list' : 'Show cards'}
                             </button>
@@ -1614,7 +1614,7 @@ function MemoryDrawer({
                                         <button
                                             type="button"
                                             onClick={onClearContinuity}
-                                            className="rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-xs font-semibold text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                            className="min-h-10 rounded-full border border-white/10 bg-black/15 px-3.5 text-xs font-semibold text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
                                         >
                                             Clear
                                         </button>
@@ -1627,7 +1627,7 @@ function MemoryDrawer({
                                                     <button
                                                         type="button"
                                                         onClick={() => onDeleteContinuity?.(entry.savedAt)}
-                                                        className="grid h-7 w-7 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                        className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
                                                         aria-label="Delete saved item"
                                                     >
                                                         <Trash2 size={13} />
@@ -1642,7 +1642,7 @@ function MemoryDrawer({
                                                 <button
                                                     type="button"
                                                     onClick={() => onUseContinuity?.(entry)}
-                                                    className="mt-3 inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs font-semibold text-zinc-300 transition hover:border-cyan-200/30 hover:text-white"
+                                                    className="mt-3 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-cyan-200/30 hover:text-white"
                                                 >
                                                     Use this
                                                 </button>
@@ -1667,14 +1667,14 @@ function MemoryDrawer({
                                                 <button
                                                     type="button"
                                                     onClick={() => active ? onPause?.() : onUse?.(item)}
-                                                    className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:border-emerald-300/30 hover:text-white"
+                                                    className="min-h-10 rounded-full border border-white/10 bg-white/[0.04] px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-emerald-300/30 hover:text-white"
                                                 >
                                                     {active ? 'Pause' : 'Use'}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => editing ? setEditingKey('') : startEdit(item)}
-                                                    className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
                                                     aria-label={editing ? 'Cancel edit' : 'Edit saved note'}
                                                 >
                                                     {editing ? <X size={15} /> : <Pencil size={15} />}
@@ -1682,7 +1682,7 @@ function MemoryDrawer({
                                                 <button
                                                     type="button"
                                                     onClick={() => onDelete?.(key)}
-                                                    className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-rose-300/30 hover:text-rose-100"
                                                     aria-label="Delete saved note"
                                                 >
                                                     <Trash2 size={15} />
@@ -2204,24 +2204,24 @@ export default function HomePage() {
 
             <header className="relative z-10 px-4 py-3 sm:py-4">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-                    <Link to="/" className="inline-flex items-center gap-3">
+                    <Link to="/" className="inline-flex min-h-10 items-center gap-3 rounded-full pr-2">
                         <MirrorLogo />
                         <div className={`text-sm font-semibold tracking-[-0.01em] ${isLight ? 'text-stone-950' : 'text-white'}`}>Active Mirror</div>
                     </Link>
                     <div className="flex items-center gap-3 sm:gap-5">
                         <nav className={`hidden items-center gap-5 text-xs font-semibold sm:flex ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
-                            <Link to="/research" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Research</Link>
-                            <Link to="/enterprise" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Business</Link>
+                            <Link to="/research" className={`inline-flex min-h-10 items-center rounded-full px-2 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Research</Link>
+                            <Link to="/enterprise" className={`inline-flex min-h-10 items-center rounded-full px-2 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Business</Link>
                         </nav>
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-xs transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-200/30 hover:text-white'}`}
+                            className={`inline-flex h-10 w-10 items-center justify-center rounded-full border text-xs transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-200/30 hover:text-white'}`}
                             aria-label={isLight ? 'Use dark mode' : 'Use light mode'}
                         >
                             {isLight ? <Moon size={15} /> : <Sun size={15} />}
                         </button>
-                        <Link to="/consulting" className={`hidden rounded-full border px-3 py-1.5 text-xs font-medium transition sm:inline-flex ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
+                        <Link to="/consulting" className={`hidden min-h-10 items-center rounded-full border px-3.5 text-xs font-medium transition sm:inline-flex ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
                             For teams
                         </Link>
                     </div>
@@ -2233,8 +2233,8 @@ export default function HomePage() {
                     {showMirror ? (
                         <>
                             <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
-                            <div className="pointer-events-none absolute -left-24 top-12 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
-                            <div className="pointer-events-none absolute -bottom-16 right-8 h-48 w-48 rounded-full bg-cyan-300/8 blur-3xl" />
+                            <div className="pointer-events-none absolute -left-24 top-12 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" aria-hidden="true" />
+                            <div className="pointer-events-none absolute -bottom-16 right-8 h-48 w-48 rounded-full bg-cyan-300/8 blur-3xl" aria-hidden="true" />
                         </>
                     ) : null}
 
@@ -2397,7 +2397,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={() => setMemoryOpen(true)}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1.5 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
+                                    className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
                                 >
                                     <SlidersHorizontal size={13} />
                                     Saved: {savedCount}
@@ -2473,11 +2473,11 @@ export default function HomePage() {
             </main>
 
             <div className={`relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs sm:justify-end ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
-                <div className="flex flex-wrap gap-3">
-                    <Link to="/about" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>About</Link>
-                    <Link to="/enterprise" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Enterprise</Link>
-                    <Link to="/privacy" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Privacy</Link>
-                    <Link to="/terms" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Terms</Link>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-end">
+                    <Link to="/about" className={`inline-flex min-h-10 items-center rounded-full px-2.5 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>About</Link>
+                    <Link to="/enterprise" className={`inline-flex min-h-10 items-center rounded-full px-2.5 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Enterprise</Link>
+                    <Link to="/privacy" className={`inline-flex min-h-10 items-center rounded-full px-2.5 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Privacy</Link>
+                    <Link to="/terms" className={`inline-flex min-h-10 items-center rounded-full px-2.5 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Terms</Link>
                 </div>
             </div>
             <MemoryDrawer
