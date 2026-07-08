@@ -1957,3 +1957,81 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: have a real user ask for one artifact and one source-backed
   answer on mobile. If they hesitate, tune the response copy; do not expand the
   homepage or add internal terminology.
+
+### 2026-07-08: Self-Tested Mobile Polish and Source-Text Hardening
+
+- Changed: increased phone-friendly hit areas for the home header, footer links,
+  close buttons, saved-note controls, reflection save buttons, artifact actions,
+  image download controls, and source-check controls.
+- Changed: marked decorative glow elements as hidden so layout audits measure
+  real visible content, not background paint.
+- Changed in deploy/gateway repo: hardened source-check text cleanup against
+  malformed mixed-script tokens such as `ქვეყნies`, added a regression test, and
+  broadened the decision smoke matcher to accept the current useful decision
+  language.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `src/components/ArtifactCard.jsx`
+  - `src/components/DraftActions.jsx`
+  - `src/components/ReflectionCardActions.jsx`
+  - `src/components/TruthStateNotice.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Source commit:
+  - `11156c3 Improve mobile touch targets`
+- Deploy/gateway commits in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `f65acb0 Deploy mobile touch target polish`
+  - `0698857 Harden source check text cleanup`
+  - `8b2562f Broaden decision smoke matcher`
+- Deploy status:
+  - Static Worker deployed: `active-mirror-static-site` version
+    `150d7133-f03e-4288-8f63-23e66eab561f`.
+  - Gateway Worker deployed: `active-mirror-site-gateway` version
+    `f5158aea-d460-4d74-bd83-5d7844a809ad`.
+  - Live app assets verified:
+    - `index-DHYLCoqw.js`
+    - `index-D-oL3YGf.css`
+- Tools and gates used:
+  - Source: `npm run build`, `npm run build:deploy`
+  - Local production-style layout check at `http://127.0.0.1:4192/app/`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`
+  - Gateway: `npm run worker:test`, `npm run worker:deploy`
+  - Live: `npm run deploy:verify`
+  - Custom Playwright live self-test:
+    - `/tmp/active-mirror-live-selftest.mjs`
+    - `/tmp/am-selftest-live-after-worker.json`
+- Verification results:
+  - Source build guards passed, including front-door, language, multilingual,
+    friction, challenge, redaction, and scoped truth gate.
+  - Local layout-only check passed on `360x740`, `390x844`, `430x932`, and
+    `1440x900`: no page overflow, no element overflow, no visible tiny touch
+    targets, and no console errors.
+  - Worker tests passed: kernel `42/42`, gateway guardrails `41/41`,
+    first-turn quality `116/116`, conversation quality `44/44`.
+  - Custom live self-test passed after worker deploy: home mobile/desktop,
+    vague start, room cleanup, poster/image, current-source answer, identity,
+    privacy, and sycophancy cases all green with no overflow offenders or tiny
+    visible targets.
+  - Live source answer was rechecked after gateway hardening and rendered
+    `more countries`, not the malformed mixed-script token.
+  - Final `npm run deploy:verify` passed: interaction smoke, browser smoke,
+    production canary `20/20`, red-team production smoke `20/20` with
+    `failed=0` and `fallback=0`, and user-prompt QA `23/23`.
+- Bad news or limits:
+  - The first local full self-test hit expected CORS failures because the live
+    gateway only allows production origins; local layout was tested separately
+    and live gateway behavior was verified on `https://activemirror.ai/app/`.
+  - A post-worker `deploy:verify` initially failed because the interaction smoke
+    matcher did not recognize a valid newer decision-frame wording. The app
+    output was useful; the smoke matcher was broadened and the full suite was
+    rerun green.
+  - This is still automated self-testing, not real human feedback.
+  - The truth gate remains scoped verification only; it is not whole-repo,
+    whole-computer, external certification, asymmetric signing, or live runtime
+    proof.
+  - Deploy repo still has unrelated dirty file
+    `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it
+    unless separately owned.
+- Next safe move: have one human use the live site for exactly three tasks:
+  ask for an image/poster, ask for current information, and ask for blunt
+  feedback. If they hesitate, tune the first response and artifact copy only;
+  do not add more homepage explanation.
