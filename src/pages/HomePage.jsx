@@ -84,8 +84,8 @@ const STARTER_ACTIONS = [
     },
     {
         kind: 'understand',
-        label: 'Understand',
-        caption: 'Plain English',
+        label: 'Learn',
+        caption: 'Understand',
         icon: Sparkles,
         intent: 'I need to understand this better.',
     },
@@ -2200,7 +2200,7 @@ export default function HomePage() {
             <div className={`fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:56px_56px] ${isLight ? 'opacity-0' : 'opacity-18'}`} />
             <ReflectionField awake={fieldAwake} />
 
-            <header className="relative z-10 px-4 py-4">
+            <header className="relative z-10 px-4 py-3 sm:py-4">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
@@ -2219,14 +2219,14 @@ export default function HomePage() {
                         >
                             {isLight ? <Moon size={15} /> : <Sun size={15} />}
                         </button>
-                        <Link to="/consulting" className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
+                        <Link to="/consulting" className={`hidden rounded-full border px-3 py-1.5 text-xs font-medium transition sm:inline-flex ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
                             For teams
                         </Link>
                     </div>
                 </div>
             </header>
 
-            <main className={`relative z-10 mx-auto flex min-h-[calc(100dvh-88px)] w-full flex-col justify-center gap-4 px-4 pb-5 pt-8 lg:pb-8 ${hasWorkSurface ? 'max-w-6xl' : 'max-w-3xl'}`}>
+            <main className={`relative z-10 mx-auto flex min-h-[calc(100dvh-76px)] w-full flex-col justify-center gap-3 px-4 pb-4 pt-4 sm:min-h-[calc(100dvh-88px)] sm:gap-4 sm:pb-5 sm:pt-8 lg:pb-8 ${hasWorkSurface ? 'max-w-6xl' : 'max-w-3xl'}`}>
                 <section className={`relative w-full overflow-hidden ${hasWorkSurface ? 'mx-auto max-w-3xl' : ''} ${showMirror ? 'rounded-[2.15rem] border border-white/10 bg-white/[0.048] p-3 shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-5 lg:p-6' : 'px-0 py-8 sm:py-10'}`}>
                     {showMirror ? (
                         <>
@@ -2241,22 +2241,22 @@ export default function HomePage() {
                             <MirrorLogo />
                         </div>
 
-                        <h1 className={`mx-auto w-full max-w-[21rem] break-words font-semibold leading-[1.02] tracking-normal sm:max-w-xl ${isLight ? 'text-[#201b16]' : 'text-white'} ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.7rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
+                        <h1 className={`mx-auto w-full max-w-[18.5rem] break-words font-semibold leading-[1.02] tracking-normal sm:max-w-xl ${isLight ? 'text-[#201b16]' : 'text-white'} ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.45rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
                             What do you want?
                         </h1>
 
                         {!showMirror ? (
-                            <div className={`mt-3 text-sm font-semibold tracking-normal sm:text-base ${isLight ? 'text-stone-500' : 'text-cyan-100/80'}`}>
+                            <div className={`mt-2.5 text-sm font-semibold tracking-normal sm:mt-3 sm:text-base ${isLight ? 'text-stone-500' : 'text-cyan-100/80'}`}>
                                 Reflection &gt; Prediction
                             </div>
                         ) : null}
 
                         {!showMirror ? (
-                            <div className="mx-auto mt-5 grid max-w-xl gap-2 sm:grid-cols-2">
+                            <div className="mx-auto mt-4 grid max-w-xl gap-2 sm:mt-5 sm:grid-cols-2">
                                 <Link
                                     to="/id"
                                     onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_action' })}
-                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-[1.2rem] bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-5 text-base font-bold text-white shadow-[0_0_42px_rgba(168,85,247,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_0_54px_rgba(34,211,238,0.24)]"
+                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.05rem] bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-5 text-[0.98rem] font-bold text-white shadow-[0_0_42px_rgba(168,85,247,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_0_54px_rgba(34,211,238,0.24)] sm:min-h-14 sm:rounded-[1.2rem] sm:text-base"
                                 >
                                     Start here
                                     <ArrowRight size={17} />
@@ -2271,7 +2271,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className={`inline-flex min-h-14 items-center justify-center gap-2 rounded-[1.2rem] border px-5 text-base font-bold transition hover:-translate-y-0.5 ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-200 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white'}`}
+                                    className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.05rem] border px-5 text-[0.98rem] font-bold transition hover:-translate-y-0.5 sm:min-h-14 sm:rounded-[1.2rem] sm:text-base ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-200 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white'}`}
                                 >
                                     <Upload size={17} />
                                     Already have one?
@@ -2294,7 +2294,7 @@ export default function HomePage() {
                                             submit(event);
                                         }
                                     }}
-                                    className={`min-h-12 max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 outline-none transition focus:border-violet-200/30 sm:min-h-14 ${isLight ? 'text-stone-950 placeholder:text-stone-400' : 'text-white placeholder:text-zinc-500'}`}
+                                    className={`min-h-11 max-h-36 flex-1 resize-none rounded-[1.15rem] border border-transparent bg-transparent px-3 py-2.5 text-base leading-6 outline-none transition focus:border-violet-200/30 sm:min-h-14 sm:rounded-[1.25rem] sm:py-3 ${isLight ? 'text-stone-950 placeholder:text-stone-400' : 'text-white placeholder:text-zinc-500'}`}
                                     style={{ overflowWrap: 'anywhere' }}
                                 />
                                 <button
@@ -2303,7 +2303,7 @@ export default function HomePage() {
                                     onClick={() => {
                                         if (!canSubmit && !busy) inputRef.current?.focus();
                                     }}
-                                    className={`${showMirror ? 'w-12 px-0 sm:w-auto sm:px-5' : 'px-4 sm:px-5'} inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 sm:min-h-14 ${ctaClass}`}
+                                    className={`${showMirror ? 'w-11 px-0 sm:w-auto sm:px-5' : 'px-4 sm:px-5'} inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[1.05rem] bg-gradient-to-r text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 sm:min-h-14 sm:rounded-[1.15rem] ${ctaClass}`}
                                     aria-label="Send"
                                 >
                                     {busy ? (
@@ -2319,9 +2319,9 @@ export default function HomePage() {
                         </form>
 
                         {!showMirror ? (
-                            <div className="mx-auto mt-4 max-w-2xl">
-                                <div className={`mb-2 text-center text-xs font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Pick a move</div>
-                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                            <div className="mx-auto mt-3 max-w-2xl sm:mt-4">
+                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Or pick one</div>
+                                <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                                 {STARTER_ACTIONS.map((item) => {
                                     const Icon = item.icon;
                                     return (
@@ -2331,22 +2331,22 @@ export default function HomePage() {
                                             onClick={() => {
                                                 startFromStarter(item);
                                             }}
-                                            className={`group grid min-h-[5.65rem] content-center justify-items-center gap-1.5 rounded-[1.25rem] border px-3 py-3 text-center shadow-[0_0_28px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/45 ${item.kind === 'fun' ? 'col-span-2 sm:col-span-1' : ''} ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.035] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white'}`}
+                                            className={`group flex min-h-[4.15rem] flex-col items-center justify-center gap-1 rounded-[0.95rem] border px-1.5 py-2 text-center shadow-[0_0_28px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/45 sm:grid sm:min-h-[5.65rem] sm:content-center sm:justify-items-center sm:gap-1.5 sm:rounded-[1.25rem] sm:px-3 sm:py-3 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.035] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white'}`}
                                         >
-                                            <span className={`grid h-8 w-8 place-items-center rounded-full border transition ${isLight ? 'border-cyan-500/15 bg-cyan-100/60 text-cyan-700 group-hover:border-cyan-600/25 group-hover:bg-cyan-100' : 'border-cyan-200/15 bg-cyan-200/[0.07] text-cyan-100/85 group-hover:border-cyan-100/30 group-hover:bg-cyan-200/[0.1]'}`}>
+                                            <span className={`grid h-7 w-7 place-items-center rounded-full border transition sm:h-8 sm:w-8 ${isLight ? 'border-cyan-500/15 bg-cyan-100/60 text-cyan-700 group-hover:border-cyan-600/25 group-hover:bg-cyan-100' : 'border-cyan-200/15 bg-cyan-200/[0.07] text-cyan-100/85 group-hover:border-cyan-100/30 group-hover:bg-cyan-200/[0.1]'}`}>
                                                 <Icon size={15} />
                                             </span>
-                                            <span className="text-sm font-bold">{item.label}</span>
-                                            <span className={`text-[11px] font-medium leading-4 transition ${isLight ? 'text-stone-500 group-hover:text-cyan-700' : 'text-zinc-500 group-hover:text-cyan-100/75'}`}>{item.caption}</span>
+                                            <span className="whitespace-nowrap text-[11px] font-bold leading-4 min-[380px]:text-[12px] sm:text-sm">{item.label}</span>
+                                            <span className={`hidden text-[11px] font-medium leading-4 transition sm:block ${isLight ? 'text-stone-500 group-hover:text-cyan-700' : 'text-zinc-500 group-hover:text-cyan-100/75'}`}>{item.caption}</span>
                                         </button>
                                     );
                                 })}
                                 </div>
-                                <div className="mt-2 flex justify-center">
+                                <div className="mt-1.5 flex justify-center sm:mt-2">
                                     <button
                                         type="button"
                                         onClick={startLearnActiveMirror}
-                                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition hover:-translate-y-0.5 ${isLight ? 'border-stone-300/70 bg-white/52 text-stone-600 hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.028] text-zinc-400 hover:border-violet-200/30 hover:bg-violet-200/[0.055] hover:text-white'}`}
+                                        className={`inline-flex min-h-9 items-center justify-center gap-2 rounded-full border px-3 text-sm font-semibold transition hover:-translate-y-0.5 sm:min-h-10 sm:px-3.5 ${isLight ? 'border-stone-300/70 bg-white/52 text-stone-600 hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.028] text-zinc-400 hover:border-violet-200/30 hover:bg-violet-200/[0.055] hover:text-white'}`}
                                     >
                                         <Sparkles size={15} className={isLight ? 'text-violet-500' : 'text-violet-200'} />
                                         Meet Active Mirror
