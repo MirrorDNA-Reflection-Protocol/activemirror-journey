@@ -1832,3 +1832,63 @@ Do not turn this into a strategy essay. Keep it operational.
     more activities belong after the user picks a move.
 - Next safe move: run the front-door, language, friction, redaction, and build
   gates before commit or deploy.
+
+### 2026-07-08: Mobile Launcher First-Screen Polish
+
+- Changed: tightened the home-page first screen so mobile users see one
+  question, setup/upload, the chat box, and five compact starts without a
+  scrolling menu.
+- Changed: hid the `For teams` header CTA on small screens while preserving
+  enterprise links in the footer and desktop header.
+- Changed: reduced mobile control height and starter-card density while keeping
+  the guard-required visible starter labels: `Make`, `Decide`, `Fix`,
+  `Understand`, and `Fun`.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `docs/CONTINUITY_LEDGER.md`
+- Source commits:
+  - `26fa041 Polish mobile Active Mirror launcher`
+  - `99153b8 Keep mobile launcher smoke-compatible`
+- Deploy commits in `/Users/mirror-pro/repos/active-mirror-site`:
+  - `bad9fed Deploy mobile launcher polish`
+  - `9a336fb Deploy smoke-compatible launcher polish`
+- Deploy status:
+  - Static Worker deployed: `active-mirror-static-site` version
+    `61235a2a-cc71-408a-a3c8-04d5b7b89042`.
+  - Live app assets verified:
+    - `index-QJqambmK.js`
+    - `index-Cl2hImiA.css`
+- Tools and gates used:
+  - Local Playwright screenshots:
+    - `/tmp/active-mirror-before-mobile.png`
+    - `/tmp/active-mirror-after3-mobile.png`
+    - `/tmp/active-mirror-after2-mobile-dark.png`
+  - Source: `npm run build:deploy`
+  - Deploy repo: `npm run app:package`, `npm run deploy:preflight`
+  - Live: `npm run deploy:verify`
+- Public routes checked:
+  - `https://activemirror.ai/app/`
+  - Browser smoke also checked `/app/id/`, `/app/enterprise/`, `/app/about/`,
+    `/app/consulting/`, `/app/research/`, `/app/device/`, `/app/feedback/`,
+    `/app/privacy/`, and `/app/terms/` on mobile and desktop.
+- Verification results:
+  - Browser smoke passed on mobile and desktop with zero ignored console errors.
+  - Production canary passed `20/20`.
+  - Red-team production smoke passed `20/20`, `failed=0`, `fallback=0`.
+  - User-prompt QA passed `23/23`, including poster/image, practical reply,
+    shopping/source, privacy, challenge, identity, marketing, and enterprise
+    cases.
+- Bad news or limits:
+  - The truth gate remains scoped verification only; it is not whole-repo,
+    whole-computer, external certification, asymmetric signing, or live runtime
+    proof.
+  - Browser-local continuity is still device/browser-local, not cross-device
+    identity sync.
+  - The `Understand` chip is intentionally small on narrow phones so it remains
+    visible and smoke-compatible in the five-chip row.
+  - Deploy repo still has unrelated dirty file
+    `docs/POST_DEPLOY_RECEIPT_2026-07-01_COUNCIL_CONTROL_PLANE.md`; preserve it
+    unless separately owned.
+- Next safe move: test the live page with one real first-time human. If they
+  still hesitate, change only the first-screen wording or chip density, not the
+  model/gateway route.
