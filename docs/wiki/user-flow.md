@@ -1,6 +1,6 @@
 # User Flow
 
-Last checked: 2026-07-04.
+Last checked: 2026-07-08.
 
 ## First Screen
 
@@ -15,6 +15,13 @@ Primary paths:
 - `Start here` opens `/id`.
 - `Already have one?` imports an Active Mirror ID JSON file.
 - The input lets the user type directly without setup.
+- `Pick a move` offers five low-friction starts: `Make`, `Decide`, `Fix`,
+  `Understand`, and `Fun`.
+- `Meet Active Mirror` opens a short guided explanation with personality,
+  not a technical product tour.
+
+The launcher can offer many activities after the first click, but the first
+screen should stay limited to the five moves above.
 
 ## Setup Flow
 

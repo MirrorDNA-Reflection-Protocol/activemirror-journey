@@ -148,10 +148,14 @@ check(
     'saved continuity UI must stay user-owned, local, and source-check capable'
 );
 for (const starterPhrase of [
-    'Start with the version someone can react to today',
-    'A decision gets easier when the reversible choice is separated from the one-way door',
-    'Fix the smallest visible break first',
-    'Find the missing piece that changes what you do next',
+    'Make the first usable version',
+    'Put the options side by side',
+    'Do not fix the whole system',
+    'Make it plain first',
+    "Let's do something fun",
+    'Good. Make it playful, but still make something you can use.',
+    'Meet Active Mirror',
+    'Think of me as the second pass before the world sees your first draft.',
     'Page is enough. Make the first screen, not the whole site.',
     'Clarity is the fix. Remove one choice',
 ]) {

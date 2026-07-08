@@ -1811,3 +1811,30 @@ Do not turn this into a strategy essay. Keep it operational.
   - hash: `96c7c25aa99f775204d88b4b69313133e385b4b81c61f17f5956e1f637736320`
 - Next safe move: create a call-site proof gate before any actual adapter
   invocation changes runtime behavior.
+
+### 2026-07-08: Consumer Launcher and Personality Guide
+
+- Changed: refined the consumer front door into a simple launcher with five
+  visible moves: `Make`, `Decide`, `Fix`, `Understand`, and `Fun`.
+- Changed: added a `Meet Active Mirror` path that answers product questions
+  with a small, warm guide voice instead of a technical explanation.
+- Changed: added light/dark controls on the home page and `/id` setup flow,
+  borrowing a warmer light palette while preserving the existing dark look.
+- Changed: fixed `/id` download naming so the portable setup file is
+  `active-mirror-id.json`.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `src/pages/Start.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/wiki/language-guide.md`
+  - `docs/wiki/user-flow.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Deploy status: not deployed at the time of this ledger entry.
+- Bad news or limits:
+  - This is source/UI behavior only until build and deployment complete.
+  - `Meet Active Mirror` is a guided product path, not a separate model,
+    account system, or full assistant persona runtime.
+  - The launcher should not become a template marketplace on the first screen;
+    more activities belong after the user picks a move.
+- Next safe move: run the front-door, language, friction, redaction, and build
+  gates before commit or deploy.

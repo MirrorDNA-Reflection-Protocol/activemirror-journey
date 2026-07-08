@@ -79,6 +79,8 @@ const requiredTerms = [
     { pattern: /Decide/i, label: 'front-door starter: decide' },
     { pattern: /Fix/i, label: 'front-door starter: fix' },
     { pattern: /Understand/i, label: 'front-door starter: understand' },
+    { pattern: /Fun/i, label: 'front-door starter: fun' },
+    { pattern: /Let'?s do something fun/i, label: 'front-door starter: fun caption' },
     { pattern: /Private by default/i, label: 'privacy choice promise' },
     { pattern: /Set it up\./i, label: 'setup: quick setup headline' },
     { pattern: /What are you here for\?/i, label: 'setup: help question' },

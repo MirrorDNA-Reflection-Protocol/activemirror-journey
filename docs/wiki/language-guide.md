@@ -13,6 +13,14 @@ Use short, normal phrases:
 - `Saved on this device`
 - `Start chat`
 - `Keep a copy`
+- `Pick a move`
+- `Make a thing`
+- `Choose clearly`
+- `Clear the snag`
+- `Plain English`
+- `Fun`
+- `Let's do something fun`
+- `Meet Active Mirror`
 - `Use placeholders for anything private`
 - `Make one small version and test it`
 - `Private first`
@@ -34,6 +42,10 @@ Active Mirror should sound:
 - not clinical.
 
 It should help the user move without diagnosing them, moralizing, or turning the page into a product lecture.
+
+The product can have a voice, but the voice should feel like a useful second
+pass: warm, quick, practical, and lightly playful. Do not expose internal myths,
+technical labels, or strategy phrases to create personality.
 
 ## Avoid On Consumer Surfaces
 

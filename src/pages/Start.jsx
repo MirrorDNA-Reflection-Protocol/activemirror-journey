@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, Download, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Download, Moon, RotateCcw, Sparkles, Sun } from 'lucide-react';
 import MirrorSig from '../components/MirrorSig';
+import { useTheme } from '../contexts/ThemeContext';
 import { FALLBACK_ARCHETYPES } from '../lib/brainFallback';
 import { currentLanguageSnapshot } from '../lib/language-preference';
 import { saveBrainScan, saveBlueprint } from '../lib/mirror-state';
@@ -209,13 +210,14 @@ function downloadSettings(result) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'active-mirror-settings.json';
+    link.download = 'active-mirror-id.json';
     link.click();
     URL.revokeObjectURL(url);
 }
 
 export default function Start() {
     const navigate = useNavigate();
+    const { theme, toggleTheme } = useTheme();
     const [phase, setPhase] = useState('scan');
     const [questionIndex, setQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState([]);
@@ -224,6 +226,7 @@ export default function Start() {
     const activeQuestion = SCAN_QUESTIONS[questionIndex];
     const progress = useMemo(() => Math.round((answers.length / SCAN_QUESTIONS.length) * 100), [answers.length]);
     const currentStep = questionIndex + 1;
+    const isLight = theme === 'light';
 
     function chooseAnswer(answerIndex) {
         const nextAnswers = [...answers, { questionIndex, answerIndex }];
@@ -280,20 +283,29 @@ export default function Start() {
     }
 
     return (
-        <div className="min-h-dvh overflow-x-hidden bg-[#030303] text-white selection:bg-emerald-300/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-12%,rgba(16,185,129,0.18),transparent_34%),radial-gradient(circle_at_95%_82%,rgba(168,85,247,0.12),transparent_30%),#030303]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
+        <div className={`min-h-dvh overflow-x-hidden selection:bg-emerald-300/30 ${isLight ? 'bg-[#f7f3ec] text-[#201b16]' : 'bg-[#030303] text-white'}`}>
+            <div className={`fixed inset-0 ${isLight ? 'bg-[radial-gradient(circle_at_50%_-12%,rgba(255,255,255,0.94),transparent_34%),radial-gradient(circle_at_92%_20%,rgba(196,181,253,0.18),transparent_30%),radial-gradient(circle_at_95%_82%,rgba(34,211,238,0.10),transparent_30%),#f7f3ec]' : 'bg-[radial-gradient(circle_at_50%_-12%,rgba(16,185,129,0.18),transparent_34%),radial-gradient(circle_at_95%_82%,rgba(168,85,247,0.12),transparent_30%),#030303]'}`} />
+            <div className={`fixed inset-0 bg-[linear-gradient(rgba(30,24,18,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(30,24,18,0.035)_1px,transparent_1px)] bg-[size:50px_50px] ${isLight ? 'opacity-28' : 'opacity-0'}`} />
+            <div className={`fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:50px_50px] ${isLight ? 'opacity-0' : 'opacity-20'}`} />
 
             <header className="relative z-10 px-4 py-4">
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
-                        <span className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</span>
+                        <span className={`text-sm font-semibold tracking-[-0.01em] ${isLight ? 'text-stone-950' : 'text-white'}`}>Active Mirror</span>
                     </Link>
                     <div className="flex items-center gap-3 text-xs">
-                        <Link to="/privacy" className="hidden text-zinc-500 transition hover:text-white sm:inline">Privacy</Link>
-                        <Link to="/terms" className="hidden text-zinc-500 transition hover:text-white sm:inline">Terms</Link>
-                        <Link to="/" className="rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 font-semibold text-zinc-300 transition hover:border-emerald-200/35 hover:text-white">
+                        <Link to="/privacy" className={`hidden transition sm:inline ${isLight ? 'text-stone-500 hover:text-stone-950' : 'text-zinc-500 hover:text-white'}`}>Privacy</Link>
+                        <Link to="/terms" className={`hidden transition sm:inline ${isLight ? 'text-stone-500 hover:text-stone-950' : 'text-zinc-500 hover:text-white'}`}>Terms</Link>
+                        <button
+                            type="button"
+                            onClick={toggleTheme}
+                            className={`grid h-9 w-9 place-items-center rounded-full border transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-300 hover:border-cyan-200/30 hover:text-white'}`}
+                            aria-label={isLight ? 'Use dark mode' : 'Use light mode'}
+                        >
+                            {isLight ? <Moon size={15} /> : <Sun size={15} />}
+                        </button>
+                        <Link to="/" className={`rounded-full border px-4 py-2 font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/45 hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-300 hover:border-emerald-200/35 hover:text-white'}`}>
                             Chat
                         </Link>
                     </div>
@@ -304,10 +316,10 @@ export default function Start() {
                 {phase === 'scan' ? (
                     <section className="mx-auto grid w-full max-w-4xl gap-5 lg:grid-cols-[0.78fr_1fr] lg:items-center">
                         <div className="px-1 text-center lg:text-left">
-                            <h1 className="mx-auto max-w-lg text-[3.2rem] font-semibold leading-[0.96] tracking-normal text-white sm:text-[4.8rem] lg:mx-0">
+                            <h1 className={`mx-auto max-w-lg text-[3.2rem] font-semibold leading-[0.96] tracking-normal sm:text-[4.8rem] lg:mx-0 ${isLight ? 'text-[#201b16]' : 'text-white'}`}>
                                 Set it up.
                             </h1>
-                            <p className="mt-4 text-base font-medium text-zinc-400 sm:text-lg">
+                            <p className={`mt-4 text-base font-medium sm:text-lg ${isLight ? 'text-stone-500' : 'text-zinc-400'}`}>
                                 Four taps. No account.
                             </p>
                             <div className="mt-7 flex justify-center gap-2 lg:justify-start" aria-label={`Step ${currentStep} of ${SCAN_QUESTIONS.length}`}>
@@ -324,12 +336,12 @@ export default function Start() {
                             </div>
                         </div>
 
-                        <div className="rounded-[1.75rem] border border-white/10 bg-[#101012]/78 p-5 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:rounded-[2rem] sm:p-7">
-                            <div className="mb-5 flex items-center justify-between gap-3 text-xs font-semibold text-zinc-500">
+                        <div className={`rounded-[1.75rem] border p-5 backdrop-blur-2xl sm:rounded-[2rem] sm:p-7 ${isLight ? 'border-stone-300/70 bg-white/72 shadow-[0_26px_80px_rgba(77,65,50,0.12)] ring-1 ring-white/80' : 'border-white/10 bg-[#101012]/78 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04]'}`}>
+                            <div className={`mb-5 flex items-center justify-between gap-3 text-xs font-semibold ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
                                 <span>{currentStep}/{SCAN_QUESTIONS.length}</span>
                                 <span>{progress}%</span>
                             </div>
-                            <h2 className="text-[1.9rem] font-semibold leading-tight tracking-normal text-white sm:text-4xl">
+                            <h2 className={`text-[1.9rem] font-semibold leading-tight tracking-normal sm:text-4xl ${isLight ? 'text-stone-950' : 'text-white'}`}>
                                 {activeQuestion.question}
                             </h2>
                             <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -338,7 +350,7 @@ export default function Start() {
                                         key={option.label}
                                         type="button"
                                         onClick={() => chooseAnswer(index)}
-                                        className="min-h-20 rounded-[1.15rem] border border-white/10 bg-white/[0.045] px-4 py-4 text-left text-base font-semibold leading-6 text-zinc-200 transition hover:-translate-y-0.5 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07] hover:text-white"
+                                        className={`min-h-20 rounded-[1.15rem] border px-4 py-4 text-left text-base font-semibold leading-6 transition hover:-translate-y-0.5 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700 hover:border-emerald-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-200 hover:border-emerald-200/35 hover:bg-emerald-200/[0.07] hover:text-white'}`}
                                     >
                                         {option.label}
                                     </button>
@@ -348,7 +360,7 @@ export default function Start() {
                                 <button
                                     type="button"
                                     onClick={reset}
-                                    className="mt-5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm font-semibold text-zinc-400 transition hover:border-white/20 hover:text-white"
+                                    className={`mt-5 rounded-full border px-4 py-2 text-sm font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/55 text-stone-500 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-400 hover:border-white/20 hover:text-white'}`}
                                 >
                                     Start over
                                 </button>
@@ -359,7 +371,7 @@ export default function Start() {
 
                 {phase === 'result' && result ? (
                     <section className="grid w-full gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-                        <div className="order-2 rounded-[2rem] border border-white/10 bg-[#101012]/76 p-6 text-center shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl lg:order-1">
+                        <div className={`order-2 rounded-[2rem] border p-6 text-center backdrop-blur-2xl lg:order-1 ${isLight ? 'border-stone-300/70 bg-white/72 shadow-[0_26px_80px_rgba(77,65,50,0.12)] ring-1 ring-white/80' : 'border-white/10 bg-[#101012]/76 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04]'}`}>
                             <div className="flex justify-center">
                                 <MirrorSig archetype={result.archetype} seed={result.mirrorId} size={210} />
                             </div>
@@ -370,16 +382,16 @@ export default function Start() {
                         </div>
 
                         <div className="order-1 lg:order-2">
-                            <h1 className="max-w-2xl text-[2.85rem] font-semibold leading-[0.98] tracking-normal text-white sm:text-[4.7rem]">
+                            <h1 className={`max-w-2xl text-[2.85rem] font-semibold leading-[0.98] tracking-normal sm:text-[4.7rem] ${isLight ? 'text-[#201b16]' : 'text-white'}`}>
                                 Ready.
                             </h1>
-                            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
+                            <p className={`mt-5 max-w-xl text-base leading-7 sm:text-lg sm:leading-8 ${isLight ? 'text-stone-500' : 'text-zinc-400'}`}>
                                 Start with anything. You can keep a copy if you want.
                             </p>
 
                             <div className="mt-6 grid gap-2">
                                 {result.preferences.slice(0, 4).map((item) => (
-                                    <span key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-semibold text-zinc-200">
+                                    <span key={item.id} className={`rounded-2xl border px-3 py-2 text-sm font-semibold ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700' : 'border-white/10 bg-white/[0.05] text-zinc-200'}`}>
                                         {preferenceSummary(item)}
                                     </span>
                                 ))}
@@ -397,7 +409,7 @@ export default function Start() {
                                 <button
                                     type="button"
                                     onClick={() => downloadSettings(result)}
-                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
+                                    className={`inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border px-6 text-base font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/60 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.05] text-zinc-300 hover:border-white/20 hover:text-white'}`}
                                 >
                                     <Download size={17} />
                                     Keep a copy
@@ -405,7 +417,7 @@ export default function Start() {
                                 <button
                                     type="button"
                                     onClick={reset}
-                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-6 text-base font-semibold text-zinc-300 transition hover:border-white/20 hover:text-white"
+                                    className={`inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border px-6 text-base font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/60 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.05] text-zinc-300 hover:border-white/20 hover:text-white'}`}
                                 >
                                     <RotateCcw size={17} />
                                     Start over

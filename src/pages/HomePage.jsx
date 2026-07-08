@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Trash2, Upload, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
 import { NeedsSources } from '../components/TruthStateNotice';
+import { useTheme } from '../contexts/ThemeContext';
 import { buildLocalSenseContext, assessLocalMirrorSense, maskSoftPrivateText } from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { attachArtifactChallenge } from '../lib/challenge-packet';
@@ -63,76 +64,135 @@ const STARTER_ACTIONS = [
     {
         kind: 'make',
         label: 'Make',
+        caption: 'Make a thing',
         icon: PenLine,
         intent: 'I want to make something useful.',
     },
     {
         kind: 'decide',
         label: 'Decide',
+        caption: 'Choose clearly',
         icon: Check,
         intent: 'I need to make a decision.',
     },
     {
         kind: 'fix',
         label: 'Fix',
+        caption: 'Clear the snag',
         icon: SlidersHorizontal,
         intent: 'Something is not working.',
     },
     {
         kind: 'understand',
         label: 'Understand',
+        caption: 'Plain English',
         icon: Sparkles,
         intent: 'I need to understand this better.',
+    },
+    {
+        kind: 'fun',
+        label: 'Fun',
+        caption: "Let's do something fun",
+        icon: PartyPopper,
+        intent: 'I want to do something fun.',
     },
 ];
 
 const STARTER_RESULTS = {
     make: {
-        reflection: 'Start with the version someone can react to today, not the whole idea.',
-        question: 'What are you making: a message, page, plan, image, or product?',
-        move: 'Pick one format and write the rough version in one sentence.',
+        reflection: 'Make the first usable version. It does not need to be perfect.',
+        question: 'What kind of thing: image, message, page, doc, code, or plan?',
+        move: 'Type the format and the rough idea. I will make the first version.',
         visual: {
             kind: 'reframe',
-            left: 'Build the whole thing',
-            right: 'Make one testable piece',
+            left: 'Whole idea',
+            right: 'First version',
         },
     },
     decide: {
-        reflection: 'A decision gets easier when the reversible choice is separated from the one-way door.',
+        reflection: 'Put the options side by side. One of them is easier to test.',
         question: 'What are the two options?',
-        move: 'Write Option A and Option B. Mark the one that is easier to undo.',
+        move: 'Write Option A and Option B. I will help find the smallest test.',
         visual: {
             kind: 'axes',
-            left: 'Hard to undo',
-            right: 'Easy to test',
+            left: 'Big bet',
+            right: 'Small test',
         },
     },
     fix: {
-        reflection: 'Fix the smallest visible break first, not the whole system.',
+        reflection: 'Do not fix the whole system. Find the first snag.',
         question: 'What feels wrong: unclear, broken, slow, ugly, or blocked?',
-        move: 'Name the visible symptom in five words, then change only one thing.',
+        move: 'Name the visible snag in five words. I will make the repair smaller.',
         visual: {
             kind: 'reframe',
             left: 'Everything is broken',
-            right: 'One visible symptom',
+            right: 'First snag',
         },
     },
     understand: {
-        reflection: 'You do not need the full explanation yet. Find the missing piece that changes what you do next.',
+        reflection: 'Make it plain first. Depth comes after the first clear handle.',
         question: 'What would help most: a definition, example, comparison, source, or next step?',
-        move: 'Choose one lens and ask for that.',
+        move: 'Pick the kind of clarity you want. I will keep it usable.',
         visual: {
             kind: 'spectrum',
-            left: 'More information',
-            right: 'The missing piece',
+            left: 'More words',
+            right: 'Clear handle',
         },
     },
+    fun: {
+        reflection: 'Good. Make it playful, but still make something you can use.',
+        question: 'What kind of fun: image, tiny game, story, surprise idea, playlist, or prompt?',
+        move: 'Pick one playful lane, or type a mood and I will start.',
+        visual: {
+            kind: 'spectrum',
+            left: 'Random',
+            right: 'Playful and useful',
+        },
+    },
+};
+
+const LAUNCHER_ACTIVITIES = {
+    make: [
+        ['Image', 'I want to make an image. Help me choose the subject, feeling, and one thing it should do.'],
+        ['Message', 'I want to write a message. Help me make it short, clear, and easy to answer.'],
+        ['Page', 'I want to make a page. Help me create the first screen and the first button.'],
+        ['Doc', 'I want to make a short document. Help me create the smallest useful version.'],
+        ['Code', 'I want to make a code starter. Help me define the smallest working piece.'],
+        ['Plan', 'I want a simple plan. Help me choose the first three steps.'],
+    ],
+    decide: [
+        ['Compare', 'Compare my options and give me the smallest useful signal.'],
+        ['Risk', 'Check what could go wrong and what is reversible.'],
+        ['Test', 'Turn this decision into a small test I can run.'],
+        ['Choose', 'Help me pick one option and name the reason.'],
+    ],
+    fix: [
+        ['Clarity', 'Fix the unclear part and make it easier to understand.'],
+        ['Flow', 'Find the step where this breaks and make it smoother.'],
+        ['Copy', 'Rewrite this so it is shorter and easier to act on.'],
+        ['Bug', 'Help me isolate the visible failure and a small repair.'],
+    ],
+    understand: [
+        ['Explain', 'Explain this in plain language with one example.'],
+        ['Example', 'Give me one concrete example and one next step.'],
+        ['Compare', 'Compare this to the closest familiar thing.'],
+        ['Check', 'Check current sources before I rely on this.'],
+    ],
+    fun: [
+        ['Image', 'Make a fun image idea from my mood. Help me choose the subject, feeling, and one surprise detail.'],
+        ['Tiny game', 'Make a tiny one-screen game idea I can try or build.'],
+        ['Story', 'Write a short playful story from one rough idea.'],
+        ['Surprise me', 'Give me one unexpected, useful, fun thing to try right now.'],
+        ['Playlist', 'Turn my mood into a small playlist brief or vibe list.'],
+        ['Prompt', 'Give me a creative prompt that gets an interesting result.'],
+    ],
 };
 
 function makeStarterResult(kind = 'make') {
     const starter = STARTER_RESULTS[kind] || STARTER_RESULTS.make;
     return {
         kind: 'starter',
+        starterKind: kind,
         mirror: {
             ...starter,
             receipt: {
@@ -142,6 +202,34 @@ function makeStarterResult(kind = 'make') {
             },
         },
     };
+}
+
+function launcherActivitiesFor(kind = '') {
+    return (LAUNCHER_ACTIVITIES[kind] || []).map(([label, prompt]) => ({
+        label,
+        prompt,
+    }));
+}
+
+function launcherIconFor(label = '') {
+    if (/\b(image)\b/i.test(label)) return Image;
+    if (/\b(message|copy)\b/i.test(label)) return PenLine;
+    if (/\b(page|doc|plan|test)\b/i.test(label)) return FileText;
+    if (/\b(code|bug)\b/i.test(label)) return Code2;
+    if (/\b(risk|flow)\b/i.test(label)) return SlidersHorizontal;
+    if (/\b(choose|compare|check)\b/i.test(label)) return Check;
+    return Sparkles;
+}
+
+function makeLauncherFollowUps(kind = 'make') {
+    return launcherActivitiesFor(kind).map((item) => {
+        return {
+            label: item.label,
+            icon: launcherIconFor(item.label),
+            action: 'reflect',
+            intent: item.prompt,
+        };
+    });
 }
 
 function starterAnswer(answer = '') {
@@ -424,13 +512,69 @@ function makeArtifactFirstResult(intent = '', kind = 'draft') {
 }
 
 function makeEcosystemResult(intent) {
+    const text = String(intent || '').toLowerCase();
+    const privacy = /\b(private|privacy|save|saved|memory|account|data)\b/.test(text);
+    const teams = /\b(team|teams|business|enterprise|company|workflows?|clients?)\b/.test(text);
+    const example = /\b(example|show me|try it|demo|what can it do|what can you do)\b/.test(text);
+
+    if (privacy) {
+        return {
+            kind: 'help',
+            intent,
+            mirror: {
+                reflection: 'Use placeholders for anything private. Keep what helps. Drop the rest.',
+                question: 'Do you want to start fresh, import your setup, or just try one sentence?',
+                move: 'Type the version you can share. Names, keys, and account details can stay out.',
+                receipt: {
+                    context_used: 'Your question about privacy.',
+                    context_excluded: 'No private details were needed.',
+                    memory_decision: 'Nothing saved.',
+                },
+            },
+        };
+    }
+
+    if (teams) {
+        return {
+            kind: 'help',
+            intent,
+            mirror: {
+                reflection: 'For teams, start with one workflow people already care about.',
+                question: 'What would the team want finished: a brief, review, decision, report, or client-ready draft?',
+                move: 'Bring one workflow. I will turn it into a smaller test your team can judge.',
+                receipt: {
+                    context_used: 'Your question about team use.',
+                    context_excluded: 'No client or private work was needed.',
+                    memory_decision: 'Nothing saved.',
+                },
+            },
+        };
+    }
+
+    if (example) {
+        return {
+            kind: 'help',
+            intent,
+            mirror: {
+                reflection: 'Example: bring a rough thought, and I turn it into a first useful output.',
+                question: 'Do you want the example to be a message, image, page, decision, or quick explanation?',
+                move: 'Pick one example type, or send your own messy version.',
+                receipt: {
+                    context_used: 'Your request for an example.',
+                    context_excluded: 'No private details were needed.',
+                    memory_decision: 'Nothing saved.',
+                },
+            },
+        };
+    }
+
     return {
         kind: 'help',
         intent,
         mirror: {
-            reflection: 'Bring the thing in front of you. I will help make it clearer, smaller, and usable.',
-            question: 'What do you want to move?',
-            move: 'Type the messy version in one sentence.',
+            reflection: 'Think of me as the second pass before the world sees your first draft.',
+            question: 'Do you want to make something, choose, fix, or understand?',
+            move: 'Send the rough version. I will answer with the smallest useful thing first.',
             receipt: {
                 context_used: 'Your question about what this can do.',
                 context_excluded: 'No private details were needed.',
@@ -438,6 +582,35 @@ function makeEcosystemResult(intent) {
             },
         },
     };
+}
+
+function makeLearnActiveMirrorFollowUps() {
+    return [
+        {
+            label: 'Try it',
+            icon: Sparkles,
+            action: 'reflect',
+            intent: 'Show me one quick example of how this works.',
+        },
+        {
+            label: 'Make something',
+            icon: PenLine,
+            action: 'reflect',
+            intent: 'I want to make something useful.',
+        },
+        {
+            label: 'Privacy',
+            icon: Lock,
+            action: 'reflect',
+            intent: 'How does Active Mirror handle privacy in plain language?',
+        },
+        {
+            label: 'For teams',
+            icon: Check,
+            action: 'reflect',
+            intent: 'How could a team use Active Mirror?',
+        },
+    ];
 }
 
 function makeSetupReadyResult() {
@@ -639,6 +812,15 @@ function makeOneDetailFollowUps(intent = '') {
 }
 
 function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
+    if (isLearnActiveMirrorContext(mirror, intent)) {
+        return makeLearnActiveMirrorFollowUps();
+    }
+
+    const starterKind = resultStarterKind(mirror, intent);
+    if (starterKind) {
+        return makeLauncherFollowUps(starterKind);
+    }
+
     const artifactKind = detectArtifactKind(intent, mirror);
     const artifactAction = artifactActionFor(artifactKind);
     const artifactIntent = artifactIntentFor(artifactKind, mirror, intent);
@@ -698,6 +880,23 @@ function makeFollowUps(mirror = {}, loopCount = 0, intent = '') {
             intent: `Give me one different useful angle on this, without repeating yourself. Keep one next move only: ${mirror.move}`,
         },
     ].filter(Boolean);
+}
+
+function isLearnActiveMirrorContext(mirror = {}, intent = '') {
+    const text = `${intent} ${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
+    return /\bwhat is active mirror\b|\bhow do i use active mirror\b|\bhow does active mirror\b|\bmeet active mirror\b/.test(text)
+        || /\bsecond pass before the world sees your first draft\b/.test(text)
+        || /\bquestion about (?:what this can do|privacy|team use)\b/.test(text);
+}
+
+function resultStarterKind(mirror = {}, intent = '') {
+    const text = `${intent} ${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
+    if (/\bwhat kind of thing:\s*image,\s*message,\s*page,\s*doc,\s*code,\s*or\s*plan\b/.test(text)) return 'make';
+    if (/\bwhat are the two options\b/.test(text)) return 'decide';
+    if (/\bwhat feels wrong:\s*unclear,\s*broken,\s*slow,\s*ugly,\s*or\s*blocked\b/.test(text)) return 'fix';
+    if (/\bdefinition,\s*example,\s*comparison,\s*source,\s*or\s*next step\b/.test(text)) return 'understand';
+    if (/\bwhat kind of fun:\s*image,\s*tiny game,\s*story,\s*surprise idea,\s*playlist,\s*or\s*prompt\b/.test(text)) return 'fun';
+    return '';
 }
 
 function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
@@ -909,25 +1108,28 @@ function savedContextCue({ activeDefault = null, continuity = [] } = {}) {
 }
 
 function MicroVisual({ visual }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
+
     if (!visual) return null;
 
     if (visual.kind === 'reframe') {
         return (
             <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-zinc-500 line-through decoration-zinc-600">{visual.left}</span>
-                <span className="text-cyan-200">to</span>
-                <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-1.5 font-semibold text-cyan-100">{visual.right}</span>
+                <span className={`rounded-full border px-3 py-1.5 line-through ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-500 decoration-stone-400' : 'border-white/10 bg-white/[0.04] text-zinc-500 decoration-zinc-600'}`}>{visual.left}</span>
+                <span className={isLight ? 'text-cyan-700' : 'text-cyan-200'}>to</span>
+                <span className={`rounded-full border px-3 py-1.5 font-semibold ${isLight ? 'border-cyan-500/20 bg-cyan-100/60 text-cyan-800' : 'border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-100'}`}>{visual.right}</span>
             </div>
         );
     }
 
     if (visual.kind === 'axes') {
         return (
-            <div className="mt-3 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] p-3">
+            <div className={`mt-3 rounded-[1.35rem] border p-3 ${isLight ? 'border-cyan-500/18 bg-cyan-50/70' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
                 <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-violet-300 via-cyan-200 to-emerald-200" />
                 <div className="flex justify-between gap-4 text-sm font-semibold">
-                    <span className="text-zinc-300">{visual.left}</span>
-                    <span className="text-right text-cyan-100">{visual.right}</span>
+                    <span className={isLight ? 'text-stone-600' : 'text-zinc-300'}>{visual.left}</span>
+                    <span className={`text-right ${isLight ? 'text-cyan-800' : 'text-cyan-100'}`}>{visual.right}</span>
                 </div>
             </div>
         );
@@ -935,11 +1137,11 @@ function MicroVisual({ visual }) {
 
     if (visual.kind === 'spectrum') {
         return (
-            <div className="mt-3 rounded-[1.35rem] border border-cyan-300/15 bg-cyan-300/[0.055] p-3">
+            <div className={`mt-3 rounded-[1.35rem] border p-3 ${isLight ? 'border-cyan-500/18 bg-cyan-50/70' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
                 <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-purple-300 to-cyan-200" />
                 <div className="flex justify-between gap-4 text-sm font-semibold">
-                    <span>{visual.left}</span>
-                    <span className="text-right text-cyan-100">{visual.right}</span>
+                    <span className={isLight ? 'text-stone-600' : ''}>{visual.left}</span>
+                    <span className={`text-right ${isLight ? 'text-cyan-800' : 'text-cyan-100'}`}>{visual.right}</span>
                 </div>
             </div>
         );
@@ -949,7 +1151,9 @@ function MicroVisual({ visual }) {
 }
 
 function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true, allowCopy = true }) {
+    const { theme } = useTheme();
     const [copied, setCopied] = useState(false);
+    const isLight = theme === 'light';
 
     async function copyMove() {
         await copyText(mirror.move || '');
@@ -960,17 +1164,17 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
 
     return (
         <div className="mt-4 grid gap-3">
-            <div className="rounded-[1.35rem] border border-white/[0.075] bg-white/[0.032] p-3.5 shadow-[0_0_22px_rgba(16,185,129,0.025)]">
+            <div className={`rounded-[1.35rem] border p-3.5 ${isLight ? 'border-stone-300/70 bg-white/65 shadow-[0_14px_34px_rgba(77,65,50,0.08)]' : 'border-white/[0.075] bg-white/[0.032] shadow-[0_0_22px_rgba(16,185,129,0.025)]'}`}>
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                     <div className="flex min-w-0 items-start gap-3">
                         <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.36)]" />
-                        <div className="break-words text-[1rem] font-medium leading-7 text-zinc-100 sm:text-[1.02rem]">{mirror.move}</div>
+                        <div className={`break-words text-[1rem] font-medium leading-7 sm:text-[1.02rem] ${isLight ? 'text-stone-800' : 'text-zinc-100'}`}>{mirror.move}</div>
                     </div>
                     {allowCopy ? (
                         <button
                             type="button"
                             onClick={copyMove}
-                            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-black/[0.14] px-4 text-sm font-semibold text-zinc-200 transition hover:border-emerald-200/30 hover:bg-emerald-200/[0.07] hover:text-white"
+                            className={`inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border px-4 text-sm font-semibold transition ${isLight ? 'border-stone-300/80 bg-stone-100/75 text-stone-700 hover:border-emerald-500/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-black/[0.14] text-zinc-200 hover:border-emerald-200/30 hover:bg-emerald-200/[0.07] hover:text-white'}`}
                         >
                             {copied ? <Check size={15} /> : <Copy size={15} />}
                             {copied ? 'Copied' : 'Copy'}
@@ -984,7 +1188,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
                     type="button"
                     onClick={() => onRemember?.(mirror)}
                     disabled={remembered}
-                    className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.028] px-3 text-xs font-semibold text-zinc-400 transition hover:border-violet-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100"
+                    className={`inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-violet-400/35 hover:text-stone-950 disabled:border-emerald-500/20 disabled:text-emerald-700' : 'border-white/10 bg-white/[0.028] text-zinc-400 hover:border-violet-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100'}`}
                 >
                     {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
                     {remembered ? 'Saved' : 'Save'}
@@ -997,6 +1201,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
 }
 
 function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled, onSourceChecked, onRemember, remembered }) {
+    const { theme } = useTheme();
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
     const isPrivacyHold = result?.kind === 'privacy_hold';
@@ -1008,6 +1213,18 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
     const answerFirst = showSourceCheck && isAnswerFirstAsk(intent);
     const focusText = String(mirror.question || '').trim();
+    const isLight = theme === 'light';
+    const assistantIconClass = isLight
+        ? 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-400/18 bg-white/65 text-violet-600 shadow-[0_14px_28px_rgba(77,65,50,0.08)] md:grid'
+        : 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid';
+    const panelClass = isLight
+        ? 'min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-stone-300/70 bg-white/72 p-4 shadow-[0_24px_70px_rgba(77,65,50,0.12)] ring-1 ring-white/80 backdrop-blur-2xl sm:p-5'
+        : 'min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-white/[0.075] bg-white/[0.038] p-4 shadow-[0_0_42px_rgba(0,0,0,0.20)] backdrop-blur-2xl sm:p-5';
+    const reflectionClass = `mt-4 break-words text-[1rem] leading-7 sm:text-[1.08rem] ${isLight ? 'text-stone-800' : 'text-zinc-100'}`;
+    const focusClass = isLight
+        ? 'mt-4 break-words rounded-[1.15rem] border border-violet-400/14 bg-violet-50/70 px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-stone-800'
+        : 'mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86';
+    const focusLabelClass = `mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] ${isLight ? 'text-violet-700/55' : 'text-violet-100/55'}`;
 
     if (isLoading) {
         return <LoadingPanel />;
@@ -1017,15 +1234,15 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
         return (
             <div className="grid gap-3">
                 <div className="flex items-start gap-3">
-                    <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid">
+                    <div className={assistantIconClass}>
                         <MirrorLogo />
                     </div>
-                    <div className="min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-white/[0.075] bg-white/[0.038] p-4 shadow-[0_0_42px_rgba(0,0,0,0.20)] backdrop-blur-2xl sm:p-5">
+                    <div className={panelClass}>
                         <ReflectionGlow mirror={mirror} />
-                        <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.08rem]">
+                        <p className={reflectionClass}>
                             {mirror.reflection}
                         </p>
-                        <div className="mt-4 rounded-[1.2rem] border border-emerald-200/12 bg-emerald-200/[0.055] px-3.5 py-3 text-[0.98rem] font-semibold leading-7 text-emerald-50">
+                        <div className={`mt-4 rounded-[1.2rem] border px-3.5 py-3 text-[0.98rem] font-semibold leading-7 ${isLight ? 'border-emerald-500/16 bg-emerald-50/75 text-emerald-900' : 'border-emerald-200/12 bg-emerald-200/[0.055] text-emerald-50'}`}>
                             {mirror.move}
                         </div>
                     </div>
@@ -1055,15 +1272,15 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
         return (
             <div className="grid gap-3">
                 <div className="flex items-start gap-3">
-                    <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-cyan-200/15 bg-white/[0.045] text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.10)] md:grid">
+                    <div className={assistantIconClass}>
                         <MirrorLogo />
                     </div>
-                    <div className="min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-cyan-200/12 bg-cyan-200/[0.045] p-4 shadow-[0_0_42px_rgba(0,0,0,0.16)] backdrop-blur-2xl sm:p-5">
+                    <div className={panelClass}>
                         <ReflectionGlow mirror={mirror} />
-                        <p className="mt-4 break-words text-[1rem] font-medium leading-7 text-zinc-100 sm:text-[1.08rem]">
+                        <p className={`${reflectionClass} font-medium`}>
                             {mirror.reflection}
                         </p>
-                        <div className="mt-3 break-words text-sm leading-6 text-zinc-400">
+                        <div className={`mt-3 break-words text-sm leading-6 ${isLight ? 'text-stone-500' : 'text-zinc-400'}`}>
                             {mirror.move}
                         </div>
                     </div>
@@ -1075,17 +1292,17 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     return (
         <div className="grid gap-3">
             <div className="flex items-start gap-3">
-                <div className="mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid">
+                <div className={assistantIconClass}>
                     <MirrorLogo />
                 </div>
-                <div className="min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-white/[0.075] bg-white/[0.038] p-4 shadow-[0_0_42px_rgba(0,0,0,0.20)] backdrop-blur-2xl sm:p-5">
+                <div className={panelClass}>
                     <ReflectionGlow mirror={mirror} />
-                    <p className="mt-4 break-words text-[1rem] leading-7 text-zinc-100 sm:text-[1.08rem]">
+                    <p className={reflectionClass}>
                         {mirror.reflection}
                     </p>
                     {focusText ? (
-                        <div className="mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86">
-                            <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-violet-100/55">Start here</div>
+                        <div className={focusClass}>
+                            <div className={focusLabelClass}>Start here</div>
                             {focusText}
                         </div>
                     ) : null}
@@ -1523,6 +1740,7 @@ function MemoryDrawer({
 
 export default function HomePage() {
     const location = useLocation();
+    const { theme, toggleTheme } = useTheme();
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
     const workSurfaceRef = useRef(null);
@@ -1839,6 +2057,22 @@ export default function HomePage() {
         window.setTimeout(() => inputRef.current?.focus(), 60);
     }
 
+    function startLearnActiveMirror() {
+        const intent = 'What is Active Mirror and how do I use it?';
+        setText('');
+        setLastIntent(intent);
+        setLastSource('learn');
+        setLastStarterKind('');
+        setLastSense(null);
+        setLoopCount(0);
+        setSendableDraft(null);
+        setArtifactBusy('');
+        setWorkSurfaceOpen(false);
+        setResult(makeEcosystemResult(intent));
+        trackEvent('learn_active_mirror_clicked', { page: 'home', source: 'launcher' });
+        window.setTimeout(() => inputRef.current?.focus(), 60);
+    }
+
     async function createArtifact(kind = 'draft', options = {}) {
         const mirror = options.mirror || result?.mirror || SAMPLE_MIRROR;
         const artifactIntent = options.intent || lastIntent || mirror.question || mirror.move || 'Create the smallest useful output.';
@@ -1952,28 +2186,40 @@ export default function HomePage() {
     const canSubmit = text.trim().length >= 4;
     const fieldAwake = showMirror || text.trim().length > 0;
     const savedCount = mirrorDefaults.length + continuityLedger.length;
+    const isLight = theme === 'light';
     const ctaClass = canSubmit && !busy
         ? 'from-emerald-400 via-cyan-400 to-violet-500 text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] hover:scale-[1.015]'
-        : 'from-zinc-800 to-zinc-700 text-zinc-500 shadow-none';
+        : isLight
+            ? 'from-stone-200 to-stone-300 text-stone-500 shadow-none'
+            : 'from-zinc-800 to-zinc-700 text-zinc-500 shadow-none';
 
     return (
-        <div className="relative min-h-dvh overflow-hidden bg-[#050507] text-white selection:bg-emerald-300/25">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_24%_10%,rgba(126,87,255,0.20),transparent_34%),radial-gradient(circle_at_92%_84%,rgba(34,211,238,0.10),transparent_32%),#050507]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:56px_56px] opacity-18" />
+        <div className={`relative min-h-dvh overflow-hidden selection:bg-emerald-300/25 ${isLight ? 'bg-[#f7f3ec] text-[#1f1b16]' : 'bg-[#050507] text-white'}`}>
+            <div className={`fixed inset-0 ${isLight ? 'bg-[radial-gradient(circle_at_24%_10%,rgba(255,255,255,0.92),transparent_34%),radial-gradient(circle_at_88%_20%,rgba(196,181,253,0.18),transparent_30%),radial-gradient(circle_at_88%_86%,rgba(34,211,238,0.12),transparent_32%),#f7f3ec]' : 'bg-[radial-gradient(circle_at_24%_10%,rgba(126,87,255,0.20),transparent_34%),radial-gradient(circle_at_92%_84%,rgba(34,211,238,0.10),transparent_32%),#050507]'}`} />
+            <div className={`fixed inset-0 bg-[linear-gradient(rgba(30,24,18,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(30,24,18,0.035)_1px,transparent_1px)] bg-[size:56px_56px] ${isLight ? 'opacity-30' : 'opacity-0'}`} />
+            <div className={`fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:56px_56px] ${isLight ? 'opacity-0' : 'opacity-18'}`} />
             <ReflectionField awake={fieldAwake} />
 
             <header className="relative z-10 px-4 py-4">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex items-center gap-3">
                         <MirrorLogo />
-                        <div className="text-sm font-semibold tracking-[-0.01em] text-white">Active Mirror</div>
+                        <div className={`text-sm font-semibold tracking-[-0.01em] ${isLight ? 'text-stone-950' : 'text-white'}`}>Active Mirror</div>
                     </Link>
                     <div className="flex items-center gap-3 sm:gap-5">
-                        <nav className="hidden items-center gap-5 text-xs font-semibold text-zinc-500 sm:flex">
-                            <Link to="/research" className="transition hover:text-white">Research</Link>
-                            <Link to="/enterprise" className="transition hover:text-white">Business</Link>
+                        <nav className={`hidden items-center gap-5 text-xs font-semibold sm:flex ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
+                            <Link to="/research" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Research</Link>
+                            <Link to="/enterprise" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Business</Link>
                         </nav>
-                        <Link to="/consulting" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-emerald-300/30 hover:text-white">
+                        <button
+                            type="button"
+                            onClick={toggleTheme}
+                            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-xs transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-200/30 hover:text-white'}`}
+                            aria-label={isLight ? 'Use dark mode' : 'Use light mode'}
+                        >
+                            {isLight ? <Moon size={15} /> : <Sun size={15} />}
+                        </button>
+                        <Link to="/consulting" className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
                             For teams
                         </Link>
                     </div>
@@ -1995,12 +2241,12 @@ export default function HomePage() {
                             <MirrorLogo />
                         </div>
 
-                        <h1 className={`mx-auto w-full max-w-[21rem] break-words font-semibold leading-[1.02] tracking-normal text-white sm:max-w-xl ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.7rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
+                        <h1 className={`mx-auto w-full max-w-[21rem] break-words font-semibold leading-[1.02] tracking-normal sm:max-w-xl ${isLight ? 'text-[#201b16]' : 'text-white'} ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.7rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
                             What do you want?
                         </h1>
 
                         {!showMirror ? (
-                            <div className="mt-3 text-sm font-semibold tracking-normal text-cyan-100/80 sm:text-base">
+                            <div className={`mt-3 text-sm font-semibold tracking-normal sm:text-base ${isLight ? 'text-stone-500' : 'text-cyan-100/80'}`}>
                                 Reflection &gt; Prediction
                             </div>
                         ) : null}
@@ -2025,7 +2271,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-[1.2rem] border border-white/10 bg-white/[0.045] px-5 text-base font-bold text-zinc-200 transition hover:-translate-y-0.5 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white"
+                                    className={`inline-flex min-h-14 items-center justify-center gap-2 rounded-[1.2rem] border px-5 text-base font-bold transition hover:-translate-y-0.5 ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-200 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white'}`}
                                 >
                                     <Upload size={17} />
                                     Already have one?
@@ -2034,7 +2280,7 @@ export default function HomePage() {
                         ) : null}
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
-                            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border border-white/10 bg-black/36 p-2 shadow-[0_0_50px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+                            <div className={`grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border p-2 backdrop-blur-xl ${isLight ? 'border-stone-300/70 bg-white/74 shadow-[0_24px_70px_rgba(77,65,50,0.10)]' : 'border-white/10 bg-black/36 shadow-[0_0_50px_rgba(0,0,0,0.22)]'}`}>
                                 <textarea
                                     ref={inputRef}
                                     rows={1}
@@ -2048,7 +2294,7 @@ export default function HomePage() {
                                             submit(event);
                                         }
                                     }}
-                                    className="min-h-12 max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 text-white outline-none transition placeholder:text-zinc-500 focus:border-violet-200/30 sm:min-h-14"
+                                    className={`min-h-12 max-h-36 flex-1 resize-none rounded-[1.25rem] border border-transparent bg-transparent px-3 py-3 text-base leading-6 outline-none transition focus:border-violet-200/30 sm:min-h-14 ${isLight ? 'text-stone-950 placeholder:text-stone-400' : 'text-white placeholder:text-zinc-500'}`}
                                     style={{ overflowWrap: 'anywhere' }}
                                 />
                                 <button
@@ -2073,7 +2319,9 @@ export default function HomePage() {
                         </form>
 
                         {!showMirror ? (
-                            <div className="mx-auto mt-3 flex max-w-2xl flex-wrap justify-center gap-2">
+                            <div className="mx-auto mt-4 max-w-2xl">
+                                <div className={`mb-2 text-center text-xs font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Pick a move</div>
+                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
                                 {STARTER_ACTIONS.map((item) => {
                                     const Icon = item.icon;
                                     return (
@@ -2083,13 +2331,27 @@ export default function HomePage() {
                                             onClick={() => {
                                                 startFromStarter(item);
                                             }}
-                                            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-3.5 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white"
+                                            className={`group grid min-h-[5.65rem] content-center justify-items-center gap-1.5 rounded-[1.25rem] border px-3 py-3 text-center shadow-[0_0_28px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/45 ${item.kind === 'fun' ? 'col-span-2 sm:col-span-1' : ''} ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.035] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white'}`}
                                         >
-                                            <Icon size={15} className="text-cyan-100/80" />
-                                            {item.label}
+                                            <span className={`grid h-8 w-8 place-items-center rounded-full border transition ${isLight ? 'border-cyan-500/15 bg-cyan-100/60 text-cyan-700 group-hover:border-cyan-600/25 group-hover:bg-cyan-100' : 'border-cyan-200/15 bg-cyan-200/[0.07] text-cyan-100/85 group-hover:border-cyan-100/30 group-hover:bg-cyan-200/[0.1]'}`}>
+                                                <Icon size={15} />
+                                            </span>
+                                            <span className="text-sm font-bold">{item.label}</span>
+                                            <span className={`text-[11px] font-medium leading-4 transition ${isLight ? 'text-stone-500 group-hover:text-cyan-700' : 'text-zinc-500 group-hover:text-cyan-100/75'}`}>{item.caption}</span>
                                         </button>
                                     );
                                 })}
+                                </div>
+                                <div className="mt-2 flex justify-center">
+                                    <button
+                                        type="button"
+                                        onClick={startLearnActiveMirror}
+                                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition hover:-translate-y-0.5 ${isLight ? 'border-stone-300/70 bg-white/52 text-stone-600 hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.028] text-zinc-400 hover:border-violet-200/30 hover:bg-violet-200/[0.055] hover:text-white'}`}
+                                    >
+                                        <Sparkles size={15} className={isLight ? 'text-violet-500' : 'text-violet-200'} />
+                                        Meet Active Mirror
+                                    </button>
+                                </div>
                             </div>
                         ) : null}
 
@@ -2123,7 +2385,7 @@ export default function HomePage() {
                             </div>
                         ) : null}
 
-                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500 ${showMirror ? 'flex' : 'flex justify-center'}`}>
+                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs ${isLight ? 'text-stone-500' : 'text-zinc-500'} ${showMirror ? 'flex' : 'flex justify-center'}`}>
                             <span>Private by default.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
@@ -2184,9 +2446,9 @@ export default function HomePage() {
                                                         reflect(item.intent, 'follow_up');
                                                     }}
                                                     disabled={busy || Boolean(artifactBusy)}
-                                                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.048] px-3.5 py-2 text-sm font-semibold text-zinc-300 transition hover:-translate-y-0.5 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                                                    className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.06)] hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.048] text-zinc-300 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white'}`}
                                                 >
-                                                    <Icon size={16} className={artifactBusy === item.artifactKind ? 'animate-pulse text-cyan-200' : 'text-purple-200'} />
+                                                    <Icon size={16} className={artifactBusy === item.artifactKind ? 'animate-pulse text-cyan-500' : isLight ? 'text-violet-500' : 'text-purple-200'} />
                                                     {artifactBusy === item.artifactKind ? 'Making...' : item.label}
                                                 </button>
                                             );
@@ -2208,12 +2470,12 @@ export default function HomePage() {
                 ) : null}
             </main>
 
-            <div className="relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs text-zinc-500 sm:justify-end">
+            <div className={`relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs sm:justify-end ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
                 <div className="flex flex-wrap gap-3">
-                    <Link to="/about" className="transition hover:text-white">About</Link>
-                    <Link to="/enterprise" className="transition hover:text-white">Enterprise</Link>
-                    <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
-                    <Link to="/terms" className="transition hover:text-white">Terms</Link>
+                    <Link to="/about" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>About</Link>
+                    <Link to="/enterprise" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Enterprise</Link>
+                    <Link to="/privacy" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Privacy</Link>
+                    <Link to="/terms" className={`transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}>Terms</Link>
                 </div>
             </div>
             <MemoryDrawer
