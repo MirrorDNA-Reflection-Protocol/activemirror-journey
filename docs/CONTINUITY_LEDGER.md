@@ -2035,3 +2035,46 @@ Do not turn this into a strategy essay. Keep it operational.
   ask for an image/poster, ask for current information, and ask for blunt
   feedback. If they hesitate, tune the first response and artifact copy only;
   do not add more homepage explanation.
+
+### 2026-07-08: Optional Keep-Chat Continuity
+
+- Feedback: a friend used Active Mirror, went for a walk, the browser refreshed,
+  and the chat was lost.
+- Product decision: add explicit browser-local chat continuity as an option.
+  This is not durable profile memory, not cross-device sync, and not automatic
+  hidden memory promotion.
+- Changed:
+  - Added `Keep chat` / `Chat kept here` / `Clear` controls on the home page.
+  - When enabled, the current home chat, draft text, last useful response, and
+    generated surface survive refresh on that browser.
+  - `Clear` removes the visible chat and stored thread while preserving the
+    user's opt-in setting.
+  - Privacy-hold turns do not persist the sensitive user intent.
+  - Added a build guard so future changes cannot remove the keep-chat path
+    silently.
+- Files touched:
+  - `src/lib/mirror-state.js`
+  - `src/pages/HomePage.jsx`
+  - `scripts/chat_continuity_guard.mjs`
+  - `package.json`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run guard:chat-continuity`
+  - `npm run guard:front-door`
+  - `npm run guard:language`
+  - `npm run guard:friction`
+  - `npm run build:deploy`
+  - Playwright local refresh test at `http://127.0.0.1:8976/`
+- Verification results:
+  - Local browser test passed: enable keep-chat, submit room-cleaning prompt,
+    reload, restored answer remains visible, then clear removes the stored
+    thread.
+  - Mobile screenshot review passed for the first screen; `Keep chat` stays
+    below the privacy line and does not compete with `What do you want?`.
+- Bad news or limits:
+  - This is browser-local only. It does not solve cross-device continuity.
+  - It does not resume an in-flight model request after refresh; it preserves
+    the latest saved local chat state.
+  - It is optional because the public promise remains `Saved only if you choose`.
+- Next safe move: package to the deploy repo, run deploy checks, deploy, and
+  verify the same refresh flow on `https://activemirror.ai/app/`.

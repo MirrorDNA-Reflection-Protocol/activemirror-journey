@@ -9,6 +9,7 @@ import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { attachArtifactChallenge } from '../lib/challenge-packet';
 import { languagePayloadFor } from '../lib/language-preference';
 import {
+    clearHomeChatContinuity,
     clearContinuityLedger,
     clearMirrorDefault,
     deleteContinuityEntry,
@@ -17,10 +18,13 @@ import {
     getArchetype,
     getBlueprint,
     getContinuityLedger,
+    getHomeChatContinuity,
     getMirrorDefaults,
     importMirrorSettings,
     saveContinuityEntry,
+    saveHomeChatContinuity,
     saveMirrorDefault,
+    setHomeChatContinuityEnabled,
     updateMirrorDefault,
     useMirrorDefault,
 } from '../lib/mirror-state';
@@ -1743,25 +1747,30 @@ function MemoryDrawer({
 export default function HomePage() {
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
+    const initialChatRef = useRef(null);
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
     const workSurfaceRef = useRef(null);
     const bootPromptRef = useRef(false);
+    if (initialChatRef.current === null) initialChatRef.current = getHomeChatContinuity();
+    const restoredThread = initialChatRef.current?.enabled ? initialChatRef.current.thread : null;
     const [seed, setSeed] = useState(() => readSavedSeed());
     const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
     const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
     const [continuityLedger, setContinuityLedger] = useState(() => getContinuityLedger());
-    const [text, setText] = useState('');
+    const [chatMemoryEnabled, setChatMemoryEnabled] = useState(() => Boolean(initialChatRef.current?.enabled));
+    const [chatMemoryFlash, setChatMemoryFlash] = useState(() => restoredThread ? 'Chat restored.' : '');
+    const [text, setText] = useState(() => restoredThread?.draftText || '');
     const [busy, setBusy] = useState(false);
-    const [result, setResult] = useState(null);
-    const [lastIntent, setLastIntent] = useState('');
-    const [lastSource, setLastSource] = useState('typed');
-    const [lastStarterKind, setLastStarterKind] = useState('');
+    const [result, setResult] = useState(() => restoredThread?.result || null);
+    const [lastIntent, setLastIntent] = useState(() => restoredThread?.lastIntent || '');
+    const [lastSource, setLastSource] = useState(() => restoredThread?.lastSource || 'typed');
+    const [lastStarterKind, setLastStarterKind] = useState(() => restoredThread?.lastStarterKind || '');
     const [lastSense, setLastSense] = useState(null);
-    const [sendableDraft, setSendableDraft] = useState(null);
+    const [sendableDraft, setSendableDraft] = useState(() => restoredThread?.sendableDraft || null);
     const [artifactBusy, setArtifactBusy] = useState('');
     const [lastArtifactRequest, setLastArtifactRequest] = useState(null);
-    const [workSurfaceOpen, setWorkSurfaceOpen] = useState(true);
+    const [workSurfaceOpen, setWorkSurfaceOpen] = useState(() => restoredThread ? Boolean(restoredThread.workSurfaceOpen) : true);
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
     const [importStatus, setImportStatus] = useState('');
@@ -1774,6 +1783,25 @@ export default function HomePage() {
     useEffect(() => {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
     }, []);
+
+    useEffect(() => {
+        if (!chatMemoryFlash) return undefined;
+        const timer = window.setTimeout(() => setChatMemoryFlash(''), 2400);
+        return () => window.clearTimeout(timer);
+    }, [chatMemoryFlash]);
+
+    useEffect(() => {
+        if (!chatMemoryEnabled) return;
+        saveHomeChatContinuity({
+            draftText: text,
+            result,
+            lastIntent,
+            lastSource,
+            lastStarterKind,
+            sendableDraft,
+            workSurfaceOpen,
+        });
+    }, [chatMemoryEnabled, lastIntent, lastSource, lastStarterKind, result, sendableDraft, text, workSurfaceOpen]);
 
     useEffect(() => {
         if (bootPromptRef.current || !location.state?.mirrorReady) return;
@@ -1804,7 +1832,10 @@ export default function HomePage() {
         const starterFollowupKind = source === 'typed' && result?.kind === 'starter' ? lastStarterKind || 'make' : '';
 
         const sense = assessLocalMirrorSense(cleanIntent, { activeDefault, mirrorDefaults, seed });
-        setLastIntent(cleanIntent);
+        const stateIntent = sense.blocked
+            ? 'privacy check'
+            : sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+        setLastIntent(stateIntent);
         setLastSource(source);
         setLastSense(sense);
         setLoopCount((current) => source === 'follow_up' ? Math.min(current + 1, 6) : 0);
@@ -2004,6 +2035,52 @@ export default function HomePage() {
     function clearContinuity() {
         setContinuityLedger(clearContinuityLedger());
         trackEvent('continuity_cleared', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function currentChatSnapshot() {
+        return {
+            draftText: text,
+            result,
+            lastIntent,
+            lastSource,
+            lastStarterKind,
+            sendableDraft,
+            workSurfaceOpen,
+        };
+    }
+
+    function toggleChatMemory() {
+        const nextEnabled = !chatMemoryEnabled;
+        setChatMemoryEnabled(nextEnabled);
+        if (nextEnabled) {
+            setHomeChatContinuityEnabled(true, currentChatSnapshot());
+            setChatMemoryFlash('Chat will stay here.');
+            trackEvent('home_chat_memory_enabled', { page: 'home', source: 'toggle' });
+            return;
+        }
+
+        clearHomeChatContinuity();
+        setChatMemoryFlash('Chat cleared.');
+        trackEvent('home_chat_memory_disabled', { page: 'home', source: 'toggle' });
+    }
+
+    function clearCurrentChat() {
+        setText('');
+        setBusy(false);
+        setResult(null);
+        setLastIntent('');
+        setLastSource('typed');
+        setLastStarterKind('');
+        setLastSense(null);
+        setLoopCount(0);
+        setSendableDraft(null);
+        setArtifactBusy('');
+        setLastArtifactRequest(null);
+        setWorkSurfaceOpen(true);
+        clearHomeChatContinuity({ keepEnabled: chatMemoryEnabled });
+        setChatMemoryFlash(chatMemoryEnabled ? 'Cleared here.' : 'Chat cleared.');
+        trackEvent('home_chat_cleared', { page: 'home', source: chatMemoryEnabled ? 'kept_enabled' : 'manual' });
+        window.setTimeout(() => inputRef.current?.focus(), 60);
     }
 
     async function uploadSavedChoices(event) {
@@ -2403,6 +2480,26 @@ export default function HomePage() {
                                     Saved: {savedCount}
                                 </button>
                             ) : null}
+                            <button
+                                type="button"
+                                onClick={toggleChatMemory}
+                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/54 text-stone-500 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-400 hover:border-cyan-200/30 hover:text-white'}`}
+                                aria-pressed={chatMemoryEnabled}
+                            >
+                                {chatMemoryEnabled ? <Check size={13} /> : <Save size={13} />}
+                                {chatMemoryEnabled ? 'Chat kept here' : 'Keep chat'}
+                            </button>
+                            {(showMirror || text.trim()) ? (
+                                <button
+                                    type="button"
+                                    onClick={clearCurrentChat}
+                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/44 text-stone-500 hover:border-stone-400 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.025] text-zinc-500 hover:border-white/25 hover:text-white'}`}
+                                >
+                                    <X size={13} />
+                                    Clear
+                                </button>
+                            ) : null}
+                            {chatMemoryFlash ? <span className="font-semibold text-emerald-100">{chatMemoryFlash}</span> : null}
                             {importStatus ? <span className="font-semibold text-emerald-100">{importStatus}</span> : null}
                             {showMirror ? <LocalSenseLine sense={typingSense} /> : null}
                         </div>

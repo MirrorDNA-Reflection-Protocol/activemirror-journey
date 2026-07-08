@@ -39,6 +39,10 @@ const DEFAULT_STATE = {
     activeDefault: null,    // { question, move, source, savedAt }
     mirrorDefaults: [],     // Recent approved defaults, newest first
     continuityLedger: [],   // Explicitly saved browser-local continuity, newest first
+    homeChat: {
+        enabled: false,     // Explicit opt-in: keep the current chat on this browser
+        thread: null,       // Latest home-page chat state, not promoted to memory
+    },
 
     // Timestamps
     brainScanCompletedAt: null,
@@ -267,6 +271,49 @@ function normalizeContinuityEntry({ intent, question, move, source = 'reflection
     };
 }
 
+function cleanChatText(value, limit = 1000) {
+    return String(value || '')
+        .replace(/\bsk-[A-Za-z0-9_-]{8,}\b/g, '[secret]')
+        .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email]')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, limit);
+}
+
+function safeJsonClone(value, limit = 60000) {
+    if (!value || typeof value !== 'object') return null;
+    try {
+        const text = JSON.stringify(value);
+        if (text.length > limit) return null;
+        return JSON.parse(text);
+    } catch {
+        return null;
+    }
+}
+
+function normalizeHomeChatThread(thread = {}) {
+    const result = safeJsonClone(thread.result, 30000);
+    const sendableDraft = safeJsonClone(thread.sendableDraft, 60000);
+    const lastIntent = result?.kind === 'privacy_hold'
+        ? ''
+        : cleanChatText(thread.lastIntent, 1000);
+    const draftText = cleanChatText(thread.draftText, 1000);
+
+    if (!draftText && !lastIntent && !result && !sendableDraft) return null;
+
+    return {
+        version: 1,
+        draftText,
+        lastIntent,
+        lastSource: cleanChatText(thread.lastSource || 'typed', 48),
+        lastStarterKind: cleanChatText(thread.lastStarterKind || '', 48),
+        result,
+        sendableDraft,
+        workSurfaceOpen: Boolean(thread.workSurfaceOpen),
+        updatedAt: thread.updatedAt || new Date().toISOString(),
+    };
+}
+
 /** Get the current approved browser-local default, if any. */
 export function getActiveMirrorDefault() {
     return _read().activeDefault || null;
@@ -334,6 +381,56 @@ export function deleteContinuityEntry(key) {
 /** Clear user-approved continuity entries without deleting profile or defaults. */
 export function clearContinuityLedger() {
     return setState({ continuityLedger: [] }).continuityLedger;
+}
+
+/** Get the explicit browser-local home chat continuity setting and thread. */
+export function getHomeChatContinuity() {
+    const current = _read();
+    const homeChat = current.homeChat && typeof current.homeChat === 'object'
+        ? current.homeChat
+        : DEFAULT_STATE.homeChat;
+    return {
+        enabled: Boolean(homeChat.enabled),
+        thread: normalizeHomeChatThread(homeChat.thread || {}),
+    };
+}
+
+/** Enable or disable browser-local chat continuity. Disabling clears the thread. */
+export function setHomeChatContinuityEnabled(enabled, thread = {}) {
+    const current = _read();
+    const nextEnabled = Boolean(enabled);
+    const currentThread = current.homeChat?.thread || null;
+    return setState({
+        homeChat: {
+            enabled: nextEnabled,
+            thread: nextEnabled ? normalizeHomeChatThread(thread || currentThread || {}) : null,
+        },
+    }).homeChat;
+}
+
+/** Save the current home chat only after the user has enabled browser-local continuity. */
+export function saveHomeChatContinuity(thread = {}) {
+    const current = _read();
+    if (!current.homeChat?.enabled) return current.homeChat || DEFAULT_STATE.homeChat;
+    return setState({
+        homeChat: {
+            enabled: true,
+            thread: normalizeHomeChatThread({
+                ...thread,
+                updatedAt: new Date().toISOString(),
+            }),
+        },
+    }).homeChat;
+}
+
+/** Clear the current home chat without touching saved setup choices or approved notes. */
+export function clearHomeChatContinuity({ keepEnabled = false } = {}) {
+    return setState({
+        homeChat: {
+            enabled: Boolean(keepEnabled),
+            thread: null,
+        },
+    }).homeChat;
 }
 
 /** Make an existing approved default active again. */
