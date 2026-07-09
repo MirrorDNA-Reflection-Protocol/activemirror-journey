@@ -15,7 +15,16 @@ function hasExplicitSecret(intent = '') {
     ].some((pattern) => pattern.test(intent));
 }
 
+function isExecutionDriftText(text = '') {
+    const value = String(text || '').toLowerCase();
+    const overload = /\b(do it all|all now|build everything|everything at once|every feature|what else should we add|best ai product|site,\s*mobile|model router|deployment)\b/.test(value);
+    const productScope = /\b(site|homepage|mobile|enterprise|memory|research|visuals?|model router|deployment|agents?|ads?|browser runtime|product|features?)\b/.test(value);
+    return overload && productScope;
+}
+
 function needsSourceCheck(text = '') {
+    if (isExecutionDriftText(text)) return false;
+
     const explicitSourceAsk = /\b(2026|this year|recently|right now|current|latest|online|web|source|sources|research|competitor|market|verify|check|paper|study|studies|report|pricing|released|launched|who is doing)\b/.test(text);
     const timedFactAsk = /\b(today|right now|this week|this month|this year|as of)\b/.test(text)
         && /\b(news|market|price|pricing|competitor|research|source|verify|check|fact|facts|numbers|paper|study|studies|report|released|launched|happened|weather|stock|model|api)\b/.test(text);
@@ -40,6 +49,9 @@ function classify(intent = '') {
     }
     if (/\b(models?|browser|ai apps?|apple|memory|genui)\b.*\bnow\b/.test(text)) {
         return 'source_check';
+    }
+    if (isExecutionDriftText(text)) {
+        return 'reset';
     }
     if (needsSourceCheck(text)) {
         return 'source_check';
