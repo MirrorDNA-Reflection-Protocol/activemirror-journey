@@ -12,6 +12,7 @@ import {
     clearHomeChatContinuity,
     clearContinuityLedger,
     clearMirrorDefault,
+    clearSessionHomeChat,
     deleteHomeChatThread,
     deleteContinuityEntry,
     deleteMirrorDefault,
@@ -21,11 +22,13 @@ import {
     getContinuityLedger,
     getHomeChatContinuity,
     getMirrorDefaults,
+    getSessionHomeChat,
     importMirrorSettings,
     restoreHomeChatThread,
     saveContinuityEntry,
     saveHomeChatContinuity,
     saveHomeChatThread,
+    saveSessionHomeChat,
     saveMirrorDefault,
     setHomeChatContinuityEnabled,
     updateMirrorDefault,
@@ -1799,19 +1802,25 @@ export default function HomePage() {
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
     const initialChatRef = useRef(null);
+    const initialSessionChatRef = useRef(null);
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
     const workSurfaceRef = useRef(null);
     const bootPromptRef = useRef(false);
     if (initialChatRef.current === null) initialChatRef.current = getHomeChatContinuity();
-    const restoredThread = initialChatRef.current?.enabled ? initialChatRef.current.thread : null;
+    if (initialSessionChatRef.current === null) initialSessionChatRef.current = getSessionHomeChat();
+    const restoredThread = initialChatRef.current?.enabled ? initialChatRef.current.thread : initialSessionChatRef.current;
+    const restoredFromSession = !initialChatRef.current?.enabled && Boolean(initialSessionChatRef.current);
     const [seed, setSeed] = useState(() => readSavedSeed());
     const [activeDefault, setActiveDefault] = useState(() => getActiveMirrorDefault());
     const [mirrorDefaults, setMirrorDefaults] = useState(() => getMirrorDefaults());
     const [continuityLedger, setContinuityLedger] = useState(() => getContinuityLedger());
     const [chatMemoryEnabled, setChatMemoryEnabled] = useState(() => Boolean(initialChatRef.current?.enabled));
     const [savedHomeChats, setSavedHomeChats] = useState(() => initialChatRef.current?.savedThreads || []);
-    const [chatMemoryFlash, setChatMemoryFlash] = useState(() => restoredThread ? 'Chat restored.' : '');
+    const [chatMemoryFlash, setChatMemoryFlash] = useState(() => {
+        if (!restoredThread) return '';
+        return restoredFromSession ? 'Picked up where you left.' : 'Chat restored.';
+    });
     const [text, setText] = useState(() => restoredThread?.draftText || '');
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(() => restoredThread?.result || null);
@@ -1841,6 +1850,15 @@ export default function HomePage() {
         const timer = window.setTimeout(() => setChatMemoryFlash(''), 2400);
         return () => window.clearTimeout(timer);
     }, [chatMemoryFlash]);
+
+    useEffect(() => {
+        const snapshot = currentChatSnapshot();
+        if (!snapshot.draftText && !snapshot.result && !snapshot.lastIntent && !snapshot.sendableDraft) {
+            clearSessionHomeChat();
+            return;
+        }
+        saveSessionHomeChat(snapshot);
+    }, [lastIntent, lastSource, lastStarterKind, result, sendableDraft, text, workSurfaceOpen]);
 
     useEffect(() => {
         if (!chatMemoryEnabled) return;
@@ -2171,6 +2189,7 @@ export default function HomePage() {
         setLastArtifactRequest(null);
         setWorkSurfaceOpen(true);
         const nextHomeChat = clearHomeChatContinuity({ keepEnabled: chatMemoryEnabled });
+        clearSessionHomeChat();
         setSavedHomeChats(nextHomeChat?.savedThreads || []);
         setChatMemoryFlash(chatMemoryEnabled ? 'Cleared here.' : 'Chat cleared.');
         trackEvent('home_chat_cleared', { page: 'home', source: chatMemoryEnabled ? 'kept_enabled' : 'manual' });
@@ -2646,7 +2665,7 @@ export default function HomePage() {
                             {showKeepChatNudge ? (
                                 <div className={`grid gap-3 rounded-[1.35rem] border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600 shadow-[0_16px_34px_rgba(77,65,50,0.08)]' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400 shadow-[0_0_30px_rgba(34,211,238,0.05)]'}`}>
                                     <div className="min-w-0 text-sm leading-6">
-                                        Leaving for a bit? Keep this chat on this browser.
+                                        This chat survives refresh here. Keep it on this browser for later?
                                     </div>
                                     <button
                                         type="button"

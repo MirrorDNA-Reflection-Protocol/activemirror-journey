@@ -14,6 +14,7 @@
  */
 
 const STATE_KEY = 'mirrorState_v1';
+const SESSION_CHAT_KEY = 'activeMirror_homeChat_session_v1';
 
 // ── Default State ──
 
@@ -359,6 +360,16 @@ function currentHomeChatState() {
     };
 }
 
+function readSessionChat() {
+    try {
+        const raw = sessionStorage.getItem(SESSION_CHAT_KEY);
+        if (!raw) return null;
+        return normalizeHomeChatThread(JSON.parse(raw));
+    } catch {
+        return null;
+    }
+}
+
 /** Get the current approved browser-local default, if any. */
 export function getActiveMirrorDefault() {
     return _read().activeDefault || null;
@@ -431,6 +442,35 @@ export function clearContinuityLedger() {
 /** Get the explicit browser-local home chat continuity setting and thread. */
 export function getHomeChatContinuity() {
     return currentHomeChatState();
+}
+
+/** Get the current tab/session chat. This survives refresh, but is not durable memory. */
+export function getSessionHomeChat() {
+    return readSessionChat();
+}
+
+/** Save current chat for refresh recovery in this browser session only. */
+export function saveSessionHomeChat(thread = {}) {
+    const normalized = normalizeHomeChatThread({
+        ...thread,
+        updatedAt: new Date().toISOString(),
+    });
+    try {
+        if (!normalized) {
+            sessionStorage.removeItem(SESSION_CHAT_KEY);
+            return null;
+        }
+        sessionStorage.setItem(SESSION_CHAT_KEY, JSON.stringify(normalized));
+    } catch {}
+    return normalized;
+}
+
+/** Clear current tab/session chat without touching saved choices or explicit memory. */
+export function clearSessionHomeChat() {
+    try {
+        sessionStorage.removeItem(SESSION_CHAT_KEY);
+    } catch {}
+    return null;
 }
 
 /** Enable or disable browser-local chat continuity. Disabling clears the thread. */
@@ -582,6 +622,7 @@ export function clearMirrorDefault() {
 /** Clear all state (for testing/reset). */
 export function clearState() {
     localStorage.removeItem(STATE_KEY);
+    clearSessionHomeChat();
     // Also clear legacy keys
     ['brainScan_archetype', 'mirrorArchetype', 'cognitiveArchetype',
      'mirrorId', 'mirrorSigData', 'mirrorBrainId',
