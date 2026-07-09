@@ -703,10 +703,10 @@ function makeLocalPrivacyResult(sense = {}) {
 
 function detectArtifactKind(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
-    if (/\b(image|visual|poster|flyer|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard)\b/.test(text)) return 'image';
+    if (/\b(image|visual|poster|flyer|logo|banner|invitation|illustration|photo|picture|thumbnail|video|ad creative|creative brief|moodboard|social post|instagram post)\b/.test(text)) return 'image';
     if (/\b(code|app|component|script|function|api|html|css|javascript|react|python)\b/.test(text)) return 'code';
     if (/\b(message|email|reply|dm|text|note)\b/.test(text)) return 'draft';
-    if (/\b(document|doc|pdf|memo|brief|deck|slide|report|summary|proposal|outline|post|website|web page|site|page|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
+    if (/\b(document|doc|pdf|memo|brief|deck|slide|presentation|report|summary|proposal|outline|post|website|web page|site|page|landing page|homepage|launch page|headline|button label|reassurance line|copy block)\b/.test(text)) return 'doc';
     return 'draft';
 }
 
@@ -731,10 +731,12 @@ function shouldOpenWorkSurface(intent = '', mirror = {}) {
     const text = `${intent} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const directAsk = /\b(make it sendable|something i can send|turn (this|it) into|draft it|write it|build it|create it|give me code|make a doc|make a visual|make an image)\b/i.test(text);
     const asksToMake = /\b(make|create|draft|write|generate|build|prepare|compose|turn)\b/i.test(text);
-    const asksForThing = /\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|flyer|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
-    const needThing = /\b(?:i\s+)?(?:need|want|looking for|could use)\b.{0,80}\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|flyer|creative|pdf|deck|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const asksForThing = /\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|flyer|logo|banner|invitation|creative|pdf|deck|presentation|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const needThing = /\b(?:i\s+)?(?:need|want|looking for|could use)\b.{0,80}\b(message|email|reply|dm|text|note|memo|doc|document|brief|outline|post|proposal|code|component|script|image|visual|poster|flyer|logo|banner|invitation|creative|pdf|deck|presentation|report|plan|website|web page|site|page|homepage|landing|headline|button|reassurance line|copy block)\b/i.test(text);
+    const bareArtifact = text.split(/\s+/).filter(Boolean).length <= 8
+        && /\b(poster|flyer|logo|banner|invitation|thumbnail|social post|instagram post|deck|presentation|pdf|website|landing page|homepage)\b/i.test(text);
 
-    return directAsk || needThing || (asksToMake && asksForThing);
+    return directAsk || bareArtifact || needThing || (asksToMake && asksForThing);
 }
 
 function isShortStartResult(result = {}) {
@@ -912,23 +914,27 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
     const cleanIntent = String(intent || 'the thing you want').replace(/\s+/g, ' ').trim();
 
     if (kind === 'image') {
+        const posterLike = /\b(poster|flyer|banner|invitation|social post|instagram post|event|launch|offer|sale)\b/i.test(cleanIntent);
         return {
             kind,
-            title: 'Image prompt',
+            title: posterLike ? 'Poster starter' : 'Image prompt',
             body: [
-                'Image prompt',
+                posterLike ? 'Poster prompt' : 'Image prompt',
                 '',
                 `Goal: ${cleanIntent || question}`,
+                posterLike ? 'Layout: bold headline at top, one clear focal visual, short supporting line, simple call-to-action at bottom.' : '',
                 `Feeling: calm, useful, warm, lightly magical, not busy.`,
                 `Main idea: ${question}`,
                 `Scene: one clear focal point that shows the outcome, not the machinery.`,
+                posterLike ? 'Text treatment: leave clean space for the headline and keep all words large enough to read on a phone.' : '',
                 `Avoid: clutter, medical or diagnostic cues, dashboards unless asked, model names, private details.`,
                 `Next action: ${move}`,
-            ].join('\n'),
+            ].filter(Boolean).join('\n'),
             checklist: [
                 'Use this as the prompt for image generation.',
+                posterLike ? 'Replace the headline and call-to-action with the exact event or offer.' : '',
                 'Remove anything private before generating it.',
-            ],
+            ].filter(Boolean),
         };
     }
 
@@ -2252,6 +2258,13 @@ export default function HomePage() {
             setLastArtifactRequest({ intent: artifactIntent, mirror, kind: artifactKind });
         }
         trackEvent('sendable_created', { page: 'home', source: eventSource, status: 'started', label: artifactKind });
+        setSendableDraft(attachArtifactChallenge(makeArtifact(mirror, artifactIntent, artifactKind), {
+            intent: artifactIntent,
+            kind: artifactKind,
+            route: 'local_first',
+            fallback: true,
+            source: eventSource,
+        }));
 
         try {
             const language = languagePayloadFor(artifactIntent, { seed });

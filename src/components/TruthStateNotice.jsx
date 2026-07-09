@@ -65,6 +65,40 @@ function displayResearchText(value = '') {
         .trim();
 }
 
+function localSourcePlan(intent = '') {
+    const clean = String(intent || 'this')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 120) || 'this';
+    const lower = clean.toLowerCase();
+
+    if (/\b(tire|tires|tyre|tyres)\b/.test(lower)) {
+        return {
+            query: `${clean} reviews current prices fitment`,
+            compare: ['right size', 'installed price', 'wet grip', 'warranty'],
+        };
+    }
+
+    if (/\b(price|pricing|buy|shopping|shop|deal|available|availability|near me)\b/.test(lower)) {
+        return {
+            query: `${clean} current price official seller reviews`,
+            compare: ['official source', 'total cost', 'recent reviews', 'return policy'],
+        };
+    }
+
+    if (/\b(competitor|market|research|latest|current|released|launched)\b/.test(lower)) {
+        return {
+            query: `${clean} latest official source 2026`,
+            compare: ['date', 'primary source', 'what changed', 'why it matters'],
+        };
+    }
+
+    return {
+        query: `${clean} official source current`,
+        compare: ['source date', 'primary source', 'one useful change', 'one uncertainty'],
+    };
+}
+
 export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = false, onPrompt, onSourceChecked, autoCheck = false, answerFirst = false }) {
     const { theme } = useTheme();
     const isLight = theme === 'light';
@@ -250,11 +284,28 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     }
 
     if (answerFirst && error) {
+        const plan = localSourcePlan(intent);
         return (
             <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${isLight ? 'border-amber-500/22 bg-amber-50/88 text-amber-950' : 'border-amber-300/20 bg-amber-300/[0.065] text-amber-50'}`}>
-                <div className="font-semibold">I could not check live sources just now.</div>
+                <div className="font-semibold">I cannot check the web from this page right now.</div>
                 <div className={`mt-1 text-xs leading-5 ${isLight ? 'text-amber-800/75' : 'text-amber-100/75'}`}>
-                    I will not guess from memory. Try again, or add one detail that narrows the search.
+                    I will not guess. Use this quick check, then try again when the connection is back.
+                </div>
+                <div className={`mt-3 rounded-xl border p-3 ${isLight ? 'border-amber-500/20 bg-white/68' : 'border-white/10 bg-black/20'}`}>
+                    <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-amber-800/70' : 'text-amber-100/70'}`}>
+                        Search
+                    </div>
+                    <div className="mt-1 break-words text-sm font-semibold">{plan.query}</div>
+                    <div className={`mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-amber-800/70' : 'text-amber-100/70'}`}>
+                        Compare
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                        {plan.compare.map((item) => (
+                            <span key={item} className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${isLight ? 'border-stone-300/70 bg-white/75 text-stone-700' : 'border-white/10 bg-white/[0.055] text-zinc-100'}`}>
+                                {item}
+                            </span>
+                        ))}
+                    </div>
                 </div>
                 <button
                     type="button"

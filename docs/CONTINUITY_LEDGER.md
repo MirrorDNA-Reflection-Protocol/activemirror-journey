@@ -2158,3 +2158,46 @@ Do not turn this into a strategy essay. Keep it operational.
     friend failure pattern, not broad behavior validation.
 - Next safe move: package to the deploy repo, deploy only `public/app`, and run
   the same saved-chat flow on `https://activemirror.ai/app/`.
+
+### 2026-07-09: Offline-Useful Fallbacks While Mini Is Down
+
+- Context: home internet/Mini bridge is offline, so live model/source routes
+  cannot be treated as verified. The app still needs to help users instead of
+  feeling broken or canned.
+- Changed:
+  - Creation asks now open a browser-local draft immediately before waiting on
+    the artifact route.
+  - Bare artifact asks like `poster`, `logo`, `flyer`, `banner`, and
+    `invitation` open the work surface without requiring perfect prompt wording.
+  - Poster-like local image drafts include layout, readable-text, feeling,
+    focal-point, and privacy-removal guidance.
+  - Source-heavy asks that cannot reach the web now show a small search/check
+    plan instead of only saying to try again.
+  - The friction guard now locks the local-first artifact behavior and useful
+    source-unavailable plan.
+- Files touched:
+  - `src/pages/HomePage.jsx`
+  - `src/components/TruthStateNotice.jsx`
+  - `scripts/first_turn_friction_guard.mjs`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run guard:friction`
+  - `npm run guard:front-door`
+  - `npm run guard:redaction`
+  - `npm run build:deploy`
+  - Playwright mobile smoke at `http://127.0.0.1:8976/`
+- Verification results:
+  - Mobile browser test passed with the artifact route aborted: typing `poster`
+    showed a `Poster starter` with `Poster prompt` immediately.
+  - Mobile browser test passed with source-check aborted: typing
+    `I am looking for tires online` showed a search phrase and compare chips.
+- Deploy status: source verified; package to `active-mirror-site/public/app`
+  and deploy next.
+- Bad news or limits:
+  - This does not restore the live model route.
+  - Local image fallback is a prompt/starter, not generated image media.
+  - Current-source answers still require the gateway/source route or the user's
+    own browser search.
+- Next safe move: package this source build into the deploy repo, keep
+  MirrorProd assets out of Active Mirror, deploy static app assets, then run
+  static/browser smoke. Full model canary remains blocked until the Mini returns.

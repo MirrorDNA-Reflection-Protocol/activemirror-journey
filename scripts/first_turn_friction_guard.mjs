@@ -68,6 +68,7 @@ check(
 const homePage = fs.readFileSync(new URL('../src/pages/HomePage.jsx', import.meta.url), 'utf8');
 const deviceExperience = fs.readFileSync(new URL('../src/pages/DeviceExperience.jsx', import.meta.url), 'utf8');
 const mirrorFeedback = fs.readFileSync(new URL('../src/components/MirrorFeedback.jsx', import.meta.url), 'utf8');
+const truthStateNotice = fs.readFileSync(new URL('../src/components/TruthStateNotice.jsx', import.meta.url), 'utf8');
 const mirrorState = fs.readFileSync(new URL('../src/lib/mirror-state.js', import.meta.url), 'utf8');
 check(
     homePage.includes("createArtifact(item.artifactKind || 'draft', {") && homePage.includes('intent: item.intent,'),
@@ -126,8 +127,14 @@ check(
 check(
     /poster\|flyer/.test(homePage) &&
     homePage.includes('const needThing =') &&
-    homePage.includes('directAsk || needThing ||'),
+    homePage.includes('directAsk || bareArtifact || needThing ||'),
     'poster/flyer asks should open creation first even without a magic verb'
+);
+check(
+    /poster\|flyer\|logo\|banner\|invitation/.test(homePage) &&
+    homePage.includes('const bareArtifact =') &&
+    homePage.includes('directAsk || bareArtifact || needThing ||'),
+    'bare artifact asks like "poster" or "logo" should open creation without requiring perfect prompt wording'
 );
 check(
     !homePage.includes('shouldOpenWorkSurface(cleanIntent, nextResult.mirror)') &&
@@ -136,9 +143,21 @@ check(
     'auto canvas/artifact opening must depend on the user request, not generated next-move text'
 );
 check(
+    homePage.includes("route: 'local_first'") &&
+    homePage.indexOf("route: 'local_first'") < homePage.indexOf('const language = languagePayloadFor(artifactIntent'),
+    'artifact surface should show a useful local draft before waiting on the gateway'
+);
+check(
     homePage.includes("draft?.kind === 'image' && artifactHasImageMedia(draft)") &&
     !homePage.includes("draft?.kind === 'image' && (draft?.media?.data_url || draft?.media?.dataUrl)"),
     'image-ready note must work for stored media URLs, not only inline data URLs'
+);
+check(
+    truthStateNotice.includes('function localSourcePlan') &&
+    truthStateNotice.includes('I cannot check the web from this page right now.') &&
+    truthStateNotice.includes('Search') &&
+    truthStateNotice.includes('Compare'),
+    'source-check failure should give a useful local search plan, not just ask the user to try again'
 );
 check(
     mirrorState.includes('continuityLedger: []') &&
