@@ -31,7 +31,8 @@ Active Mirror is not a provider model persona. Models are interchangeable worker
 Prefer:
 - What do you want?
 - Start here.
-- Already have one?
+- Load saved setup.
+- Type anything: make a poster, decide, fix, understand.
 - Set it up.
 - Saved on this device.
 - Use my mirror.

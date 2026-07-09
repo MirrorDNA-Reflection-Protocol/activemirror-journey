@@ -8,18 +8,19 @@ Use short, normal phrases:
 
 - `What do you want?`
 - `Start here`
-- `Already have one?`
+- `Load saved setup`
+- `Type anything: make a poster, decide, fix, understand`
 - `Set it up`
 - `Saved on this device`
 - `Start chat`
 - `Keep a copy`
-- `Pick a move`
-- `Make a thing`
-- `Choose clearly`
-- `Clear the snag`
-- `Plain English`
+- `Try one`
+- `Message, image, doc`
+- `Compare options`
+- `Unblock a thing`
+- `Explain simply`
 - `Fun`
-- `Let's do something fun`
+- `Surprise me`
 - `Meet Active Mirror`
 - `Use placeholders for anything private`
 - `Make one small version and test it`
