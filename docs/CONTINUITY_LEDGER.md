@@ -162,6 +162,38 @@ Do not turn this into a strategy essay. Keep it operational.
 
 ## Ledger Entries
 
+### 2026-07-09: MirrorProd Sprint Receipt v1
+
+- Changed: added a public Sprint Receipt v1 surface to the MirrorProd Story route after reviewing the AMOS build pack for reusable product controls.
+- Product reason:
+  - MirrorProd needs to sell governed story execution, not generic AI video generation.
+  - The page now shows native sprint objects, consent state, capability switches, and a JSON-style handoff object before any automation claim.
+- Files touched:
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `docs/topic-packets/mirrorprod-story-os.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run build:deploy`
+  - Production-style local static smoke against `http://127.0.0.1:8976/app/mirrorprod-story/`
+  - Desktop/mobile screenshots at `output/playwright/mirrorprod-sprint-receipt-*.png`
+- Deploy status:
+  - deployed through `/Users/mirror-pro/repos/active-mirror-site`
+  - bridge commits: `2b016d6`, `c15e360`, `8183282`, `7665df3`
+  - Cloudflare Worker version: `32c8e12f-7652-435d-9a4a-817bb64549a0`
+- Public routes checked:
+  - `https://activemirror.ai/app/mirrorprod-story/` desktop and mobile route-specific smoke passed.
+  - Broad app browser smoke passed after the Worker served the current app shell for `/app` routes.
+  - Production canary passed 21/21.
+  - Red-team prod smoke had one first-run vague-tone failure, then passed 20/20 on rerun.
+  - User prompt QA had first-run input timeouts during shell/cache warmup, then passed 23/23 on rerun.
+  - Live-user selftest passed after its stale placeholder selector was updated.
+- Bad news or limits:
+  - Sprint Receipt v1 is a visible handoff model, not a live backend contract, signed receipt, or durable receipt store.
+  - This still does not generate video, upload files, post to channels, or use Mini-only assets.
+- Next safe move:
+  - Decide whether MirrorProd stays inside Active Mirror or gets a standalone sales surface/repo.
+
 ### 2026-07-09: MirrorProd Story OS Deploy Candidate
 
 - Changed: made `/mirrorprod-story` deploy-safe and actionable after the Mini was confirmed unavailable.

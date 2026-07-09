@@ -100,8 +100,10 @@ Turn the India short-form and microdrama opportunity into a public, review-first
   - local preview route `/app/mirrorprod-story` renders with 9 video elements, 6 episodes, no horizontal overflow, and no console/page errors
   - media is imported from `src/assets/mirrorprod-story/` and emitted under `dist/assets/`, so deploy packaging does not need to copy a raw public route directory
   - desktop copy action and `mailto:` story-sprint action include the edited campaign brief
-  - live route `https://activemirror.ai/app/mirrorprod-story/` renders on desktop and mobile with 9 videos, 6 episodes, 9 fields, no horizontal overflow, and `/app/assets/` media URLs
-  - full production deploy gate passed from the deploy bridge after updating stale QA expectations
+  - live route `https://activemirror.ai/app/mirrorprod-story/` renders on desktop and mobile with 9 videos, 6 episodes, 8 native sprint objects, 6 capability switches, no horizontal overflow, and `/app/assets/` media URLs
+  - production deploy sub-gates passed from the deploy bridge after updating stale QA expectations and rerunning cache-warmed checks
+  - Sprint Receipt v1 is modeled on the page with native sprint objects, six consent/capability switches, and a JSON-style handoff object
+  - final deployed Worker version is `32c8e12f-7652-435d-9a4a-817bb64549a0`
 - Unchecked:
   - whether the Mini has newer MirrorProd assets
 - Evidence paths:
@@ -110,6 +112,10 @@ Turn the India short-form and microdrama opportunity into a public, review-first
   - `/Users/mirror-pro/repos/active-mirror-site/output/playwright/live-mirrorprod-story-desktop.png`
   - `/Users/mirror-pro/repos/active-mirror-site/output/playwright/live-mirrorprod-story-mobile.png`
   - `/Users/mirror-pro/repos/active-mirror-site/output/playwright/live-mirrorprod-story-action.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-sprint-receipt-desktop.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-sprint-receipt-mobile.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/live-mirrorprod-sprint-receipt-desktop.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/live-mirrorprod-sprint-receipt-mobile.png`
 
 ## Bad News
 
@@ -122,6 +128,32 @@ Turn the India short-form and microdrama opportunity into a public, review-first
 - Decide whether this remains an Active Mirror product route or becomes a standalone MirrorProd sales surface.
 
 ## Update Log
+
+### 2026-07-09 Sprint Receipt v1
+
+- Changed: converted the AMOS build-pack leverage into a public product control surface without exposing AMOS architecture copy.
+- Files touched:
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `docs/topic-packets/mirrorprod-story-os.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools/gates used:
+  - `npm run build:deploy`
+  - production-style local static smoke against `http://127.0.0.1:8976/app/mirrorprod-story/`
+- Deploy status:
+  - deployed through `/Users/mirror-pro/repos/active-mirror-site`
+  - bridge commits: `2b016d6`, `c15e360`, `8183282`, `7665df3`
+  - Cloudflare Worker version: `32c8e12f-7652-435d-9a4a-817bb64549a0`
+- Public routes checked:
+  - `https://activemirror.ai/app/mirrorprod-story/` desktop and mobile route-specific smoke passed
+  - `npm run smoke:browser` passed after the Worker served the current app shell
+  - `npm run canary:prod` passed 21/21
+  - `npm run redteam:prod-smoke` had one first-run vague-tone failure, rerun passed 20/20
+  - `npm run qa:user-prompts` had first-run input timeouts during shell/cache warmup, rerun passed 23/23
+  - `npm run qa:live-user` passed after selector was updated from stale placeholder copy to the current textarea contract
+- Remaining risk:
+  - Sprint Receipt v1 is a visible handoff model, not a live backend contract or durable receipt store
+  - the deploy bridge now serves the current app shell from the Worker for `/app` routes to avoid stale cached HTML
 
 ### 2026-07-09 Deploy Candidate
 

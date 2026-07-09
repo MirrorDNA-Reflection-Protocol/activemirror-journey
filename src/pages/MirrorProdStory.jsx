@@ -155,6 +155,39 @@ const performanceDefaults = {
     saves: 11,
 };
 
+const sprintControls = [
+    {
+        label: 'Generate new video',
+        state: 'Off',
+        detail: 'This demo only reviews the story sprint.',
+    },
+    {
+        label: 'Upload source assets',
+        state: 'Off',
+        detail: 'Source clips stay with the owner until scoped intake.',
+    },
+    {
+        label: 'Use owner likeness',
+        state: 'Consent required',
+        detail: 'No face, voice, or public photo reuse without explicit approval.',
+    },
+    {
+        label: 'Post to channels',
+        state: 'Off',
+        detail: 'Nothing posts from this screen.',
+    },
+    {
+        label: 'WhatsApp distribution',
+        state: 'Draft only',
+        detail: 'Share copy and reply starter are reviewable handoff items.',
+    },
+    {
+        label: 'Claim review',
+        state: 'Required',
+        detail: 'Price, scarcity, health, and performance claims need owner signoff.',
+    },
+];
+
 function mediaUrl(kind, fileName) {
     return mediaAssets[kind]?.[fileName] || '';
 }
@@ -170,9 +203,43 @@ function makeReceipt(brief, selectedAngle) {
     ];
 }
 
+function makeSprintObjects(brief, selectedAngle, performanceRead) {
+    return [
+        ['business_offer', brief.offer],
+        ['target_audience', brief.audience],
+        ['source_assets', brief.assets],
+        ['story_angle', selectedAngle.title],
+        ['claim_risks', brief.guardrails],
+        ['consent_state', 'Owner approval required before likeness or source reuse'],
+        ['output_formats', '6 vertical episodes, 6 WhatsApp cuts, 2 language passes'],
+        ['next_signal', performanceRead],
+    ];
+}
+
+function makeSprintReceipt(brief, selectedAngle, performanceRead) {
+    return {
+        schema: 'mirrorprod.sprint_receipt.v1',
+        campaign: 'Monsoon Cafe Box',
+        business_offer: brief.offer,
+        target_audience: brief.audience,
+        story_angle: selectedAngle.title,
+        consent_state: 'owner_approval_required',
+        capabilities: {
+            generate_video: 'off',
+            upload_source_assets: 'off',
+            use_owner_likeness: 'consent_required',
+            post_to_social: 'off',
+            whatsapp_distribution: 'draft_only',
+            claim_review: 'required',
+        },
+        next_signal: performanceRead,
+    };
+}
+
 function makeCampaignBrief(brief, selectedAngle, performanceRead) {
     return [
         'MirrorProd Story Sprint',
+        'Receipt schema: mirrorprod.sprint_receipt.v1',
         'Campaign: Monsoon Cafe Box',
         `Goal: ${brief.goal}`,
         `Audience: ${brief.audience}`,
@@ -183,6 +250,7 @@ function makeCampaignBrief(brief, selectedAngle, performanceRead) {
         `Source assets: ${brief.assets}`,
         `Guardrails: ${brief.guardrails}`,
         `Next episode read: ${performanceRead}`,
+        'Capabilities: generate video off; upload source assets off; post to social off; owner likeness requires consent.',
         'Approval state: Draft only until owner approval. Nothing has been posted.',
     ].join('\n');
 }
@@ -236,6 +304,14 @@ export default function MirrorProdStory() {
     const selectedAngle = storyAngles.find((angle) => angle.id === angleId) || storyAngles[0];
     const receipt = useMemo(() => makeReceipt(brief, selectedAngle), [brief, selectedAngle]);
     const performanceRead = useMemo(() => getPerformanceRead(performance), [performance]);
+    const sprintObjects = useMemo(
+        () => makeSprintObjects(brief, selectedAngle, performanceRead),
+        [brief, selectedAngle, performanceRead],
+    );
+    const sprintReceipt = useMemo(
+        () => makeSprintReceipt(brief, selectedAngle, performanceRead),
+        [brief, selectedAngle, performanceRead],
+    );
     const campaignBrief = useMemo(
         () => makeCampaignBrief(brief, selectedAngle, performanceRead),
         [brief, selectedAngle, performanceRead],
@@ -446,6 +522,40 @@ export default function MirrorProdStory() {
                 </div>
             </section>
 
+            <section className="mps-section mps-control-grid" id="sprint-receipt">
+                <div className="mps-section-head">
+                    <p>Sprint receipt v1</p>
+                    <h2>The story sprint has controls before it has automation.</h2>
+                </div>
+                <div className="mps-object-panel">
+                    <span>Native objects</span>
+                    <div className="mps-object-list">
+                        {sprintObjects.map(([label, value]) => (
+                            <div key={label}>
+                                <small>{label}</small>
+                                <strong>{value}</strong>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="mps-switch-panel">
+                    <span>Consent and capability switches</span>
+                    <div className="mps-switch-list">
+                        {sprintControls.map((control) => (
+                            <div key={control.label}>
+                                <b>{control.label}</b>
+                                <strong>{control.state}</strong>
+                                <p>{control.detail}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="mps-json-panel" aria-label="MirrorProd sprint receipt preview">
+                    <span>Handoff object</span>
+                    <pre>{JSON.stringify(sprintReceipt, null, 2)}</pre>
+                </div>
+            </section>
+
             <section className="mps-section mps-performance">
                 <div className="mps-section-head">
                     <p>Performance read</p>
@@ -496,8 +606,8 @@ export default function MirrorProdStory() {
                     <h2>Turn the reviewed brief into a story sprint.</h2>
                 </div>
                 <div className="mps-brief-preview" aria-label="Campaign handoff brief">
-                    {campaignBrief.split('\n').slice(0, 9).map((line) => (
-                        <p key={line}>{line}</p>
+                    {campaignBrief.split('\n').map((line, index) => (
+                        <p key={`${index}-${line}`}>{line}</p>
                     ))}
                 </div>
                 <div className="mps-action-card">
@@ -524,7 +634,7 @@ export default function MirrorProdStory() {
                 <Sparkles size={32} aria-hidden="true" />
                 <h2>Review-first demo. Nothing posts from this page.</h2>
                 <p>
-                    This screen proves the product loop: brief, angle, episode board, approval state, pack, and learning.
+                    This screen proves the product loop: brief, angle, episode board, consent state, pack, and learning.
                     It does not generate new video, upload source files, or publish a campaign.
                 </p>
                 <div className="mps-close-actions">
