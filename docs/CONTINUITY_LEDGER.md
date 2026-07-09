@@ -144,6 +144,7 @@ For a topic that will last more than one session, create a topic packet from `do
 ## Topic Packets
 
 - [AMOS Cognitive Mesh v0.1](./topic-packets/amos-cognitive-mesh-v0-1.md)
+- [MirrorProd Story OS](./topic-packets/mirrorprod-story-os.md)
 
 ## Update Rule
 
@@ -160,6 +161,33 @@ After each bounded Active Mirror site task, append a new dated entry with:
 Do not turn this into a strategy essay. Keep it operational.
 
 ## Ledger Entries
+
+### 2026-07-09: MirrorProd Story OS Local Prototype
+
+- Changed: added a local `/mirrorprod-story` prototype route for the Monsoon Cafe Box business microdrama flow.
+- Product reason:
+  - MirrorProd should be tested as a brief-locked business story system, not a generic video generator.
+  - The previous public MirrorProd route was reverted, so this slice stays local and undeployed.
+- Files touched:
+  - `src/App.jsx`
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `public/mirrorprod-story/`
+  - `docs/topic-packets/mirrorprod-story-os.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run build:deploy`
+  - Playwright desktop/mobile smoke against `http://127.0.0.1:8976/app/mirrorprod-story`
+  - screenshot proof in `output/playwright/mirrorprod-story-desktop-hero.png` and `output/playwright/mirrorprod-story-mobile.png`
+- Deploy status:
+  - not deployed
+- Public routes checked:
+  - none for this local prototype slice
+- Bad news or limits:
+  - This does not generate new video, upload content, or restore the public MirrorProd route.
+  - It reuses a small copied subset of legacy `mprod-*` and cafe clips from `/Users/mirror-pro/repos/activemirror-site`.
+- Next safe move:
+  - Decide whether to package this local prototype into the deploy bridge or keep iterating on the product surface.
 
 ### 2026-07-05: Continuity Ledger Created
 
