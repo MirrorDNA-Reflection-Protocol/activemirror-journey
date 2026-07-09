@@ -179,15 +179,21 @@ Do not turn this into a strategy essay. Keep it operational.
   - `npm run build:deploy`
   - Playwright desktop/mobile smoke against `http://127.0.0.1:8976/app/mirrorprod-story`
   - Copy-brief and story-sprint mail action smoke
+  - Deploy bridge `npm run app:package`
+  - Deploy bridge `npm run deploy:preflight`
+  - Deploy bridge `npm run site:worker:deploy`
+  - Deploy bridge `npm run deploy:verify`
+  - Live Playwright desktop/mobile smoke against `https://activemirror.ai/app/mirrorprod-story/`
 - Deploy status:
-  - packaging in progress
+  - deployed on `active-mirror-static-site` version `3714703c-ae23-4657-a077-774e77d4b65c`
 - Public routes checked:
-  - pending after deploy
+  - `https://activemirror.ai/app/mirrorprod-story/`
 - Bad news or limits:
   - This still does not generate video, upload source files, auto-post, or use Mini assets.
+  - The Mini is still unavailable, so newer Mini-only MirrorProd assets were not swept.
   - Video generation/upload credentials are not part of this slice.
 - Next safe move:
-  - Commit source, package `dist` into `/Users/mirror-pro/repos/active-mirror-site/public/app`, run deploy preflight, deploy, and verify `/app/mirrorprod-story`.
+  - Decide whether MirrorProd Story stays as an Active Mirror product route or gets a standalone sales surface.
 
 ### 2026-07-09: MirrorProd Story OS Local Prototype
 

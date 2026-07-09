@@ -45,7 +45,7 @@ Turn the India short-form and microdrama opportunity into a public, review-first
 - Commits:
   - `7116605 Add MirrorProd Story OS product spec`
 - Live routes:
-  - deploy candidate route: `/app/mirrorprod-story`
+  - live route: `https://activemirror.ai/app/mirrorprod-story/`
   - legacy MirrorProd route: `activemirror.ai/mirrorprod-india/` returned the generic Active Mirror page earlier in this session.
 - Unknowns:
   - why the previous MirrorProd public route was reverted
@@ -100,22 +100,26 @@ Turn the India short-form and microdrama opportunity into a public, review-first
   - local preview route `/app/mirrorprod-story` renders with 9 video elements, 6 episodes, no horizontal overflow, and no console/page errors
   - media is imported from `src/assets/mirrorprod-story/` and emitted under `dist/assets/`, so deploy packaging does not need to copy a raw public route directory
   - desktop copy action and `mailto:` story-sprint action include the edited campaign brief
+  - live route `https://activemirror.ai/app/mirrorprod-story/` renders on desktop and mobile with 9 videos, 6 episodes, 9 fields, no horizontal overflow, and `/app/assets/` media URLs
+  - full production deploy gate passed from the deploy bridge after updating stale QA expectations
 - Unchecked:
   - whether the Mini has newer MirrorProd assets
-  - final production canary for `/app/mirrorprod-story`
 - Evidence paths:
   - this packet
   - `docs/CONTINUITY_LEDGER.md`
+  - `/Users/mirror-pro/repos/active-mirror-site/output/playwright/live-mirrorprod-story-desktop.png`
+  - `/Users/mirror-pro/repos/active-mirror-site/output/playwright/live-mirrorprod-story-mobile.png`
+  - `/Users/mirror-pro/repos/active-mirror-site/output/playwright/live-mirrorprod-story-action.png`
 
 ## Bad News
 
-- MirrorProd is not currently verified live as its own public route.
+- The Mini is still unavailable, so newer Mini-only MirrorProd assets were not swept.
 - This page is a review-first demo, not an automated generation/upload product.
 - Video generation/upload credentials are not part of this build.
 
 ## Next Move
 
-- Package the deploy candidate through the deploy bridge and verify the live `/app/mirrorprod-story` route.
+- Decide whether this remains an Active Mirror product route or becomes a standalone MirrorProd sales surface.
 
 ## Update Log
 
@@ -130,12 +134,17 @@ Turn the India short-form and microdrama opportunity into a public, review-first
 - Tools/gates used:
   - `npm run build:deploy`
   - Playwright desktop/mobile smoke against `http://127.0.0.1:8976/app/mirrorprod-story`
+  - deploy bridge `npm run app:package`
+  - deploy bridge `npm run deploy:preflight`
+  - deploy bridge `npm run site:worker:deploy`
+  - deploy bridge `npm run deploy:verify`
+  - live Playwright desktop/mobile smoke against `https://activemirror.ai/app/mirrorprod-story/`
 - Deploy status:
-  - packaging in progress
+  - deployed on `active-mirror-static-site` version `3714703c-ae23-4657-a077-774e77d4b65c`
 - Public routes checked:
-  - pending after deploy
+  - `https://activemirror.ai/app/mirrorprod-story/`
 - Remaining risk:
-  - production canary and live route proof still required
+  - Mini assets were not checked because the Mini is down
 
 ### 2026-07-09 Local Prototype
 
