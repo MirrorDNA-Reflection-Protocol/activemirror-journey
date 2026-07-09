@@ -4,23 +4,57 @@ import {
     ArrowLeft,
     BadgeCheck,
     BarChart3,
+    Check,
     ClipboardCheck,
+    Copy,
     FileCheck2,
     Languages,
     ListChecks,
+    Mail,
     MessageCircle,
     PlaySquare,
     ShieldCheck,
     Sparkles,
 } from 'lucide-react';
+import cafeScamPoster from '../assets/mirrorprod-story/posters/cafe-scam-alert.jpg';
+import festivalOfferPoster from '../assets/mirrorprod-story/posters/mprod-festival-offer.jpg';
+import flashSalePoster from '../assets/mirrorprod-story/posters/mprod-flash-sale.jpg';
+import productDemoPoster from '../assets/mirrorprod-story/posters/mprod-product-demo.jpg';
+import retailLaunchPoster from '../assets/mirrorprod-story/posters/mprod-retail-launch.jpg';
+import serviceIntroPoster from '../assets/mirrorprod-story/posters/mprod-service-intro.jpg';
+import cafeScamVideo from '../assets/mirrorprod-story/videos/cafe-scam-alert.mp4';
+import festivalOfferVideo from '../assets/mirrorprod-story/videos/mprod-festival-offer.mp4';
+import flashSaleVideo from '../assets/mirrorprod-story/videos/mprod-flash-sale.mp4';
+import productDemoVideo from '../assets/mirrorprod-story/videos/mprod-product-demo.mp4';
+import retailLaunchVideo from '../assets/mirrorprod-story/videos/mprod-retail-launch.mp4';
+import serviceIntroVideo from '../assets/mirrorprod-story/videos/mprod-service-intro.mp4';
 import './MirrorProdStory.css';
+
+const mediaAssets = {
+    posters: {
+        'cafe-scam-alert.jpg': cafeScamPoster,
+        'mprod-festival-offer.jpg': festivalOfferPoster,
+        'mprod-flash-sale.jpg': flashSalePoster,
+        'mprod-product-demo.jpg': productDemoPoster,
+        'mprod-retail-launch.jpg': retailLaunchPoster,
+        'mprod-service-intro.jpg': serviceIntroPoster,
+    },
+    videos: {
+        'cafe-scam-alert.mp4': cafeScamVideo,
+        'mprod-festival-offer.mp4': festivalOfferVideo,
+        'mprod-flash-sale.mp4': flashSaleVideo,
+        'mprod-product-demo.mp4': productDemoVideo,
+        'mprod-retail-launch.mp4': retailLaunchVideo,
+        'mprod-service-intro.mp4': serviceIntroVideo,
+    },
+};
 
 const storyAngles = [
     {
         id: 'drama',
         title: 'Customer drama',
         promise: 'Make the product feel like a weekend moment, not an ad.',
-        hook: 'Weekend plans changed when this box reached the table.',
+        hook: 'Weekend plans changed when this cafe box reached the table.',
         risk: 'Low',
         bestFor: 'Reels, Shorts, WhatsApp status',
     },
@@ -28,7 +62,7 @@ const storyAngles = [
         id: 'founder',
         title: 'Founder constraint',
         promise: 'Use the owner story to make urgency feel earned.',
-        hook: 'The owner almost cancelled the monsoon menu.',
+        hook: 'The owner almost cancelled the monsoon cafe menu.',
         risk: 'Medium',
         bestFor: 'Founder cut, story post, community update',
     },
@@ -36,7 +70,7 @@ const storyAngles = [
         id: 'proof',
         title: 'Proof and FAQ',
         promise: 'Answer the real objections before the viewer asks.',
-        hook: 'Three desserts, one reason people reorder.',
+        hook: 'Three buyer questions, one clean preorder answer.',
         risk: 'Review',
         bestFor: 'Product cut, FAQ reel, sales reply',
     },
@@ -122,7 +156,7 @@ const performanceDefaults = {
 };
 
 function mediaUrl(kind, fileName) {
-    return `${import.meta.env.BASE_URL}mirrorprod-story/${kind}/${fileName}`;
+    return mediaAssets[kind]?.[fileName] || '';
 }
 
 function makeReceipt(brief, selectedAngle) {
@@ -134,6 +168,47 @@ function makeReceipt(brief, selectedAngle) {
         ['Approval state', 'Draft only until owner approval'],
         ['Distribution', 'Reels, Shorts, WhatsApp status, WhatsApp reply cut'],
     ];
+}
+
+function makeCampaignBrief(brief, selectedAngle, performanceRead) {
+    return [
+        'MirrorProd Story Sprint',
+        'Campaign: Monsoon Cafe Box',
+        `Goal: ${brief.goal}`,
+        `Audience: ${brief.audience}`,
+        `Language: ${brief.language}`,
+        `Offer: ${brief.offer}`,
+        `Selected angle: ${selectedAngle.title}`,
+        `Hook: ${selectedAngle.hook}`,
+        `Source assets: ${brief.assets}`,
+        `Guardrails: ${brief.guardrails}`,
+        `Next episode read: ${performanceRead}`,
+        'Approval state: Draft only until owner approval. Nothing has been posted.',
+    ].join('\n');
+}
+
+function makeMailto(briefText) {
+    const subject = encodeURIComponent('MirrorProd Story Sprint');
+    const body = encodeURIComponent(briefText);
+    return `mailto:paul@activemirror.ai?subject=${subject}&body=${body}`;
+}
+
+async function copyText(value = '') {
+    if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+        return true;
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = value;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    const copied = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    return copied;
 }
 
 function getPerformanceRead(values) {
@@ -156,10 +231,16 @@ export default function MirrorProdStory() {
     const [brief, setBrief] = useState(defaultBrief);
     const [angleId, setAngleId] = useState('drama');
     const [performance, setPerformance] = useState(performanceDefaults);
+    const [copyState, setCopyState] = useState('idle');
 
     const selectedAngle = storyAngles.find((angle) => angle.id === angleId) || storyAngles[0];
     const receipt = useMemo(() => makeReceipt(brief, selectedAngle), [brief, selectedAngle]);
     const performanceRead = useMemo(() => getPerformanceRead(performance), [performance]);
+    const campaignBrief = useMemo(
+        () => makeCampaignBrief(brief, selectedAngle, performanceRead),
+        [brief, selectedAngle, performanceRead],
+    );
+    const storySprintHref = useMemo(() => makeMailto(campaignBrief), [campaignBrief]);
 
     function updateBrief(field, value) {
         setBrief((current) => ({ ...current, [field]: value }));
@@ -167,6 +248,16 @@ export default function MirrorProdStory() {
 
     function updatePerformance(field, value) {
         setPerformance((current) => ({ ...current, [field]: value }));
+    }
+
+    async function copyCampaignBrief() {
+        try {
+            const copied = await copyText(campaignBrief);
+            setCopyState(copied ? 'copied' : 'failed');
+        } catch {
+            setCopyState('failed');
+        }
+        window.setTimeout(() => setCopyState('idle'), 1800);
     }
 
     return (
@@ -201,7 +292,7 @@ export default function MirrorProdStory() {
                     </div>
                 </div>
 
-                <div className="mps-hero-panel" aria-label="Monsoon Dessert Box campaign snapshot">
+                <div className="mps-hero-panel" aria-label="Monsoon Cafe Box campaign snapshot">
                     <div className="mps-phone-stack">
                         {episodeBase.slice(0, 3).map((episode) => (
                             <video
@@ -399,12 +490,42 @@ export default function MirrorProdStory() {
                 </div>
             </section>
 
+            <section className="mps-section mps-action-grid" id="story-sprint">
+                <div className="mps-section-head">
+                    <p>Next action</p>
+                    <h2>Turn the reviewed brief into a story sprint.</h2>
+                </div>
+                <div className="mps-brief-preview" aria-label="Campaign handoff brief">
+                    {campaignBrief.split('\n').slice(0, 9).map((line) => (
+                        <p key={line}>{line}</p>
+                    ))}
+                </div>
+                <div className="mps-action-card">
+                    <BadgeCheck size={30} aria-hidden="true" />
+                    <h3>Ready for scoped intake.</h3>
+                    <p>
+                        Bring the business goal, source clips, owner approval rules, and one local-language priority.
+                        This page sends no source files and posts nothing.
+                    </p>
+                    <div className="mps-action-buttons">
+                        <button type="button" className="mps-primary" onClick={copyCampaignBrief}>
+                            {copyState === 'copied' ? <Check size={18} aria-hidden="true" /> : <Copy size={18} aria-hidden="true" />}
+                            {copyState === 'copied' ? 'Copied brief' : copyState === 'failed' ? 'Copy unavailable' : 'Copy brief'}
+                        </button>
+                        <a className="mps-secondary" href={storySprintHref}>
+                            <Mail size={18} aria-hidden="true" />
+                            Start story sprint
+                        </a>
+                    </div>
+                </div>
+            </section>
+
             <section className="mps-close">
                 <Sparkles size={32} aria-hidden="true" />
-                <h2>Local prototype only. The public MirrorProd route stays parked until the brand decision is clear.</h2>
+                <h2>Review-first demo. Nothing posts from this page.</h2>
                 <p>
                     This screen proves the product loop: brief, angle, episode board, approval state, pack, and learning.
-                    It does not generate new video, upload anything, or publish a campaign.
+                    It does not generate new video, upload source files, or publish a campaign.
                 </p>
                 <div className="mps-close-actions">
                     <a href="#brief-lock" className="mps-primary">

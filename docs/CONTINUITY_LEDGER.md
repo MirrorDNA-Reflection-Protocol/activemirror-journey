@@ -162,6 +162,33 @@ Do not turn this into a strategy essay. Keep it operational.
 
 ## Ledger Entries
 
+### 2026-07-09: MirrorProd Story OS Deploy Candidate
+
+- Changed: made `/mirrorprod-story` deploy-safe and actionable after the Mini was confirmed unavailable.
+- Product reason:
+  - The page now has a real conversion path: copy the reviewed campaign brief or start a scoped story-sprint email.
+  - Media now comes through Vite-bundled `src/assets/mirrorprod-story/` files, so the deploy bridge can package only `dist/index.html`, `dist/404.html`, and `dist/assets/`.
+- Files touched:
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `src/assets/mirrorprod-story/`
+  - removed `public/mirrorprod-story/`
+  - `docs/topic-packets/mirrorprod-story-os.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Tools and gates used:
+  - `npm run build:deploy`
+  - Playwright desktop/mobile smoke against `http://127.0.0.1:8976/app/mirrorprod-story`
+  - Copy-brief and story-sprint mail action smoke
+- Deploy status:
+  - packaging in progress
+- Public routes checked:
+  - pending after deploy
+- Bad news or limits:
+  - This still does not generate video, upload source files, auto-post, or use Mini assets.
+  - Video generation/upload credentials are not part of this slice.
+- Next safe move:
+  - Commit source, package `dist` into `/Users/mirror-pro/repos/active-mirror-site/public/app`, run deploy preflight, deploy, and verify `/app/mirrorprod-story`.
+
 ### 2026-07-09: MirrorProd Story OS Local Prototype
 
 - Changed: added a local `/mirrorprod-story` prototype route for the Monsoon Cafe Box business microdrama flow.

@@ -3,7 +3,7 @@
 ## Topic
 
 - Name: MirrorProd Story OS
-- Lane: Active Mirror public product, local prototype only
+- Lane: Active Mirror public product, deploy candidate
 - Status: open
 - Owner: Paul
 - Updated: 2026-07-09
@@ -13,14 +13,14 @@
 One sentence:
 
 ```text
-Turn the India short-form and microdrama opportunity into a usable local product prototype for business-video campaign planning.
+Turn the India short-form and microdrama opportunity into a public, review-first business-video campaign demo.
 ```
 
 ## Why It Matters
 
 - India short-form video and microdrama are high-signal markets, but a generic video generator is not defensible.
 - MirrorProd can be higher value if it locks the business brief, story arc, approval state, outputs, and next-episode learning.
-- The prototype should prove the product loop before any public route or deploy decision.
+- The deploy candidate should prove the product loop and give users a scoped intake action before any generation/upload workflow.
 
 ## Source Material
 
@@ -39,12 +39,14 @@ Turn the India short-form and microdrama opportunity into a usable local product
 - Screenshots:
   - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-story-desktop-hero.png`
   - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-story-mobile.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-story-action.png`
 - Specs:
   - MirrorProd Story OS v0
 - Commits:
   - `7116605 Add MirrorProd Story OS product spec`
 - Live routes:
-  - no active MirrorProd public route. `activemirror.ai/mirrorprod-india/` currently returns the generic Active Mirror page.
+  - deploy candidate route: `/app/mirrorprod-story`
+  - legacy MirrorProd route: `activemirror.ai/mirrorprod-india/` returned the generic Active Mirror page earlier in this session.
 - Unknowns:
   - why the previous MirrorProd public route was reverted
   - whether MirrorProd should become a public route, sales artifact, or standalone brand
@@ -55,7 +57,7 @@ Turn the India short-form and microdrama opportunity into a usable local product
 - Privacy: no client data, no private files, no raw vault material.
 - Model/provider names: do not expose.
 - Client exposure: use fictional cafe/bakery demo data only.
-- Deploy path: no deploy in this slice.
+- Deploy path: product source first, then package only `dist/index.html`, `dist/404.html`, and `dist/assets/` through `/Users/mirror-pro/repos/active-mirror-site/public/app`.
 - Approval required: public route, production deploy, credential use, upload, or auto-posting.
 - No-touch paths:
   - deploy bridge repo unless explicitly packaging for deploy
@@ -76,13 +78,18 @@ Turn the India short-form and microdrama opportunity into a usable local product
   - mobile `/app/mirrorprod-story`
   - brief edits update story board and receipt
   - angle selection updates the selected campaign
+  - copy brief action copies the edited campaign handoff
+  - story sprint mail action includes the edited brief
   - hero leaves the production summary visible in the first desktop and mobile viewport
 - Public canaries:
   - none in this slice
 - Research checks:
   - already completed in the preceding market sweep
 - Deploy checks:
-  - not applicable unless Paul asks to package and deploy
+  - `npm run app:package`
+  - `npm run deploy:preflight`
+  - `npm run site:worker:deploy`
+  - `npm run deploy:verify`
 
 ## Current Proof
 
@@ -91,25 +98,46 @@ Turn the India short-form and microdrama opportunity into a usable local product
   - legacy media pool exists under `/Users/mirror-pro/repos/activemirror-site/videos`
   - current deploy source reverted the public MirrorProd route
   - local preview route `/app/mirrorprod-story` renders with 9 video elements, 6 episodes, no horizontal overflow, and no console/page errors
+  - media is imported from `src/assets/mirrorprod-story/` and emitted under `dist/assets/`, so deploy packaging does not need to copy a raw public route directory
+  - desktop copy action and `mailto:` story-sprint action include the edited campaign brief
 - Unchecked:
   - whether the Mini has newer MirrorProd assets
+  - final production canary for `/app/mirrorprod-story`
 - Evidence paths:
   - this packet
   - `docs/CONTINUITY_LEDGER.md`
 
 ## Bad News
 
-- MirrorProd is not currently live as its own public route.
-- This slice is a local prototype, not a launched product.
+- MirrorProd is not currently verified live as its own public route.
+- This page is a review-first demo, not an automated generation/upload product.
 - Video generation/upload credentials are not part of this build.
 
 ## Next Move
 
-- Build `/mirrorprod-story` as a local prototype with real reused media and a working brief-to-story flow.
+- Package the deploy candidate through the deploy bridge and verify the live `/app/mirrorprod-story` route.
 
 ## Update Log
 
-### 2026-07-09
+### 2026-07-09 Deploy Candidate
+
+- Changed: made the MirrorProd Story OS route deployable by moving media into Vite-bundled assets and adding a copyable story-sprint intake path.
+- Files touched:
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `src/assets/mirrorprod-story/`
+  - `public/mirrorprod-story/` removed
+- Tools/gates used:
+  - `npm run build:deploy`
+  - Playwright desktop/mobile smoke against `http://127.0.0.1:8976/app/mirrorprod-story`
+- Deploy status:
+  - packaging in progress
+- Public routes checked:
+  - pending after deploy
+- Remaining risk:
+  - production canary and live route proof still required
+
+### 2026-07-09 Local Prototype
 
 - Changed: created topic packet for the MirrorProd Story OS prototype.
 - Files touched:

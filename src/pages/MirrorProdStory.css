@@ -535,6 +535,81 @@
     padding: 24px;
 }
 
+.mps-action-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.86fr) minmax(340px, 0.48fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.mps-action-grid .mps-section-head {
+    grid-column: 1 / -1;
+}
+
+.mps-brief-preview,
+.mps-action-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: #10131a;
+}
+
+.mps-brief-preview {
+    display: grid;
+    gap: 10px;
+    min-height: 100%;
+    padding: 24px;
+}
+
+.mps-brief-preview p {
+    margin: 0;
+    color: #dbe4ef;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.mps-brief-preview p:first-child {
+    color: #f2d19f;
+    font-size: 0.96rem;
+    font-weight: 900;
+}
+
+.mps-action-card {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 28px;
+}
+
+.mps-action-card svg {
+    color: #f2d19f;
+}
+
+.mps-action-card h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.8rem;
+    line-height: 1.05;
+}
+
+.mps-action-card p {
+    margin: 0;
+    color: #cfd7e3;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.mps-action-buttons {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.mps-action-buttons button {
+    cursor: pointer;
+}
+
 .mps-meters {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -611,7 +686,8 @@
     .mps-hero,
     .mps-brief-grid,
     .mps-review-grid,
-    .mps-performance-card {
+    .mps-performance-card,
+    .mps-action-grid {
         grid-template-columns: 1fr;
     }
 
