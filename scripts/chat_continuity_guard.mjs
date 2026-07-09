@@ -31,7 +31,7 @@ const required = [
     [homePage, 'setHomeChatContinuityEnabled(true', 'home page has explicit enable path'],
     [homePage, 'clearHomeChatContinuity({ keepEnabled:', 'home page can clear current chat'],
     [homePage, 'showKeepChatNudge', 'home page nudges after a useful answer instead of hiding the option'],
-    [homePage, 'This chat survives refresh here. Keep it on this browser for later?', 'visible post-answer keep-chat nudge explains refresh recovery plainly'],
+    [homePage, 'Want this chat to stay after refresh?', 'visible post-answer keep-chat nudge explains refresh recovery plainly'],
     [homePage, 'Keep it', 'visible post-answer enable action stays plain'],
     [homePage, 'Save chat', 'visible saved chat action stays plain'],
     [homePage, 'Saved chats', 'visible saved chat section stays plain'],

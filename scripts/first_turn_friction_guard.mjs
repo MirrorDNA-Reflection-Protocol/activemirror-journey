@@ -177,7 +177,7 @@ for (const starterPhrase of [
     'Put the options side by side',
     'Do not fix the whole system',
     'Make it plain first',
-    "Let's do something fun",
+    'Surprise me',
     'Good. Make it playful, but still make something you can use.',
     'Meet Active Mirror',
     'Think of me as the second pass before the world sees your first draft.',

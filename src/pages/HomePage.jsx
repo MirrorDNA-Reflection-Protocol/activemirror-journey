@@ -74,35 +74,35 @@ const STARTER_ACTIONS = [
     {
         kind: 'make',
         label: 'Make',
-        caption: 'Make a thing',
+        caption: 'Message, image, doc',
         icon: PenLine,
         intent: 'I want to make something useful.',
     },
     {
         kind: 'decide',
         label: 'Decide',
-        caption: 'Choose clearly',
+        caption: 'Compare options',
         icon: Check,
         intent: 'I need to make a decision.',
     },
     {
         kind: 'fix',
         label: 'Fix',
-        caption: 'Clear the snag',
+        caption: 'Unblock a thing',
         icon: SlidersHorizontal,
         intent: 'Something is not working.',
     },
     {
         kind: 'understand',
         label: 'Understand',
-        caption: 'Plain English',
+        caption: 'Explain simply',
         icon: Sparkles,
         intent: 'I need to understand this better.',
     },
     {
         kind: 'fun',
         label: 'Fun',
-        caption: "Let's do something fun",
+        caption: 'Surprise me',
         icon: PartyPopper,
         intent: 'I want to do something fun.',
     },
@@ -2482,7 +2482,7 @@ export default function HomePage() {
                                     className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.05rem] border px-5 text-[0.98rem] font-bold transition hover:-translate-y-0.5 sm:min-h-14 sm:rounded-[1.2rem] sm:text-base ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-200 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white'}`}
                                 >
                                     <Upload size={17} />
-                                    Already have one?
+                                    Load saved setup
                                 </button>
                             </div>
                         ) : null}
@@ -2494,7 +2494,7 @@ export default function HomePage() {
                                     rows={1}
                                     value={text}
                                     maxLength={1000}
-                                    placeholder="Or type what you want..."
+                                    placeholder="Type anything: make a poster, decide, fix, understand..."
                                     onChange={(event) => setText(event.target.value)}
                                     onKeyDown={(event) => {
                                         if (event.key === 'Enter' && !event.shiftKey) {
@@ -2528,7 +2528,7 @@ export default function HomePage() {
 
                         {!showMirror ? (
                             <div className="mx-auto mt-3 max-w-2xl sm:mt-4">
-                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Or pick one</div>
+                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Try one</div>
                                 <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                                 {STARTER_ACTIONS.map((item) => {
                                     const Icon = item.icon;
@@ -2594,10 +2594,10 @@ export default function HomePage() {
                         ) : null}
 
                         <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs ${isLight ? 'text-stone-500' : 'text-zinc-500'} ${showMirror ? 'flex' : 'flex justify-center'}`}>
-                            <span>Private by default.</span>
+                            <span>Private.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
-                                Saved only if you choose.
+                                Save only if you choose.
                             </span>
                             {savedCount > 0 ? (
                                 <button
@@ -2665,7 +2665,7 @@ export default function HomePage() {
                             {showKeepChatNudge ? (
                                 <div className={`grid gap-3 rounded-[1.35rem] border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600 shadow-[0_16px_34px_rgba(77,65,50,0.08)]' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400 shadow-[0_0_30px_rgba(34,211,238,0.05)]'}`}>
                                     <div className="min-w-0 text-sm leading-6">
-                                        This chat survives refresh here. Keep it on this browser for later?
+                                        Want this chat to stay after refresh?
                                     </div>
                                     <button
                                         type="button"
