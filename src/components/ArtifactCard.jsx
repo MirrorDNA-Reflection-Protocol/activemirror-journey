@@ -248,6 +248,11 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
     const challengeTone = (isLight ? CHALLENGE_META_LIGHT : CHALLENGE_META)[challenge.status] || (isLight ? CHALLENGE_META_LIGHT.draft : CHALLENGE_META.draft);
     const challengeLabel = challenge.label || 'Draft';
     const challengeNote = challenge.user_note || '';
+    const artifactStatus = String(artifact.status || '').trim().toLowerCase();
+    const artifactNotReady = artifact.ready === false
+        || artifact.fallback === true
+        || challenge.promotion?.can_share === false
+        || ['degraded', 'fallback', 'not_ready', 'not-ready', 'unready'].includes(artifactStatus);
 
     return (
         <section className={`min-w-0 overflow-hidden rounded-[1.7rem] border px-4 py-4 ${isLight ? 'border-stone-300/70 bg-white/72 shadow-[0_20px_50px_rgba(77,65,50,0.10)]' : 'border-cyan-300/15 bg-cyan-300/[0.055] shadow-[0_0_40px_rgba(34,211,238,0.08)]'}`}>
@@ -272,7 +277,14 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
             ) : null}
             <ImageMedia media={media} title={title} isLight={isLight} />
             <ArtifactBody body={body} isLight={isLight} />
-            <DraftActions title={title} text={body} kind={kind} surface={surface} />
+            <DraftActions
+                title={title}
+                text={body}
+                kind={kind}
+                surface={surface}
+                allowShare={!artifactNotReady}
+                copyLabel={artifactNotReady ? 'Copy to edit' : 'Copy'}
+            />
             {kind === 'image' ? <ImageRetryActions onRegenerate={onRegenerate} onSharpen={onSharpen} isLight={isLight} /> : null}
             {checklist.length ? (
                 <div className="mt-3 grid gap-2">

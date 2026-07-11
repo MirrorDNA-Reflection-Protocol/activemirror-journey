@@ -15,6 +15,8 @@
 
 const STATE_KEY = 'mirrorState_v1';
 const SESSION_CHAT_KEY = 'activeMirror_homeChat_session_v1';
+const PRIVATE_RECALL_LEGACY_KEY = 'activeMirrorPrivateRecall.v1';
+const SESSION_CONTEXT_MAX_MESSAGES = 4;
 
 // ── Default State ──
 
@@ -45,6 +47,9 @@ const DEFAULT_STATE = {
         thread: null,       // Latest home-page chat state, not promoted to memory
         savedThreads: [],    // Explicitly saved browser-local chats, newest first
     },
+    privateRecall: {
+        enabled: false,      // Consent flag only; recall files and text use origin-private stores
+    },
 
     // Timestamps
     brainScanCompletedAt: null,
@@ -56,7 +61,7 @@ const DEFAULT_STATE = {
 function _read() {
     try {
         const raw = localStorage.getItem(STATE_KEY);
-        if (raw) return { ...DEFAULT_STATE, ...JSON.parse(raw) };
+        if (raw) return stripSessionContextFields({ ...DEFAULT_STATE, ...JSON.parse(raw) });
     } catch {}
 
     // Migrate from legacy keys on first read
@@ -65,17 +70,18 @@ function _read() {
 
 function _write(state) {
     try {
-        localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        const safeState = stripSessionContextFields(state);
+        localStorage.setItem(STATE_KEY, JSON.stringify(safeState));
         // Also write legacy keys for backwards compat with pages not yet migrated
-        if (state.archetype) {
-            localStorage.setItem('brainScan_archetype', state.archetype);
-            localStorage.setItem('mirrorArchetype', state.archetype);
+        if (safeState.archetype) {
+            localStorage.setItem('brainScan_archetype', safeState.archetype);
+            localStorage.setItem('mirrorArchetype', safeState.archetype);
         }
-        if (state.mirrorId) {
-            localStorage.setItem('mirrorId', state.mirrorId);
+        if (safeState.mirrorId) {
+            localStorage.setItem('mirrorId', safeState.mirrorId);
         }
-        if (state.blueprint) {
-            localStorage.setItem('mirrorBlueprint', JSON.stringify(state.blueprint));
+        if (safeState.blueprint) {
+            localStorage.setItem('mirrorBlueprint', JSON.stringify(safeState.blueprint));
         }
     } catch {}
 }
@@ -128,9 +134,32 @@ export function getState() {
 /** Update state (partial merge). */
 export function setState(updates) {
     const current = _read();
-    const next = { ...current, ...updates };
+    const next = stripSessionContextFields({ ...current, ...updates });
     _write(next);
     return next;
+}
+
+/** Read and migrate the explicit private-recall consent flag. */
+export function getPrivateRecallPreference() {
+    const current = _read();
+    if (current.privateRecall?.enabled === true) return true;
+    try {
+        if (localStorage.getItem(PRIVATE_RECALL_LEGACY_KEY) === 'enabled') {
+            setState({ privateRecall: { enabled: true } });
+            localStorage.removeItem(PRIVATE_RECALL_LEGACY_KEY);
+            return true;
+        }
+    } catch {}
+    return false;
+}
+
+/** Store only private-recall consent in the canonical browser state. */
+export function setPrivateRecallPreference(enabled) {
+    const next = setState({ privateRecall: { enabled: Boolean(enabled) } });
+    try {
+        localStorage.removeItem(PRIVATE_RECALL_LEGACY_KEY);
+    } catch {}
+    return Boolean(next.privateRecall?.enabled);
 }
 
 /** Save BrainScan results (called from Start.jsx COMPLETE phase). */
@@ -277,9 +306,33 @@ function cleanChatText(value, limit = 1000) {
     return String(value || '')
         .replace(/\bsk-[A-Za-z0-9_-]{8,}\b/g, '[secret]')
         .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email]')
+        .replace(/\b(api[_-]?key|secret|token|password|passcode|private[_-]?key)\s*[:=]\s*\S{4,}/gi, '$1: [secret]')
+        .replace(/(^|[^\w])\+?\d[\d\s().-]{8,}\d\b/g, '$1[phone]')
         .replace(/\s+/g, ' ')
         .trim()
         .slice(0, limit);
+}
+
+function stripSessionContextFields(value) {
+    if (Array.isArray(value)) return value.map(stripSessionContextFields);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(
+        Object.entries(value)
+            .filter(([key]) => !['session_context', 'sessionContextTurns', 'sessionContextMessages'].includes(key))
+            .map(([key, item]) => [key, stripSessionContextFields(item)])
+    );
+}
+
+function normalizeSessionContextMessages(messages = []) {
+    if (!Array.isArray(messages)) return [];
+    return messages
+        .filter((message) => ['user', 'assistant'].includes(message?.role))
+        .map((message) => ({
+            role: message.role,
+            content: cleanChatText(message?.content, 480),
+        }))
+        .filter((message) => message.content)
+        .slice(-SESSION_CONTEXT_MAX_MESSAGES);
 }
 
 function safeJsonClone(value, limit = 60000) {
@@ -287,13 +340,13 @@ function safeJsonClone(value, limit = 60000) {
     try {
         const text = JSON.stringify(value);
         if (text.length > limit) return null;
-        return JSON.parse(text);
+        return stripSessionContextFields(JSON.parse(text));
     } catch {
         return null;
     }
 }
 
-function normalizeHomeChatThread(thread = {}) {
+function normalizeHomeChatThread(thread = {}, { includeSessionContext = false } = {}) {
     const result = safeJsonClone(thread.result, 30000);
     const sendableDraft = safeJsonClone(thread.sendableDraft, 60000);
     const lastIntent = result?.kind === 'privacy_hold'
@@ -303,7 +356,7 @@ function normalizeHomeChatThread(thread = {}) {
 
     if (!draftText && !lastIntent && !result && !sendableDraft) return null;
 
-    return {
+    const normalized = {
         version: 1,
         draftText,
         lastIntent,
@@ -314,6 +367,10 @@ function normalizeHomeChatThread(thread = {}) {
         workSurfaceOpen: Boolean(thread.workSurfaceOpen),
         updatedAt: thread.updatedAt || new Date().toISOString(),
     };
+    if (includeSessionContext) {
+        normalized.sessionContextMessages = normalizeSessionContextMessages(thread.sessionContextMessages);
+    }
+    return normalized;
 }
 
 function savedChatTitle(thread = {}) {
@@ -364,7 +421,7 @@ function readSessionChat() {
     try {
         const raw = sessionStorage.getItem(SESSION_CHAT_KEY);
         if (!raw) return null;
-        return normalizeHomeChatThread(JSON.parse(raw));
+        return normalizeHomeChatThread(JSON.parse(raw), { includeSessionContext: true });
     } catch {
         return null;
     }
@@ -444,7 +501,7 @@ export function getHomeChatContinuity() {
     return currentHomeChatState();
 }
 
-/** Get the current tab/session chat. This survives refresh, but is not durable memory. */
+/** Get the current tab/session chat. It survives refresh until the tab closes, but is not durable memory. */
 export function getSessionHomeChat() {
     return readSessionChat();
 }
@@ -454,7 +511,7 @@ export function saveSessionHomeChat(thread = {}) {
     const normalized = normalizeHomeChatThread({
         ...thread,
         updatedAt: new Date().toISOString(),
-    });
+    }, { includeSessionContext: true });
     try {
         if (!normalized) {
             sessionStorage.removeItem(SESSION_CHAT_KEY);
@@ -626,6 +683,6 @@ export function clearState() {
     // Also clear legacy keys
     ['brainScan_archetype', 'mirrorArchetype', 'cognitiveArchetype',
      'mirrorId', 'mirrorSigData', 'mirrorBrainId',
-     'mirrorBlueprint', 'mirrorIntake_draft', 'mirrorIntake_complete',
+     'mirrorBlueprint', 'mirrorIntake_draft', 'mirrorIntake_complete', PRIVATE_RECALL_LEGACY_KEY,
     ].forEach(k => localStorage.removeItem(k));
 }

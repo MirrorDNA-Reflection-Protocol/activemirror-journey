@@ -22,6 +22,17 @@ const STOP_WORDS = new Set([
     'this', 'want', 'what', 'when', 'where', 'which', 'with', 'would', 'your',
 ]);
 
+export const SESSION_CONTEXT_MAX_MESSAGES = 4;
+
+export const CONVERSATION_PERSONALITY_CONTRACT = Object.freeze({
+    voice: 'curious, calm, perceptive, lightly opinionated, occasionally playful',
+    boundaries: 'never a guru or therapist',
+    conversation: 'may stay with the user without prescribing action',
+});
+
+const EXPLICIT_REFLECTION_PATTERN = /\b(?:help me (?:decide|choose|figure out|plan|fix|solve|understand)|what should i do|what do i do|how should i|which (?:one|option) should i|give me (?:advice|a recommendation|a plan|a next step|a next move)|(?:next|best) (?:step|move)|make (?:a|the) decision|compare (?:my|the|these) options)\b/i;
+const SESSION_CONTEXT_TONES = new Set(['warm', 'direct', 'short', 'careful', 'playful']);
+
 function cleanText(value) {
     return String(value || '').replace(/\s+/g, ' ').trim();
 }
@@ -31,6 +42,56 @@ export function maskSoftPrivateText(value) {
         .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email]')
         .replace(/(^|[^\w])\+?\d[\d\s().-]{8,}\d\b/g, '$1[phone]')
         .replace(/\b(account|passport|aadhaar|pan|ssn|otp|pin)\b\s*(?:number|no\.?|#)?\s*[:=]?\s*[A-Z0-9-]{4,}/gi, '$1 [detail]');
+}
+
+function maskSessionContextText(value, limit = 480) {
+    return maskSoftPrivateText(value)
+        .replace(/\bsk-(?:ant|proj|live|test|[a-z0-9])[a-z0-9_-]{8,}\b/gi, '[secret]')
+        .replace(/\b(api[_-]?key|secret|token|password|passcode|private[_-]?key)\s*[:=]\s*\S{4,}/gi, '$1: [secret]')
+        .replace(/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/gi, '[private key]')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, limit);
+}
+
+export function conversationRouteFor(intent, { source = 'typed' } = {}) {
+    const text = cleanText(intent);
+    if (source !== 'typed' || !text || EXPLICIT_REFLECTION_PATTERN.test(text)) return 'reflection';
+    return 'chat';
+}
+
+export function normalizeSessionContextMessages(messages = []) {
+    if (!Array.isArray(messages)) return [];
+    return messages
+        .filter((message) => ['user', 'assistant'].includes(message?.role))
+        .map((message) => ({
+            role: message.role,
+            content: maskSessionContextText(message?.content),
+        }))
+        .filter((message) => message.content)
+        .slice(-SESSION_CONTEXT_MAX_MESSAGES);
+}
+
+export function appendSessionContextMessages(messages = [], nextMessages = []) {
+    const additions = Array.isArray(nextMessages) ? nextMessages : [nextMessages];
+    return normalizeSessionContextMessages([
+        ...normalizeSessionContextMessages(messages),
+        ...additions,
+    ]);
+}
+
+export function buildSessionContextEnvelope({ mode = 'reflection', tone = '', messages = [] } = {}) {
+    const normalizedMode = mode === 'conversation' ? 'conversation' : 'reflection';
+    const toneValue = cleanText(tone).toLowerCase();
+    const normalizedTone = SESSION_CONTEXT_TONES.has(toneValue) ? toneValue : '';
+    return {
+        schema_version: 'session_context.v0_1',
+        source: 'session',
+        durable: false,
+        mode: normalizedMode,
+        ...(normalizedTone ? { tone: normalizedTone } : {}),
+        turns: normalizeSessionContextMessages(messages),
+    };
 }
 
 function tokenize(value) {
@@ -78,13 +139,19 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         .sort((a, b) => b.score - a.score);
     const best = scoredDefaults[0];
     const approvedDefault = best && best.score >= 0.24 ? best.item : null;
+    const setupPreferences = [
+        ...(Array.isArray(seed?.preferences) ? seed.preferences : []),
+        ...(Array.isArray(seed?.mirrorSeed?.preferences) ? seed.mirrorSeed.preferences : []),
+        ...(Array.isArray(seed?.blueprint?.preferences) ? seed.blueprint.preferences : []),
+    ];
     const setupChoices = [
-        ...(Array.isArray(seed?.preferences) ? seed.preferences.map((item) => item.answer) : []),
-        ...(Array.isArray(seed?.blueprint?.preferences) ? seed.blueprint.preferences.map((item) => item.answer) : []),
+        ...setupPreferences.map((item) => item?.answer),
         seed?.blueprint?.help?.label,
         seed?.blueprint?.boundary?.label,
         seed?.blueprint?.directness?.label || seed?.blueprint?.memory?.label,
     ].filter(Boolean);
+    const replyStyle = setupPreferences.find((item) => item?.preference === 'reply_style')?.answer;
+    const toneCue = replyStyle ? cleanText(replyStyle) : '';
     const seedSummary = seed
         ? [
             seed.archetypeName || seed.archetype || '',
@@ -139,6 +206,7 @@ export function assessLocalMirrorSense(intent, { activeDefault = null, mirrorDef
         drift: broadByLength || broadByPattern,
         approvedDefault,
         seedSummary,
+        toneCue,
         cues,
     };
 }

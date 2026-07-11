@@ -97,6 +97,39 @@ const requiredTerms = [
     { pattern: /Pick the move/i, label: 'loop brake follow-up' },
 ];
 
+const mainEntry = read('src/main.jsx');
+const viteConfig = read('vite.config.js');
+const offlineE2E = read('scripts/offline_app_shell_e2e.mjs');
+const privacyEvents = read('src/lib/privacy-events.js');
+
+if (!mainEntry.includes(".register(`${import.meta.env.BASE_URL}service-worker.js`")) {
+    failures.push('missing production service-worker registration for the /app scope');
+}
+if (!viteConfig.includes("name: 'active-mirror-app-shell-service-worker'")) {
+    failures.push('missing generated offline app-shell worker');
+}
+if (!viteConfig.includes("request.method !== 'GET'") || !viteConfig.includes("request.mode === 'navigate'")) {
+    failures.push('offline app-shell worker must reject writes and bound navigation fallback');
+}
+if (!viteConfig.includes("'index.html',") || !viteConfig.includes('const APP_INDEX')) {
+    failures.push('offline app-shell worker must precache the navigation fallback');
+}
+if (!viteConfig.includes("url.pathname.startsWith") || !viteConfig.includes("v1/")) {
+    failures.push('offline app-shell worker must exclude API traffic');
+}
+if (!viteConfig.includes("caches.match(request, { ignoreVary: true })")) {
+    failures.push('offline app-shell worker must match same-origin hashed assets across Vary headers');
+}
+if (!viteConfig.includes("PRIVATE_RECALL_RUNTIME_CACHE = 'active-mirror-private-recall-runtime-v1'") || !viteConfig.includes('PRIVATE_RECALL_RUNTIME_PREFIX')) {
+    failures.push('private recall must persist its self-hosted runtime only after opt-in');
+}
+if (!offlineE2E.includes('context.setOffline(true)') || !offlineE2E.includes('playwright-trace.zip')) {
+    failures.push('missing real-browser offline reload and trace evidence harness');
+}
+if (!read('src/pages/HomePage.jsx').includes('if (!navigator.onLine)') || !privacyEvents.includes('if (!navigator.onLine) return;')) {
+    failures.push('known-offline use must not attempt model or telemetry network routes');
+}
+
 function read(file) {
     const absolute = path.join(root, file);
     if (!fs.existsSync(absolute)) return '';
@@ -112,6 +145,7 @@ for (const file of scanFiles) {
     const lines = text.split(/\r?\n/);
     lines.forEach((line, index) => {
         if (/<meta\s+name=["']viewport["']/i.test(line)) return;
+        if (/<meta\s+http-equiv=["']Content-Security-Policy["']/i.test(line)) return;
         for (const rule of bannedConsumerTerms) {
             if (rule.pattern.test(line)) {
                 failures.push(`${file}:${index + 1} ${rule.label}: ${line.trim()}`);

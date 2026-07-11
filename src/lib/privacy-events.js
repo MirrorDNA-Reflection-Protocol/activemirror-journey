@@ -144,6 +144,7 @@ export function trackEvent(eventName, details = {}) {
     rememberLocally(payload);
 
     if (!REMOTE_EVENTS_ENABLED) return;
+    if (!navigator.onLine) return;
 
     const body = JSON.stringify(payload);
     try {

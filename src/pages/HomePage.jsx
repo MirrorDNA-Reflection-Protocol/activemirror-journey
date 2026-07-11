@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, Check, Code2, Copy, FileText, Image, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
+import PrivateRecallPanel from '../components/PrivateRecallPanel';
+import PrivateRecallSuggestions from '../components/PrivateRecallSuggestions';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { useTheme } from '../contexts/ThemeContext';
-import { buildLocalSenseContext, assessLocalMirrorSense, maskSoftPrivateText } from '../lib/local-mirror-sense';
+import {
+    appendSessionContextMessages,
+    assessLocalMirrorSense,
+    buildLocalSenseContext,
+    buildSessionContextEnvelope,
+    conversationRouteFor,
+    maskSoftPrivateText,
+} from '../lib/local-mirror-sense';
 import { makeOfflineMirrorResult } from '../lib/first-turn-fallback';
 import { attachArtifactChallenge } from '../lib/challenge-packet';
 import { languagePayloadFor } from '../lib/language-preference';
@@ -37,11 +46,36 @@ import {
 import { getPrivacySessionId, trackEvent } from '../lib/privacy-events';
 import { copyText } from '../lib/sendable-actions';
 import { createDisabledSourceAdapterProjection } from '../lib/amos-disabled-source-adapter';
+import {
+    buildPrivateRecallItems,
+    clearPrivateRecall,
+    enablePrivateRecall,
+    getPrivateRecallSnapshot,
+    privateRecallItemsFingerprint,
+    restorePrivateRecallPreference,
+    resumePrivateRecall,
+    searchPrivateRecall,
+    subscribePrivateRecall,
+    syncPrivateRecallItems,
+    turnOffPrivateRecall,
+} from '../lib/private-recall';
 
-const GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/create';
-const ARTIFACT_GATEWAY = 'https://gateway.activemirror.ai/v1/mirror/artifact';
+const DEFAULT_MIRROR_API_ORIGIN = 'https://gateway.activemirror.ai';
+const MIRROR_API_ORIGIN = (() => {
+    const configured = String(import.meta.env.VITE_ACTIVE_MIRROR_GATEWAY_ORIGIN || '').trim();
+    if (!configured) return DEFAULT_MIRROR_API_ORIGIN;
+    try {
+        const url = new URL(configured);
+        return /^https?:$/.test(url.protocol) ? url.origin : DEFAULT_MIRROR_API_ORIGIN;
+    } catch {
+        return DEFAULT_MIRROR_API_ORIGIN;
+    }
+})();
+const MIRROR_CREATE_ENDPOINT = `${MIRROR_API_ORIGIN}/v1/mirror/create`;
+const ARTIFACT_CREATE_ENDPOINT = `${MIRROR_API_ORIGIN}/v1/mirror/artifact`;
 const IMAGE_ARTIFACT_MAX_ATTEMPTS = 2;
 const IMAGE_ARTIFACT_RETRY_DELAY_MS = 900;
+const ARTIFACT_FALLBACK_LABEL = 'Template fallback - not ready to send';
 
 const SAMPLE_MIRROR = {
     reflection: 'You do not need the perfect prompt. Say the messy thing, and we will make it usable.',
@@ -68,6 +102,36 @@ const LOADING_MIRROR = {
         context_excluded: 'Private context stays out unless approved.',
         memory_decision: 'Nothing saved.',
     },
+};
+
+const OFFLINE_CONVERSATION_LINES = {
+    hi: 'जैसा मन में आ रहा है, वैसा कहिए। मैं बात का सिरा थामे रखूँगा और हर बात को कामों की सूची नहीं बनाऊँगा।',
+    hinglish: 'Jaise aa raha hai waise bolo. Main thread pakad ke rakhunga, aur har baat ko productivity exercise nahi banaunga.',
+    bn: 'মনে যেভাবে আসছে, সেভাবেই বলুন। আমি কথার সুতো ধরে রাখব, আর সবকিছুকে কাজের তালিকায় বদলে দেব না।',
+    ta: 'மனதில் வருவது போலவே சொல்லுங்கள். உரையாடலின் இழையைப் பிடித்துக் கொள்கிறேன்; எல்லாவற்றையும் செய்யவேண்டிய பட்டியலாக மாற்றமாட்டேன்.',
+    te: 'మనసులో వచ్చినట్టే చెప్పండి. మాటల దారిని పట్టుకుంటాను; ప్రతి విషయాన్నీ పనుల జాబితాగా మార్చను.',
+    mr: 'मनात येईल तसे सांगा. मी बोलण्याचा धागा पकडून ठेवेन; प्रत्येक गोष्ट कामांच्या यादीत बदलणार नाही.',
+    gu: 'મનમાં આવે તેમ કહો. હું વાતનો દોર પકડી રાખીશ; દરેક વાતને કામોની યાદીમાં ફેરવીશ નહીં.',
+    kn: 'ಮನಸ್ಸಿಗೆ ಬಂದಂತೆ ಹೇಳಿ. ಮಾತಿನ ಎಳೆಯನ್ನು ಹಿಡಿದುಕೊಳ್ಳುತ್ತೇನೆ; ಪ್ರತಿಯೊಂದನ್ನೂ ಕೆಲಸಗಳ ಪಟ್ಟಿಯಾಗಿಸುವುದಿಲ್ಲ.',
+    ml: 'മനസ്സിൽ വരുന്നതുപോലെ പറയൂ. സംഭാഷണത്തിന്റെ നൂൽ പിടിച്ചുനിർത്താം; എല്ലാം ചെയ്യേണ്ട കാര്യങ്ങളുടെ പട്ടികയാക്കില്ല.',
+    pa: 'ਜਿਵੇਂ ਮਨ ਵਿੱਚ ਆ ਰਿਹਾ ਹੈ, ਤਿਵੇਂ ਦੱਸੋ। ਮੈਂ ਗੱਲ ਦੀ ਡੋਰ ਫੜੀ ਰੱਖਾਂਗਾ; ਹਰ ਗੱਲ ਨੂੰ ਕੰਮਾਂ ਦੀ ਸੂਚੀ ਨਹੀਂ ਬਣਾਵਾਂਗਾ।',
+    or: 'ମନରେ ଯେମିତି ଆସୁଛି ସେମିତି କୁହନ୍ତୁ। ମୁଁ କଥାର ସୂତା ଧରି ରଖିବି; ପ୍ରତ୍ୟେକ କଥାକୁ କାମ ତାଲିକାରେ ବଦଳାଇବି ନାହିଁ।',
+    ur: 'جو دل میں آ رہا ہے، ویسے ہی کہیں۔ میں بات کا سلسلہ تھامے رکھوں گا، اور ہر بات کو کاموں کی فہرست نہیں بناؤں گا۔',
+};
+
+const RECALL_CONTEXT_LABELS = {
+    hi: 'इस डिवाइस से चुना गया संदर्भ:',
+    hinglish: 'Is device se chuna hua context:',
+    bn: 'এই ডিভাইস থেকে বেছে নেওয়া প্রসঙ্গ:',
+    ta: 'இந்தச் சாதனத்திலிருந்து தேர்ந்தெடுத்த பின்னணி:',
+    te: 'ఈ పరికరం నుంచి ఎంచుకున్న సందర్భం:',
+    mr: 'या डिवाइसवरून निवडलेला संदर्भ:',
+    gu: 'આ ડિવાઇસમાંથી પસંદ કરેલો સંદર્ભ:',
+    kn: 'ಈ ಸಾಧನದಿಂದ ಆಯ್ಕೆ ಮಾಡಿದ ಸಂದರ್ಭ:',
+    ml: 'ഈ ഉപകരണത്തിൽ നിന്ന് തിരഞ്ഞെടുത്ത പശ്ചാത്തലം:',
+    pa: 'ਇਸ ਡਿਵਾਈਸ ਤੋਂ ਚੁਣਿਆ ਸੰਦਰਭ:',
+    or: 'ଏହି ଡିଭାଇସରୁ ବାଛିଥିବା ପ୍ରସଙ୍ଗ:',
+    ur: 'اس ڈیوائس سے منتخب کیا گیا پس منظر:',
 };
 
 const STARTER_ACTIONS = [
@@ -236,10 +300,36 @@ function makeLauncherFollowUps(kind = 'make') {
         return {
             label: item.label,
             icon: launcherIconFor(item.label),
-            action: 'reflect',
+            action: kind === 'make' ? 'set_format' : 'reflect',
+            inputPrefix: kind === 'make' ? `${item.label}: ` : '',
             intent: item.prompt,
         };
     });
+}
+
+function isMakeFormatOnly(intent = '') {
+    return /^(?:image|message|page|doc|code|plan):?$/i.test(String(intent || '').trim());
+}
+
+function makeFormatInputPrefix(intent = '') {
+    const format = String(intent || '').replace(/:$/, '').trim();
+    return format ? `${format.charAt(0).toUpperCase()}${format.slice(1).toLowerCase()}: ` : '';
+}
+
+function explicitMakeBrief(intent = '') {
+    const match = String(intent || '').trim().match(/^(image|message|page|doc|code|plan):\s*(.+)$/i);
+    if (!match?.[2]?.trim()) return null;
+    return {
+        format: match[1].toLowerCase(),
+        brief: match[2].trim(),
+    };
+}
+
+function artifactKindForMakeFormat(format = '') {
+    if (format === 'image') return 'image';
+    if (format === 'code') return 'code';
+    if (['page', 'doc', 'plan'].includes(format)) return 'doc';
+    return 'draft';
 }
 
 function starterAnswer(answer = '') {
@@ -498,6 +588,94 @@ function wait(ms = 0) {
 function artifactHasImageMedia(artifact = {}) {
     const media = artifact?.media || {};
     return Boolean(media.url || media.data_url || media.data);
+}
+
+function assistantTextForSession(mirror = {}, mode = 'reflection') {
+    if (mode === 'conversation') return String(mirror?.reflection || '').trim();
+    return [mirror?.reflection, mirror?.question, mirror?.move]
+        .map((value) => String(value || '').trim())
+        .filter(Boolean)
+        .join('\n');
+}
+
+function makeOfflineConversationResult(intent = '', offlineResult = {}, tone = '', language = {}) {
+    const cleanIntent = String(intent || '').replace(/\s+/g, ' ').trim();
+    const conversationalHint = `${tone} ${cleanIntent}`;
+    const languageCode = String(language.reply_language || language.code || '').toLowerCase();
+    const localLanguageLine = OFFLINE_CONVERSATION_LINES[languageCode];
+    const playful = /\b(?:playful|joke|funny|silly|banter|lighthearted|surprise me|make me laugh)\b/i.test(conversationalHint);
+    const justTalk = /\b(?:just talk|talk (?:to|with) me|chat with me|keep me company|no advice|without advice|no exercises?|without exercises?|no homework)\b/i.test(conversationalHint);
+    const greeting = /^(?:hey|hi|hello|yo|how are you|what'?s up)[\s.!?]*$/i.test(cleanIntent);
+    const reflection = localLanguageLine || (playful
+        ? 'A tiny bit of nonsense, then: the serious plan has misplaced its tie and is pretending that was intentional.'
+        : justTalk
+            ? 'Good. No homework, no timer, and no stealth coaching. We can just talk.'
+            : greeting
+                ? 'Hey. I am here, paying attention, and not about to turn hello into a productivity exercise.'
+                : 'Say it the way it comes. I will keep the thread and stay conversational.');
+
+    return {
+        ...offlineResult,
+        responseMode: 'conversation',
+        route: { ...(offlineResult.route || {}), capability: 'chat' },
+        mirror: {
+            ...(offlineResult.mirror || {}),
+            reflection,
+            question: '',
+            move: '',
+            visual: null,
+        },
+    };
+}
+
+function isConversationResult(result = {}) {
+    return result?.responseMode === 'conversation'
+        || result?.response_mode === 'conversation'
+        || result?.route?.capability === 'chat';
+}
+
+function gatewayArtifactIsNotReady(payload = {}) {
+    const artifact = payload?.artifact || {};
+    const status = String(payload?.status || artifact?.status || '').trim().toLowerCase();
+    const note = String(payload?.note || artifact?.note || '').trim();
+    return payload?.fallback === true
+        || artifact?.fallback === true
+        || payload?.ready === false
+        || artifact?.ready === false
+        || ['degraded', 'fallback', 'not_ready', 'not-ready', 'unready'].includes(status)
+        || /\b(?:template fallback|degraded|not ready)\b/i.test(note);
+}
+
+function markArtifactNotReady(artifact = {}) {
+    const challenge = artifact?.challenge || {};
+    return {
+        ...artifact,
+        fallback: true,
+        ready: false,
+        status: 'degraded',
+        challenge: {
+            ...challenge,
+            status: 'failed',
+            label: ARTIFACT_FALLBACK_LABEL,
+            user_note: 'This is a template fallback. Review and replace any generic details before sending.',
+            reason: 'The requested output did not return in a send-ready state.',
+            promotion: {
+                ...(challenge?.promotion || {}),
+                can_share: false,
+                can_claim_done: false,
+                can_remember: false,
+                can_deploy: false,
+            },
+        },
+    };
+}
+
+function artifactIsNotReady(artifact = {}) {
+    const status = String(artifact?.status || '').trim().toLowerCase();
+    return artifact?.fallback === true
+        || artifact?.ready === false
+        || ['degraded', 'fallback', 'not_ready', 'not-ready', 'unready'].includes(status)
+        || artifact?.challenge?.label === ARTIFACT_FALLBACK_LABEL;
 }
 
 function makeArtifactFirstResult(intent = '', kind = 'draft') {
@@ -1224,11 +1402,13 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const isArtifactFirst = result?.kind === 'artifact_first';
     const isSetupReady = result?.kind === 'setup_ready';
     const isStartHelp = result?.kind === 'start_help';
+    const isConversation = isConversationResult(result);
     const truthState = result?.truth_state || mirror.truth_state;
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface', 'saved_context'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
     const answerFirst = showSourceCheck && isAnswerFirstAsk(intent);
     const focusText = String(mirror.question || '').trim();
+    const moveText = String(mirror.move || '').trim();
     const isLight = theme === 'light';
     const assistantIconClass = isLight
         ? 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-400/18 bg-white/65 text-violet-600 shadow-[0_14px_28px_rgba(77,65,50,0.08)] md:grid'
@@ -1316,19 +1496,21 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     <p className={reflectionClass}>
                         {mirror.reflection}
                     </p>
-                    {focusText ? (
+                    {!isConversation && focusText ? (
                         <div className={focusClass}>
                             <div className={focusLabelClass}>Start here</div>
                             {focusText}
                         </div>
                     ) : null}
-                    <NextMoveSurface
-                        mirror={mirror}
-                        onRemember={onRemember}
-                        remembered={remembered}
-                        allowRemember={!isPrivacyHold && !isSetupReady && !isStartHelp}
-                        allowCopy={!isSetupReady && !isStartHelp}
-                    />
+                    {!isConversation && moveText ? (
+                        <NextMoveSurface
+                            mirror={mirror}
+                            onRemember={onRemember}
+                            remembered={remembered}
+                            allowRemember={!isPrivacyHold && !isSetupReady && !isStartHelp}
+                            allowCopy={!isSetupReady && !isStartHelp}
+                        />
+                    ) : null}
                 </div>
             </div>
             {showSourceCheck ? (
@@ -1381,7 +1563,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
                         </span>
                         <div className="min-w-0">
                             <div className={`text-sm font-semibold ${isLight ? 'text-stone-900' : 'text-cyan-50'}`}>Making it useful</div>
-                            <div className={`text-xs ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Almost there.</div>
+                            <div className={`text-xs ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>Almost there.</div>
                         </div>
                     </div>
                     <button
@@ -1421,12 +1603,13 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
                 onRegenerate={draft?.kind === 'image' ? onRegenerateImage : undefined}
                 onSharpen={draft?.kind === 'image' ? onSharpenImage : undefined}
             />
-            <div className={`mt-2 px-1 text-xs leading-5 ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>{note}</div>
+            <div className={`mt-2 px-1 text-xs leading-5 ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>{note}</div>
         </div>
     );
 }
 
 function workSurfaceNote(draft) {
+    if (artifactIsNotReady(draft)) return 'Edit the placeholders before using it.';
     if (draft?.kind === 'image' && artifactHasImageMedia(draft)) {
         return 'Ready to download. Try again if you want a different version.';
     }
@@ -1807,6 +1990,8 @@ export default function HomePage() {
     const fileInputRef = useRef(null);
     const workSurfaceRef = useRef(null);
     const bootPromptRef = useRef(false);
+    const privateRecallResumeRef = useRef(false);
+    const privateRecallSearchRef = useRef(0);
     if (initialChatRef.current === null) initialChatRef.current = getHomeChatContinuity();
     if (initialSessionChatRef.current === null) initialSessionChatRef.current = getSessionHomeChat();
     const restoredThread = initialChatRef.current?.enabled ? initialChatRef.current.thread : initialSessionChatRef.current;
@@ -1827,6 +2012,7 @@ export default function HomePage() {
     const [lastIntent, setLastIntent] = useState(() => restoredThread?.lastIntent || '');
     const [lastSource, setLastSource] = useState(() => restoredThread?.lastSource || 'typed');
     const [lastStarterKind, setLastStarterKind] = useState(() => restoredThread?.lastStarterKind || '');
+    const [sessionContextMessages, setSessionContextMessages] = useState(() => initialSessionChatRef.current?.sessionContextMessages || []);
     const [lastSense, setLastSense] = useState(null);
     const [sendableDraft, setSendableDraft] = useState(() => restoredThread?.sendableDraft || null);
     const [artifactBusy, setArtifactBusy] = useState('');
@@ -1834,16 +2020,94 @@ export default function HomePage() {
     const [workSurfaceOpen, setWorkSurfaceOpen] = useState(() => restoredThread ? Boolean(restoredThread.workSurfaceOpen) : true);
     const [rememberedKey, setRememberedKey] = useState('');
     const [memoryOpen, setMemoryOpen] = useState(false);
+    const [privateRecallOpen, setPrivateRecallOpen] = useState(false);
+    const [privateRecallStatus, setPrivateRecallStatus] = useState(() => getPrivateRecallSnapshot());
+    const [privateRecallMatches, setPrivateRecallMatches] = useState([]);
+    const [privateRecallDismissedText, setPrivateRecallDismissedText] = useState('');
     const [importStatus, setImportStatus] = useState('');
     const [loopCount, setLoopCount] = useState(0);
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount, lastIntent), [result, loopCount, lastIntent]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
     const savedCue = useMemo(() => savedContextCue({ activeDefault, continuity: continuityLedger }), [activeDefault, continuityLedger]);
+    const privateRecallItems = useMemo(() => buildPrivateRecallItems({
+        savedChats: savedHomeChats,
+        continuity: continuityLedger,
+        mirrorDefaults,
+    }), [continuityLedger, mirrorDefaults, savedHomeChats]);
+    const privateRecallFingerprint = useMemo(() => privateRecallItemsFingerprint(privateRecallItems), [privateRecallItems]);
+    const privateRecallLanguage = useMemo(
+        () => languagePayloadFor(text, { seed }).reply_language,
+        [seed, text],
+    );
 
     useEffect(() => {
         trackEvent('home_view', { page: 'home', surface: 'homepage' });
     }, []);
+
+    useEffect(() => {
+        const unsubscribe = subscribePrivateRecall(setPrivateRecallStatus);
+        restorePrivateRecallPreference().catch(() => {});
+        return unsubscribe;
+    }, []);
+
+    useEffect(() => {
+        if (!privateRecallStatus.enabled || privateRecallStatus.ready || privateRecallResumeRef.current) return undefined;
+        privateRecallResumeRef.current = true;
+        let canceled = false;
+        const start = () => {
+            resumePrivateRecall()
+                .then(() => {
+                    if (!canceled) trackEvent('private_recall_resumed', { page: 'home', source: 'browser_local' });
+                })
+                .catch(() => {
+                    if (!canceled) trackEvent('private_recall_resume_failed', { page: 'home', source: 'browser_local' });
+                });
+        };
+        const idleId = window.requestIdleCallback
+            ? window.requestIdleCallback(start, { timeout: 1200 })
+            : window.setTimeout(start, 320);
+        return () => {
+            canceled = true;
+            if (window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+            else window.clearTimeout(idleId);
+        };
+    }, [privateRecallStatus.enabled, privateRecallStatus.ready]);
+
+    useEffect(() => {
+        if (!privateRecallStatus.ready) return undefined;
+        let canceled = false;
+        syncPrivateRecallItems(privateRecallItems)
+            .then((next) => {
+                if (!canceled) trackEvent('private_recall_synced', { page: 'home', source: 'explicit_saves', count: next.count || 0 });
+            })
+            .catch(() => {
+                if (!canceled) trackEvent('private_recall_sync_failed', { page: 'home', source: 'browser_local' });
+            });
+        return () => {
+            canceled = true;
+        };
+    }, [privateRecallFingerprint, privateRecallStatus.ready]);
+
+    useEffect(() => {
+        const query = text.trim();
+        if (!privateRecallStatus.ready || busy || typingSense.hardPrivate || query.length < 6 || query === privateRecallDismissedText) {
+            setPrivateRecallMatches([]);
+            return undefined;
+        }
+
+        const requestKey = ++privateRecallSearchRef.current;
+        const timer = window.setTimeout(() => {
+            searchPrivateRecall(query)
+                .then((matches) => {
+                    if (privateRecallSearchRef.current === requestKey) setPrivateRecallMatches(matches);
+                })
+                .catch(() => {
+                    if (privateRecallSearchRef.current === requestKey) setPrivateRecallMatches([]);
+                });
+        }, 520);
+        return () => window.clearTimeout(timer);
+    }, [busy, privateRecallDismissedText, privateRecallStatus.ready, text, typingSense.hardPrivate]);
 
     useEffect(() => {
         if (!chatMemoryFlash) return undefined;
@@ -1852,13 +2116,13 @@ export default function HomePage() {
     }, [chatMemoryFlash]);
 
     useEffect(() => {
-        const snapshot = currentChatSnapshot();
-        if (!snapshot.draftText && !snapshot.result && !snapshot.lastIntent && !snapshot.sendableDraft) {
+        const snapshot = currentChatSnapshot({ includeSessionContext: true });
+        if (!snapshot.draftText && !snapshot.result && !snapshot.lastIntent && !snapshot.sendableDraft && !snapshot.sessionContextMessages.length) {
             clearSessionHomeChat();
             return;
         }
         saveSessionHomeChat(snapshot);
-    }, [lastIntent, lastSource, lastStarterKind, result, sendableDraft, text, workSurfaceOpen]);
+    }, [lastIntent, lastSource, lastStarterKind, result, sendableDraft, sessionContextMessages, text, workSurfaceOpen]);
 
     useEffect(() => {
         if (!chatMemoryEnabled) return;
@@ -1895,13 +2159,60 @@ export default function HomePage() {
         }, 80);
     }, [artifactBusy, sendableDraft, workSurfaceOpen]);
 
+    async function turnOnPrivateRecall() {
+        try {
+            const next = await enablePrivateRecall();
+            privateRecallResumeRef.current = true;
+            trackEvent('private_recall_enabled', { page: 'home', source: 'explicit_approval', accelerator: next.accelerator || 'wasm' });
+        } catch {
+            trackEvent('private_recall_enable_failed', { page: 'home', source: 'browser_local' });
+        }
+    }
+
+    async function turnOffPrivateRecallHere() {
+        await turnOffPrivateRecall();
+        privateRecallResumeRef.current = false;
+        setPrivateRecallMatches([]);
+        trackEvent('private_recall_disabled', { page: 'home', source: 'explicit_action' });
+    }
+
+    async function clearPrivateRecallHere() {
+        try {
+            await clearPrivateRecall();
+            privateRecallResumeRef.current = false;
+            setPrivateRecallMatches([]);
+            trackEvent('private_recall_cleared', { page: 'home', source: 'explicit_action' });
+        } catch {
+            trackEvent('private_recall_clear_failed', { page: 'home', source: 'browser_local' });
+        }
+    }
+
+    function usePrivateRecallMatch(item) {
+        const current = text.trim();
+        const context = String(item?.text || '').trim().slice(0, 520);
+        if (!context) return;
+        const contextLabel = RECALL_CONTEXT_LABELS[privateRecallLanguage] || 'Context I chose from this device:';
+        const nextText = [current, `${contextLabel}\n${context}`]
+            .filter(Boolean)
+            .join('\n\n')
+            .slice(0, 1000);
+        setText(nextText);
+        setPrivateRecallMatches([]);
+        setPrivateRecallDismissedText(nextText);
+        trackEvent('private_recall_used', { page: 'home', source: 'explicit_action', kind: item?.kind || 'saved' });
+        window.setTimeout(() => inputRef.current?.focus(), 40);
+    }
+
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
         const shortStartFollowup = source === 'typed' && isShortStartResult(result);
         const starterFollowupKind = source === 'typed' && result?.kind === 'starter' ? lastStarterKind || 'make' : '';
+        const selectedMakeBrief = starterFollowupKind === 'make' ? explicitMakeBrief(cleanIntent) : null;
 
         const sense = assessLocalMirrorSense(cleanIntent, { activeDefault, mirrorDefaults, seed });
+        const gatewayRoute = conversationRouteFor(cleanIntent, { source });
+        const responseMode = gatewayRoute === 'chat' ? 'conversation' : 'reflection';
         const stateIntent = sense.blocked
             ? 'privacy check'
             : sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
@@ -1912,7 +2223,7 @@ export default function HomePage() {
         setSendableDraft(null);
         setArtifactBusy('');
         setWorkSurfaceOpen(false);
-        trackEvent('mirror_submit', { page: 'home', source, route: 'reflection', status: 'started' });
+        trackEvent('mirror_submit', { page: 'home', source, route: gatewayRoute, status: 'started' });
 
         if (sense.blocked) {
             setText('');
@@ -1923,6 +2234,24 @@ export default function HomePage() {
         }
 
         setText('');
+        setPrivateRecallMatches([]);
+        setPrivateRecallDismissedText('');
+
+        if (selectedMakeBrief) {
+            const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
+            const artifactKind = artifactKindForMakeFormat(selectedMakeBrief.format);
+            const artifactResult = makeArtifactFirstResult(safeIntent, artifactKind);
+            setLastIntent(safeIntent);
+            setResult(artifactResult);
+            setLastStarterKind('');
+            trackEvent('starter_make_artifact', { page: 'home', source: 'starter', status: 'artifact_first', label: artifactKind });
+            createArtifact(artifactKind, {
+                mirror: artifactResult.mirror,
+                intent: safeIntent,
+                source: 'starter_make',
+            });
+            return;
+        }
 
         if (starterFollowupKind) {
             const safeFollowup = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
@@ -1974,14 +2303,48 @@ export default function HomePage() {
             return;
         }
 
+        const language = languagePayloadFor(cleanIntent, { seed });
         setBusy(true);
+        const applyLocalFallback = (reason) => {
+            const offlineResult = makeOfflineMirrorResult(cleanIntent, reason, language);
+            const fallbackResult = responseMode === 'conversation'
+                ? makeOfflineConversationResult(cleanIntent, offlineResult, sense.toneCue, language)
+                : offlineResult;
+            setResult(fallbackResult);
+            setSessionContextMessages((current) => appendSessionContextMessages(current, [
+                { role: 'user', content: cleanIntent },
+                { role: 'assistant', content: assistantTextForSession(fallbackResult.mirror, responseMode) },
+            ]));
+
+            if (shouldOpenWorkSurface(cleanIntent, {})) {
+                createArtifact(detectArtifactKind(cleanIntent, fallbackResult.mirror), {
+                    mirror: fallbackResult.mirror,
+                    intent: cleanIntent,
+                    source: 'auto_local',
+                });
+            }
+        };
+
+        if (!navigator.onLine) {
+            trackEvent('mirror_result', { page: 'home', source, route: 'browser_local', status: 'offline' });
+            applyLocalFallback('offline');
+            setBusy(false);
+            return;
+        }
+
         try {
             const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
             const seededIntent = seed || sense.approvedDefault || sense.drift || sense.softPrivate
                 ? buildLocalSenseContext(sense, safeIntent)
                 : safeIntent;
-            const language = languagePayloadFor(cleanIntent, { seed });
-            const response = await fetch(GATEWAY, {
+            const sessionContext = gatewayRoute === 'chat'
+                ? buildSessionContextEnvelope({
+                    mode: responseMode,
+                    tone: sense.toneCue,
+                    messages: sessionContextMessages,
+                })
+                : null;
+            const response = await fetch(MIRROR_CREATE_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1990,9 +2353,12 @@ export default function HomePage() {
                 body: JSON.stringify({
                     intent: seededIntent,
                     boundary: 'personal',
-                    route: 'reflection',
-                    turn: shortStartFollowup ? 2 : 1,
+                    route: gatewayRoute,
+                    turn: shortStartFollowup
+                        ? 2
+                        : sessionContextMessages.filter((message) => message.role === 'user').length + 1,
                     mode: shortStartFollowup ? 'short_start_followup' : 'standard',
+                    ...(sessionContext ? { session_context: sessionContext } : {}),
                     ...language,
                 }),
             });
@@ -2000,14 +2366,26 @@ export default function HomePage() {
             trackEvent('mirror_result', {
                 page: 'home',
                 source,
-                route: data.route?.capability || 'reflection',
+                route: data.route?.capability || gatewayRoute,
                 status: data.ok ? 'ok' : 'blocked',
                 fallback: Boolean(data.fallback),
                 visualKind: data.mirror?.visual?.kind || 'none',
             });
 
-            const nextResult = data.ok ? data : makeBlockedResult(data);
+            const nextResult = data.ok
+                ? {
+                    ...data,
+                    responseMode: data.responseMode || data.response_mode || responseMode,
+                }
+                : makeBlockedResult(data);
             setResult(nextResult);
+
+            if (data.ok) {
+                setSessionContextMessages((current) => appendSessionContextMessages(current, [
+                    { role: 'user', content: safeIntent },
+                    { role: 'assistant', content: assistantTextForSession(nextResult.mirror, responseMode) },
+                ]));
+            }
 
             if (data.ok && shouldOpenWorkSurface(cleanIntent, {})) {
                 createArtifact(detectArtifactKind(cleanIntent, nextResult.mirror), {
@@ -2017,17 +2395,8 @@ export default function HomePage() {
                 });
             }
         } catch {
-            trackEvent('gateway_error', { page: 'home', source, route: 'reflection', status: 'network' });
-            const fallbackResult = makeOfflineMirrorResult(cleanIntent, 'network', languagePayloadFor(cleanIntent, { seed }));
-            setResult(fallbackResult);
-
-            if (shouldOpenWorkSurface(cleanIntent, {})) {
-                createArtifact(detectArtifactKind(cleanIntent, fallbackResult.mirror), {
-                    mirror: fallbackResult.mirror,
-                    intent: cleanIntent,
-                    source: 'auto_local',
-                });
-            }
+            trackEvent('gateway_error', { page: 'home', source, route: gatewayRoute, status: 'network' });
+            applyLocalFallback('network');
         } finally {
             setBusy(false);
         }
@@ -2107,8 +2476,8 @@ export default function HomePage() {
         trackEvent('continuity_cleared', { page: 'home', source: 'memory_drawer' });
     }
 
-    function currentChatSnapshot() {
-        return {
+    function currentChatSnapshot({ includeSessionContext = false } = {}) {
+        const snapshot = {
             draftText: text,
             result,
             lastIntent,
@@ -2117,15 +2486,20 @@ export default function HomePage() {
             sendableDraft,
             workSurfaceOpen,
         };
+        if (includeSessionContext) snapshot.sessionContextMessages = sessionContextMessages;
+        return snapshot;
     }
 
     function loadChatSnapshot(thread = {}) {
         setText(thread.draftText || '');
+        setPrivateRecallMatches([]);
+        setPrivateRecallDismissedText('');
         setBusy(false);
         setResult(thread.result || null);
         setLastIntent(thread.lastIntent || '');
         setLastSource(thread.lastSource || 'typed');
         setLastStarterKind(thread.lastStarterKind || '');
+        setSessionContextMessages([]);
         setLastSense(null);
         setLoopCount(0);
         setSendableDraft(thread.sendableDraft || null);
@@ -2177,11 +2551,14 @@ export default function HomePage() {
 
     function clearCurrentChat() {
         setText('');
+        setPrivateRecallMatches([]);
+        setPrivateRecallDismissedText('');
         setBusy(false);
         setResult(null);
         setLastIntent('');
         setLastSource('typed');
         setLastStarterKind('');
+        setSessionContextMessages([]);
         setLastSense(null);
         setLoopCount(0);
         setSendableDraft(null);
@@ -2209,10 +2586,13 @@ export default function HomePage() {
             setMirrorDefaults(getMirrorDefaults());
             setContinuityLedger(getContinuityLedger());
             setText('');
+            setPrivateRecallMatches([]);
+            setPrivateRecallDismissedText('');
             setResult(makeSetupReadyResult());
             setLastIntent('loaded saved choices');
             setLastSource('uploaded_id');
             setLastStarterKind('');
+            setSessionContextMessages([]);
             setLastSense(null);
             setLoopCount(0);
             setSendableDraft(null);
@@ -2265,6 +2645,17 @@ export default function HomePage() {
         window.setTimeout(() => inputRef.current?.focus(), 60);
     }
 
+    function selectMakeFormat(item = {}) {
+        const inputPrefix = item.inputPrefix || makeFormatInputPrefix(item.label);
+        setText(inputPrefix);
+        setLastSense(null);
+        trackEvent('make_format_selected', { page: 'home', source: 'follow_up', label: item.label || 'format' });
+        window.setTimeout(() => {
+            inputRef.current?.focus();
+            inputRef.current?.setSelectionRange(inputPrefix.length, inputPrefix.length);
+        }, 40);
+    }
+
     async function createArtifact(kind = 'draft', options = {}) {
         const mirror = options.mirror || result?.mirror || SAMPLE_MIRROR;
         const artifactIntent = options.intent || lastIntent || mirror.question || mirror.move || 'Create the smallest useful output.';
@@ -2277,13 +2668,13 @@ export default function HomePage() {
             setLastArtifactRequest({ intent: artifactIntent, mirror, kind: artifactKind });
         }
         trackEvent('sendable_created', { page: 'home', source: eventSource, status: 'started', label: artifactKind });
-        setSendableDraft(attachArtifactChallenge(makeArtifact(mirror, artifactIntent, artifactKind), {
+        setSendableDraft(markArtifactNotReady(attachArtifactChallenge(makeArtifact(mirror, artifactIntent, artifactKind), {
             intent: artifactIntent,
             kind: artifactKind,
             route: 'local_first',
             fallback: true,
             source: eventSource,
-        }));
+        })));
 
         try {
             const language = languagePayloadFor(artifactIntent, { seed });
@@ -2303,7 +2694,7 @@ export default function HomePage() {
             let lastError = null;
 
             for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-                const response = await fetch(ARTIFACT_GATEWAY, {
+                const response = await fetch(ARTIFACT_CREATE_ENDPOINT, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2336,28 +2727,30 @@ export default function HomePage() {
             if (!data?.artifact) {
                 throw lastError || new Error('artifact_failed');
             }
-            setSendableDraft(attachArtifactChallenge(data.artifact, {
+            const challengedArtifact = attachArtifactChallenge(data.artifact, {
                 intent: artifactIntent,
                 kind: artifactKind,
-                route: data.fallback ? 'gateway_fallback' : 'gateway',
-                fallback: Boolean(data.fallback),
+                route: gatewayArtifactIsNotReady(data) ? 'gateway_fallback' : 'gateway',
+                fallback: gatewayArtifactIsNotReady(data),
                 source: eventSource,
-            }));
+            });
+            const notReady = gatewayArtifactIsNotReady(data);
+            setSendableDraft(notReady ? markArtifactNotReady(challengedArtifact) : challengedArtifact);
             trackEvent('sendable_created', {
                 page: 'home',
-                source: data.fallback ? 'gateway_fallback' : 'gateway',
-                status: 'ok',
-                fallback: Boolean(data.fallback),
+                source: notReady ? 'gateway_fallback' : 'gateway',
+                status: notReady ? 'degraded' : 'ok',
+                fallback: notReady,
                 label: data.artifact.kind || artifactKind,
             });
         } catch {
-            setSendableDraft(attachArtifactChallenge(makeArtifact(mirror, artifactIntent, artifactKind), {
+            setSendableDraft(markArtifactNotReady(attachArtifactChallenge(makeArtifact(mirror, artifactIntent, artifactKind), {
                 intent: artifactIntent,
                 kind: artifactKind,
                 route: 'local_fallback',
                 fallback: true,
                 source: eventSource,
-            }));
+            })));
             trackEvent('sendable_created', { page: 'home', source: 'local_fallback', status: 'fallback', label: artifactKind });
         } finally {
             setArtifactBusy('');
@@ -2382,7 +2775,7 @@ export default function HomePage() {
 
     const showMirror = Boolean(result || busy || lastIntent);
     const hasWorkSurface = workSurfaceOpen && Boolean(sendableDraft || artifactBusy);
-    const canSubmit = text.trim().length >= 4;
+    const canSubmit = text.trim().length >= 4 && !isMakeFormatOnly(text);
     const fieldAwake = showMirror || text.trim().length > 0;
     const savedCount = savedHomeChats.length + mirrorDefaults.length + continuityLedger.length;
     const isLight = theme === 'light';
@@ -2395,6 +2788,14 @@ export default function HomePage() {
         && !busy
         && !chatMemoryEnabled
         && !['privacy_hold', 'setup_ready', 'start_help'].includes(result?.kind);
+    const privateRecallPreparing = ['preparing', 'downloading', 'verifying', 'opening', 'indexing'].includes(privateRecallStatus.phase);
+    const privateRecallLabel = privateRecallPreparing
+        ? `Recall ${Math.round((privateRecallStatus.progress || 0) * 100)}%`
+        : privateRecallStatus.ready
+            ? 'Recall on'
+            : privateRecallStatus.error
+                ? 'Recall needs attention'
+                : 'Private recall';
     const ctaClass = canSubmit && !busy
         ? 'from-emerald-400 via-cyan-400 to-violet-500 text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] hover:scale-[1.015]'
         : isLight
@@ -2488,21 +2889,27 @@ export default function HomePage() {
                         ) : null}
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
+                            <label htmlFor="active-mirror-intent" className="sr-only">What do you want to talk through or work on?</label>
                             <div className={`grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border p-2 backdrop-blur-xl ${isLight ? 'border-stone-300/70 bg-white/74 shadow-[0_24px_70px_rgba(77,65,50,0.10)]' : 'border-white/10 bg-black/36 shadow-[0_0_50px_rgba(0,0,0,0.22)]'}`}>
                                 <textarea
+                                    id="active-mirror-intent"
                                     ref={inputRef}
                                     rows={1}
                                     value={text}
                                     maxLength={1000}
+                                    aria-describedby="active-mirror-intent-help"
                                     placeholder="Type anything: make a poster, decide, fix, understand..."
-                                    onChange={(event) => setText(event.target.value)}
+                                    onChange={(event) => {
+                                        setText(event.target.value);
+                                        setPrivateRecallDismissedText('');
+                                    }}
                                     onKeyDown={(event) => {
                                         if (event.key === 'Enter' && !event.shiftKey) {
                                             event.preventDefault();
                                             submit(event);
                                         }
                                     }}
-                                    className={`min-h-11 max-h-36 flex-1 resize-none rounded-[1.15rem] border border-transparent bg-transparent px-3 py-2.5 text-base leading-6 outline-none transition focus:border-violet-200/30 sm:min-h-14 sm:rounded-[1.25rem] sm:py-3 ${isLight ? 'text-stone-950 placeholder:text-stone-400' : 'text-white placeholder:text-zinc-500'}`}
+                                    className={`h-[5.5rem] min-h-[5.5rem] max-h-36 flex-1 resize-none rounded-[1.15rem] border border-transparent bg-transparent px-3 py-2.5 text-base leading-6 outline-none transition focus:border-violet-200/30 sm:h-14 sm:min-h-14 sm:rounded-[1.25rem] sm:py-3 ${isLight ? 'text-stone-950 placeholder:text-stone-400' : 'text-white placeholder:text-zinc-400'}`}
                                     style={{ overflowWrap: 'anywhere' }}
                                 />
                                 <button
@@ -2524,11 +2931,23 @@ export default function HomePage() {
                                     )}
                                 </button>
                             </div>
+                            <p id="active-mirror-intent-help" className="sr-only">Enter what you want to make, decide, fix, understand, or talk about. Use placeholders for private details.</p>
                         </form>
+
+                        <PrivateRecallSuggestions
+                            matches={privateRecallMatches}
+                            isLight={isLight}
+                            language={privateRecallLanguage}
+                            onUse={usePrivateRecallMatch}
+                            onDismiss={() => {
+                                setPrivateRecallDismissedText(text.trim());
+                                setPrivateRecallMatches([]);
+                            }}
+                        />
 
                         {!showMirror ? (
                             <div className="mx-auto mt-3 max-w-2xl sm:mt-4">
-                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Try one</div>
+                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>Try one</div>
                                 <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                                 {STARTER_ACTIONS.map((item) => {
                                     const Icon = item.icon;
@@ -2545,7 +2964,7 @@ export default function HomePage() {
                                                 <Icon size={15} />
                                             </span>
                                             <span className="whitespace-nowrap text-[9px] font-bold leading-4 min-[380px]:text-[10px] sm:text-sm">{item.label}</span>
-                                            <span className={`hidden text-[11px] font-medium leading-4 transition sm:block ${isLight ? 'text-stone-500 group-hover:text-cyan-700' : 'text-zinc-500 group-hover:text-cyan-100/75'}`}>{item.caption}</span>
+                                            <span className={`hidden text-[11px] font-medium leading-4 transition sm:block ${isLight ? 'text-stone-600 group-hover:text-cyan-700' : 'text-zinc-400 group-hover:text-cyan-100/75'}`}>{item.caption}</span>
                                         </button>
                                     );
                                 })}
@@ -2593,7 +3012,7 @@ export default function HomePage() {
                             </div>
                         ) : null}
 
-                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs ${isLight ? 'text-stone-500' : 'text-zinc-500'} ${showMirror ? 'flex' : 'flex justify-center'}`}>
+                        <div className={`mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-xs ${isLight ? 'text-stone-600' : 'text-zinc-400'} ${showMirror ? 'flex' : 'flex justify-center'}`}>
                             <span>Private.</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Lock size={13} />
@@ -2627,6 +3046,15 @@ export default function HomePage() {
                             >
                                 {chatMemoryEnabled ? <Check size={13} /> : <Save size={13} />}
                                 {chatMemoryEnabled ? 'Chat kept here' : 'Keep chat'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPrivateRecallOpen(true)}
+                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${privateRecallStatus.ready ? (isLight ? 'border-cyan-600/24 bg-cyan-50 text-cyan-800 hover:border-cyan-600/40' : 'border-cyan-200/20 bg-cyan-200/[0.075] text-cyan-50 hover:border-cyan-100/35') : (isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-cyan-200/30 hover:text-white')}`}
+                                aria-pressed={privateRecallStatus.ready}
+                            >
+                                <BrainCircuit size={13} />
+                                {privateRecallLabel}
                             </button>
                             {(showMirror || text.trim()) ? (
                                 <button
@@ -2665,7 +3093,7 @@ export default function HomePage() {
                             {showKeepChatNudge ? (
                                 <div className={`grid gap-3 rounded-[1.35rem] border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600 shadow-[0_16px_34px_rgba(77,65,50,0.08)]' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400 shadow-[0_0_30px_rgba(34,211,238,0.05)]'}`}>
                                     <div className="min-w-0 text-sm leading-6">
-                                        Want this chat to stay after refresh?
+                                        This chat stays until this tab closes. Keep it here for later?
                                     </div>
                                     <button
                                         type="button"
@@ -2677,7 +3105,7 @@ export default function HomePage() {
                                     </button>
                                 </div>
                             ) : null}
-                            {!busy && result && !['privacy_hold', 'setup_ready', 'artifact_first'].includes(result.kind) ? (
+                            {!busy && result && !isConversationResult(result) && !['privacy_hold', 'setup_ready', 'artifact_first'].includes(result.kind) ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">
                                         {followUps.map((item) => {
@@ -2688,6 +3116,10 @@ export default function HomePage() {
                                                     type="button"
                                                     onClick={() => {
                                                         trackEvent('followup_clicked', { page: 'home', source: 'follow_up' });
+                                                        if (item.action === 'set_format') {
+                                                            selectMakeFormat(item);
+                                                            return;
+                                                        }
                                                         if (item.action === 'artifact') {
                                                             createArtifact(item.artifactKind || 'draft', {
                                                                 intent: item.intent,
@@ -2723,7 +3155,7 @@ export default function HomePage() {
                 ) : null}
             </main>
 
-            <div className={`relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs sm:justify-end ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
+            <div className={`relative z-10 mx-auto flex max-w-3xl justify-center px-4 pb-6 text-xs sm:justify-end ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>
                 <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-end">
                     <Link to="/about" className={`inline-flex min-h-10 items-center rounded-full px-2.5 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>About</Link>
                     <Link to="/enterprise" className={`inline-flex min-h-10 items-center rounded-full px-2.5 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Enterprise</Link>
@@ -2747,6 +3179,15 @@ export default function HomePage() {
                 onUseContinuity={useContinuity}
                 onDeleteContinuity={removeContinuity}
                 onClearContinuity={clearContinuity}
+            />
+            <PrivateRecallPanel
+                open={privateRecallOpen}
+                status={privateRecallStatus}
+                isLight={isLight}
+                onClose={() => setPrivateRecallOpen(false)}
+                onEnable={turnOnPrivateRecall}
+                onTurnOff={turnOffPrivateRecallHere}
+                onClear={clearPrivateRecallHere}
             />
         </div>
     );

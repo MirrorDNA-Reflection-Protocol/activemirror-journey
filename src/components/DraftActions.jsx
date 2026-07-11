@@ -60,7 +60,14 @@ function filenameFromTitle(title = 'active-mirror-draft', kind = 'draft') {
     return `${slug || 'active-mirror-draft'}.${ext}`;
 }
 
-export default function DraftActions({ title = 'Sendable draft', text = '', kind = 'draft', surface = 'home' }) {
+export default function DraftActions({
+    title = 'Sendable draft',
+    text = '',
+    kind = 'draft',
+    surface = 'home',
+    allowShare = true,
+    copyLabel = 'Copy',
+}) {
     const { theme } = useTheme();
     const isLight = theme === 'light';
     const [status, setStatus] = useState('');
@@ -111,12 +118,14 @@ export default function DraftActions({ title = 'Sendable draft', text = '', kind
         <div className="mt-3 flex flex-wrap items-center gap-2">
             <button type="button" onClick={copyDraft} className={buttonClass}>
                 <Copy size={13} />
-                Copy
+                {copyLabel}
             </button>
-            <button type="button" onClick={shareDraft} className={buttonClass}>
-                <Share2 size={13} />
-                Share
-            </button>
+            {allowShare ? (
+                <button type="button" onClick={shareDraft} className={buttonClass}>
+                    <Share2 size={13} />
+                    Share
+                </button>
+            ) : null}
             <button type="button" onClick={downloadDraft} className={buttonClass}>
                 <Download size={13} />
                 {download.label}

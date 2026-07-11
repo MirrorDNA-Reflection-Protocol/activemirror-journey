@@ -70,6 +70,8 @@ const deviceExperience = fs.readFileSync(new URL('../src/pages/DeviceExperience.
 const mirrorFeedback = fs.readFileSync(new URL('../src/components/MirrorFeedback.jsx', import.meta.url), 'utf8');
 const truthStateNotice = fs.readFileSync(new URL('../src/components/TruthStateNotice.jsx', import.meta.url), 'utf8');
 const mirrorState = fs.readFileSync(new URL('../src/lib/mirror-state.js', import.meta.url), 'utf8');
+const artifactCard = fs.readFileSync(new URL('../src/components/ArtifactCard.jsx', import.meta.url), 'utf8');
+const draftActions = fs.readFileSync(new URL('../src/components/DraftActions.jsx', import.meta.url), 'utf8');
 check(
     homePage.includes("createArtifact(item.artifactKind || 'draft', {") && homePage.includes('intent: item.intent,'),
     'artifact follow-up must pass its exact artifact instruction, not fall back to the old turn'
@@ -148,9 +150,46 @@ check(
     'artifact surface should show a useful local draft before waiting on the gateway'
 );
 check(
+    homePage.includes("const ARTIFACT_FALLBACK_LABEL = 'Template fallback - not ready to send'") &&
+    homePage.includes('function gatewayArtifactIsNotReady') &&
+    homePage.includes("if (artifactIsNotReady(draft)) return 'Edit the placeholders before using it.'"),
+    'fallback, degraded, or not-ready artifacts must show the truthful template fallback state'
+);
+check(
+    homePage.indexOf("if (artifactIsNotReady(draft)) return 'Edit the placeholders before using it.'") < homePage.indexOf("return 'Ready to copy. Edit if needed.'"),
+    'artifact fallback truth must be checked before any ready-to-copy note'
+);
+check(
+    artifactCard.includes('allowShare={!artifactNotReady}') &&
+    artifactCard.includes("copyLabel={artifactNotReady ? 'Copy to edit' : 'Copy'}") &&
+    draftActions.includes('{allowShare ? ('),
+    'fallback or unready artifacts must support editing without exposing a Share action'
+);
+check(
+    homePage.includes("action: kind === 'make' ? 'set_format' : 'reflect'") &&
+    homePage.includes("if (item.action === 'set_format')") &&
+    homePage.includes('selectMakeFormat(item)') &&
+    homePage.includes('!isMakeFormatOnly(text)'),
+    'Make format choices without a brief must set and focus the input instead of generating placeholder output'
+);
+check(
+    homePage.includes('function explicitMakeBrief') &&
+    homePage.includes('function artifactKindForMakeFormat') &&
+    homePage.includes("trackEvent('starter_make_artifact'") &&
+    homePage.includes("source: 'starter_make'"),
+    'a selected Make format with a brief must create that artifact instead of switching formats from later keywords'
+);
+check(
     homePage.includes("draft?.kind === 'image' && artifactHasImageMedia(draft)") &&
     !homePage.includes("draft?.kind === 'image' && (draft?.media?.data_url || draft?.media?.dataUrl)"),
     'image-ready note must work for stored media URLs, not only inline data URLs'
+);
+check(
+    homePage.includes('htmlFor="active-mirror-intent"') &&
+    homePage.includes('aria-describedby="active-mirror-intent-help"') &&
+    homePage.includes('h-[5.5rem] min-h-[5.5rem]') &&
+    homePage.includes('placeholder:text-zinc-400'),
+    'mobile input must have stable height, programmatic help, and readable placeholder contrast'
 );
 check(
     truthStateNotice.includes('function localSourcePlan') &&
