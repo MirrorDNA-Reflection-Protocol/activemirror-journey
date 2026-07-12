@@ -81,16 +81,43 @@ const APPROVED_HEX_COLORS = new Set([
     '#176b5b', '#5db8a5', '#1769aa', '#70b7e6', '#2e7d32', '#78c47c',
     '#a35a00', '#efb35c', '#b42318', '#f08b80', '#59636e', '#aab3bd', '#28666e',
 ]);
-const COLOR_FUNCTION = /\b(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\s*\(/i;
-const FORBIDDEN_COLOR_WORD = /(?:pink|purple|violet|fuchsia|magenta|mauve|lilac|lavender|plum|orchid)/i;
+const COLOR_FUNCTION = /\b(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color|device-cmyk|light-dark)\s*\(/i;
+const COLOR_MIX_FUNCTION = /\bcolor-mix\s*\(/gi;
+const SAFE_COLOR_MIX = /\bcolor-mix\(\s*in\s+srgb\s*,\s*var\(\s*(--am-[a-z0-9-]+)\s*\)\s+\d+(?:\.\d+)?%\s*,\s*(transparent|#[0-9a-f]{6})\s*\)/gi;
+const SAFE_COLOR_MIX_TOKENS = new Set(['--am-ink', '--am-focus', '--am-surface', '--am-primary']);
+const FORBIDDEN_COLOR_WORD = /\b(?:blueviolet|darkmagenta|darkorchid|darkslateblue|darkviolet|deeppink|fuchsia|hotpink|indigo|lavender|lavenderblush|lightpink|lilac|magenta|mauve|mediumorchid|mediumpurple|mediumslateblue|mediumvioletred|mistyrose|orchid|palevioletred|pink|plum|purple|rebeccapurple|slateblue|thistle|violet)\b/i;
 
 function normalizeEncodedColors(source) {
-    return source.replace(/%(?:25)*23/gi, '#');
+    let normalized = String(source);
+    for (let pass = 0; pass < 8; pass += 1) {
+        const decoded = normalized.replace(/%([0-9a-f]{2})/gi, (_match, hex) => (
+            String.fromCharCode(Number.parseInt(hex, 16))
+        ));
+        if (decoded === normalized) break;
+        normalized = decoded;
+    }
+    return normalized;
 }
 
 function colorViolations(source, { rawApprovedColorsAllowed = false } = {}) {
     const normalized = normalizeEncodedColors(source);
     const violations = [];
+    const safeMixStarts = new Set();
+    for (const match of normalized.matchAll(SAFE_COLOR_MIX)) {
+        const token = match[1].toLowerCase();
+        const secondColor = match[2].toLowerCase();
+        if (
+            SAFE_COLOR_MIX_TOKENS.has(token)
+            && (secondColor === 'transparent' || APPROVED_HEX_COLORS.has(secondColor))
+        ) {
+            safeMixStarts.add(match.index);
+        }
+    }
+    for (const match of normalized.matchAll(COLOR_MIX_FUNCTION)) {
+        if (!safeMixStarts.has(match.index)) {
+            violations.push({ index: match.index, reason: 'non-token color-mix' });
+        }
+    }
     const functionMatch = COLOR_FUNCTION.exec(normalized);
     if (functionMatch) violations.push({ index: functionMatch.index, reason: 'non-token color function' });
     const wordMatch = FORBIDDEN_COLOR_WORD.exec(normalized);
@@ -236,14 +263,33 @@ const rejectedColorFixtures = [
     '%23ff00ff',
     '%23800080',
     '%2523ff00ff',
+    '%23%66%66%30%30%66%66',
+    '%2523%2566%2566%2530%2530%2566%2566',
     'rgb(255 0 255)',
     'hsl(300 100% 25%)',
+    'color-mix(in srgb, red, blue)',
+    'color-mix(in srgb, var(--evil-purple) 50%, transparent)',
     'rebeccapurple',
     'plum',
+    'indigo',
+    'thistle',
+    'mediumslateblue',
+    'mistyrose',
 ];
 check(
     rejectedColorFixtures.every((fixture) => colorViolations(fixture, { rawApprovedColorsAllowed: true }).length > 0),
     'negative color fixtures reject encoded and functional magenta-purple variants',
+);
+const approvedColorMixFixtures = [
+    'color-mix(in srgb, var(--am-ink) 5.5%, transparent)',
+    'color-mix(in srgb, var(--am-focus) 34%, transparent)',
+    'color-mix(in srgb, var(--am-primary) 86%, #000000)',
+];
+check(
+    approvedColorMixFixtures.every((fixture) => (
+        colorViolations(fixture, { rawApprovedColorsAllowed: true }).length === 0
+    )),
+    'only approved token color-mix forms remain available',
 );
 
 check(sourceFiles.length >= 20, 'consumer source scan covered expected surface', `${sourceFiles.length} files`);
