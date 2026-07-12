@@ -81,6 +81,7 @@ const tokens = JSON.parse(tokensText);
 const trustStates = await readJson('src/design/trust-states.json');
 const boundary = await readJson('src/design/authority-and-boundary.json');
 const tokenCss = await readText('src/design/amos-design-tokens.css');
+const indexHtml = await readText('index.html');
 const home = await readText('src/pages/HomePage.jsx');
 const rail = await readText('src/components/TrustStatusRail.jsx');
 const main = await readText('src/main.jsx');
@@ -133,6 +134,19 @@ check(rootVars['am-primary'] === tokens.colors.semantic.primary, 'light action t
 check(darkVars['am-primary'] === tokens.colors.semantic.primary, 'dark action token preserves contrast-safe jade');
 check(darkVars['am-primary-marker'] === tokens.colors.semantic.local_marker_dark, 'dark local marker matches canonical JSON');
 
+const encodedColor = (value) => `%23${value.slice(1).toLowerCase()}`;
+const normalizedIndex = indexHtml.toLowerCase();
+check(
+    normalizedIndex.includes(`name="theme-color" content="${tokens.colors.dark.canvas.toLowerCase()}"`),
+    'browser theme color matches dark canvas token',
+);
+check(
+    normalizedIndex.includes(`fill='${encodedColor(tokens.colors.dark.canvas)}'`)
+        && normalizedIndex.includes(`stroke='${encodedColor(tokens.colors.semantic.local_marker_dark)}'`)
+        && normalizedIndex.includes(`stroke='${encodedColor(darkVars['am-focus'])}'`),
+    'favicon uses canonical dark canvas, jade marker, and focus colors',
+);
+
 checkContrast('light body text contrast', tokens.colors.light.text, tokens.colors.light.canvas, 7);
 checkContrast('light muted text contrast', tokens.colors.light.text_muted, tokens.colors.light.canvas, 4.5);
 checkContrast('dark body text contrast', tokens.colors.dark.text, tokens.colors.dark.canvas, 7);
@@ -151,7 +165,7 @@ const sourceFiles = (await walk(path.join(ROOT, 'src')))
     .map((filePath) => path.relative(ROOT, filePath))
     .filter((relativePath) => /\.(?:css|js|jsx|mjs)$/.test(relativePath))
     .filter((relativePath) => !excluded.has(relativePath));
-sourceFiles.push('tailwind.config.js');
+sourceFiles.push('index.html', 'tailwind.config.js');
 
 const forbidden = [
     ['pink-purple color family', /\b(?:pink|purple|violet|fuchsia|magenta|rose-|indigo-)/i],
@@ -171,13 +185,14 @@ const forbidden = [
 
 for (const relativePath of sourceFiles) {
     const source = await readText(relativePath);
+    const normalizedSource = source.replace(/%23([0-9a-f]{3,8})/gi, '#$1');
     for (const [label, pattern] of forbidden) {
-        const match = pattern.exec(source);
-        if (match) failures.push(`${relativePath}:${lineNumber(source, match.index)}: ${label}`);
+        const match = pattern.exec(normalizedSource);
+        if (match) failures.push(`${relativePath}:${lineNumber(normalizedSource, match.index)}: ${label}`);
     }
-    if (!relativePath.startsWith('src/design/')) {
-        const rawColor = /#[0-9a-f]{3,8}\b/i.exec(source);
-        if (rawColor) failures.push(`${relativePath}:${lineNumber(source, rawColor.index)}: raw color outside semantic token files`);
+    if (!relativePath.startsWith('src/design/') && relativePath !== 'index.html') {
+        const rawColor = /#[0-9a-f]{3,8}\b/i.exec(normalizedSource);
+        if (rawColor) failures.push(`${relativePath}:${lineNumber(normalizedSource, rawColor.index)}: raw color outside semantic token files`);
     }
 }
 
@@ -193,6 +208,7 @@ const report = {
         'design snapshot and generator provenance',
         'governance, action-outcome, authority, and processing-boundary contracts',
         'solid-token contrast floor',
+        'browser theme and percent-encoded favicon colors',
         'consumer source prohibited-pattern scan',
         'Mirror home trust rail, product mode, primary action, and reduced motion hooks',
     ],
