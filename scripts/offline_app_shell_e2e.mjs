@@ -22,6 +22,7 @@ const paths = {
     offlineScreenshot: path.join(outputDir, 'offline-mobile.png'),
     screenshotManifest: path.join(outputDir, 'screenshots.json'),
     console: path.join(outputDir, 'console-logs.json'),
+    privacyEvents: path.join(outputDir, 'privacy-event-requests.json'),
     network: path.join(outputDir, 'network-failures.json'),
     report: path.join(outputDir, 'test-report.json'),
     evidence: path.join(outputDir, 'evidence-manifest.json'),
@@ -29,7 +30,10 @@ const paths = {
 
 const consoleEvents = [];
 const pageErrors = [];
-const networkFailures = [];
+const eventRequests = [];
+const expectedOfflineNetworkFailures = [];
+const unexpectedNetworkFailures = [];
+let offlineStarted = false;
 let browser;
 let context;
 let page;
@@ -38,6 +42,28 @@ let report;
 try {
     browser = await chromium.launch({ headless: true });
     context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await context.route('https://gateway.activemirror.ai/v1/events', async (route) => {
+        const request = route.request();
+        let payload = null;
+        try {
+            payload = JSON.parse(request.postData() || 'null');
+        } catch {
+            payload = null;
+        }
+        eventRequests.push({
+            phase: offlineStarted ? 'offline' : 'online',
+            method: request.method(),
+            payload,
+        });
+        await route.fulfill({
+            status: 204,
+            headers: {
+                'Access-Control-Allow-Origin': new URL(baseUrl).origin,
+                'Cache-Control': 'no-store',
+                'X-Active-Mirror-E2E-Fixture': 'privacy-event',
+            },
+        });
+    });
     await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
     page = await context.newPage();
 
@@ -48,11 +74,18 @@ try {
         pageErrors.push(error.message);
     });
     page.on('requestfailed', (request) => {
-        networkFailures.push({
+        const failure = {
             method: request.method(),
             url: request.url(),
             error: request.failure()?.errorText || 'unknown',
-        });
+        };
+        const isExpectedOfflineTelemetryAbort = offlineStarted
+            && failure.method === 'POST'
+            && failure.url === 'https://gateway.activemirror.ai/v1/events'
+            && /^net::ERR_(?:ABORTED|INTERNET_DISCONNECTED)$/.test(failure.error);
+        (isExpectedOfflineTelemetryAbort
+            ? expectedOfflineNetworkFailures
+            : unexpectedNetworkFailures).push(failure);
     });
 
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
@@ -69,6 +102,7 @@ try {
     }));
     await page.screenshot({ path: paths.onlineScreenshot, fullPage: true });
 
+    offlineStarted = true;
     await context.setOffline(true);
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.getByText('What do you want?', { exact: true }).waitFor({ state: 'visible' });
@@ -81,6 +115,15 @@ try {
     await page.screenshot({ path: paths.offlineScreenshot, fullPage: true });
 
     const errorConsoleEvents = consoleEvents.filter((event) => event.type === 'error');
+    const allowedEventKeys = new Set(['event', 'session', 'ts', 'page', 'surface']);
+    const invalidEventRequests = eventRequests.filter(({ method, payload }) => {
+        if (method !== 'POST' || !payload || typeof payload !== 'object' || Array.isArray(payload)) return true;
+        if (Object.keys(payload).some((key) => !allowedEventKeys.has(key))) return true;
+        if (!/^[a-z0-9_]{1,64}$/.test(String(payload.event || ''))) return true;
+        if (!/^[a-z0-9-]{1,64}$/i.test(String(payload.session || ''))) return true;
+        if (Number.isNaN(Date.parse(String(payload.ts || '')))) return true;
+        return ['page', 'surface'].some((key) => !/^[a-z0-9_-]{1,64}$/i.test(String(payload[key] || '')));
+    });
     const assertions = {
         serviceWorkerRegistered: onlineState.registrations.some((scope) => scope.endsWith('/app/')),
         appShellCachePresent: onlineState.caches.some((name) => name.startsWith('active-mirror-app-shell-')),
@@ -89,17 +132,23 @@ try {
         offlineBrowserState: offlineState.online === false,
         offlineServiceWorkerControlled: offlineState.controlled,
         offlineViewportFits: offlineState.viewportFits,
+        privacyEventFixtureObserved: eventRequests.length > 0,
+        privacyEventMetadataOnly: invalidEventRequests.length === 0,
+        expectedOfflineTelemetryFailuresBounded: expectedOfflineNetworkFailures.length <= 1,
+        unexpectedNetworkFailuresAbsent: unexpectedNetworkFailures.length === 0,
         consoleErrorsAbsent: errorConsoleEvents.length === 0 && pageErrors.length === 0,
     };
     const failedAssertions = Object.entries(assertions).filter(([, passed]) => !passed).map(([name]) => name);
     report = {
-        schema_version: 'active-mirror.offline-app-shell-e2e/v1',
+        schema_version: 'active-mirror.offline-app-shell-e2e/v2',
         base_url: baseUrl,
         status: failedAssertions.length ? 'FAIL' : 'PASS',
         assertions,
         failed_assertions: failedAssertions,
         console_error_count: errorConsoleEvents.length + pageErrors.length,
-        network_failure_count: networkFailures.length,
+        network_failure_count: expectedOfflineNetworkFailures.length + unexpectedNetworkFailures.length,
+        expected_offline_network_failure_count: expectedOfflineNetworkFailures.length,
+        unexpected_network_failure_count: unexpectedNetworkFailures.length,
         online_state: onlineState,
         offline_state: { ...offlineState, bodyText: undefined },
         checked_scope: [
@@ -108,6 +157,8 @@ try {
             'bounded app-shell cache presence',
             'offline reload after browser network disable',
             'horizontal viewport fit',
+            'metadata-only privacy telemetry contract',
+            'exact classification of offline telemetry transport aborts',
             'browser console and page errors',
         ],
         unchecked_scope: [
@@ -119,7 +170,11 @@ try {
     };
 
     await fs.writeFile(paths.console, `${JSON.stringify({ consoleEvents, pageErrors }, null, 2)}\n`);
-    await fs.writeFile(paths.network, `${JSON.stringify(networkFailures, null, 2)}\n`);
+    await fs.writeFile(paths.privacyEvents, `${JSON.stringify(eventRequests, null, 2)}\n`);
+    await fs.writeFile(
+        paths.network,
+        `${JSON.stringify({ expectedOfflineNetworkFailures, unexpectedNetworkFailures }, null, 2)}\n`,
+    );
     await fs.writeFile(
         paths.screenshotManifest,
         `${JSON.stringify({ screenshots: [path.basename(paths.onlineScreenshot), path.basename(paths.offlineScreenshot)] }, null, 2)}\n`,
@@ -135,6 +190,7 @@ try {
         ['playwright_trace', paths.trace],
         ['screenshots', paths.screenshotManifest],
         ['console_logs', paths.console],
+        ['privacy_event_requests', paths.privacyEvents],
         ['network_failures', paths.network],
         ['test_report', paths.report],
     ];
@@ -148,7 +204,7 @@ try {
     if (report.status !== 'PASS') process.exitCode = 1;
 } catch (error) {
     report = {
-        schema_version: 'active-mirror.offline-app-shell-e2e/v1',
+        schema_version: 'active-mirror.offline-app-shell-e2e/v2',
         base_url: baseUrl,
         status: 'FAIL',
         error: error instanceof Error ? error.message : String(error),
@@ -156,7 +212,11 @@ try {
         unchecked_scope: ['offline app-shell journey did not complete'],
     };
     await fs.writeFile(paths.console, `${JSON.stringify({ consoleEvents, pageErrors }, null, 2)}\n`);
-    await fs.writeFile(paths.network, `${JSON.stringify(networkFailures, null, 2)}\n`);
+    await fs.writeFile(paths.privacyEvents, `${JSON.stringify(eventRequests, null, 2)}\n`);
+    await fs.writeFile(
+        paths.network,
+        `${JSON.stringify({ expectedOfflineNetworkFailures, unexpectedNetworkFailures }, null, 2)}\n`,
+    );
     if (page) await page.screenshot({ path: path.join(outputDir, 'failure.png'), fullPage: true }).catch(() => {});
     if (context) await context.tracing.stop({ path: paths.trace }).catch(() => {});
     await fs.writeFile(paths.report, `${JSON.stringify(report, null, 2)}\n`);
