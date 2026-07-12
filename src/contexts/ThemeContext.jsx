@@ -12,7 +12,7 @@ export function ThemeProvider({ children }) {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('mirror-theme');
             if (saved) return saved;
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            return 'dark';
         }
         return 'dark';
     });
@@ -50,31 +50,31 @@ export function useTheme() {
 // Theme color definitions
 export const themes = {
     dark: {
-        bg: 'bg-[#08080a]',
-        bgSecondary: 'bg-[#0f0f12]',
-        bgTertiary: 'bg-[#16161a]',
-        text: 'text-white',
-        textSecondary: 'text-zinc-400',
-        textMuted: 'text-zinc-500',
-        border: 'border-white/10',
-        borderAccent: 'border-white/20',
-        glass: 'bg-white/[0.03] backdrop-blur-xl',
-        glassStrong: 'bg-white/[0.08] backdrop-blur-xl',
+        bg: 'bg-[var(--am-canvas)]',
+        bgSecondary: 'bg-[var(--am-surface)]',
+        bgTertiary: 'bg-[var(--am-surface-subtle)]',
+        text: 'text-[var(--am-ink)]',
+        textSecondary: 'text-[var(--am-muted)]',
+        textMuted: 'text-[var(--am-muted)]',
+        border: 'border-[var(--am-border)]',
+        borderAccent: 'border-[var(--am-focus)]',
+        glass: 'bg-[var(--am-surface)]',
+        glassStrong: 'bg-[var(--am-surface)]',
         input: 'bg-white/5 border-white/10 text-white placeholder-zinc-500',
-        card: 'bg-white/[0.02] border-white/[0.06]',
+        card: 'bg-[var(--am-surface)] border-[var(--am-border)]',
     },
     light: {
-        bg: 'bg-[#fafafa]',
-        bgSecondary: 'bg-white',
-        bgTertiary: 'bg-zinc-50',
-        text: 'text-zinc-900',
-        textSecondary: 'text-zinc-600',
-        textMuted: 'text-zinc-500',
-        border: 'border-zinc-200',
-        borderAccent: 'border-zinc-300',
-        glass: 'bg-white/80 backdrop-blur-xl',
-        glassStrong: 'bg-white/90 backdrop-blur-xl',
+        bg: 'bg-[var(--am-canvas)]',
+        bgSecondary: 'bg-[var(--am-surface)]',
+        bgTertiary: 'bg-[var(--am-surface-subtle)]',
+        text: 'text-[var(--am-ink)]',
+        textSecondary: 'text-[var(--am-muted)]',
+        textMuted: 'text-[var(--am-muted)]',
+        border: 'border-[var(--am-border)]',
+        borderAccent: 'border-[var(--am-focus)]',
+        glass: 'bg-[var(--am-surface)]',
+        glassStrong: 'bg-[var(--am-surface)]',
         input: 'bg-white border-zinc-200 text-zinc-900 placeholder-zinc-400',
-        card: 'bg-white border-zinc-200 shadow-sm',
+        card: 'bg-[var(--am-surface)] border-[var(--am-border)]',
     }
 };

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, LoaderCircle, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
 import PrivateRecallPanel from '../components/PrivateRecallPanel';
 import PrivateRecallSuggestions from '../components/PrivateRecallSuggestions';
+import TrustStatusRail, { TrustStateMark } from '../components/TrustStatusRail';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { useTheme } from '../contexts/ThemeContext';
 import {
@@ -1244,8 +1245,8 @@ function makeArtifact(mirror = {}, intent = '', kind = 'draft') {
 function MirrorLogo() {
     return (
         <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
-            <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="#a78bfa" strokeWidth="1.6" />
-            <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="#22d3ee" strokeWidth="1.6" />
+            <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="var(--am-primary-marker)" strokeWidth="1.6" />
+            <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="var(--am-focus)" strokeWidth="1.6" />
         </svg>
     );
 }
@@ -1261,11 +1262,11 @@ function ReflectionGlow({ mirror }) {
     const text = `${mirror?.reflection || ''} ${mirror?.question || ''} ${mirror?.move || ''}`.toLowerCase();
     const urgent = /\b(overwhelmed|stuck|panic|confused|scared|afraid|urgent|pressure|spiral|loop)\b/.test(text);
     const decisive = /\b(decide|choice|ship|send|test|move|start|today)\b/.test(text);
-    const tone = urgent ? 'from-amber-200/24 via-violet-300/12 to-white/5' : decisive ? 'from-violet-200/20 via-fuchsia-200/10 to-white/5' : 'from-violet-300/18 via-white/8 to-white/5';
+    const tone = urgent ? 'steady' : decisive ? 'clear' : 'open';
     const label = urgent ? 'steady' : decisive ? 'clear' : 'open';
 
     return (
-        <div className={`h-1.5 w-24 rounded-full bg-gradient-to-r ${tone}`} aria-label={`Reflection tone: ${label}`} />
+        <div className="am-witness-line" data-tone={tone} aria-label={`Reflection tone: ${label}`} />
     );
 }
 
@@ -1310,7 +1311,7 @@ function MicroVisual({ visual }) {
     if (visual.kind === 'reframe') {
         return (
             <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                <span className={`rounded-full border px-3 py-1.5 line-through ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-500 decoration-stone-400' : 'border-white/10 bg-white/[0.04] text-zinc-500 decoration-zinc-600'}`}>{visual.left}</span>
+                <span className={`rounded-full border px-3 py-1.5 line-through ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 decoration-stone-400' : 'border-white/10 bg-white/[0.04] text-zinc-400 decoration-zinc-600'}`}>{visual.left}</span>
                 <span className={isLight ? 'text-cyan-700' : 'text-cyan-200'}>to</span>
                 <span className={`rounded-full border px-3 py-1.5 font-semibold ${isLight ? 'border-cyan-500/20 bg-cyan-100/60 text-cyan-800' : 'border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-100'}`}>{visual.right}</span>
             </div>
@@ -1319,8 +1320,8 @@ function MicroVisual({ visual }) {
 
     if (visual.kind === 'axes') {
         return (
-            <div className={`mt-3 rounded-[1.35rem] border p-3 ${isLight ? 'border-cyan-500/18 bg-cyan-50/70' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
-                <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-violet-300 via-cyan-200 to-emerald-200" />
+            <div className={`mt-3 rounded-lg border p-3 ${isLight ? 'border-cyan-500/18 bg-cyan-50/70' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
+                <div className="am-witness-line mb-3" data-tone="clear" />
                 <div className="flex justify-between gap-4 text-sm font-semibold">
                     <span className={isLight ? 'text-stone-600' : 'text-zinc-300'}>{visual.left}</span>
                     <span className={`text-right ${isLight ? 'text-cyan-800' : 'text-cyan-100'}`}>{visual.right}</span>
@@ -1331,8 +1332,8 @@ function MicroVisual({ visual }) {
 
     if (visual.kind === 'spectrum') {
         return (
-            <div className={`mt-3 rounded-[1.35rem] border p-3 ${isLight ? 'border-cyan-500/18 bg-cyan-50/70' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
-                <div className="mb-3 h-1 rounded-full bg-gradient-to-r from-purple-300 to-cyan-200" />
+            <div className={`mt-3 rounded-lg border p-3 ${isLight ? 'border-cyan-500/18 bg-cyan-50/70' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
+                <div className="am-witness-line mb-3" />
                 <div className="flex justify-between gap-4 text-sm font-semibold">
                     <span className={isLight ? 'text-stone-600' : ''}>{visual.left}</span>
                     <span className={`text-right ${isLight ? 'text-cyan-800' : 'text-cyan-100'}`}>{visual.right}</span>
@@ -1358,10 +1359,10 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
 
     return (
         <div className="mt-4 grid gap-3">
-            <div className={`rounded-[1.35rem] border p-3.5 ${isLight ? 'border-stone-300/70 bg-white/65 shadow-[0_14px_34px_rgba(77,65,50,0.08)]' : 'border-white/[0.075] bg-white/[0.032] shadow-[0_0_22px_rgba(16,185,129,0.025)]'}`}>
+            <div className={`rounded-lg border p-3.5 ${isLight ? 'border-stone-300/70 bg-white/65' : 'border-white/[0.075] bg-white/[0.032]'}`}>
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                     <div className="flex min-w-0 items-start gap-3">
-                        <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.36)]" />
+                        <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
                         <div className={`break-words text-[1rem] font-medium leading-7 sm:text-[1.02rem] ${isLight ? 'text-stone-800' : 'text-zinc-100'}`}>{mirror.move}</div>
                     </div>
                     {allowCopy ? (
@@ -1382,7 +1383,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
                     type="button"
                     onClick={() => onRemember?.(mirror)}
                     disabled={remembered}
-                    className={`inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-violet-400/35 hover:text-stone-950 disabled:border-emerald-500/20 disabled:text-emerald-700' : 'border-white/10 bg-white/[0.028] text-zinc-400 hover:border-violet-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100'}`}
+                    className={`inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-600 hover:border-blue-400/35 hover:text-stone-950 disabled:border-emerald-500/20 disabled:text-emerald-700' : 'border-white/10 bg-white/[0.028] text-zinc-400 hover:border-blue-300/30 hover:text-white disabled:border-emerald-300/18 disabled:text-emerald-100'}`}
                 >
                     {remembered ? <Check size={13} /> : <BookmarkPlus size={13} />}
                     {remembered ? 'Saved' : 'Save'}
@@ -1407,20 +1408,25 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
     const canPromptSourceCheck = ['typed', 'follow_up', 'surface', 'saved_context'].includes(turnSource);
     const showSourceCheck = canPromptSourceCheck && truthState?.status === 'needs_checking' && isSourceHeavyAsk(intent);
     const answerFirst = showSourceCheck && isAnswerFirstAsk(intent);
+    const resultTrustState = isPrivacyHold
+        ? 'rejected'
+        : truthState?.status === 'checked'
+            ? 'verified'
+            : 'proposed';
     const focusText = String(mirror.question || '').trim();
     const moveText = String(mirror.move || '').trim();
     const isLight = theme === 'light';
     const assistantIconClass = isLight
-        ? 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-400/18 bg-white/65 text-violet-600 shadow-[0_14px_28px_rgba(77,65,50,0.08)] md:grid'
-        : 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-2xl border border-violet-200/15 bg-white/[0.045] text-violet-100 shadow-[0_0_28px_rgba(168,85,247,0.12)] md:grid';
+        ? 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-lg border border-blue-400/18 bg-white/65 text-blue-600 md:grid'
+        : 'mt-1 hidden h-9 w-9 shrink-0 place-items-center rounded-lg border border-blue-200/15 bg-white/[0.045] text-blue-100 md:grid';
     const panelClass = isLight
-        ? 'min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-stone-300/70 bg-white/72 p-4 shadow-[0_24px_70px_rgba(77,65,50,0.12)] ring-1 ring-white/80 backdrop-blur-2xl sm:p-5'
-        : 'min-w-0 flex-1 overflow-hidden rounded-[1.55rem] border border-white/[0.075] bg-white/[0.038] p-4 shadow-[0_0_42px_rgba(0,0,0,0.20)] backdrop-blur-2xl sm:p-5';
+        ? 'min-w-0 flex-1 overflow-hidden rounded-lg border border-stone-300/70 bg-white/72 p-4 ring-1 ring-white/80 sm:p-5'
+        : 'min-w-0 flex-1 overflow-hidden rounded-lg border border-white/[0.075] bg-white/[0.038] p-4 sm:p-5';
     const reflectionClass = `mt-4 break-words text-[1rem] leading-7 sm:text-[1.08rem] ${isLight ? 'text-stone-800' : 'text-zinc-100'}`;
     const focusClass = isLight
-        ? 'mt-4 break-words rounded-[1.15rem] border border-violet-400/14 bg-violet-50/70 px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-stone-800'
-        : 'mt-4 break-words rounded-[1.15rem] border border-violet-200/10 bg-violet-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-violet-50/86';
-    const focusLabelClass = `mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] ${isLight ? 'text-violet-700/55' : 'text-violet-100/55'}`;
+        ? 'mt-4 break-words rounded-lg border border-blue-400/14 bg-blue-50/70 px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-stone-800'
+        : 'mt-4 break-words rounded-lg border border-blue-200/10 bg-blue-200/[0.045] px-3.5 py-3 text-[0.95rem] font-medium leading-7 text-blue-50/86';
+    const focusLabelClass = `mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] ${isLight ? 'text-blue-700/55' : 'text-blue-100/55'}`;
 
     if (isLoading) {
         return <LoadingPanel />;
@@ -1434,11 +1440,12 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                         <MirrorLogo />
                     </div>
                     <div className={panelClass}>
+                        <div className="mb-3"><TrustStateMark state={resultTrustState} /></div>
                         <ReflectionGlow mirror={mirror} />
                         <p className={reflectionClass}>
                             {mirror.reflection}
                         </p>
-                        <div className={`mt-4 rounded-[1.2rem] border px-3.5 py-3 text-[0.98rem] font-semibold leading-7 ${isLight ? 'border-emerald-500/16 bg-emerald-50/75 text-emerald-900' : 'border-emerald-200/12 bg-emerald-200/[0.055] text-emerald-50'}`}>
+                        <div className={`mt-4 rounded-lg border px-3.5 py-3 text-[0.98rem] font-semibold leading-7 ${isLight ? 'border-emerald-500/16 bg-emerald-50/75 text-emerald-900' : 'border-emerald-200/12 bg-emerald-200/[0.055] text-emerald-50'}`}>
                             {mirror.move}
                         </div>
                     </div>
@@ -1472,11 +1479,12 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                         <MirrorLogo />
                     </div>
                     <div className={panelClass}>
+                        <div className="mb-3"><TrustStateMark state={resultTrustState} /></div>
                         <ReflectionGlow mirror={mirror} />
                         <p className={`${reflectionClass} font-medium`}>
                             {mirror.reflection}
                         </p>
-                        <div className={`mt-3 break-words text-sm leading-6 ${isLight ? 'text-stone-500' : 'text-zinc-400'}`}>
+                        <div className={`mt-3 break-words text-sm leading-6 ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>
                             {mirror.move}
                         </div>
                     </div>
@@ -1492,6 +1500,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                     <MirrorLogo />
                 </div>
                 <div className={panelClass}>
+                    <div className="mb-3"><TrustStateMark state={resultTrustState} /></div>
                     <ReflectionGlow mirror={mirror} />
                     <p className={reflectionClass}>
                         {mirror.reflection}
@@ -1531,15 +1540,15 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
 
 function LoadingPanel() {
     return (
-        <div className="rounded-[1.8rem] border border-cyan-300/15 bg-cyan-300/[0.045] px-5 py-5 shadow-[0_0_46px_rgba(34,211,238,0.08)]">
+        <div className="rounded-lg border border-cyan-300/15 bg-cyan-300/[0.045] px-5 py-5">
             <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-cyan-100">
-                <Sparkles size={16} className="animate-pulse text-cyan-200" />
+                <LoaderCircle size={16} className="animate-spin text-cyan-200" aria-hidden="true" />
                 Finding the useful move
             </div>
             <div className="grid gap-2">
-                <div className="h-3 w-3/4 animate-pulse rounded-full bg-white/10" />
-                <div className="h-3 w-1/2 animate-pulse rounded-full bg-white/10" />
-                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/10" />
+                <div className="h-3 w-3/4 rounded-full bg-white/10" />
+                <div className="h-3 w-1/2 rounded-full bg-white/10" />
+                <div className="h-3 w-2/3 rounded-full bg-white/10" />
             </div>
         </div>
     );
@@ -1555,10 +1564,10 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
         const { icon: Icon } = artifactActionFor(busyKind);
 
         return (
-            <section className={`min-w-0 overflow-hidden rounded-[1.7rem] border px-4 py-4 ${isLight ? 'border-stone-300/70 bg-white/72 shadow-[0_20px_50px_rgba(77,65,50,0.10)]' : 'border-cyan-300/15 bg-cyan-300/[0.055] shadow-[0_0_40px_rgba(34,211,238,0.08)]'}`}>
+            <section className={`min-w-0 overflow-hidden rounded-lg border px-4 py-4 ${isLight ? 'border-stone-300/70 bg-white/72' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
                 <div className="mb-4 flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-2">
-                        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-2xl border ${isLight ? 'border-cyan-500/18 bg-cyan-50 text-cyan-700' : 'border-cyan-200/20 bg-cyan-300/[0.07] text-cyan-100'}`}>
+                        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg border ${isLight ? 'border-cyan-500/18 bg-cyan-50 text-cyan-700' : 'border-cyan-200/20 bg-cyan-300/[0.07] text-cyan-100'}`}>
                             <Icon size={15} />
                         </span>
                         <div className="min-w-0">
@@ -1569,16 +1578,16 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
                     <button
                         type="button"
                         onClick={onClose}
-                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-500 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-white/25 hover:text-white'}`}
+                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-white/25 hover:text-white'}`}
                         aria-label="Close"
                     >
                         <X size={15} />
                     </button>
                 </div>
                 <div className="grid gap-2">
-                    <div className={`h-3 w-4/5 animate-pulse rounded-full ${isLight ? 'bg-stone-200/80' : 'bg-white/10'}`} />
-                    <div className={`h-3 w-2/3 animate-pulse rounded-full ${isLight ? 'bg-stone-200/70' : 'bg-white/10'}`} />
-                    <div className={`h-24 animate-pulse rounded-2xl border ${isLight ? 'border-stone-300/65 bg-stone-100/70' : 'border-white/10 bg-black/20'}`} />
+                    <div className={`h-3 w-4/5 rounded-full ${isLight ? 'bg-stone-200/80' : 'bg-white/10'}`} />
+                    <div className={`h-3 w-2/3 rounded-full ${isLight ? 'bg-stone-200/70' : 'bg-white/10'}`} />
+                    <div className={`h-24 rounded-lg border ${isLight ? 'border-stone-300/65 bg-stone-100/70' : 'border-white/10 bg-black/20'}`} />
                 </div>
             </section>
         );
@@ -1591,7 +1600,7 @@ function WorkSurface({ draft, busyKind, onClose, onRegenerateImage, onSharpenIma
             <button
                 type="button"
                 onClick={onClose}
-                className={`absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border backdrop-blur transition ${isLight ? 'border-stone-300/70 bg-white/74 text-stone-500 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/40 text-zinc-400 hover:border-white/25 hover:text-white'}`}
+                className={`absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border backdrop-blur transition ${isLight ? 'border-stone-300/70 bg-white/74 text-stone-600 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-black/40 text-zinc-400 hover:border-white/25 hover:text-white'}`}
                 aria-label="Close"
             >
                 <X size={15} />
@@ -1625,24 +1634,11 @@ function ReflectionField({ awake = false }) {
     return (
         <div className={`reflection-field ${awake ? 'reflection-field--awake' : ''}`} aria-hidden="true">
             <svg className="reflection-field__svg" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice">
-                <defs>
-                    <linearGradient id="mirror-line-a" x1="0" x2="1" y1="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(34,211,238,0)" />
-                        <stop offset="42%" stopColor="rgba(34,211,238,0.38)" />
-                        <stop offset="100%" stopColor="rgba(168,85,247,0)" />
-                    </linearGradient>
-                    <linearGradient id="mirror-line-b" x1="1" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(255,255,255,0)" />
-                        <stop offset="48%" stopColor="rgba(232,221,255,0.28)" />
-                        <stop offset="100%" stopColor="rgba(110,231,183,0)" />
-                    </linearGradient>
-                </defs>
                 <path className="reflection-field__arc reflection-field__arc--a" d="M174 448 C 340 196, 840 122, 1046 390" />
                 <path className="reflection-field__arc reflection-field__arc--b" d="M152 520 C 388 330, 788 292, 1070 482" />
                 <path className="reflection-field__arc reflection-field__arc--c" d="M276 610 C 492 428, 706 398, 936 576" />
                 <ellipse className="reflection-field__lens" cx="600" cy="414" rx="342" ry="118" />
             </svg>
-            <div className="reflection-field__sheen" />
         </div>
     );
 }
@@ -1652,12 +1648,12 @@ function LocalSenseLine({ sense }) {
     if (!sense?.hasText || !cue) return null;
 
     const tone = cue.tone === 'block'
-        ? 'border-rose-300/20 bg-rose-300/[0.07] text-rose-100'
+        ? 'border-red-300/20 bg-red-300/[0.07] text-red-100'
         : cue.tone === 'caution'
             ? 'border-amber-300/20 bg-amber-300/[0.07] text-amber-100'
             : cue.tone === 'good'
                 ? 'border-emerald-300/20 bg-emerald-300/[0.07] text-emerald-100'
-                : 'border-violet-300/20 bg-violet-300/[0.07] text-violet-100';
+                : 'border-blue-300/20 bg-blue-300/[0.07] text-blue-100';
 
     return (
         <div className={`inline-flex max-w-full items-center rounded-full border px-3 py-1.5 text-xs leading-5 ${tone}`}>
@@ -1724,10 +1720,10 @@ function MemoryDrawer({
                 aria-label="Close saved"
                 onClick={onClose}
             />
-            <div className="relative mx-auto flex max-h-[88dvh] max-w-3xl flex-col overflow-hidden rounded-[2rem] border border-white/12 bg-[#0d0d11]/95 shadow-[0_0_80px_rgba(124,58,237,0.2)] ring-1 ring-white/[0.04]">
+            <div className="relative mx-auto flex max-h-[88dvh] max-w-3xl flex-col overflow-hidden rounded-lg border border-white/12 bg-[var(--am-surface)] ring-1 ring-white/[0.04]">
                 <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
                     <div>
-                        <div className="text-lg font-semibold tracking-[-0.03em] text-white">Saved here</div>
+                        <div className="text-lg font-semibold text-white">Saved here</div>
                         <div className="mt-1 text-sm leading-6 text-zinc-400">Only on this browser. Reopen, edit, or remove anything.</div>
                         {items.length ? (
                             <button
@@ -1742,7 +1738,7 @@ function MemoryDrawer({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-blue-200/30 hover:text-white"
                         aria-label="Close saved"
                     >
                         <X size={18} />
@@ -1751,7 +1747,7 @@ function MemoryDrawer({
 
                 <div className="overflow-y-auto px-4 py-4">
                     {!hasSavedContext ? (
-                        <div className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
+                        <div className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-5 text-sm leading-6 text-zinc-400">
                             Nothing saved yet. When an answer is useful, choose Save.
                         </div>
                     ) : mode === 'cards' && activeCard ? (
@@ -1759,20 +1755,20 @@ function MemoryDrawer({
                             <button
                                 type="button"
                                 onClick={() => setCardFlipped((value) => !value)}
-                                className="min-h-[17rem] rounded-[1.75rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(167,139,250,0.14),transparent_55%),rgba(255,255,255,0.04)] p-5 text-left shadow-[0_0_50px_rgba(124,58,237,0.12)] transition hover:border-violet-200/30"
+                                className="min-h-[17rem] rounded-lg border border-blue-200/15 bg-white/[0.04] p-5 text-left transition hover:border-blue-200/30"
                             >
-                                <div className="mb-5 flex items-center justify-between gap-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                                <div className="mb-5 flex items-center justify-between gap-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
                                     <span>Card {activeCardIndex + 1} of {items.length}</span>
                                     <span>{cardFlipped ? 'Move' : 'Pattern'}</span>
                                 </div>
                                 <div className="flex min-h-40 items-center">
-                                    <p className={`text-2xl font-semibold leading-tight tracking-[-0.04em] ${cardFlipped ? 'text-emerald-50' : 'text-white'} sm:text-3xl`}>
+                                    <p className={`text-2xl font-semibold leading-tight ${cardFlipped ? 'text-emerald-50' : 'text-white'} sm:text-3xl`}>
                                         {cardFlipped
                                             ? activeCard.move || 'No move saved yet.'
                                             : activeCard.question || 'No question saved yet.'}
                                     </p>
                                 </div>
-                                <div className="mt-5 text-sm text-zinc-500">
+                                <div className="mt-5 text-sm text-zinc-400">
                                     {cardFlipped ? 'Tap to see the pattern again.' : 'Tap to reveal the move.'}
                                 </div>
                             </button>
@@ -1781,7 +1777,7 @@ function MemoryDrawer({
                                 <button
                                     type="button"
                                     onClick={() => changeCard(-1)}
-                                    className="min-h-11 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                    className="min-h-11 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-zinc-300 transition hover:border-blue-200/30 hover:text-white"
                                 >
                                     Back
                                 </button>
@@ -1798,7 +1794,7 @@ function MemoryDrawer({
                                 <button
                                     type="button"
                                     onClick={() => changeCard(1)}
-                                    className="min-h-11 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                    className="min-h-11 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-zinc-300 transition hover:border-blue-200/30 hover:text-white"
                                 >
                                     Next
                                 </button>
@@ -1807,20 +1803,20 @@ function MemoryDrawer({
                     ) : (
                         <div className="grid gap-3">
                             {savedChats.length ? (
-                                <section className="rounded-[1.45rem] border border-violet-300/12 bg-violet-300/[0.045] p-3">
+                                <section className="rounded-lg border border-blue-300/12 bg-blue-300/[0.045] p-3">
                                     <div className="mb-3">
-                                        <div className="text-sm font-semibold text-violet-50">Saved chats</div>
-                                        <div className="mt-1 text-xs leading-5 text-zinc-500">Only on this browser. Reopen or delete anytime.</div>
+                                        <div className="text-sm font-semibold text-blue-50">Saved chats</div>
+                                        <div className="mt-1 text-xs leading-5 text-zinc-400">Only on this browser. Reopen or delete anytime.</div>
                                     </div>
                                     <div className="grid gap-2">
                                         {savedChats.map((entry) => (
-                                            <div key={entry.id || entry.savedAt} className="rounded-[1.15rem] border border-white/10 bg-black/16 p-3">
+                                            <div key={entry.id || entry.savedAt} className="rounded-lg border border-white/10 bg-black/16 p-3">
                                                 <div className="mb-2 flex items-center justify-between gap-3">
-                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">{formatSavedDate(entry.savedAt)}</span>
+                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-400">{formatSavedDate(entry.savedAt)}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => onDeleteSavedChat?.(entry.id || entry.savedAt)}
-                                                        className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                        className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-red-300/30 hover:text-red-100"
                                                         aria-label="Delete saved chat"
                                                     >
                                                         <Trash2 size={13} />
@@ -1828,14 +1824,14 @@ function MemoryDrawer({
                                                 </div>
                                                 <div className="text-sm font-semibold leading-6 text-zinc-100">{entry.title || 'Saved chat'}</div>
                                                 {entry.thread?.result?.mirror?.move ? (
-                                                    <div className="mt-2 max-h-16 overflow-hidden rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-sm leading-6 text-cyan-50">
+                                                    <div className="mt-2 max-h-16 overflow-hidden rounded-lg border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-sm leading-6 text-cyan-50">
                                                         {entry.thread.result.mirror.move}
                                                     </div>
                                                 ) : null}
                                                 <button
                                                     type="button"
                                                     onClick={() => onUseSavedChat?.(entry)}
-                                                    className="mt-3 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-violet-200/18 bg-violet-200/[0.06] px-3.5 text-xs font-semibold text-violet-50 transition hover:border-violet-100/35"
+                                                    className="mt-3 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-blue-200/18 bg-blue-200/[0.06] px-3.5 text-xs font-semibold text-blue-50 transition hover:border-blue-100/35"
                                                 >
                                                     Open chat
                                                 </button>
@@ -1846,29 +1842,29 @@ function MemoryDrawer({
                             ) : null}
 
                             {continuity.length ? (
-                                <section className="rounded-[1.45rem] border border-cyan-300/12 bg-cyan-300/[0.045] p-3">
+                                <section className="rounded-lg border border-cyan-300/12 bg-cyan-300/[0.045] p-3">
                                     <div className="mb-3 flex items-start justify-between gap-3">
                                         <div>
                                             <div className="text-sm font-semibold text-cyan-50">Saved by you</div>
-                                            <div className="mt-1 text-xs leading-5 text-zinc-500">Only on this browser. Delete it anytime.</div>
+                                            <div className="mt-1 text-xs leading-5 text-zinc-400">Only on this browser. Delete it anytime.</div>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={onClearContinuity}
-                                            className="min-h-10 rounded-full border border-white/10 bg-black/15 px-3.5 text-xs font-semibold text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                            className="min-h-10 rounded-full border border-white/10 bg-black/15 px-3.5 text-xs font-semibold text-zinc-400 transition hover:border-red-300/30 hover:text-red-100"
                                         >
                                             Clear
                                         </button>
                                     </div>
                                     <div className="grid gap-2">
                                         {continuity.map((entry) => (
-                                            <div key={entry.savedAt} className="rounded-[1.15rem] border border-white/10 bg-black/16 p-3">
+                                            <div key={entry.savedAt} className="rounded-lg border border-white/10 bg-black/16 p-3">
                                                 <div className="mb-2 flex items-center justify-between gap-3">
-                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">{formatSavedDate(entry.savedAt)}</span>
+                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-400">{formatSavedDate(entry.savedAt)}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => onDeleteContinuity?.(entry.savedAt)}
-                                                        className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                        className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:border-red-300/30 hover:text-red-100"
                                                         aria-label="Delete saved item"
                                                     >
                                                         <Trash2 size={13} />
@@ -1876,7 +1872,7 @@ function MemoryDrawer({
                                                 </div>
                                                 <div className="text-sm leading-6 text-zinc-300">{entry.intent || 'Saved reflection'}</div>
                                                 {entry.move ? (
-                                                    <div className="mt-2 rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-2 text-sm font-semibold leading-6 text-emerald-50">
+                                                    <div className="mt-2 rounded-lg border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-2 text-sm font-semibold leading-6 text-emerald-50">
                                                         {entry.move}
                                                     </div>
                                                 ) : null}
@@ -1899,9 +1895,9 @@ function MemoryDrawer({
                                 const active = isActiveMemory(item, activeDefault);
 
                                 return (
-                                    <div key={key} className="rounded-[1.45rem] border border-white/10 bg-white/[0.035] p-3">
+                                    <div key={key} className="rounded-lg border border-white/10 bg-white/[0.035] p-3">
                                         <div className="mb-3 flex items-center justify-between gap-3">
-                                            <div className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${active ? 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-100' : 'border-white/10 bg-black/20 text-zinc-500'}`}>
+                                            <div className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${active ? 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-100' : 'border-white/10 bg-black/20 text-zinc-400'}`}>
                                                 {active ? 'Using now' : 'Saved'}
                                             </div>
                                             <div className="flex items-center gap-1">
@@ -1915,7 +1911,7 @@ function MemoryDrawer({
                                                 <button
                                                     type="button"
                                                     onClick={() => editing ? setEditingKey('') : startEdit(item)}
-                                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-blue-200/30 hover:text-white"
                                                     aria-label={editing ? 'Cancel edit' : 'Edit saved note'}
                                                 >
                                                     {editing ? <X size={15} /> : <Pencil size={15} />}
@@ -1923,7 +1919,7 @@ function MemoryDrawer({
                                                 <button
                                                     type="button"
                                                     onClick={() => onDelete?.(key)}
-                                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-rose-300/30 hover:text-rose-100"
+                                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition hover:border-red-300/30 hover:text-red-100"
                                                     aria-label="Delete saved note"
                                                 >
                                                     <Trash2 size={15} />
@@ -1933,22 +1929,22 @@ function MemoryDrawer({
 
                                         {editing ? (
                                             <div className="grid gap-2">
-                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">
                                                     Question
                                                     <textarea
                                                         rows={2}
                                                         value={draft.question}
                                                         onChange={(event) => setDraft((current) => ({ ...current, question: event.target.value }))}
-                                                        className="resize-none rounded-2xl border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-violet-200/35"
+                                                        className="resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-blue-200/35"
                                                     />
                                                 </label>
-                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">
                                                     Move
                                                     <textarea
                                                         rows={2}
                                                         value={draft.move}
                                                         onChange={(event) => setDraft((current) => ({ ...current, move: event.target.value }))}
-                                                        className="resize-none rounded-2xl border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-violet-200/35"
+                                                        className="resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-blue-200/35"
                                                     />
                                                 </label>
                                                 <button
@@ -1962,10 +1958,10 @@ function MemoryDrawer({
                                             </div>
                                         ) : (
                                             <div className="grid gap-3">
-                                                <div className="rounded-2xl border border-white/10 bg-black/18 px-3 py-3 text-sm leading-6 text-zinc-300">
+                                                <div className="rounded-lg border border-white/10 bg-black/18 px-3 py-3 text-sm leading-6 text-zinc-300">
                                                     {item.question || 'No question saved.'}
                                                 </div>
-                                                <div className="rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-3 text-sm font-semibold leading-6 text-emerald-50">
+                                                <div className="rounded-lg border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-3 text-sm font-semibold leading-6 text-emerald-50">
                                                     {item.move || 'No move saved.'}
                                                 </div>
                                             </div>
@@ -2026,6 +2022,7 @@ export default function HomePage() {
     const [privateRecallDismissedText, setPrivateRecallDismissedText] = useState('');
     const [importStatus, setImportStatus] = useState('');
     const [loopCount, setLoopCount] = useState(0);
+    const [processingBoundary, setProcessingBoundary] = useState('local_device');
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount, lastIntent), [result, loopCount, lastIntent]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
@@ -2219,6 +2216,7 @@ export default function HomePage() {
         setLastIntent(stateIntent);
         setLastSource(source);
         setLastSense(sense);
+        setProcessingBoundary('local_device');
         setLoopCount((current) => source === 'follow_up' ? Math.min(current + 1, 6) : 0);
         setSendableDraft(null);
         setArtifactBusy('');
@@ -2310,7 +2308,7 @@ export default function HomePage() {
             const fallbackResult = responseMode === 'conversation'
                 ? makeOfflineConversationResult(cleanIntent, offlineResult, sense.toneCue, language)
                 : offlineResult;
-            setResult(fallbackResult);
+            setResult({ ...fallbackResult, ...language });
             setSessionContextMessages((current) => appendSessionContextMessages(current, [
                 { role: 'user', content: cleanIntent },
                 { role: 'assistant', content: assistantTextForSession(fallbackResult.mirror, responseMode) },
@@ -2332,6 +2330,7 @@ export default function HomePage() {
             return;
         }
 
+        setProcessingBoundary('external_provider');
         try {
             const safeIntent = sense.softPrivate ? maskSoftPrivateText(cleanIntent) : cleanIntent;
             const seededIntent = seed || sense.approvedDefault || sense.drift || sense.softPrivate
@@ -2375,9 +2374,10 @@ export default function HomePage() {
             const nextResult = data.ok
                 ? {
                     ...data,
+                    ...language,
                     responseMode: data.responseMode || data.response_mode || responseMode,
                 }
-                : makeBlockedResult(data);
+                : { ...makeBlockedResult(data), ...language };
             setResult(nextResult);
 
             if (data.ok) {
@@ -2396,6 +2396,7 @@ export default function HomePage() {
             }
         } catch {
             trackEvent('gateway_error', { page: 'home', source, route: gatewayRoute, status: 'network' });
+            setProcessingBoundary('local_device');
             applyLocalFallback('network');
         } finally {
             setBusy(false);
@@ -2796,66 +2797,64 @@ export default function HomePage() {
             : privateRecallStatus.error
                 ? 'Recall needs attention'
                 : 'Private recall';
-    const ctaClass = canSubmit && !busy
-        ? 'from-emerald-400 via-cyan-400 to-violet-500 text-white shadow-[0_0_30px_rgba(45,212,191,0.28)] hover:scale-[1.015]'
-        : isLight
-            ? 'from-stone-200 to-stone-300 text-stone-500 shadow-none'
-            : 'from-zinc-800 to-zinc-700 text-zinc-500 shadow-none';
+    const ctaClass = 'am-primary-action';
 
     return (
-        <div className={`relative min-h-dvh overflow-hidden selection:bg-emerald-300/25 ${isLight ? 'bg-[#f7f3ec] text-[#1f1b16]' : 'bg-[#050507] text-white'}`}>
-            <div className={`fixed inset-0 ${isLight ? 'bg-[radial-gradient(circle_at_24%_10%,rgba(255,255,255,0.92),transparent_34%),radial-gradient(circle_at_88%_20%,rgba(196,181,253,0.18),transparent_30%),radial-gradient(circle_at_88%_86%,rgba(34,211,238,0.12),transparent_32%),#f7f3ec]' : 'bg-[radial-gradient(circle_at_24%_10%,rgba(126,87,255,0.20),transparent_34%),radial-gradient(circle_at_92%_84%,rgba(34,211,238,0.10),transparent_32%),#050507]'}`} />
-            <div className={`fixed inset-0 bg-[linear-gradient(rgba(30,24,18,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(30,24,18,0.035)_1px,transparent_1px)] bg-[size:56px_56px] ${isLight ? 'opacity-30' : 'opacity-0'}`} />
-            <div className={`fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.014)_1px,transparent_1px)] bg-[size:56px_56px] ${isLight ? 'opacity-0' : 'opacity-18'}`} />
+        <div data-product-mode="mirror" className="am-shell relative min-h-dvh overflow-hidden selection:bg-emerald-300/25">
             <ReflectionField awake={fieldAwake} />
 
             <header className="relative z-10 px-4 py-3 sm:py-4">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex min-h-10 items-center gap-3 rounded-full pr-2">
                         <MirrorLogo />
-                        <div className={`text-sm font-semibold tracking-[-0.01em] ${isLight ? 'text-stone-950' : 'text-white'}`}>Active Mirror</div>
+                        <div className={`text-sm font-semibold tracking-normal ${isLight ? 'text-stone-950' : 'text-white'}`}>Active Mirror</div>
                     </Link>
                     <div className="flex items-center gap-3 sm:gap-5">
-                        <nav className={`hidden items-center gap-5 text-xs font-semibold sm:flex ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>
+                        <nav className={`hidden items-center gap-5 text-xs font-semibold sm:flex ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>
                             <Link to="/research" className={`inline-flex min-h-10 items-center rounded-full px-2 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Research</Link>
                             <Link to="/enterprise" className={`inline-flex min-h-10 items-center rounded-full px-2 transition ${isLight ? 'hover:bg-stone-200/45 hover:text-stone-950' : 'hover:bg-white/[0.055] hover:text-white'}`}>Business</Link>
                         </nav>
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className={`inline-flex h-10 w-10 items-center justify-center rounded-full border text-xs transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-200/30 hover:text-white'}`}
+                            className={`inline-flex h-10 w-10 items-center justify-center rounded-full border text-xs transition ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-600 hover:border-stone-400 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-200/30 hover:text-white'}`}
                             aria-label={isLight ? 'Use dark mode' : 'Use light mode'}
                         >
                             {isLight ? <Moon size={15} /> : <Sun size={15} />}
                         </button>
-                        <Link to="/consulting" className={`hidden min-h-10 items-center rounded-full border px-3.5 text-xs font-medium transition sm:inline-flex ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_10px_24px_rgba(77,65,50,0.08)] hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
+                        <Link to="/consulting" className={`hidden min-h-10 items-center rounded-full border px-3.5 text-xs font-medium transition sm:inline-flex ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 hover:border-emerald-400/50 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-emerald-300/30 hover:text-white'}`}>
                             For teams
                         </Link>
                     </div>
                 </div>
             </header>
 
-            <main className={`relative z-10 mx-auto flex min-h-[calc(100dvh-76px)] w-full flex-col justify-center gap-3 px-4 pb-4 pt-4 sm:min-h-[calc(100dvh-88px)] sm:gap-4 sm:pb-5 sm:pt-8 lg:pb-8 ${hasWorkSurface ? 'max-w-6xl' : 'max-w-3xl'}`}>
-                <section className={`relative w-full overflow-hidden ${hasWorkSurface ? 'mx-auto max-w-3xl' : ''} ${showMirror ? 'rounded-[2.15rem] border border-white/10 bg-white/[0.048] p-3 shadow-[0_0_90px_rgba(168,85,247,0.12)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-5 lg:p-6' : 'px-0 py-8 sm:py-10'}`}>
+            <div className="relative z-10 mx-auto max-w-6xl px-4">
+                <TrustStatusRail
+                    processingBoundary={processingBoundary}
+                    memoryEnabled={chatMemoryEnabled}
+                />
+            </div>
+
+            <main className={`relative z-10 mx-auto flex min-h-[calc(100dvh-116px)] w-full flex-col justify-center gap-3 px-4 pb-4 pt-4 sm:min-h-[calc(100dvh-128px)] sm:gap-4 sm:pb-5 sm:pt-8 lg:pb-8 ${hasWorkSurface ? 'max-w-6xl' : 'max-w-3xl'}`}>
+                <section className={`relative w-full overflow-hidden ${hasWorkSurface ? 'mx-auto max-w-3xl' : ''} ${showMirror ? 'border-y border-[var(--am-border)] py-3 sm:py-5 lg:py-6' : 'px-0 py-8 sm:py-10'}`}>
                     {showMirror ? (
                         <>
-                            <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/45 to-transparent" />
-                            <div className="pointer-events-none absolute -left-24 top-12 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" aria-hidden="true" />
-                            <div className="pointer-events-none absolute -bottom-16 right-8 h-48 w-48 rounded-full bg-cyan-300/8 blur-3xl" aria-hidden="true" />
+                            <div className="pointer-events-none absolute inset-x-4 top-0 h-0.5 bg-[var(--am-primary)]" />
                         </>
                     ) : null}
 
                     <div className={`relative z-10 ${showMirror ? '' : 'text-center'}`}>
-                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'hidden'} h-14 w-14 place-items-center rounded-[1.25rem] border border-violet-200/20 bg-white/[0.05] shadow-[0_0_42px_rgba(168,85,247,0.16)]`}>
+                        <div className={`${showMirror ? 'mb-4 hidden sm:grid' : 'hidden'} h-14 w-14 place-items-center rounded-lg border border-blue-200/20 bg-white/[0.05]`}>
                             <MirrorLogo />
                         </div>
 
-                        <h1 className={`mx-auto w-full max-w-[18.5rem] break-words font-semibold leading-[1.02] tracking-normal sm:max-w-xl ${isLight ? 'text-[#201b16]' : 'text-white'} ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.45rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
+                        <h1 className={`mx-auto w-full max-w-[18.5rem] break-words font-semibold leading-[1.02] tracking-normal sm:max-w-xl ${isLight ? 'text-[var(--am-ink)]' : 'text-white'} ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.45rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
                             What do you want?
                         </h1>
 
                         {!showMirror ? (
-                            <div className={`mt-2.5 text-sm font-semibold tracking-normal sm:mt-3 sm:text-base ${isLight ? 'text-stone-500' : 'text-cyan-100/80'}`}>
+                            <div className={`mt-2.5 text-sm font-semibold tracking-normal sm:mt-3 sm:text-base ${isLight ? 'text-stone-600' : 'text-cyan-100/80'}`}>
                                 Reflection &gt; Prediction
                             </div>
                         ) : null}
@@ -2865,7 +2864,7 @@ export default function HomePage() {
                                 <Link
                                     to="/id"
                                     onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_action' })}
-                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.05rem] bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-5 text-[0.98rem] font-bold text-white shadow-[0_0_42px_rgba(168,85,247,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_0_54px_rgba(34,211,238,0.24)] sm:min-h-14 sm:rounded-[1.2rem] sm:text-base"
+                                    className="am-primary-action inline-flex min-h-12 items-center justify-center gap-2 px-5 text-[0.98rem] font-bold sm:min-h-14 sm:text-base"
                                 >
                                     Start here
                                     <ArrowRight size={17} />
@@ -2880,7 +2879,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.05rem] border px-5 text-[0.98rem] font-bold transition hover:-translate-y-0.5 sm:min-h-14 sm:rounded-[1.2rem] sm:text-base ${isLight ? 'border-stone-300/70 bg-white/65 text-stone-700 shadow-[0_14px_36px_rgba(77,65,50,0.08)] hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-200 hover:border-cyan-200/35 hover:bg-cyan-200/[0.07] hover:text-white'}`}
+                                    className="am-secondary-action inline-flex min-h-12 items-center justify-center gap-2 px-5 text-[0.98rem] font-bold sm:min-h-14 sm:text-base"
                                 >
                                     <Upload size={17} />
                                     Load saved setup
@@ -2890,7 +2889,7 @@ export default function HomePage() {
 
                         <form onSubmit={submit} className={`${showMirror ? 'mt-3 sm:mt-4' : 'mx-auto mt-4 max-w-2xl'} grid gap-2`}>
                             <label htmlFor="active-mirror-intent" className="sr-only">What do you want to talk through or work on?</label>
-                            <div className={`grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 rounded-[1.6rem] border p-2 backdrop-blur-xl ${isLight ? 'border-stone-300/70 bg-white/74 shadow-[0_24px_70px_rgba(77,65,50,0.10)]' : 'border-white/10 bg-black/36 shadow-[0_0_50px_rgba(0,0,0,0.22)]'}`}>
+                            <div className="am-surface grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 p-2">
                                 <textarea
                                     id="active-mirror-intent"
                                     ref={inputRef}
@@ -2909,7 +2908,7 @@ export default function HomePage() {
                                             submit(event);
                                         }
                                     }}
-                                    className={`h-[5.5rem] min-h-[5.5rem] max-h-36 flex-1 resize-none rounded-[1.15rem] border border-transparent bg-transparent px-3 py-2.5 text-base leading-6 outline-none transition focus:border-violet-200/30 sm:h-14 sm:min-h-14 sm:rounded-[1.25rem] sm:py-3 ${isLight ? 'text-stone-950 placeholder:text-stone-400' : 'text-white placeholder:text-zinc-400'}`}
+                                    className={`h-[5.5rem] min-h-[5.5rem] max-h-36 flex-1 resize-none rounded-lg border border-transparent bg-transparent px-3 py-2.5 text-base leading-6 outline-none transition focus:border-[var(--am-focus)] sm:h-14 sm:min-h-14 sm:py-3 ${isLight ? 'text-stone-950 placeholder:text-stone-600' : 'text-white placeholder:text-zinc-400'}`}
                                     style={{ overflowWrap: 'anywhere' }}
                                 />
                                 <button
@@ -2918,11 +2917,11 @@ export default function HomePage() {
                                     onClick={() => {
                                         if (!canSubmit && !busy) inputRef.current?.focus();
                                     }}
-                                    className={`${showMirror ? 'w-11 px-0 sm:w-auto sm:px-5' : 'px-4 sm:px-5'} inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[1.05rem] bg-gradient-to-r text-sm font-bold transition disabled:cursor-not-allowed disabled:hover:scale-100 sm:min-h-14 sm:rounded-[1.15rem] ${ctaClass}`}
+                                    className={`${showMirror ? 'w-11 px-0 sm:w-auto sm:px-5' : 'px-4 sm:px-5'} inline-flex min-h-11 shrink-0 items-center justify-center gap-2 text-sm font-bold disabled:cursor-not-allowed sm:min-h-14 ${ctaClass}`}
                                     aria-label="Send"
                                 >
                                     {busy ? (
-                                        <Sparkles size={18} className="animate-pulse" />
+                                        <LoaderCircle size={18} className="animate-spin" aria-hidden="true" />
                                     ) : (
                                         <>
                                             <span className={showMirror ? 'hidden sm:inline' : ''}>Send</span>
@@ -2958,7 +2957,7 @@ export default function HomePage() {
                                             onClick={() => {
                                                 startFromStarter(item);
                                             }}
-                                            className={`group flex min-h-[4.15rem] flex-col items-center justify-center gap-1 rounded-[0.95rem] border px-1.5 py-2 text-center shadow-[0_0_28px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/45 sm:grid sm:min-h-[5.65rem] sm:content-center sm:justify-items-center sm:gap-1.5 sm:rounded-[1.25rem] sm:px-3 sm:py-3 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.035] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white'}`}
+                                            className={`group flex min-h-[4.15rem] flex-col items-center justify-center gap-1 rounded-lg border px-1.5 py-2 text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/45 sm:grid sm:min-h-[5.65rem] sm:content-center sm:justify-items-center sm:gap-1.5 sm:rounded-lg sm:px-3 sm:py-3 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-700 hover:border-cyan-500/30 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.035] text-zinc-300 hover:border-cyan-200/30 hover:bg-cyan-200/[0.065] hover:text-white'}`}
                                         >
                                             <span className={`grid h-7 w-7 place-items-center rounded-full border transition sm:h-8 sm:w-8 ${isLight ? 'border-cyan-500/15 bg-cyan-100/60 text-cyan-700 group-hover:border-cyan-600/25 group-hover:bg-cyan-100' : 'border-cyan-200/15 bg-cyan-200/[0.07] text-cyan-100/85 group-hover:border-cyan-100/30 group-hover:bg-cyan-200/[0.1]'}`}>
                                                 <Icon size={15} />
@@ -2973,9 +2972,9 @@ export default function HomePage() {
                                     <button
                                         type="button"
                                         onClick={startLearnActiveMirror}
-                                        className={`inline-flex min-h-9 items-center justify-center gap-2 rounded-full border px-3 text-sm font-semibold transition hover:-translate-y-0.5 sm:min-h-10 sm:px-3.5 ${isLight ? 'border-stone-300/70 bg-white/52 text-stone-600 hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.028] text-zinc-400 hover:border-violet-200/30 hover:bg-violet-200/[0.055] hover:text-white'}`}
+                                        className={`inline-flex min-h-9 items-center justify-center gap-2 rounded-full border px-3 text-sm font-semibold transition sm:min-h-10 sm:px-3.5 ${isLight ? 'border-stone-300/70 bg-white/52 text-stone-600 hover:border-blue-400/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.028] text-zinc-400 hover:border-blue-200/30 hover:bg-blue-200/[0.055] hover:text-white'}`}
                                     >
-                                        <Sparkles size={15} className={isLight ? 'text-violet-500' : 'text-violet-200'} />
+                                        <Sparkles size={15} className={isLight ? 'text-blue-500' : 'text-blue-200'} />
                                         Meet Active Mirror
                                     </button>
                                 </div>
@@ -2983,7 +2982,7 @@ export default function HomePage() {
                         ) : null}
 
                         {!showMirror && savedCue ? (
-                            <div className="mx-auto mt-3 grid max-w-2xl gap-3 rounded-[1.45rem] border border-emerald-300/14 bg-emerald-300/[0.045] p-3.5 text-left shadow-[0_0_32px_rgba(16,185,129,0.055)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                            <div className="mx-auto mt-3 grid max-w-2xl gap-3 rounded-lg border border-emerald-300/14 bg-emerald-300/[0.045] p-3.5 text-left sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-emerald-50">
                                         <BookmarkPlus size={15} className="text-emerald-200" />
@@ -3004,7 +3003,7 @@ export default function HomePage() {
                                     <button
                                         type="button"
                                         onClick={() => setMemoryOpen(true)}
-                                        className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-black/15 px-3.5 text-sm font-semibold text-zinc-300 transition hover:border-violet-200/30 hover:text-white"
+                                        className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-black/15 px-3.5 text-sm font-semibold text-zinc-300 transition hover:border-blue-200/30 hover:text-white"
                                     >
                                         Saved
                                     </button>
@@ -3022,7 +3021,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={() => setMemoryOpen(true)}
-                                    className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs text-zinc-400 transition hover:border-violet-200/30 hover:text-white"
+                                    className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs text-zinc-400 transition hover:border-blue-200/30 hover:text-white"
                                 >
                                     <SlidersHorizontal size={13} />
                                     Saved: {savedCount}
@@ -3032,7 +3031,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={saveCurrentChat}
-                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-violet-200/30 hover:text-white'}`}
+                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-600 hover:border-blue-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-blue-200/30 hover:text-white'}`}
                                 >
                                     <BookmarkPlus size={13} />
                                     Save chat
@@ -3041,7 +3040,7 @@ export default function HomePage() {
                             <button
                                 type="button"
                                 onClick={toggleChatMemory}
-                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/54 text-stone-500 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-400 hover:border-cyan-200/30 hover:text-white'}`}
+                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/54 text-stone-600 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-400 hover:border-cyan-200/30 hover:text-white'}`}
                                 aria-pressed={chatMemoryEnabled}
                             >
                                 {chatMemoryEnabled ? <Check size={13} /> : <Save size={13} />}
@@ -3050,7 +3049,7 @@ export default function HomePage() {
                             <button
                                 type="button"
                                 onClick={() => setPrivateRecallOpen(true)}
-                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${privateRecallStatus.ready ? (isLight ? 'border-cyan-600/24 bg-cyan-50 text-cyan-800 hover:border-cyan-600/40' : 'border-cyan-200/20 bg-cyan-200/[0.075] text-cyan-50 hover:border-cyan-100/35') : (isLight ? 'border-stone-300/70 bg-white/50 text-stone-500 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-cyan-200/30 hover:text-white')}`}
+                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${privateRecallStatus.ready ? (isLight ? 'border-cyan-600/24 bg-cyan-50 text-cyan-800 hover:border-cyan-600/40' : 'border-cyan-200/20 bg-cyan-200/[0.075] text-cyan-50 hover:border-cyan-100/35') : (isLight ? 'border-stone-300/70 bg-white/50 text-stone-600 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-cyan-200/30 hover:text-white')}`}
                                 aria-pressed={privateRecallStatus.ready}
                             >
                                 <BrainCircuit size={13} />
@@ -3060,7 +3059,7 @@ export default function HomePage() {
                                 <button
                                     type="button"
                                     onClick={clearCurrentChat}
-                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/44 text-stone-500 hover:border-stone-400 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.025] text-zinc-500 hover:border-white/25 hover:text-white'}`}
+                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/44 text-stone-600 hover:border-stone-400 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.025] text-zinc-400 hover:border-white/25 hover:text-white'}`}
                                 >
                                     <X size={13} />
                                     Clear
@@ -3077,28 +3076,30 @@ export default function HomePage() {
                 {showMirror ? (
                     <section className={`grid min-w-0 gap-3 ${hasWorkSurface ? 'lg:grid-cols-[minmax(0,0.95fr)_minmax(340px,0.72fr)] lg:items-start' : ''}`}>
                         <div className="grid min-w-0 gap-3">
-                            <MirrorResult
-                                result={result}
-                                intent={lastIntent}
-                                turnSource={lastSource}
-                                disabled={busy}
-                                onSourceChecked={setLastSourceCheck}
-                                onRemember={rememberMirror}
-                                remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
-                                onPrompt={(nextIntent, source = 'surface') => {
-                                    trackEvent('followup_clicked', { page: 'home', source });
-                                    reflect(nextIntent, source);
-                                }}
-                            />
+                            <div lang={result?.reply_language || 'en'} data-response-language={result?.reply_language || 'en'}>
+                                <MirrorResult
+                                    result={result}
+                                    intent={lastIntent}
+                                    turnSource={lastSource}
+                                    disabled={busy}
+                                    onSourceChecked={setLastSourceCheck}
+                                    onRemember={rememberMirror}
+                                    remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
+                                    onPrompt={(nextIntent, source = 'surface') => {
+                                        trackEvent('followup_clicked', { page: 'home', source });
+                                        reflect(nextIntent, source);
+                                    }}
+                                />
+                            </div>
                             {showKeepChatNudge ? (
-                                <div className={`grid gap-3 rounded-[1.35rem] border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600 shadow-[0_16px_34px_rgba(77,65,50,0.08)]' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400 shadow-[0_0_30px_rgba(34,211,238,0.05)]'}`}>
+                                <div className={`grid gap-3 rounded-lg border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400'}`}>
                                     <div className="min-w-0 text-sm leading-6">
                                         This chat stays until this tab closes. Keep it here for later?
                                     </div>
                                     <button
                                         type="button"
                                         onClick={toggleChatMemory}
-                                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition hover:-translate-y-0.5 ${isLight ? 'border-cyan-500/24 bg-cyan-50 text-cyan-800 hover:border-cyan-500/45 hover:bg-white' : 'border-cyan-200/24 bg-cyan-200/[0.08] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.12]'}`}
+                                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition ${isLight ? 'border-cyan-500/24 bg-cyan-50 text-cyan-800 hover:border-cyan-500/45 hover:bg-white' : 'border-cyan-200/24 bg-cyan-200/[0.08] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.12]'}`}
                                     >
                                         <Save size={15} />
                                         Keep it
@@ -3131,9 +3132,9 @@ export default function HomePage() {
                                                         reflect(item.intent, 'follow_up');
                                                     }}
                                                     disabled={busy || Boolean(artifactBusy)}
-                                                    className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 shadow-[0_10px_24px_rgba(77,65,50,0.06)] hover:border-violet-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.048] text-zinc-300 hover:border-violet-200/35 hover:bg-violet-200/[0.07] hover:text-white'}`}
+                                                    className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-blue-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.048] text-zinc-300 hover:border-blue-200/35 hover:bg-blue-200/[0.07] hover:text-white'}`}
                                                 >
-                                                    <Icon size={16} className={artifactBusy === item.artifactKind ? 'animate-pulse text-cyan-500' : isLight ? 'text-violet-500' : 'text-purple-200'} />
+                                                    <Icon size={16} className={artifactBusy === item.artifactKind ? 'text-cyan-500' : isLight ? 'text-blue-500' : 'text-teal-200'} />
                                                     {artifactBusy === item.artifactKind ? 'Making...' : item.label}
                                                 </button>
                                             );

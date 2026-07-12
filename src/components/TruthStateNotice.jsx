@@ -33,9 +33,9 @@ const VERDICT_COPY = {
         title: 'Needs stronger support',
         helper: 'Found links, but not enough reliable support to trust the line yet.',
         shell: 'border-zinc-300/15 bg-white/[0.055] text-zinc-100',
-        shellLight: 'border-stone-300/75 bg-white/82 text-stone-900 shadow-[0_18px_50px_rgba(77,65,50,0.10)]',
+        shellLight: 'border-stone-300/75 bg-white/82 text-stone-900',
         icon: 'text-zinc-300',
-        iconLight: 'text-stone-500',
+        iconLight: 'text-stone-600',
         muted: 'text-zinc-400',
         mutedLight: 'text-stone-600',
         link: 'text-zinc-200 hover:border-zinc-200/30 hover:bg-white/[0.08]',
@@ -177,7 +177,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
         const canNarrowClaim = typeof onPrompt === 'function' && result.research?.verdict !== 'supported';
         const plan = result.research?.verification_plan;
         return (
-            <div className={`min-w-0 max-w-[46rem] overflow-hidden rounded-2xl border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
+            <div className={`min-w-0 max-w-[46rem] overflow-hidden rounded-lg border px-4 py-3 text-sm leading-6 ${verdict.shell}`}>
                 <div className="mb-2 flex items-center gap-2 font-semibold">
                     <SearchCheck size={16} className={verdict.icon} />
                     {answerFirst && !plan ? 'What I found' : plan ? 'What to check' : verdict.title}
@@ -192,8 +192,8 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                 {plan ? (
                     <div className="mt-3 grid gap-3">
                         {plan.queries?.length ? (
-                            <div className={`rounded-xl border p-3 ${isLight ? 'border-stone-300/70 bg-white/68' : 'border-white/10 bg-black/20'}`}>
-                                <div className={`mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-stone-500' : 'text-zinc-400'}`}>
+                            <div className={`rounded-lg border p-3 ${isLight ? 'border-stone-300/70 bg-white/68' : 'border-white/10 bg-black/20'}`}>
+                                <div className={`mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>
                                     Try these searches
                                 </div>
                                 <div className="grid gap-2">
@@ -207,7 +207,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                         ) : null}
                         <div className="grid gap-2 sm:grid-cols-2">
                             {plan.prefer?.length ? (
-                                <div className={`rounded-xl border p-3 ${isLight ? 'border-emerald-500/20 bg-emerald-50/78' : 'border-emerald-300/15 bg-emerald-300/[0.06]'}`}>
+                                <div className={`rounded-lg border p-3 ${isLight ? 'border-emerald-500/20 bg-emerald-50/78' : 'border-emerald-300/15 bg-emerald-300/[0.06]'}`}>
                                     <div className={`mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-emerald-700' : 'text-emerald-200/75'}`}>
                                         Prefer
                                     </div>
@@ -217,7 +217,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                                 </div>
                             ) : null}
                             {plan.avoid?.length ? (
-                                <div className={`rounded-xl border p-3 ${isLight ? 'border-amber-500/20 bg-amber-50/78' : 'border-amber-300/15 bg-amber-300/[0.06]'}`}>
+                                <div className={`rounded-lg border p-3 ${isLight ? 'border-amber-500/20 bg-amber-50/78' : 'border-amber-300/15 bg-amber-300/[0.06]'}`}>
                                     <div className={`mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-amber-700' : 'text-amber-200/75'}`}>
                                         Avoid
                                     </div>
@@ -252,7 +252,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
                         {sources.map((source) => (
                             <details
                                 key={source.url}
-                                className={`group overflow-hidden rounded-xl border text-xs font-semibold transition ${isLight ? 'border-stone-300/75 bg-white/62' : 'border-white/10 bg-black/20'} ${verdict.link}`}
+                                className={`group overflow-hidden rounded-lg border text-xs font-semibold transition ${isLight ? 'border-stone-300/75 bg-white/62' : 'border-white/10 bg-black/20'} ${verdict.link}`}
                             >
                                 <summary className="flex min-w-0 cursor-pointer list-none items-center gap-2 px-3 py-2">
                                     {source.quality_label ? (
@@ -286,12 +286,12 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     if (answerFirst && error) {
         const plan = localSourcePlan(intent);
         return (
-            <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${isLight ? 'border-amber-500/22 bg-amber-50/88 text-amber-950' : 'border-amber-300/20 bg-amber-300/[0.065] text-amber-50'}`}>
+            <div className={`max-w-[46rem] rounded-lg border px-4 py-3 text-sm leading-6 ${isLight ? 'border-amber-500/22 bg-amber-50/88 text-amber-950' : 'border-amber-300/20 bg-amber-300/[0.065] text-amber-50'}`}>
                 <div className="font-semibold">I cannot check the web from this page right now.</div>
                 <div className={`mt-1 text-xs leading-5 ${isLight ? 'text-amber-800/75' : 'text-amber-100/75'}`}>
                     I will not guess. Use this quick check, then try again when the connection is back.
                 </div>
-                <div className={`mt-3 rounded-xl border p-3 ${isLight ? 'border-amber-500/20 bg-white/68' : 'border-white/10 bg-black/20'}`}>
+                <div className={`mt-3 rounded-lg border p-3 ${isLight ? 'border-amber-500/20 bg-white/68' : 'border-white/10 bg-black/20'}`}>
                     <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${isLight ? 'text-amber-800/70' : 'text-amber-100/70'}`}>
                         Search
                     </div>
@@ -322,7 +322,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
 
     if (answerFirst && (busy || autoCheck)) {
         return (
-            <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-6 ${isLight ? 'border-cyan-500/18 bg-cyan-50/85 text-cyan-950' : 'border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-50'}`}>
+            <div className={`max-w-[46rem] rounded-lg border px-4 py-3 text-sm leading-6 ${isLight ? 'border-cyan-500/18 bg-cyan-50/85 text-cyan-950' : 'border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-50'}`}>
                 <div className="flex items-center gap-2 font-semibold">
                     <Loader2 size={15} className={`animate-spin ${isLight ? 'text-cyan-700' : 'text-cyan-100'}`} />
                     Checking current options
@@ -335,7 +335,7 @@ export function NeedsSources({ truthState, intent = '', mirror = {}, disabled = 
     }
 
     return (
-        <div className={`max-w-[46rem] rounded-2xl border px-4 py-3 text-sm leading-5 ${isLight ? 'border-amber-500/22 bg-amber-50/88 text-amber-950' : 'border-amber-300/20 bg-amber-300/[0.065] text-amber-50'}`}>
+        <div className={`max-w-[46rem] rounded-lg border px-4 py-3 text-sm leading-5 ${isLight ? 'border-amber-500/22 bg-amber-50/88 text-amber-950' : 'border-amber-300/20 bg-amber-300/[0.065] text-amber-50'}`}>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <div className="font-semibold">This asks for current facts.</div>
@@ -365,15 +365,15 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
 
     return (
         <div>
-            <div className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>Checked</div>
+            <div className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>Checked</div>
             <div className="mt-1 leading-6">{sourceCheckLabel(truthState)}</div>
             {sourceCheck?.truth_state?.status === 'checked' || plan ? (
-                <details className={`group mt-3 rounded-2xl border px-3 py-2 ${isLight ? 'border-stone-300/70 bg-white/62' : 'border-white/10 bg-white/[0.035]'}`}>
+                <details className={`group mt-3 rounded-lg border px-3 py-2 ${isLight ? 'border-stone-300/70 bg-white/62' : 'border-white/10 bg-white/[0.035]'}`}>
                     <summary className={`cursor-pointer list-none text-xs font-semibold ${isLight ? 'text-stone-700' : 'text-zinc-300'}`}>
                         {plan ? 'Last check plan' : 'Last check'}
-                        <ChevronDown className={`float-right mt-0.5 h-4 w-4 transition group-open:rotate-180 ${isLight ? 'text-stone-500' : 'text-zinc-500'}`} />
+                        <ChevronDown className={`float-right mt-0.5 h-4 w-4 transition group-open:rotate-180 ${isLight ? 'text-stone-600' : 'text-zinc-400'}`} />
                     </summary>
-                    <div className={`mt-3 border-t pt-3 text-xs leading-5 ${isLight ? 'border-stone-300/65 text-stone-600' : 'border-white/10 text-zinc-500'}`}>
+                    <div className={`mt-3 border-t pt-3 text-xs leading-5 ${isLight ? 'border-stone-300/65 text-stone-600' : 'border-white/10 text-zinc-400'}`}>
                         <div className={`font-semibold ${isLight ? 'text-stone-800' : 'text-zinc-300'}`}>
                             {plan
                                 ? 'Needs sources'
@@ -387,7 +387,7 @@ export function SourceCheckLine({ truthState, sourceCheck, onClearSourceCheck })
                         {plan?.queries?.length ? (
                             <div className="mt-3 grid gap-2">
                                 {plan.queries.slice(0, 3).map((query) => (
-                                    <div key={query} className={`rounded-xl border px-3 py-2 ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600' : 'border-white/10 bg-black/20 text-zinc-400'}`}>
+                                    <div key={query} className={`rounded-lg border px-3 py-2 ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600' : 'border-white/10 bg-black/20 text-zinc-400'}`}>
                                         {query}
                                     </div>
                                 ))}

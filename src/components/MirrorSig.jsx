@@ -8,14 +8,14 @@ import { motion } from 'framer-motion';
 
 // Archetype color palettes
 const ARCHETYPE_PALETTES = {
-    architect: ['#3b82f6', '#06b6d4', '#8b5cf6'],
-    explorer: ['#8b5cf6', '#a855f7', '#ec4899'],
+    architect: ['#3b82f6', '#06b6d4', '#1769aa'],
+    explorer: ['#1769aa', '#176b5b', '#d97706'],
     builder: ['#10b981', '#22c55e', '#84cc16'],
     analyst: ['#f59e0b', '#eab308', '#f97316'],
-    connector: ['#3b82f6', '#6366f1', '#8b5cf6'],
-    creative: ['#f97316', '#ef4444', '#ec4899'],
+    connector: ['#3b82f6', '#28666e', '#1769aa'],
+    creative: ['#f97316', '#ef4444', '#d97706'],
     scholar: ['#6b7280', '#9ca3af', '#d1d5db'],
-    strategist: ['#ef4444', '#f43f5e', '#ec4899'],
+    strategist: ['#ef4444', '#b42318', '#d97706'],
 };
 
 // Generate deterministic random from seed
@@ -157,7 +157,7 @@ export default function MirrorSig({
                 <motion.div
                     className="absolute inset-0 rounded-full"
                     style={{
-                        background: `radial-gradient(circle, ${colors[0]}20 0%, transparent 70%)`,
+                        background: `${colors[0]}14`,
                     }}
                     animate={{
                         scale: [1, 1.1, 1],

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Check, Copy, ImageDown, Share2 } from 'lucide-react';
 import { copyText, shareText } from '../lib/sendable-actions';
 import { trackEvent } from '../lib/privacy-events';
+import designTokens from '../design/amos-design-tokens.json';
 
 function reflectionText(mirror = {}) {
     return [
@@ -43,7 +44,7 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
         if (!cardRef.current) return;
         const { default: html2canvas } = await import('html2canvas');
         const canvas = await html2canvas(cardRef.current, {
-            backgroundColor: '#030305',
+            backgroundColor: designTokens.colors.dark.canvas,
             scale: 2,
             useCORS: true,
         });
@@ -59,17 +60,17 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
 
     return (
         <>
-            <div className={`max-w-[46rem] rounded-[1.5rem] border border-white/10 bg-white/[0.045] px-4 py-3 ${className}`}>
+            <div className={`max-w-[46rem] rounded-lg border border-white/10 bg-white/[0.045] px-4 py-3 ${className}`}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <div className="text-sm font-semibold text-zinc-200">Keep the useful part.</div>
-                        <div className="mt-1 text-xs leading-5 text-zinc-500">Copy the next step without the private prompt.</div>
+                        <div className="mt-1 text-xs leading-5 text-zinc-400">Copy the next step without the private prompt.</div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
                             onClick={copyCard}
-                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-purple-300/30 hover:text-white"
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-teal-300/30 hover:text-white"
                         >
                             <Copy size={13} />
                             Copy
@@ -98,19 +99,19 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
             <div className="pointer-events-none fixed -left-[9999px] top-0" aria-hidden="true">
                 <div
                     ref={cardRef}
-                    className="w-[720px] overflow-hidden rounded-[36px] border border-white/10 bg-[#030305] p-8 text-white shadow-2xl"
+                    className="w-[720px] overflow-hidden rounded-lg border border-white/10 bg-[var(--am-canvas)] p-8 text-white shadow-2xl"
                 >
                     <div className="mb-10 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="grid h-12 w-12 place-items-center rounded-2xl border border-white/12 bg-white/[0.05]">
+                            <div className="grid h-12 w-12 place-items-center rounded-lg border border-white/12 bg-white/[0.05]">
                                 <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
-                                    <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="#a78bfa" strokeWidth="1.6" />
-                                    <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="#22d3ee" strokeWidth="1.6" />
+                                    <path d="M12 3.4 19.5 7.7v8.6L12 20.6 4.5 16.3V7.7L12 3.4Z" fill="none" stroke="var(--am-primary-marker)" strokeWidth="1.6" />
+                                    <path d="M12 7.8 16 10v4l-4 2.2L8 14v-4l4-2.2Z" fill="none" stroke="var(--am-focus)" strokeWidth="1.6" />
                                 </svg>
                             </div>
                             <div>
-                                <div className="text-[20px] font-semibold tracking-[-0.02em]">Active Mirror</div>
-                                <div className="text-[13px] text-zinc-500">useful next step</div>
+                                <div className="text-[20px] font-semibold">Active Mirror</div>
+                                <div className="text-[13px] text-zinc-400">useful next step</div>
                             </div>
                         </div>
                         <div className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-4 py-2 text-[13px] font-semibold text-emerald-100">
@@ -118,21 +119,21 @@ export default function ReflectionCardActions({ mirror = {}, surface = 'home', c
                         </div>
                     </div>
 
-                    <div className="rounded-[28px] border border-purple-300/20 bg-purple-300/[0.08] p-6">
-                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-purple-200/75">Focus</div>
-                        <div className="text-[30px] font-semibold leading-[1.16] tracking-[-0.04em] text-white">
+                    <div className="rounded-lg border border-teal-300/20 bg-teal-300/[0.08] p-6">
+                        <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-teal-200/75">Focus</div>
+                        <div className="text-[30px] font-semibold leading-[1.16] text-white">
                             {mirror.question || 'What is the useful question here?'}
                         </div>
                     </div>
 
-                    <div className="mt-5 rounded-[28px] border border-emerald-300/15 bg-emerald-300/[0.08] p-6">
+                    <div className="mt-5 rounded-lg border border-emerald-300/15 bg-emerald-300/[0.08] p-6">
                         <div className="mb-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">Try next</div>
                         <div className="text-[22px] leading-[1.45] text-zinc-100">
                             {mirror.move || 'Take the smallest concrete next step.'}
                         </div>
                     </div>
 
-                    <div className="mt-8 text-[14px] leading-6 text-zinc-500">
+                    <div className="mt-8 text-[14px] leading-6 text-zinc-400">
                         Private by default. Nothing saved unless accepted.
                     </div>
                 </div>

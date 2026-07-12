@@ -1,0 +1,52 @@
+{
+  "schema_version": "amos-trust-state-components/v2",
+  "governance_states": [
+    {
+      "id": "proposed",
+      "label": "Proposed",
+      "icon": "clock-3",
+      "border_style": "dotted",
+      "color_token": "semantic.proposed",
+      "receipt_required": false
+    },
+    {
+      "id": "verified",
+      "label": "Verified",
+      "icon": "badge-check",
+      "border_style": "solid",
+      "color_token": "semantic.verified",
+      "receipt_required": true
+    },
+    {
+      "id": "rejected",
+      "label": "Rejected",
+      "icon": "octagon-x",
+      "border_style": "double",
+      "color_token": "semantic.rejected",
+      "receipt_required": true
+    },
+    {
+      "id": "rolled_back",
+      "label": "Rolled back",
+      "icon": "undo-2",
+      "border_style": "dashed",
+      "color_token": "semantic.rolled_back",
+      "receipt_required": true
+    }
+  ],
+  "action_outcomes": [
+    {
+      "id": "blocked",
+      "label": "Blocked",
+      "icon": "ban",
+      "color_token": "semantic.rejected"
+    },
+    {
+      "id": "executed",
+      "label": "Executed",
+      "icon": "receipt-text",
+      "color_token": "semantic.primary"
+    }
+  ],
+  "color_only_allowed": false
+}

@@ -1,0 +1,191 @@
+:root {
+    --am-canvas: #f5f7f4;
+    --am-surface: #ffffff;
+    --am-surface-subtle: #eef2ee;
+    --am-ink: #17201c;
+    --am-muted: #5e6963;
+    --am-border: #d7ddd9;
+    --am-primary: #176b5b;
+    --am-primary-marker: #176b5b;
+    --am-focus: #1769aa;
+    --am-verified: #2e7d32;
+    --am-warning: #a35a00;
+    --am-danger: #b42318;
+    --am-rollback: #59636e;
+    --am-radius-small: 4px;
+    --am-radius-panel: 8px;
+    --am-motion-fast: 140ms;
+    --am-motion-standard: 180ms;
+    --am-motion-deliberate: 240ms;
+}
+
+[data-theme="dark"] {
+    --am-canvas: #0b110e;
+    --am-surface: #121a16;
+    --am-surface-subtle: #19231e;
+    --am-ink: #f3f7f4;
+    --am-muted: #a8b4ad;
+    --am-border: #314039;
+    --am-primary: #176b5b;
+    --am-primary-marker: #5db8a5;
+    --am-focus: #70b7e6;
+    --am-verified: #78c47c;
+    --am-warning: #efb35c;
+    --am-danger: #f08b80;
+    --am-rollback: #aab3bd;
+}
+
+.am-shell {
+    background: var(--am-canvas);
+    color: var(--am-ink);
+}
+
+.am-surface {
+    background: color-mix(in srgb, var(--am-surface) 94%, transparent);
+    border: 1px solid var(--am-border);
+    border-radius: var(--am-radius-panel);
+}
+
+.am-primary-action {
+    background: var(--am-primary);
+    border: 1px solid var(--am-primary);
+    border-radius: var(--am-radius-panel);
+    color: #ffffff;
+    transition:
+        background-color var(--am-motion-standard) ease,
+        border-color var(--am-motion-standard) ease;
+}
+
+.am-primary-action:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--am-primary) 86%, #000000);
+    border-color: color-mix(in srgb, var(--am-primary) 86%, #000000);
+}
+
+.am-primary-action:focus-visible,
+.am-secondary-action:focus-visible,
+.am-icon-action:focus-visible {
+    outline: 2px solid var(--am-focus);
+    outline-offset: 2px;
+}
+
+.am-primary-action:disabled {
+    background: var(--am-surface-subtle);
+    border-color: var(--am-border);
+    color: var(--am-muted);
+}
+
+.am-secondary-action {
+    background: var(--am-surface);
+    border: 1px solid var(--am-border);
+    border-radius: var(--am-radius-panel);
+    color: var(--am-ink);
+    transition:
+        background-color var(--am-motion-standard) ease,
+        border-color var(--am-motion-standard) ease;
+}
+
+.am-secondary-action:hover {
+    background: var(--am-surface-subtle);
+    border-color: var(--am-focus);
+}
+
+.am-witness-line {
+    background: var(--am-primary-marker);
+    border-radius: var(--am-radius-small);
+    height: 2px;
+    width: 72px;
+}
+
+.am-witness-line[data-tone="steady"] {
+    background: var(--am-warning);
+}
+
+.am-witness-line[data-tone="clear"] {
+    background: var(--am-focus);
+}
+
+.am-trust-rail {
+    align-items: stretch;
+    border-block: 1px solid var(--am-border);
+    display: flex;
+    min-height: 40px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.am-trust-rail::-webkit-scrollbar {
+    display: none;
+}
+
+.am-trust-rail__item {
+    align-items: center;
+    color: var(--am-muted);
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 0.75rem;
+    font-weight: 650;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+.am-trust-rail__item + .am-trust-rail__item {
+    border-left: 1px solid var(--am-border);
+}
+
+.am-trust-rail__item[data-kind="local_device"] {
+    color: var(--am-ink);
+}
+
+.am-trust-rail__item[data-kind="local_device"] svg {
+    color: var(--am-primary-marker);
+}
+
+.am-trust-rail__item[data-kind="external_provider"] {
+    color: var(--am-ink);
+}
+
+.am-trust-rail__item[data-kind="external_provider"] svg {
+    color: var(--am-warning);
+}
+
+.am-trust-state {
+    align-items: center;
+    border-radius: var(--am-radius-small);
+    display: inline-flex;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    gap: 6px;
+    letter-spacing: 0;
+    min-height: 28px;
+    padding: 4px 8px;
+}
+
+.am-trust-state[data-state="proposed"] {
+    border: 1px dotted var(--am-focus);
+    color: var(--am-focus);
+}
+
+.am-trust-state[data-state="verified"] {
+    border: 1px solid var(--am-verified);
+    color: var(--am-verified);
+}
+
+.am-trust-state[data-state="rejected"] {
+    border: 3px double var(--am-danger);
+    color: var(--am-danger);
+}
+
+.am-trust-state[data-state="rolled_back"] {
+    border: 1px dashed var(--am-rollback);
+    color: var(--am-rollback);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .am-primary-action,
+    .am-secondary-action {
+        transition: none;
+    }
+
+}

@@ -30,7 +30,7 @@ export default function PrivateRecallSuggestions({ matches = [], isLight = false
                 <button
                     type="button"
                     onClick={onDismiss}
-                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full transition ${isLight ? 'text-stone-500 hover:bg-stone-200/70 hover:text-stone-950' : 'text-zinc-500 hover:bg-white/[0.06] hover:text-white'}`}
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full transition ${isLight ? 'text-stone-600 hover:bg-stone-200/70 hover:text-stone-950' : 'text-zinc-400 hover:bg-white/[0.06] hover:text-white'}`}
                     aria-label={copy.hide}
                 >
                     <X size={14} />
@@ -57,7 +57,7 @@ export default function PrivateRecallSuggestions({ matches = [], isLight = false
                     </article>
                 ))}
             </div>
-            <p className={`px-1 text-[11px] leading-5 ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>{copy.disclosure}</p>
+            <p className={`px-1 text-[11px] leading-5 ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>{copy.disclosure}</p>
         </div>
     );
 }

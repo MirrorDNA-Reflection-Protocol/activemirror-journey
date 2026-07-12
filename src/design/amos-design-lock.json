@@ -1,0 +1,35 @@
+{
+  "schema_version": "active-mirror-design-snapshot/v1",
+  "design_system_version": "1.0.0",
+  "canonical_source": "/Users/mirror-pro/Documents/activemirroros-trust-kernel/design-system/tokens.json",
+  "tokens_sha256": "88b281c73c071a689843eec9c626c8a8031e5025aa595c291cac50d97835816e",
+  "shared_constitution": {
+    "path": "/Users/mirror-pro/.mirrordna/skills/universal/ui-ux-pro-max/AMOS_DESIGN_CONSTITUTION.md",
+    "sha256": "114ae759dc56818a00dae6d51ad621486e33201e7e2d0e82e7703736673afec6"
+  },
+  "generator": {
+    "package": "ui-ux-pro-max-cli",
+    "version": "2.10.2",
+    "search_script_sha256": "ab74fd08a652f78e3e431eb246c8c32c2bfb3eeda72af89f2f74b0c532b519a6",
+    "candidate_sha256": "a47634d74f2b282b21fce031c584cfce26dc07832206604b549b7939fafaa55d",
+    "status": "rejected"
+  },
+  "product_mode": "mirror",
+  "scope": [
+    "consumer_home",
+    "setup",
+    "privacy",
+    "terms",
+    "research",
+    "enterprise",
+    "device_experience",
+    "feedback",
+    "not_found",
+    "shared_consumer_components"
+  ],
+  "excluded_scope": [
+    "mirrorprod_story_owned_palette",
+    "user_generated_artifact_media",
+    "operator_console_not_present_in_this_repo"
+  ]
+}

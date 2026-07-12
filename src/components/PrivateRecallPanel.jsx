@@ -36,8 +36,8 @@ export default function PrivateRecallPanel({
     const preparing = ['preparing', 'downloading', 'verifying', 'opening', 'indexing'].includes(status.phase);
     const progress = Math.max(0, Math.min(1, Number(status.progress) || 0));
     const panelClass = isLight
-        ? 'border-stone-300/80 bg-[#fbfaf7]/98 text-stone-950 shadow-[0_30px_90px_rgba(66,54,39,0.22)]'
-        : 'border-white/12 bg-[#0d0d11]/98 text-white shadow-[0_0_90px_rgba(34,211,238,0.16)]';
+        ? 'border-stone-300/80 bg-[var(--am-surface)] text-stone-950'
+        : 'border-white/12 bg-[var(--am-surface)] text-white';
     const mutedClass = isLight ? 'text-stone-600' : 'text-zinc-400';
     const lineClass = isLight ? 'border-stone-300/70' : 'border-white/10';
 
@@ -53,7 +53,7 @@ export default function PrivateRecallPanel({
     return (
         <div className="fixed inset-0 z-40 bg-black/68 px-3 py-4 backdrop-blur-md sm:px-6" role="dialog" aria-modal="true" aria-label="Private recall">
             <button type="button" className="absolute inset-0 cursor-default" aria-label="Close private recall" onClick={onClose} />
-            <section className={`relative mx-auto flex max-h-[90dvh] w-full max-w-xl flex-col overflow-hidden rounded-[1.75rem] border ${panelClass}`}>
+            <section className={`relative mx-auto flex max-h-[90dvh] w-full max-w-xl flex-col overflow-hidden rounded-lg border ${panelClass}`}>
                 <header className={`flex items-start justify-between gap-4 border-b px-5 py-4 ${lineClass}`}>
                     <div className="min-w-0">
                         <div className="flex items-center gap-2.5">
@@ -65,7 +65,7 @@ export default function PrivateRecallPanel({
                     <button
                         type="button"
                         onClick={onClose}
-                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl border transition ${isLight ? 'border-stone-300 bg-white text-stone-600 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-100/30 hover:text-white'}`}
+                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg border transition ${isLight ? 'border-stone-300 bg-white text-stone-600 hover:text-stone-950' : 'border-white/10 bg-white/[0.04] text-zinc-300 hover:border-cyan-100/30 hover:text-white'}`}
                         aria-label="Close private recall"
                     >
                         <X size={17} />
@@ -129,7 +129,7 @@ export default function PrivateRecallPanel({
                                         run(onClear);
                                     }}
                                     disabled={actionBusy}
-                                    className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition disabled:opacity-60 ${isLight ? 'border-rose-300 bg-rose-50 text-rose-800 hover:border-rose-400' : 'border-rose-300/20 bg-rose-300/[0.07] text-rose-100 hover:border-rose-200/35'}`}
+                                    className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition disabled:opacity-60 ${isLight ? 'border-red-300 bg-red-50 text-red-800 hover:border-red-400' : 'border-red-300/20 bg-red-300/[0.07] text-red-100 hover:border-red-200/35'}`}
                                 >
                                     <Trash2 size={15} />
                                     {confirmClear ? 'Confirm clear' : 'Clear recall'}
@@ -158,14 +158,14 @@ export default function PrivateRecallPanel({
                             ) : null}
 
                             {status.error ? (
-                                <div className={`text-sm leading-6 ${isLight ? 'text-rose-800' : 'text-rose-100'}`} role="alert">{status.error}</div>
+                                <div className={`text-sm leading-6 ${isLight ? 'text-red-800' : 'text-red-100'}`} role="alert">{status.error}</div>
                             ) : null}
 
                             <button
                                 type="button"
                                 onClick={() => run(onEnable)}
                                 disabled={actionBusy}
-                                className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[1rem] border px-4 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${isLight ? 'border-cyan-600/25 bg-cyan-700 text-white hover:bg-cyan-800' : 'border-cyan-200/25 bg-cyan-200/[0.11] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.16]'}`}
+                                className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border px-4 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${isLight ? 'border-cyan-600/25 bg-cyan-700 text-white hover:bg-cyan-800' : 'border-cyan-200/25 bg-cyan-200/[0.11] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.16]'}`}
                             >
                                 <Download size={17} />
                                 {online ? 'Download and turn on' : 'Open downloaded recall'}

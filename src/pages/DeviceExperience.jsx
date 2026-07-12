@@ -114,19 +114,19 @@ function DeviceCard({ profile, active, onClick }) {
         <button
             type="button"
             onClick={onClick}
-            className={`group rounded-3xl border p-4 text-left transition ${
+            className={`group rounded-lg border p-4 text-left transition ${
                 active
-                    ? 'border-cyan-200/45 bg-cyan-300/[0.09] shadow-[0_0_34px_rgba(34,211,238,0.10)]'
-                    : 'border-white/10 bg-black/25 hover:border-purple-300/30 hover:bg-purple-300/[0.06]'
+                    ? 'border-cyan-200/45 bg-cyan-300/[0.09]'
+                    : 'border-white/10 bg-black/25 hover:border-teal-300/30 hover:bg-teal-300/[0.06]'
             }`}
         >
             <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-cyan-100">
+                <span className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-cyan-100">
                     <Icon size={18} />
                 </span>
                 <span>
                     <span className="block text-sm font-semibold text-white">{profile.label}</span>
-                    <span className="block text-xs text-zinc-500">{active ? 'Recommended here' : 'Preview mode'}</span>
+                    <span className="block text-xs text-zinc-400">{active ? 'Recommended here' : 'Preview mode'}</span>
                 </span>
             </div>
         </button>
@@ -197,22 +197,22 @@ function phoneBlocked(error) {
 function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSendable = true, turn = 1 }) {
     return (
         <div className="space-y-3">
-            <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-[0.98rem] leading-7 text-zinc-100">
+            <div className="rounded-lg border border-white/10 bg-white/[0.06] px-4 py-3 text-[0.98rem] leading-7 text-zinc-100">
                 {mirror.reflection}
             </div>
             {mirror.question ? (
-                <div className="rounded-[1.35rem] border border-purple-300/20 bg-purple-300/[0.08] px-4 py-3">
-                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-purple-200/70">Focus</div>
+                <div className="rounded-lg border border-teal-300/20 bg-teal-300/[0.08] px-4 py-3">
+                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-teal-200/70">Focus</div>
                     <div className="text-sm font-semibold leading-6 text-white">{mirror.question}</div>
                 </div>
             ) : null}
             {mirror.move ? (
-                <div className="rounded-[1.35rem] border border-emerald-300/15 bg-emerald-300/[0.08] px-4 py-3">
+                <div className="rounded-lg border border-emerald-300/15 bg-emerald-300/[0.08] px-4 py-3">
                     <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] text-emerald-200/75">Try next</div>
                     <div className="text-sm leading-6 text-zinc-100">{mirror.move}</div>
                 </div>
             ) : null}
-            <details className="group rounded-[1.35rem] border border-white/10 bg-black/25 px-4 py-3 text-xs text-zinc-500">
+            <details className="group rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-xs text-zinc-400">
                 <summary className="cursor-pointer list-none font-semibold text-zinc-400">
                     Private by default
                     <ChevronDown className="float-right mt-0.5 h-4 w-4 transition group-open:rotate-180" />
@@ -243,9 +243,9 @@ function PhoneMirrorTurn({ mirror, onSendable, onRemember, remembered, showSenda
                             {remembered ? 'Default saved' : 'Use as default'}
                         </button>
                     </div>
-                    <details className="rounded-[1.1rem] border border-white/10 bg-white/[0.025] px-3 py-2">
-                        <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-500">Tune this</summary>
-                        <MirrorFeedback page="device" surface="phone_chat" turn={turn} className="mt-2 max-w-none rounded-[1.1rem]" />
+                    <details className="rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2">
+                        <summary className="cursor-pointer list-none text-xs font-semibold text-zinc-400">Tune this</summary>
+                        <MirrorFeedback page="device" surface="phone_chat" turn={turn} className="mt-2 max-w-none rounded-lg" />
                     </details>
                 </>
             ) : null}
@@ -413,7 +413,7 @@ export default function DeviceExperience() {
     if (isPhoneView) {
         return (
             <div className="min-h-dvh overflow-x-hidden bg-black text-white">
-                <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.24),transparent_34%),radial-gradient(circle_at_bottom,_rgba(34,211,238,0.12),transparent_32%),#000]" />
+                <div className="fixed inset-0 bg-[var(--am-canvas)]" />
                 <header className="fixed inset-x-0 top-0 z-20 flex items-center justify-between border-b border-white/10 bg-black/75 px-4 py-3 backdrop-blur-xl">
                     <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-300">
                         <ArrowLeft size={16} />
@@ -442,7 +442,7 @@ export default function DeviceExperience() {
                         {phoneTurns.map((turn, index) => (
                             <div key={`${turn.who}-${index}`} className={turn.who === 'you' ? 'flex justify-end' : 'flex justify-start'}>
                                 {turn.who === 'you' ? (
-                                    <div className="max-w-[82%] rounded-[1.25rem] bg-white px-4 py-3 text-sm leading-6 text-black">
+                                    <div className="max-w-[82%] rounded-lg bg-white px-4 py-3 text-sm leading-6 text-black">
                                         {turn.text}
                                     </div>
                                 ) : turn.artifact ? (
@@ -466,7 +466,7 @@ export default function DeviceExperience() {
                         {phoneBusy ? (
                             <div className="flex justify-start">
                                 <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-zinc-300">
-                                    <Sparkles size={15} className="animate-pulse text-cyan-200" />
+                                    <Sparkles size={15} className="text-cyan-200" />
                                     Reflecting
                                 </div>
                             </div>
@@ -496,7 +496,7 @@ export default function DeviceExperience() {
                                 event.preventDefault();
                                 askPhone(phoneText);
                             }}
-                            className="flex items-end gap-2 rounded-[1.5rem] border border-white/10 bg-white/[0.055] p-2"
+                            className="flex items-end gap-2 rounded-lg border border-white/10 bg-white/[0.055] p-2"
                         >
                             <textarea
                                 rows={1}
@@ -510,13 +510,13 @@ export default function DeviceExperience() {
                                         askPhone(phoneText);
                                     }
                                 }}
-                                className="max-h-28 min-h-11 flex-1 resize-none bg-transparent px-3 py-2 text-base leading-6 text-white outline-none placeholder:text-zinc-500"
+                                className="max-h-28 min-h-11 flex-1 resize-none bg-transparent px-3 py-2 text-base leading-6 text-white outline-none placeholder:text-zinc-400"
                             />
                             <button
                                 type="submit"
                                 disabled={phoneBusy || phoneText.trim().length < 3}
                                 aria-label="Send"
-                                className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 text-white disabled:opacity-40"
+                                className="am-primary-action grid h-11 w-11 shrink-0 place-items-center disabled:opacity-40"
                             >
                                 <ArrowUp size={18} />
                             </button>
@@ -529,8 +529,7 @@ export default function DeviceExperience() {
 
     return (
         <div className="min-h-dvh overflow-x-hidden bg-black text-white">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.22),transparent_36%),radial-gradient(circle_at_bottom_right,_rgba(34,211,238,0.14),transparent_34%),#000]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.026)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:46px_46px] opacity-25" />
+            <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
@@ -538,19 +537,19 @@ export default function DeviceExperience() {
                         <ArrowLeft size={16} />
                         Active Mirror
                     </Link>
-                    <Link to="/mirror" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
+                    <Link to="/mirror" className="rounded-full border border-teal-300/20 bg-teal-300/[0.08] px-3 py-1.5 text-xs font-semibold text-teal-100 transition hover:border-teal-300/40 hover:bg-teal-300/[0.12]">
                         Full mirror
                     </Link>
                 </div>
             </header>
 
             <main className="relative z-10 mx-auto grid min-h-[calc(100dvh-57px)] max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,0.78fr)_minmax(420px,1fr)] lg:items-stretch lg:px-6 lg:py-6">
-                <section className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_0_60px_rgba(168,85,247,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-7">
+                <section className="px-1 py-2 sm:px-2 sm:py-3">
                     <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-xs font-semibold text-emerald-200">
                         <ShieldCheck size={14} />
                         Tuned locally
                     </div>
-                    <h1 className="mt-6 max-w-[10ch] text-[3.2rem] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[4.7rem]">
+                    <h1 className="mt-6 max-w-[10ch] text-[3.2rem] font-semibold leading-[0.94] text-white sm:text-[4.7rem]">
                         Best on this device.
                     </h1>
                     <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
@@ -570,8 +569,8 @@ export default function DeviceExperience() {
 
                     <div className="mt-7 grid gap-2 sm:grid-cols-2">
                         {status.map((item) => (
-                            <div key={item.label} className="rounded-2xl border border-white/10 bg-black/25 p-3">
-                                <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                            <div key={item.label} className="rounded-lg border border-white/10 bg-black/25 p-3">
+                                <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
                                     <item.icon size={13} />
                                     {item.label}
                                 </div>
@@ -581,7 +580,7 @@ export default function DeviceExperience() {
                     </div>
                 </section>
 
-                <section className="flex min-h-[36rem] flex-col rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_0_70px_rgba(124,58,237,0.14)] ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                <section className="flex min-h-[36rem] flex-col lg:border-l lg:border-white/10 lg:pl-5">
                     <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3">
                         <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
                             <ProfileIcon size={17} className="text-cyan-200" />
@@ -594,8 +593,8 @@ export default function DeviceExperience() {
 
                     <div className="flex flex-1 flex-col justify-between gap-5 p-4 sm:p-5">
                         <div>
-                            <div className="rounded-3xl border border-white/10 bg-black/25 px-5 py-5">
-                                <h2 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-white sm:text-4xl">
+                            <div className="px-1 py-2">
+                                <h2 className="text-2xl font-semibold leading-tight text-white sm:text-4xl">
                                     {profile.headline}
                                 </h2>
                                 <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
@@ -604,14 +603,14 @@ export default function DeviceExperience() {
                                 <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                                     <Link
                                         to={profile.primaryTo}
-                                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 px-4 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(168,85,247,0.28)] transition hover:scale-[1.01]"
+                                        className="am-primary-action inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold"
                                     >
                                         {profile.primary}
                                         <ArrowRight size={16} />
                                     </Link>
                                     <Link
                                         to={profile.secondaryTo}
-                                        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
+                                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-zinc-200 transition hover:border-teal-300/30 hover:text-white"
                                     >
                                         {profile.secondary}
                                     </Link>
@@ -620,8 +619,8 @@ export default function DeviceExperience() {
 
                             <div className="mt-4 grid gap-3">
                                 {profile.strengths.map((item) => (
-                                    <div key={item.title} className="flex gap-3 rounded-3xl border border-white/10 bg-black/22 p-4">
-                                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-cyan-100">
+                                    <div key={item.title} className="flex gap-3 rounded-lg border border-white/10 bg-black/22 p-4">
+                                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-cyan-100">
                                             <item.icon size={18} />
                                         </span>
                                         <span>
@@ -633,7 +632,7 @@ export default function DeviceExperience() {
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-cyan-300/15 bg-cyan-300/[0.055] p-4">
+                        <div className="border-t border-cyan-300/15 bg-cyan-300/[0.035] px-1 py-4">
                             <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/75">
                                 What changes
                             </div>

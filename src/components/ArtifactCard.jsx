@@ -20,8 +20,8 @@ const ARTIFACT_META = {
     image: {
         label: 'Image',
         icon: Image,
-        tone: 'text-violet-100 border-violet-200/20 bg-violet-300/[0.07]',
-        toneLight: 'text-violet-700 border-violet-500/18 bg-violet-50',
+        tone: 'text-blue-100 border-blue-200/20 bg-blue-300/[0.07]',
+        toneLight: 'text-blue-700 border-blue-500/18 bg-blue-50',
     },
     draft: {
         label: 'Draft',
@@ -35,14 +35,14 @@ const CHALLENGE_META = {
     passed: 'border-emerald-300/15 bg-emerald-300/[0.065] text-emerald-100',
     draft: 'border-cyan-300/15 bg-cyan-300/[0.065] text-cyan-100',
     needs_check: 'border-amber-300/20 bg-amber-300/[0.075] text-amber-100',
-    failed: 'border-rose-300/20 bg-rose-300/[0.075] text-rose-100',
+    failed: 'border-red-300/20 bg-red-300/[0.075] text-red-100',
 };
 
 const CHALLENGE_META_LIGHT = {
     passed: 'border-emerald-500/18 bg-emerald-50/85 text-emerald-800',
     draft: 'border-cyan-500/18 bg-cyan-50/85 text-cyan-800',
     needs_check: 'border-amber-500/22 bg-amber-50/88 text-amber-900',
-    failed: 'border-rose-500/18 bg-rose-50/88 text-rose-800',
+    failed: 'border-red-500/18 bg-red-50/88 text-red-800',
 };
 
 function cleanKind(kind = 'draft') {
@@ -84,7 +84,7 @@ function CodeSegment({ lang, text, isLight }) {
     }
 
     return (
-        <div className={`overflow-hidden rounded-2xl border ${isLight ? 'border-emerald-500/18 bg-white/72 shadow-[0_14px_34px_rgba(77,65,50,0.08)]' : 'border-emerald-200/15 bg-black/40'}`}>
+        <div className={`overflow-hidden rounded-lg border ${isLight ? 'border-emerald-500/18 bg-white/72' : 'border-emerald-200/15 bg-black/40'}`}>
             <div className={`flex items-center justify-between border-b px-3 py-2 ${isLight ? 'border-stone-300/65' : 'border-white/10'}`}>
                 <span className={`font-mono text-[11px] uppercase tracking-[0.16em] ${isLight ? 'text-emerald-700/78' : 'text-emerald-100/75'}`}>{lang}</span>
                 <button
@@ -103,7 +103,7 @@ function CodeSegment({ lang, text, isLight }) {
 
 function TextSegment({ text, isLight }) {
     return (
-        <div className={`whitespace-pre-wrap break-words rounded-2xl border px-3 py-3 text-sm leading-6 ${isLight ? 'border-stone-300/70 bg-white/68 text-stone-800 shadow-[0_12px_30px_rgba(77,65,50,0.06)]' : 'border-white/10 bg-black/25 text-zinc-100'}`}>
+        <div className={`whitespace-pre-wrap break-words rounded-lg border px-3 py-3 text-sm leading-6 ${isLight ? 'border-stone-300/70 bg-white/68 text-stone-800' : 'border-white/10 bg-black/25 text-zinc-100'}`}>
             {text}
         </div>
     );
@@ -186,18 +186,18 @@ function ImageMedia({ media, title, isLight }) {
     }
 
     return (
-        <div className={`mb-3 overflow-hidden rounded-[1.25rem] border ${isLight ? 'border-violet-500/18 bg-white/72 shadow-[0_16px_36px_rgba(77,65,50,0.08)]' : 'border-violet-200/15 bg-black/30'}`}>
+        <div className={`mb-3 overflow-hidden rounded-lg border ${isLight ? 'border-blue-500/18 bg-white/72' : 'border-blue-200/15 bg-black/30'}`}>
             <img
                 src={imageSrc}
                 alt={media?.alt || title || 'Generated visual'}
                 className="block max-h-[520px] w-full object-contain"
             />
             <div className={`flex flex-wrap items-center justify-between gap-2 border-t px-3 py-2 ${isLight ? 'border-stone-300/65' : 'border-white/10'}`}>
-                <span className={`text-xs font-semibold ${isLight ? 'text-violet-700' : 'text-violet-100'}`}>{readyLabel}</span>
+                <span className={`text-xs font-semibold ${isLight ? 'text-blue-700' : 'text-blue-100'}`}>{readyLabel}</span>
                 <button
                     type="button"
                     onClick={downloadImage}
-                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600 hover:border-violet-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white'}`}
+                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-stone-50/78 text-stone-600 hover:border-blue-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-blue-200/30 hover:bg-blue-300/[0.075] hover:text-white'}`}
                 >
                     {status || 'Download image'}
                 </button>
@@ -208,7 +208,7 @@ function ImageMedia({ media, title, isLight }) {
 
 function ImageRetryActions({ onRegenerate, onSharpen, isLight }) {
     if (!onRegenerate && !onSharpen) return null;
-    const buttonClass = `inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-violet-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-violet-200/30 hover:bg-violet-300/[0.075] hover:text-white'}`;
+    const buttonClass = `inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/58 text-stone-600 hover:border-blue-500/30 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.045] text-zinc-300 hover:border-blue-200/30 hover:bg-blue-300/[0.075] hover:text-white'}`;
 
     return (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -255,15 +255,15 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
         || ['degraded', 'fallback', 'not_ready', 'not-ready', 'unready'].includes(artifactStatus);
 
     return (
-        <section className={`min-w-0 overflow-hidden rounded-[1.7rem] border px-4 py-4 ${isLight ? 'border-stone-300/70 bg-white/72 shadow-[0_20px_50px_rgba(77,65,50,0.10)]' : 'border-cyan-300/15 bg-cyan-300/[0.055] shadow-[0_0_40px_rgba(34,211,238,0.08)]'}`}>
+        <section className={`min-w-0 overflow-hidden rounded-lg border px-4 py-4 ${isLight ? 'border-stone-300/70 bg-white/72' : 'border-cyan-300/15 bg-cyan-300/[0.055]'}`}>
             <div className={`mb-3 flex flex-wrap items-start justify-between gap-2 ${dismissInset ? 'pr-10' : ''}`}>
                 <div className="flex min-w-0 items-start gap-2">
-                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-2xl border ${isLight ? meta.toneLight : meta.tone}`}>
+                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg border ${isLight ? meta.toneLight : meta.tone}`}>
                         <Icon size={15} />
                     </span>
                     <div className="min-w-0">
                         <div className={`break-words text-sm font-semibold leading-5 ${isLight ? 'text-stone-900' : 'text-cyan-50'}`}>{title}</div>
-                        <div className={`text-xs ${isLight ? 'text-stone-500' : 'text-zinc-500'}`}>{meta.label}</div>
+                        <div className={`text-xs ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>{meta.label}</div>
                     </div>
                 </div>
                 <div className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${challengeTone}`}>
@@ -271,7 +271,7 @@ export default function ArtifactCard({ artifact, surface = 'home', dismissInset 
                 </div>
             </div>
             {challengeNote ? (
-                <div className={`mb-3 rounded-2xl border px-3 py-2 text-xs leading-5 ${isLight ? 'border-stone-300/70 bg-stone-50/75 text-stone-600' : 'border-white/10 bg-black/20 text-zinc-400'}`}>
+                <div className={`mb-3 rounded-lg border px-3 py-2 text-xs leading-5 ${isLight ? 'border-stone-300/70 bg-stone-50/75 text-stone-600' : 'border-white/10 bg-black/20 text-zinc-400'}`}>
                     {challengeNote}
                 </div>
             ) : null}

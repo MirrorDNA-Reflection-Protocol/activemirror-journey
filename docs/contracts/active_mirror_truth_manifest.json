@@ -148,7 +148,7 @@
     },
     {
       "claim_id": "truth_state_and_source_check_copy",
-      "pattern": "\\b(?:source checked|sources mixed|needs stronger support|needs sources|check plan|source check|reliable support|claim|claims|source-heavy|stronger support|missing-support|support from this turn|public example|checkable search|primary sources|what needs checking|which claim would change your next move|what sources would actually prove or disprove this)\\b",
+      "pattern": "\\b(?:verified|source checked|sources mixed|needs stronger support|needs sources|check plan|source check|reliable support|claim|claims|source-heavy|stronger support|missing-support|support from this turn|public example|checkable search|primary sources|what needs checking|which claim would change your next move|what sources would actually prove or disprove this)\\b",
       "verification_state": "source_backed",
       "source_refs": [
         "src/components/TruthStateNotice.jsx",

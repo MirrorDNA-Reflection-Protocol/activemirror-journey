@@ -201,7 +201,7 @@ const machineryPanels = [
         title: 'Tools',
         value: 'observed',
         note: 'Reads, searches, and drafts are logged.',
-        tone: 'violet',
+        tone: 'blue',
     },
     {
         icon: ShieldAlert,
@@ -339,7 +339,7 @@ function defaultMetrics(run) {
     return [
         { label: 'Approval', value: 'Human on', tone: 'emerald' },
         { label: 'Risk', value: run.risk, tone: run.risk === 'high' ? 'amber' : 'cyan' },
-        { label: 'Saved context', value: 'choice', tone: 'violet' },
+        { label: 'Saved context', value: 'choice', tone: 'blue' },
         { label: 'Sharing', value: 'gated', tone: 'emerald' },
     ];
 }
@@ -573,15 +573,15 @@ function LiveConsole({ run }) {
     const streamPill = streamConnected ? 'Live' : streamError ? 'Replay' : 'Connecting';
 
     return (
-        <section className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[#050608]/92 shadow-[0_0_90px_rgba(34,211,238,0.12)] ring-1 ring-white/[0.04]">
+        <section className="overflow-hidden rounded-lg border border-cyan-300/20 bg-[var(--am-canvas)]/92 ring-1 ring-white/[0.04]">
             <div className="flex flex-col gap-3 border-b border-cyan-300/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="grid h-10 w-10 place-items-center rounded-2xl border border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100">
+                    <span className="grid h-10 w-10 place-items-center rounded-lg border border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100">
                         <TerminalSquare size={18} />
                     </span>
                     <div>
                         <div className="text-sm font-semibold text-cyan-100">Workflow preview</div>
-                        <div className="text-[11px] text-zinc-500">{streamLabel}</div>
+                        <div className="text-[11px] text-zinc-400">{streamLabel}</div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -601,14 +601,14 @@ function LiveConsole({ run }) {
 
             <div className="grid gap-3 p-4 lg:grid-cols-[1fr_1.08fr]">
                 <div className="grid gap-3">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">How the work moves</div>
+                    <div className="rounded-lg border border-white/10 bg-white/[0.035] p-4">
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">How the work moves</div>
                         <div className="font-mono text-[12px] leading-6 text-zinc-300">
                             {route}
                         </div>
                         <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
                             <div
-                                className="h-full rounded-full bg-gradient-to-r from-emerald-300 via-cyan-300 to-violet-300 transition-all duration-500"
+                                className="h-full rounded-full bg-[var(--am-primary)] transition-[width] duration-500"
                                 style={{ width: `${completed}%` }}
                             />
                         </div>
@@ -626,10 +626,10 @@ function LiveConsole({ run }) {
                         ))}
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Current checkpoint</div>
+                    <div className="rounded-lg border border-white/10 bg-black/30 p-4">
+                        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Current checkpoint</div>
                         <div className="flex items-start gap-3">
-                            <CircleDot className="mt-1 h-4 w-4 shrink-0 animate-pulse text-cyan-200" />
+                            <CircleDot className="mt-1 h-4 w-4 shrink-0 text-cyan-200" />
                             <div>
                                 <div className="text-sm font-semibold text-white">{active[1]}</div>
                                 <p className="mt-1 text-sm leading-6 text-zinc-400">{active[2]}</p>
@@ -638,10 +638,10 @@ function LiveConsole({ run }) {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
+                <div className="rounded-lg border border-white/10 bg-black/35 p-3">
                     <div className="mb-3 flex items-center justify-between gap-3">
                         <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Review steps</div>
-                        <div className="font-mono text-[10px] text-zinc-500">step {index + 1}/{run.steps.length}</div>
+                        <div className="font-mono text-[10px] text-zinc-400">step {index + 1}/{run.steps.length}</div>
                     </div>
                     <div className="grid gap-2">
                         {visibleSteps.map(({ step, active: isActive, complete }) => {
@@ -649,16 +649,16 @@ function LiveConsole({ run }) {
                             return (
                                 <div
                                     key={key}
-                                    className={`rounded-xl border px-3 py-2 transition ${
+                                    className={`rounded-lg border px-3 py-2 transition ${
                                         isActive ? statusStyles[status] : complete ? 'border-emerald-300/15 bg-emerald-300/[0.035]' : 'border-white/10 bg-white/[0.025]'
                                     }`}
                                 >
                                     <div className="flex items-center justify-between gap-3">
-                                        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-500">{key}</span>
+                                        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-400">{key}</span>
                                         <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusStyles[status]}`}>{status}</span>
                                     </div>
                                     <div className="mt-1 text-sm font-semibold text-white">{title}</div>
-                                    <div className="mt-1 text-xs leading-5 text-zinc-500">{body}</div>
+                                    <div className="mt-1 text-xs leading-5 text-zinc-400">{body}</div>
                                 </div>
                             );
                         })}
@@ -674,17 +674,17 @@ function MachineryPanel({ item }) {
     const colors = {
         emerald: 'border-emerald-300/15 bg-emerald-300/[0.055] text-emerald-100',
         cyan: 'border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-100',
-        violet: 'border-violet-300/15 bg-violet-300/[0.055] text-violet-100',
+        blue: 'border-blue-300/15 bg-blue-300/[0.055] text-blue-100',
         amber: 'border-amber-300/15 bg-amber-300/[0.055] text-amber-100',
     };
 
     return (
-        <div className={`rounded-2xl border p-3 ${colors[item.tone] || colors.cyan}`}>
+        <div className={`rounded-lg border p-3 ${colors[item.tone] || colors.cyan}`}>
             <div className="mb-3 flex items-center justify-between gap-2">
                 <Icon size={15} />
                 <span className="text-[10px] font-semibold uppercase tracking-[0.14em] opacity-70">{item.title}</span>
             </div>
-            <div className="text-sm font-semibold tracking-[-0.02em]">{item.value}</div>
+            <div className="text-sm font-semibold">{item.value}</div>
             <div className="mt-1 text-[11px] leading-4 text-zinc-400">{item.note}</div>
         </div>
     );
@@ -692,19 +692,19 @@ function MachineryPanel({ item }) {
 
 function ArchitectureDiagram({ diagram }) {
     return (
-        <div className="rounded-[1.35rem] border border-white/10 bg-black/25 p-4">
+        <div className="rounded-lg border border-white/10 bg-black/25 p-4">
             <div className="mb-4">
                 <div className="text-sm font-semibold text-white">{diagram.title}</div>
-                <p className="mt-1 text-xs leading-5 text-zinc-500">{diagram.text}</p>
+                <p className="mt-1 text-xs leading-5 text-zinc-400">{diagram.text}</p>
             </div>
             <div className="grid gap-2">
                 {diagram.nodes.map((node, index) => (
                     <div key={node} className="flex items-center gap-2">
-                        <div className="min-w-0 flex-1 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-xs font-semibold text-cyan-50">
+                        <div className="min-w-0 flex-1 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-xs font-semibold text-cyan-50">
                             {node}
                         </div>
                         {index < diagram.nodes.length - 1 ? (
-                            <ArrowRight className="h-4 w-4 shrink-0 text-zinc-600" />
+                            <ArrowRight className="h-4 w-4 shrink-0 text-zinc-400" />
                         ) : null}
                     </div>
                 ))}
@@ -717,14 +717,14 @@ function Metric({ label, value, tone }) {
     const colors = {
         emerald: 'border-emerald-300/15 bg-emerald-300/[0.06] text-emerald-100',
         cyan: 'border-cyan-300/15 bg-cyan-300/[0.06] text-cyan-100',
-        violet: 'border-violet-300/15 bg-violet-300/[0.06] text-violet-100',
+        blue: 'border-blue-300/15 bg-blue-300/[0.06] text-blue-100',
         amber: 'border-amber-300/15 bg-amber-300/[0.06] text-amber-100',
     };
 
     return (
-        <div className={`rounded-2xl border p-4 ${colors[tone] || colors.cyan}`}>
+        <div className={`rounded-lg border p-4 ${colors[tone] || colors.cyan}`}>
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">{label}</div>
-            <div className="mt-2 text-xl font-semibold tracking-[-0.03em]">{value}</div>
+            <div className="mt-2 text-xl font-semibold">{value}</div>
         </div>
     );
 }
@@ -808,19 +808,19 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
     }
 
     return (
-        <form id="workflow-sprint" onSubmit={submit} className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.07] p-5 text-left ring-1 ring-white/[0.04] sm:p-6">
+        <form id="workflow-sprint" onSubmit={submit} className="rounded-lg border border-emerald-300/20 bg-emerald-300/[0.07] p-5 text-left ring-1 ring-white/[0.04] sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-black/25 px-3 py-1 text-xs font-semibold text-emerald-100">
                         <Mail size={14} />
                         Scoped request
                     </div>
-                    <h2 className="text-3xl font-semibold tracking-[-0.05em]">Start a workflow sprint.</h2>
+                    <h2 className="text-3xl font-semibold">Start a workflow sprint.</h2>
                     <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-300">
                         Send a work email and the rough workflow. Details come after scoped intake.
                     </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
+                <div className="rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
                     Selected: <span className="font-semibold text-white">{activeRun?.label || 'Not sure'}</span>
                 </div>
             </div>
@@ -834,7 +834,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                         onChange={(event) => setReplyTo(event.target.value)}
                         placeholder="you@company.com"
                         autoComplete="email"
-                        className="min-h-12 rounded-2xl border border-white/10 bg-black/35 px-4 text-base text-white outline-none transition placeholder:text-zinc-600 focus:border-emerald-300/45"
+                        className="min-h-12 rounded-lg border border-white/10 bg-black/35 px-4 text-base text-white outline-none transition placeholder:text-zinc-400 focus:border-emerald-300/45"
                     />
                 </label>
                 <label className="grid gap-2 text-sm font-semibold text-zinc-200">
@@ -842,7 +842,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                     <select
                         value={timeline}
                         onChange={(event) => setTimeline(event.target.value)}
-                        className="min-h-12 rounded-2xl border border-white/10 bg-black/35 px-4 text-base text-white outline-none transition focus:border-emerald-300/45"
+                        className="min-h-12 rounded-lg border border-white/10 bg-black/35 px-4 text-base text-white outline-none transition focus:border-emerald-300/45"
                     >
                         {timelineOptions.map(([value, label]) => (
                             <option key={value} value={value}>{label}</option>
@@ -869,7 +869,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                 <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {status === 'submitting' ? 'Sending...' : 'Send request'}
                     <Send size={16} />
@@ -877,7 +877,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
                 {fallbackHref ? (
                     <a
                         href={fallbackHref}
-                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-100 transition hover:border-emerald-300/35 hover:text-white"
+                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-100 transition hover:border-emerald-300/35 hover:text-white"
                     >
                         Open email
                         <ArrowRight size={16} />
@@ -886,7 +886,7 @@ function ProofSprintRequest({ activeRun, source = 'final' }) {
             </div>
 
             {message ? (
-                <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm leading-6 ${status === 'ready' ? 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-100' : 'border-amber-300/20 bg-amber-300/[0.08] text-amber-100'}`}>
+                <div className={`mt-4 rounded-lg border px-4 py-3 text-sm leading-6 ${status === 'ready' ? 'border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-100' : 'border-amber-300/20 bg-amber-300/[0.08] text-amber-100'}`}>
                     {message}
                     {receipt?.receipt_id ? <span className="ml-2 font-mono text-xs text-zinc-300">Ref {receipt.receipt_id}</span> : null}
                 </div>
@@ -910,26 +910,25 @@ export default function Enterprise() {
 
     return (
         <div className="min-h-dvh overflow-hidden bg-black text-white selection:bg-emerald-500/30">
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(124,58,237,0.16),transparent_34%),#000]" />
-            <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.024)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.016)_1px,transparent_1px)] bg-[size:46px_46px] opacity-20" />
+            <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <main className="relative z-10 mx-auto max-w-6xl px-5 py-8 sm:py-12">
                 <nav className="mb-10 flex items-center justify-between gap-4">
-                    <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-500 transition hover:text-white">
+                    <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 transition hover:text-white">
                         <ArrowLeft size={16} />
                         Back
                     </Link>
-                    <Link to="/" className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12]">
+                    <Link to="/" className="rounded-full border border-teal-300/20 bg-teal-300/[0.08] px-3 py-1.5 text-xs font-semibold text-teal-100 transition hover:border-teal-300/40 hover:bg-teal-300/[0.12]">
                         Try Active Mirror
                     </Link>
                 </nav>
 
                 <section className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
-                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 shadow-[0_0_70px_rgba(16,185,129,0.10)] ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-8">
-                        <div className="mb-8 grid h-16 w-16 place-items-center rounded-[1.35rem] border border-emerald-200/20 bg-white/[0.045] shadow-[0_0_38px_rgba(16,185,129,0.14)]">
+                    <div className="rounded-lg border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] sm:p-8">
+                        <div className="mb-8 grid h-16 w-16 place-items-center rounded-lg border border-emerald-200/20 bg-white/[0.045]">
                             <ShieldCheck className="h-8 w-8 text-emerald-100" />
                         </div>
-                        <h1 className="max-w-[11ch] text-[3.05rem] font-semibold leading-[0.94] tracking-[-0.06em] sm:text-[4.9rem]">
+                        <h1 className="max-w-[11ch] text-[3.05rem] font-semibold leading-[0.94] sm:text-[4.9rem]">
                             Private AI for real work.
                         </h1>
                         <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-400">
@@ -938,7 +937,7 @@ export default function Enterprise() {
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a
                                 href="#workflow-sprint"
-                                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 text-sm font-semibold text-black shadow-[0_0_34px_rgba(16,185,129,0.24)] transition hover:scale-[1.01]"
+                                className="am-primary-action inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap px-5 text-sm font-semibold"
                             >
                                 Start workflow sprint
                                 <ArrowRight size={17} />
@@ -946,14 +945,14 @@ export default function Enterprise() {
                             <button
                                 type="button"
                                 onClick={downloadEnterpriseBrief}
-                                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.07] px-5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
+                                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
                             >
                                 Download brief
                                 <Download size={16} />
                             </button>
                             <Link
                                 to="/"
-                                className="inline-flex min-h-12 items-center justify-center whitespace-nowrap rounded-2xl border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-200 transition hover:border-purple-300/30 hover:text-white"
+                                className="inline-flex min-h-12 items-center justify-center whitespace-nowrap rounded-lg border border-white/10 bg-white/[0.045] px-5 text-sm font-semibold text-zinc-200 transition hover:border-teal-300/30 hover:text-white"
                             >
                                 Try it first
                             </Link>
@@ -966,13 +965,13 @@ export default function Enterprise() {
                 </section>
 
                 <section id="consulting" className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Private AI deployment.</h2>
+                    <div className="rounded-lg border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04]">
+                        <h2 className="text-2xl font-semibold sm:text-3xl">Private AI deployment.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
                             Active Mirror wraps your AI tools with practical controls: what AI may read, what it may do next, who approves it, and what gets recorded before rollout.
                         </p>
                     </div>
-                    <div className="rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.06] p-6 ring-1 ring-white/[0.04]">
+                    <div className="rounded-lg border border-emerald-300/15 bg-emerald-300/[0.06] p-6 ring-1 ring-white/[0.04]">
                         <div className="text-sm font-semibold text-emerald-50">One workflow first.</div>
                         <p className="mt-3 text-sm leading-6 text-zinc-300">
                             We do not replace enterprise AI platforms. We make one workflow usable inside your rules.
@@ -980,10 +979,10 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                <section className="mt-6 rounded-lg border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] sm:p-6">
                     <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">How we work.</h2>
+                            <h2 className="text-2xl font-semibold sm:text-3xl">How we work.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                                 A short path from unclear AI interest to one controlled workflow your team can judge.
                             </p>
@@ -991,7 +990,7 @@ export default function Enterprise() {
                     </div>
                     <div className="grid gap-3 lg:grid-cols-5">
                         {workSteps.map(([title, text], index) => (
-                            <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                            <div key={title} className="rounded-lg border border-white/10 bg-black/25 p-4">
                                 <div className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/[0.07] font-mono text-xs font-semibold text-cyan-100">
                                     {String(index + 1).padStart(2, '0')}
                                 </div>
@@ -1003,15 +1002,15 @@ export default function Enterprise() {
                 </section>
 
                 <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Start small. Grow only if it works.</h2>
+                    <div className="rounded-lg border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04]">
+                        <h2 className="text-2xl font-semibold sm:text-3xl">Start small. Grow only if it works.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
                             The first sale is not a platform promise. It is one useful workflow, tested under your rules.
                         </p>
                     </div>
                     <div className="grid gap-3">
                         {offerLadder.map((offer) => (
-                            <div key={offer.title} className="grid gap-3 rounded-2xl border border-white/10 bg-black/25 p-4 sm:grid-cols-[12rem_1fr] sm:items-center">
+                            <div key={offer.title} className="grid gap-3 rounded-lg border border-white/10 bg-black/25 p-4 sm:grid-cols-[12rem_1fr] sm:items-center">
                                 <div>
                                     <div className="text-sm font-semibold text-white">{offer.title}</div>
                                     <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200/70">{offer.time}</div>
@@ -1022,19 +1021,19 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 overflow-hidden rounded-[2rem] border border-emerald-300/15 bg-emerald-300/[0.065] ring-1 ring-white/[0.04] backdrop-blur-2xl">
+                <section className="mt-6 overflow-hidden rounded-lg border border-emerald-300/15 bg-emerald-300/[0.065] ring-1 ring-white/[0.04]">
                     <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
                         <div className="border-b border-emerald-300/10 p-5 sm:p-6 lg:border-b-0 lg:border-r">
                             <div className="mb-4 inline-flex rounded-full border border-emerald-300/20 bg-black/25 px-3 py-1 text-xs font-semibold text-emerald-100">
                                 Names and data withheld
                             </div>
-                            <h2 className="max-w-lg text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Anonymized case study.</h2>
+                            <h2 className="max-w-lg text-2xl font-semibold sm:text-3xl">Anonymized case study.</h2>
                             <p className="mt-3 max-w-xl text-sm leading-6 text-emerald-50/75">
                                 No logo slide. No private details. Just the pattern: messy research work became a controlled review flow.
                             </p>
                             <div className="mt-5 grid gap-3">
                                 {proofStory.map(([title, text]) => (
-                                    <div key={title} className="rounded-2xl border border-emerald-300/15 bg-black/25 p-4">
+                                    <div key={title} className="rounded-lg border border-emerald-300/15 bg-black/25 p-4">
                                         <div className="text-sm font-semibold text-emerald-50">{title}</div>
                                         <p className="mt-2 text-sm leading-6 text-zinc-300">{text}</p>
                                     </div>
@@ -1045,7 +1044,7 @@ export default function Enterprise() {
                             <div className="mb-4 text-sm font-semibold text-white">What changed in practice</div>
                             <div className="grid gap-3 sm:grid-cols-2">
                                 {fieldProof.map(([title, text]) => (
-                                    <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                    <div key={title} className="rounded-lg border border-white/10 bg-black/25 p-4">
                                         <div className="flex items-start gap-3">
                                             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-200" />
                                             <div>
@@ -1056,17 +1055,17 @@ export default function Enterprise() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-4 rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.06] p-4 text-sm leading-6 text-cyan-50/80">
+                            <div className="mt-4 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.06] p-4 text-sm leading-6 text-cyan-50/80">
                                 The point is not a bigger AI rollout. The point is one workflow your team can trust enough to use.
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                <section className="mt-6 rounded-lg border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] sm:p-6">
                     <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Pick one workflow.</h2>
+                            <h2 className="text-2xl font-semibold sm:text-3xl">Pick one workflow.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                                 Try a sample flow first. A private sprint connects the same pattern to your real tools, files, approval points, and support needs.
                             </p>
@@ -1082,9 +1081,9 @@ export default function Enterprise() {
                                 key={run.id}
                                 type="button"
                                 onClick={() => setRunId(run.id)}
-                                className={`rounded-2xl border p-4 text-left transition ${
+                                className={`rounded-lg border p-4 text-left transition ${
                                     run.id === runId
-                                        ? 'border-emerald-300/30 bg-emerald-300/[0.08] shadow-[0_0_30px_rgba(16,185,129,0.10)]'
+                                        ? 'border-emerald-300/30 bg-emerald-300/[0.08]'
                                         : 'border-white/10 bg-black/25 hover:border-cyan-300/25 hover:bg-white/[0.045]'
                                 }`}
                             >
@@ -1093,7 +1092,7 @@ export default function Enterprise() {
                                     {run.id === runId ? <CheckCircle2 className="h-4 w-4 text-emerald-200" /> : null}
                                 </div>
                                 <p className="mt-2 text-sm leading-6 text-zinc-400">{run.request}</p>
-                                <div className="mt-4 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs leading-5 text-zinc-500">
+                                <div className="mt-4 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs leading-5 text-zinc-400">
                                     {run.output}
                                 </div>
                             </button>
@@ -1101,10 +1100,10 @@ export default function Enterprise() {
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] backdrop-blur-2xl sm:p-6">
+                <section className="mt-6 rounded-lg border border-white/10 bg-white/[0.045] p-5 ring-1 ring-white/[0.04] sm:p-6">
                     <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold tracking-[-0.04em]">Deployment choices.</h2>
+                            <h2 className="text-2xl font-semibold">Deployment choices.</h2>
                             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                                 Start narrow. Move closer to the work only when the workflow proves it is worth scaling.
                             </p>
@@ -1118,13 +1117,13 @@ export default function Enterprise() {
                 </section>
 
                 <section className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-                    <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04] backdrop-blur-2xl">
-                        <h2 className="text-2xl font-semibold tracking-[-0.04em]">First call expectation.</h2>
+                    <div className="rounded-lg border border-white/10 bg-white/[0.045] p-6 ring-1 ring-white/[0.04]">
+                        <h2 className="text-2xl font-semibold">First call expectation.</h2>
                         <p className="mt-3 text-sm leading-6 text-zinc-400">
                             Bring one workflow, one owner, and one example output. Do not send private files through the public form.
                         </p>
                     </div>
-                    <div className="rounded-[2rem] border border-cyan-300/15 bg-cyan-300/[0.06] p-6 ring-1 ring-white/[0.04]">
+                    <div className="rounded-lg border border-cyan-300/15 bg-cyan-300/[0.06] p-6 ring-1 ring-white/[0.04]">
                         <div className="text-sm font-semibold text-cyan-50">Scoped before priced.</div>
                         <p className="mt-2 text-sm leading-6 text-zinc-300">
                             We scope the workflow first, then decide whether it is a sprint, a deployment, or not worth doing yet.

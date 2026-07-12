@@ -64,9 +64,9 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
     }
 
     return (
-        <div className={`max-w-[46rem] rounded-[1.25rem] px-1 py-1 ${className}`}>
+        <div className={`max-w-[46rem] rounded-lg px-1 py-1 ${className}`}>
             <div className="flex flex-wrap items-center gap-2">
-                <div className="mr-1 text-xs font-medium text-zinc-500">Helpful?</div>
+                <div className="mr-1 text-xs font-medium text-zinc-400">Helpful?</div>
                 <div className="flex flex-wrap gap-2">
                     {FEEDBACK_OPTIONS.map((option) => {
                         const active = selected === option.id;
@@ -80,7 +80,7 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
                                 className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                                     active
                                         ? 'border-cyan-200/45 bg-cyan-300/[0.14] text-cyan-100'
-                                        : 'border-white/10 bg-white/[0.025] text-zinc-500 hover:border-purple-300/30 hover:bg-purple-300/[0.08] hover:text-white'
+                                        : 'border-white/10 bg-white/[0.025] text-zinc-400 hover:border-teal-300/30 hover:bg-teal-300/[0.08] hover:text-white'
                                 }`}
                             >
                                 {option.label}
@@ -88,7 +88,7 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
                         );
                     })}
                 </div>
-                {selected ? <div className="text-[11px] text-zinc-600">No message text saved.</div> : null}
+                {selected ? <div className="text-[11px] text-zinc-400">No message text saved.</div> : null}
             </div>
             {showRepair ? (
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -97,7 +97,7 @@ export default function MirrorFeedback({ page = 'mirror', surface = 'reflection'
                             key={option.id}
                             type="button"
                             onClick={() => repair(option)}
-                            className="rounded-full border border-purple-300/20 bg-purple-300/[0.08] px-3 py-1.5 text-xs font-semibold text-purple-100 transition hover:border-purple-300/40 hover:bg-purple-300/[0.12] hover:text-white"
+                            className="rounded-full border border-teal-300/20 bg-teal-300/[0.08] px-3 py-1.5 text-xs font-semibold text-teal-100 transition hover:border-teal-300/40 hover:bg-teal-300/[0.12] hover:text-white"
                         >
                             {option.label}
                         </button>

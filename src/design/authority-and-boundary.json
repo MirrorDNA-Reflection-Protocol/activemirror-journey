@@ -1,0 +1,22 @@
+{
+  "schema_version": "amos-authority-boundary-components/v1",
+  "authority_levels": [
+    { "id": "observe", "label": "Observe", "icon": "eye", "side_effects": false },
+    { "id": "suggest", "label": "Suggest", "icon": "message-square", "side_effects": false },
+    { "id": "draft", "label": "Draft only", "icon": "pencil-line", "side_effects": false },
+    { "id": "act", "label": "Act", "icon": "play", "side_effects": true, "approval_required": true }
+  ],
+  "processing_boundaries": [
+    { "id": "local_device", "label": "On this device", "icon": "hard-drive", "color_token": "semantic.local" },
+    { "id": "private_mesh", "label": "Private mesh", "icon": "network", "color_token": "semantic.private_mesh" },
+    { "id": "external_provider", "label": "External provider", "icon": "external-link", "color_token": "semantic.external" }
+  ],
+  "required_for_consequential_action": [
+    "authority_level",
+    "processing_boundary",
+    "project_boundary",
+    "data_classification",
+    "consequence_preview",
+    "rollback_path"
+  ]
+}

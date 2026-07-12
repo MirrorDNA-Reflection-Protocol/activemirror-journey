@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 body {
-    background: black;
-    color: white;
+    background: var(--am-canvas);
+    color: var(--am-ink);
+    font-family: "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     overflow-x: hidden;
 }
 
@@ -18,7 +19,7 @@ html {
     inset: 0;
     z-index: 1;
     overflow: hidden;
-    opacity: 0.48;
+    opacity: 0.28;
 }
 
 .reflection-field__svg {
@@ -28,7 +29,6 @@ html {
     width: min(1160px, 126vw);
     height: min(740px, 86vh);
     transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 28px rgba(124, 58, 237, 0.16));
 }
 
 .reflection-field__arc,
@@ -39,16 +39,12 @@ html {
 }
 
 .reflection-field__arc {
-    stroke: url("#mirror-line-a");
-    stroke-dasharray: 420 760;
-    stroke-dashoffset: 900;
+    stroke: var(--am-primary);
     opacity: 0.34;
-    animation: reflection-line-drift 13s ease-in-out infinite;
 }
 
 .reflection-field__arc--b {
-    stroke: url("#mirror-line-b");
-    animation-delay: -4s;
+    stroke: var(--am-focus);
     opacity: 0.25;
 }
 
@@ -62,27 +58,12 @@ html {
     opacity: 0.9;
 }
 
-.reflection-field__sheen {
-    position: absolute;
-    left: 50%;
-    top: 52%;
-    width: min(680px, 78vw);
-    height: min(180px, 22vh);
-    border-radius: 999px;
-    transform: translate(-50%, -50%) rotate(-4deg);
-    background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.055) 45%, transparent 72%);
-    filter: blur(14px);
-    opacity: 0.16;
-    mix-blend-mode: screen;
-}
-
 .reflection-field--awake {
-    opacity: 0.74;
+    opacity: 0.42;
 }
 
 .reflection-field--awake .reflection-field__arc {
     opacity: 0.54;
-    animation-duration: 8s;
 }
 
 .reflection-field--awake .reflection-field__arc--b {
@@ -93,63 +74,18 @@ html {
     opacity: 0.31;
 }
 
-.reflection-field--awake .reflection-field__sheen {
-    opacity: 0.25;
-}
-
-@keyframes reflection-line-drift {
-    0% {
-        stroke-dashoffset: 900;
-        transform: translateY(0);
-    }
-
-    50% {
-        stroke-dashoffset: 240;
-        transform: translateY(-8px);
-    }
-
-    100% {
-        stroke-dashoffset: -320;
-        transform: translateY(0);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .reflection-field__arc {
-        animation: none;
-        stroke-dashoffset: 0;
-    }
-}
-
-/* ⟡ Glyph Breathing Animation */
 .glyph-breathe {
     display: inline-block;
-    animation: breathe 4s ease-in-out infinite;
-}
-
-@keyframes pulse-glyph {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.6;
-        transform: scale(1.1);
-    }
 }
 
 .glyph-pulse {
-    animation: pulse-glyph 1.5s ease-in-out infinite;
     display: inline-block;
 }
 
 /* Global Polish */
 ::selection {
-    background: rgba(123, 217, 255, 0.34);
-    color: #031018;
+    background: color-mix(in srgb, var(--am-focus) 34%, transparent);
+    color: var(--am-ink);
 }
 
 /* Utility: Hide Scrollbar but keep functionality */
@@ -168,79 +104,43 @@ html {
 }
 
 .mirror-response .glyph {
-    color: #a855f7;
-    /* purple-500 */
+    color: var(--am-primary-marker);
     font-weight: 500;
 }
 
 /* Late night mode - softer, warmer */
 .late-night .mirror-response {
-    color: #d4d4d8;
-    /* zinc-300 */
+    color: var(--am-muted);
 }
 
 .late-night .glyph {
-    color: #c084fc;
-    /* purple-400 */
+    color: var(--am-primary-marker);
 }
 
 .homepage-surface {
     position: relative;
-    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-family: "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .homepage-surface h1,
 .homepage-surface h2,
 .homepage-surface h3,
 .homepage-surface .display-copy {
-    font-family: "Sora", "IBM Plex Sans", system-ui, sans-serif;
-    letter-spacing: -0.05em;
+    font-family: "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0;
 }
 
-.homepage-surface::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background:
-        linear-gradient(115deg, rgba(123, 217, 255, 0.1) 0%, transparent 24%, transparent 62%, rgba(255, 143, 122, 0.08) 100%),
-        radial-gradient(circle at 22% 16%, rgba(124, 240, 203, 0.14), transparent 20%),
-        radial-gradient(circle at 82% 24%, rgba(123, 217, 255, 0.14), transparent 18%);
-    mix-blend-mode: screen;
-    opacity: 0.72;
-    animation: homepage-prism 18s ease-in-out infinite;
-    z-index: 0;
-}
-
-.homepage-surface::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-        radial-gradient(rgba(255, 255, 255, 0.1) 0.6px, transparent 0.8px),
-        radial-gradient(rgba(123, 217, 255, 0.08) 0.6px, transparent 0.8px);
-    background-position: 0 0, 14px 14px;
-    background-size: 22px 22px, 22px 22px;
-    opacity: 0.06;
-    mix-blend-mode: soft-light;
-    z-index: 0;
-}
-
-@keyframes homepage-prism {
-    0% {
-        transform: translate3d(0, 0, 0) scale(1);
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
     }
 
-    33% {
-        transform: translate3d(1.2%, -1%, 0) scale(1.03);
-    }
-
-    66% {
-        transform: translate3d(-1.4%, 1.1%, 0) scale(1.02);
-    }
-
-    100% {
-        transform: translate3d(0, 0, 0) scale(1);
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
     }
 }
