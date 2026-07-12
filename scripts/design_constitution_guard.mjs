@@ -74,6 +74,38 @@ function cssVariables(block) {
     );
 }
 
+const APPROVED_HEX_COLORS = new Set([
+    '#000000', '#ffffff',
+    '#f5f7f4', '#eef2ee', '#17201c', '#5e6963', '#d7ddd9',
+    '#0b110e', '#121a16', '#19231e', '#f3f7f4', '#a8b4ad', '#314039',
+    '#176b5b', '#5db8a5', '#1769aa', '#70b7e6', '#2e7d32', '#78c47c',
+    '#a35a00', '#efb35c', '#b42318', '#f08b80', '#59636e', '#aab3bd', '#28666e',
+]);
+const COLOR_FUNCTION = /\b(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\s*\(/i;
+const FORBIDDEN_COLOR_WORD = /(?:pink|purple|violet|fuchsia|magenta|mauve|lilac|lavender|plum|orchid)/i;
+
+function normalizeEncodedColors(source) {
+    return source.replace(/%(?:25)*23/gi, '#');
+}
+
+function colorViolations(source, { rawApprovedColorsAllowed = false } = {}) {
+    const normalized = normalizeEncodedColors(source);
+    const violations = [];
+    const functionMatch = COLOR_FUNCTION.exec(normalized);
+    if (functionMatch) violations.push({ index: functionMatch.index, reason: 'non-token color function' });
+    const wordMatch = FORBIDDEN_COLOR_WORD.exec(normalized);
+    if (wordMatch) violations.push({ index: wordMatch.index, reason: 'pink-purple color family' });
+    for (const match of normalized.matchAll(/#[0-9a-f]{3,8}\b/gi)) {
+        const value = match[0].toLowerCase();
+        if (!APPROVED_HEX_COLORS.has(value)) {
+            violations.push({ index: match.index, reason: `unapproved color literal ${value}` });
+        } else if (!rawApprovedColorsAllowed) {
+            violations.push({ index: match.index, reason: 'raw color outside approved palette surfaces' });
+        }
+    }
+    return violations;
+}
+
 const lockText = await readText('src/design/amos-design-lock.json');
 const lock = JSON.parse(lockText);
 const tokensText = await readText('src/design/amos-design-tokens.json');
@@ -134,6 +166,12 @@ check(rootVars['am-primary'] === tokens.colors.semantic.primary, 'light action t
 check(darkVars['am-primary'] === tokens.colors.semantic.primary, 'dark action token preserves contrast-safe jade');
 check(darkVars['am-primary-marker'] === tokens.colors.semantic.local_marker_dark, 'dark local marker matches canonical JSON');
 
+const tokenColorValues = Object.values(tokens.colors).flatMap((group) => Object.values(group));
+check(
+    tokenColorValues.every((value) => APPROVED_HEX_COLORS.has(String(value).toLowerCase())),
+    'token JSON uses only the fixed approved palette',
+);
+
 const encodedColor = (value) => `%23${value.slice(1).toLowerCase()}`;
 const normalizedIndex = indexHtml.toLowerCase();
 check(
@@ -168,8 +206,6 @@ const sourceFiles = (await walk(path.join(ROOT, 'src')))
 sourceFiles.push('index.html', 'tailwind.config.js');
 
 const forbidden = [
-    ['pink-purple color family', /\b(?:pink|purple|violet|fuchsia|magenta|rose-|indigo-)/i],
-    ['forbidden generated color', /#(?:7c3aed|a78bfa|ec4899|faf5ff|4c1d95|ddd6fe)\b/i],
     ['runtime font CDN', /fonts\.googleapis\.com|fonts\.gstatic\.com/i],
     ['external style asset', /url\(\s*["']?https?:\/\//i],
     ['ornamental gradient', /(?:linear|radial|conic)-gradient|bg-gradient/i],
@@ -185,16 +221,30 @@ const forbidden = [
 
 for (const relativePath of sourceFiles) {
     const source = await readText(relativePath);
-    const normalizedSource = source.replace(/%23([0-9a-f]{3,8})/gi, '#$1');
+    const normalizedSource = normalizeEncodedColors(source);
     for (const [label, pattern] of forbidden) {
         const match = pattern.exec(normalizedSource);
         if (match) failures.push(`${relativePath}:${lineNumber(normalizedSource, match.index)}: ${label}`);
     }
-    if (!relativePath.startsWith('src/design/') && relativePath !== 'index.html') {
-        const rawColor = /#[0-9a-f]{3,8}\b/i.exec(normalizedSource);
-        if (rawColor) failures.push(`${relativePath}:${lineNumber(normalizedSource, rawColor.index)}: raw color outside semantic token files`);
+    const rawApprovedColorsAllowed = relativePath === 'index.html' || relativePath === 'src/design/amos-design-tokens.css';
+    for (const violation of colorViolations(source, { rawApprovedColorsAllowed })) {
+        failures.push(`${relativePath}:${lineNumber(normalizedSource, violation.index)}: ${violation.reason}`);
     }
 }
+
+const rejectedColorFixtures = [
+    '%23ff00ff',
+    '%23800080',
+    '%2523ff00ff',
+    'rgb(255 0 255)',
+    'hsl(300 100% 25%)',
+    'rebeccapurple',
+    'plum',
+];
+check(
+    rejectedColorFixtures.every((fixture) => colorViolations(fixture, { rawApprovedColorsAllowed: true }).length > 0),
+    'negative color fixtures reject encoded and functional magenta-purple variants',
+);
 
 check(sourceFiles.length >= 20, 'consumer source scan covered expected surface', `${sourceFiles.length} files`);
 
@@ -208,7 +258,7 @@ const report = {
         'design snapshot and generator provenance',
         'governance, action-outcome, authority, and processing-boundary contracts',
         'solid-token contrast floor',
-        'browser theme and percent-encoded favicon colors',
+        'fixed palette, browser theme, and recursively encoded favicon colors',
         'consumer source prohibited-pattern scan',
         'Mirror home trust rail, product mode, primary action, and reduced motion hooks',
     ],

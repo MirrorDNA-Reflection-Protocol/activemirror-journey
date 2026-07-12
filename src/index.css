@@ -54,7 +54,7 @@ html {
 }
 
 .reflection-field__lens {
-    stroke: rgba(255, 255, 255, 0.055);
+    stroke: color-mix(in srgb, var(--am-ink) 5.5%, transparent);
     opacity: 0.9;
 }
 
