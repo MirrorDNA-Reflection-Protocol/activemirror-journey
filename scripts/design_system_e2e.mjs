@@ -218,14 +218,15 @@ async function keyboardReachPrimary(page, label) {
         });
         if (!active) continue;
         trail.push(`${active.tag}:${active.name}`);
-        if (/^(Start here|Send)$/i.test(active.name)) {
+        if (active.tag === 'TEXTAREA' || /^Send$/i.test(active.name)) {
             primary = active;
             break;
         }
     }
-    const focusVisible = primary
-        && primary.outline !== 'none'
-        && primary.outlineWidth !== '0px';
+    const focusVisible = primary && (
+        (primary.outline !== 'none' && primary.outlineWidth !== '0px')
+        || primary.boxShadow !== 'none'
+    );
     assert(`${label}.primary_keyboard_reachable`, Boolean(primary), trail.join(' -> '));
     assert(`${label}.primary_focus_visible`, Boolean(focusVisible), primary ? JSON.stringify(primary) : 'primary not reached');
     return trail;
@@ -303,7 +304,7 @@ async function runJourney(browser, config) {
     const screenshotPath = path.join(outputDir, `${config.label}.png`);
     try {
         await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-        await page.getByRole('heading', { name: 'What do you want?' }).waitFor({ state: 'visible' });
+        await page.getByRole('heading', { name: 'Bring the unfinished thing.' }).waitFor({ state: 'visible' });
         await page.locator('[data-testid="trust-status-rail"]').waitFor({ state: 'visible' });
         await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'dark');
         await page.waitForTimeout(100);

@@ -6,22 +6,27 @@ Status: current consumer-facing language guide.
 
 Use short, normal phrases:
 
-- `What do you want?`
-- `Start here`
-- `Load saved setup`
-- `Type anything: make a poster, decide, fix, understand`
+- `Bring the unfinished thing.`
+- `Set a private context`
+- `Load saved context`
+- `Start messy: I have an idea, but I do not know how to ship it.`
 - `Set it up`
 - `Saved on this device`
 - `Start chat`
 - `Keep a copy`
-- `Try one`
-- `Message, image, doc`
-- `Compare options`
-- `Unblock a thing`
-- `Explain simply`
-- `Fun`
-- `Surprise me`
-- `Meet Active Mirror`
+- `Start with a move`
+- `First version`
+- `Pressure-test`
+- `Find the break`
+- `Make it clear`
+- `Talk`
+- `Think aloud`
+- `How this works`
+- `Working read`
+- `Challenge`
+- `Improve`
+- `Evidence and boundary`
+- `Public draft`
 - `Use placeholders for anything private`
 - `Make one small version and test it`
 - `Private first`
@@ -118,8 +123,8 @@ Avoid scary blocked-state wording unless the turn truly cannot proceed.
 The market is moving toward local/private AI and persistent memory. Active
 Mirror should not claim those as unique. The user-facing lane is simpler:
 
-- starts privately;
-- asks what the user wants;
-- reflects before producing;
+- starts with unfinished work;
+- makes a first useful version before expanding;
+- lets the user challenge or improve the work deliberately;
 - checks current facts before relying on them;
 - keeps memory and sharing as a user choice.

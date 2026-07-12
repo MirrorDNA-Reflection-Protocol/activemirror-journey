@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, LoaderCircle, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
+import MirrorMoment from '../components/MirrorMoment';
 import PrivateRecallPanel from '../components/PrivateRecallPanel';
 import PrivateRecallSuggestions from '../components/PrivateRecallSuggestions';
 import TrustStatusRail, { TrustStateMark } from '../components/TrustStatusRail';
@@ -139,37 +140,37 @@ const STARTER_ACTIONS = [
     {
         kind: 'make',
         label: 'Make',
-        caption: 'Message, image, doc',
+        caption: 'First version',
         icon: PenLine,
-        intent: 'I want to make something useful.',
+        intent: 'I have a rough idea and need a first usable version.',
     },
     {
         kind: 'decide',
         label: 'Decide',
-        caption: 'Compare options',
+        caption: 'Pressure-test',
         icon: Check,
-        intent: 'I need to make a decision.',
+        intent: 'I need to pressure-test a decision before I commit.',
     },
     {
         kind: 'fix',
         label: 'Fix',
-        caption: 'Unblock a thing',
+        caption: 'Find the break',
         icon: SlidersHorizontal,
-        intent: 'Something is not working.',
+        intent: 'Something is not working and I need to find the first useful repair.',
     },
     {
         kind: 'understand',
         label: 'Understand',
-        caption: 'Explain simply',
+        caption: 'Make it clear',
         icon: Sparkles,
-        intent: 'I need to understand this better.',
+        intent: 'I need to make something unclear understandable.',
     },
     {
         kind: 'fun',
-        label: 'Fun',
-        caption: 'Surprise me',
+        label: 'Talk',
+        caption: 'Think aloud',
         icon: PartyPopper,
-        intent: 'I want to do something fun.',
+        intent: 'I want to talk something through without being turned into a task list.',
     },
 ];
 
@@ -215,13 +216,13 @@ const STARTER_RESULTS = {
         },
     },
     fun: {
-        reflection: 'Good. Make it playful, but still make something you can use.',
-        question: 'What kind of fun: image, tiny game, story, surprise idea, playlist, or prompt?',
-        move: 'Pick one playful lane, or type a mood and I will start.',
+        reflection: 'Start with the rough version. You do not need to make it tidy first.',
+        question: 'What is the part you have not found the words for yet?',
+        move: 'Say it as it comes. We will find the useful thread together.',
         visual: {
-            kind: 'spectrum',
-            left: 'Random',
-            right: 'Playful and useful',
+            kind: 'reframe',
+            left: 'Keep it in my head',
+            right: 'Put one true sentence down',
         },
     },
 };
@@ -254,12 +255,10 @@ const LAUNCHER_ACTIVITIES = {
         ['Check', 'Check current sources before I rely on this.'],
     ],
     fun: [
-        ['Image', 'Make a fun image idea from my mood. Help me choose the subject, feeling, and one surprise detail.'],
-        ['Tiny game', 'Make a tiny one-screen game idea I can try or build.'],
-        ['Story', 'Write a short playful story from one rough idea.'],
-        ['Surprise me', 'Give me one unexpected, useful, fun thing to try right now.'],
-        ['Playlist', 'Turn my mood into a small playlist brief or vibe list.'],
-        ['Prompt', 'Give me a creative prompt that gets an interesting result.'],
+        ['Open it', 'I want to talk something through. Stay with the thread and do not give me a task list unless I ask.'],
+        ['Find words', 'I need help finding the words for something difficult.'],
+        ['Unstick', 'I feel stuck on one thing. Help me name the part that can move.'],
+        ['Different view', 'Give me a different useful view of this without making up certainty.'],
     ],
 };
 
@@ -1086,7 +1085,7 @@ function resultStarterKind(mirror = {}, intent = '') {
     if (/\bwhat are the two options\b/.test(text)) return 'decide';
     if (/\bwhat feels wrong:\s*unclear,\s*broken,\s*slow,\s*ugly,\s*or\s*blocked\b/.test(text)) return 'fix';
     if (/\bdefinition,\s*example,\s*comparison,\s*source,\s*or\s*next step\b/.test(text)) return 'understand';
-    if (/\bwhat kind of fun:\s*image,\s*tiny game,\s*story,\s*surprise idea,\s*playlist,\s*or\s*prompt\b/.test(text)) return 'fun';
+    if (/\bpart you have not found the words for yet\b/.test(text)) return 'fun';
     return '';
 }
 
@@ -1395,7 +1394,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
     );
 }
 
-function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled, onSourceChecked, onRemember, remembered }) {
+function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreateArtifact, disabled, onSourceChecked, onRemember, remembered }) {
     const { theme } = useTheme();
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
@@ -1489,6 +1488,53 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, disabled
                         </div>
                     </div>
                 </div>
+            </div>
+        );
+    }
+
+    if (result && !isConversation && !isSetupReady && !isStartHelp) {
+        return (
+            <div className="grid gap-3">
+                <MirrorMoment
+                    mirror={mirror}
+                    intent={intent}
+                    isLight={isLight}
+                    trustState={resultTrustState}
+                    onCopy={async (draft) => {
+                        await copyText(draft);
+                        trackEvent('draft_copied', { page: 'home', source: 'mirror_moment' });
+                    }}
+                    onRemember={onRemember}
+                    remembered={remembered}
+                    allowRemember={!isPrivacyHold}
+                    busy={disabled}
+                    onChallenge={() => onPrompt?.(
+                        `Challenge the weakest assumption in this working read. Do not invent facts. Name the one thing to test or change next. Working read: ${mirror.reflection || mirror.question || intent}`,
+                        'surface',
+                    )}
+                    onImprove={() => onCreateArtifact?.('draft', {
+                        source: 'mirror_moment_improve',
+                        intent: `Turn this into the first usable version. Keep it concrete, grounded in the working read, and ready to copy or test. Original request: ${intent}`,
+                        mirror,
+                    })}
+                    onPublicNote={() => onCreateArtifact?.('doc', {
+                        source: 'mirror_moment_public_draft',
+                        intent: `Create a short public build note from this working thread. Remove private details, treat any unverified statement as a question to resolve, and make it a draft for review rather than a release. Original request: ${intent}`,
+                        mirror,
+                    })}
+                />
+                {showSourceCheck ? (
+                    <NeedsSources
+                        truthState={truthState}
+                        intent={intent}
+                        mirror={mirror}
+                        disabled={disabled}
+                        onPrompt={onPrompt}
+                        onSourceChecked={onSourceChecked}
+                        autoCheck={false}
+                        answerFirst={false}
+                    />
+                ) : null}
             </div>
         );
     }
@@ -1680,7 +1726,7 @@ function MemoryDrawer({
     onClearContinuity,
 }) {
     const [editingKey, setEditingKey] = useState('');
-    const [draft, setDraft] = useState({ question: '', move: '' });
+    const [draft, setDraft] = useState({ question: '', move: '', workingRead: '' });
     const [mode, setMode] = useState('list');
     const [cardIndex, setCardIndex] = useState(0);
     const [cardFlipped, setCardFlipped] = useState(false);
@@ -1703,13 +1749,14 @@ function MemoryDrawer({
         setDraft({
             question: item.question || '',
             move: item.move || '',
+            workingRead: item.workingRead || '',
         });
     }
 
     function saveEdit(item) {
         onEdit?.(memoryItemKey(item), draft);
         setEditingKey('');
-        setDraft({ question: '', move: '' });
+        setDraft({ question: '', move: '', workingRead: '' });
     }
 
     return (
@@ -1871,6 +1918,12 @@ function MemoryDrawer({
                                                     </button>
                                                 </div>
                                                 <div className="text-sm leading-6 text-zinc-300">{entry.intent || 'Saved reflection'}</div>
+                                                {entry.workingRead ? (
+                                                    <div className="mt-2 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-sm leading-6 text-cyan-50">
+                                                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-100/65">Working read</div>
+                                                        {entry.workingRead}
+                                                    </div>
+                                                ) : null}
                                                 {entry.move ? (
                                                     <div className="mt-2 rounded-lg border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-2 text-sm font-semibold leading-6 text-emerald-50">
                                                         {entry.move}
@@ -1947,6 +2000,15 @@ function MemoryDrawer({
                                                         className="resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-blue-200/35"
                                                     />
                                                 </label>
+                                                <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">
+                                                    Working read
+                                                    <textarea
+                                                        rows={3}
+                                                        value={draft.workingRead}
+                                                        onChange={(event) => setDraft((current) => ({ ...current, workingRead: event.target.value }))}
+                                                        className="resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm normal-case leading-6 tracking-normal text-white outline-none focus:border-blue-200/35"
+                                                    />
+                                                </label>
                                                 <button
                                                     type="button"
                                                     onClick={() => saveEdit(item)}
@@ -1958,6 +2020,12 @@ function MemoryDrawer({
                                             </div>
                                         ) : (
                                             <div className="grid gap-3">
+                                                {item.workingRead ? (
+                                                    <div className="rounded-lg border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-3 text-sm leading-6 text-cyan-50">
+                                                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-100/65">Working read</div>
+                                                        {item.workingRead}
+                                                    </div>
+                                                ) : null}
                                                 <div className="rounded-lg border border-white/10 bg-black/18 px-3 py-3 text-sm leading-6 text-zinc-300">
                                                     {item.question || 'No question saved.'}
                                                 </div>
@@ -1985,6 +2053,7 @@ export default function HomePage() {
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
     const workSurfaceRef = useRef(null);
+    const resultFocusRef = useRef(null);
     const bootPromptRef = useRef(false);
     const privateRecallResumeRef = useRef(false);
     const privateRecallSearchRef = useRef(0);
@@ -2155,6 +2224,15 @@ export default function HomePage() {
             workSurfaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 80);
     }, [artifactBusy, sendableDraft, workSurfaceOpen]);
+
+    useEffect(() => {
+        if (!result || busy) return undefined;
+        const timer = window.setTimeout(() => {
+            resultFocusRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            resultFocusRef.current?.focus({ preventScroll: true });
+        }, 80);
+        return () => window.clearTimeout(timer);
+    }, [busy, result]);
 
     async function turnOnPrivateRecall() {
         try {
@@ -2404,15 +2482,18 @@ export default function HomePage() {
     }
 
     function rememberMirror(mirror = {}) {
+        const workingRead = mirror.workingRead || mirror.observation || mirror.reflection || '';
         const saved = saveMirrorDefault({
             question: mirror.question,
             move: mirror.move,
+            workingRead,
             source: 'home',
         });
         const nextLedger = saveContinuityEntry({
             intent: lastIntent || mirror.question,
             question: mirror.question,
             move: mirror.move,
+            workingRead,
             source: 'user_save',
         });
         setActiveDefault(saved);
@@ -2450,7 +2531,11 @@ export default function HomePage() {
     }
 
     function useContinuity(entry, source = 'memory_drawer') {
-        const intent = [entry?.intent, entry?.move].filter(Boolean).join(' Next: ');
+        const intent = [
+            entry?.intent,
+            entry?.workingRead ? `Working read: ${entry.workingRead}` : '',
+            entry?.move ? `Next: ${entry.move}` : '',
+        ].filter(Boolean).join('\n\n');
         setMemoryOpen(false);
         reflect(intent || 'Use what I saved here.', 'saved_context');
         trackEvent('continuity_used', { page: 'home', source });
@@ -2462,7 +2547,11 @@ export default function HomePage() {
             return;
         }
 
-        const intent = [activeDefault?.question, activeDefault?.move].filter(Boolean).join(' Next: ');
+        const intent = [
+            activeDefault?.question,
+            activeDefault?.workingRead ? `Working read: ${activeDefault.workingRead}` : '',
+            activeDefault?.move ? `Next: ${activeDefault.move}` : '',
+        ].filter(Boolean).join('\n\n');
         reflect(intent || 'Use what I saved here.', 'saved_context');
         trackEvent('mirror_default_used', { page: 'home', source: 'home_cue' });
     }
@@ -2777,13 +2866,13 @@ export default function HomePage() {
     const showMirror = Boolean(result || busy || lastIntent);
     const hasWorkSurface = workSurfaceOpen && Boolean(sendableDraft || artifactBusy);
     const canSubmit = text.trim().length >= 4 && !isMakeFormatOnly(text);
-    const fieldAwake = showMirror || text.trim().length > 0;
     const savedCount = savedHomeChats.length + mirrorDefaults.length + continuityLedger.length;
     const isLight = theme === 'light';
-    const canSaveCurrentChat = showMirror
-        && Boolean(result)
-        && !busy
-        && !['privacy_hold', 'setup_ready', 'start_help'].includes(result?.kind);
+    const usingWorkingMoment = Boolean(
+        result
+        && !isConversationResult(result)
+        && !['privacy_hold', 'setup_ready', 'start_help', 'artifact_first'].includes(result?.kind),
+    );
     const showKeepChatNudge = showMirror
         && Boolean(result)
         && !busy
@@ -2801,8 +2890,6 @@ export default function HomePage() {
 
     return (
         <div data-product-mode="mirror" className="am-shell relative min-h-dvh overflow-hidden selection:bg-emerald-300/25">
-            <ReflectionField awake={fieldAwake} />
-
             <header className="relative z-10 px-4 py-3 sm:py-4">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
                     <Link to="/" className="inline-flex min-h-10 items-center gap-3 rounded-full pr-2">
@@ -2837,7 +2924,10 @@ export default function HomePage() {
             </div>
 
             <main className={`relative z-10 mx-auto flex min-h-[calc(100dvh-116px)] w-full flex-col justify-center gap-3 px-4 pb-4 pt-4 sm:min-h-[calc(100dvh-128px)] sm:gap-4 sm:pb-5 sm:pt-8 lg:pb-8 ${hasWorkSurface ? 'max-w-6xl' : 'max-w-3xl'}`}>
-                <section className={`relative w-full overflow-hidden ${hasWorkSurface ? 'mx-auto max-w-3xl' : ''} ${showMirror ? 'border-y border-[var(--am-border)] py-3 sm:py-5 lg:py-6' : 'px-0 py-8 sm:py-10'}`}>
+                <section
+                    className={`relative w-full overflow-hidden ${hasWorkSurface ? 'mx-auto max-w-3xl' : ''} ${showMirror ? 'border-y border-[var(--am-border)] py-3 sm:py-5 lg:py-6' : 'px-0 py-8 sm:py-10'}`}
+                    data-testid={showMirror ? undefined : 'mirror-first-turn'}
+                >
                     {showMirror ? (
                         <>
                             <div className="pointer-events-none absolute inset-x-4 top-0 h-0.5 bg-[var(--am-primary)]" />
@@ -2849,41 +2939,13 @@ export default function HomePage() {
                             <MirrorLogo />
                         </div>
 
-                        <h1 className={`mx-auto w-full max-w-[18.5rem] break-words font-semibold leading-[1.02] tracking-normal sm:max-w-xl ${isLight ? 'text-[var(--am-ink)]' : 'text-white'} ${showMirror ? 'text-2xl sm:text-[3.1rem] sm:leading-[0.98] lg:text-[3.65rem]' : 'text-[2.45rem] sm:text-[4.85rem] sm:leading-[0.98]'}`}>
-                            What do you want?
+                        <h1 className={`mx-auto w-full break-words font-semibold leading-[1.02] tracking-normal ${showMirror ? 'max-w-2xl text-2xl sm:text-3xl sm:leading-[1]' : 'max-w-[22rem] text-[2.45rem] sm:max-w-3xl sm:text-[4.35rem] sm:leading-[0.98]'} ${isLight ? 'text-[var(--am-ink)]' : 'text-white'}`}>
+                            {showMirror ? 'Build the next version.' : 'Bring the unfinished thing.'}
                         </h1>
 
                         {!showMirror ? (
-                            <div className={`mt-2.5 text-sm font-semibold tracking-normal sm:mt-3 sm:text-base ${isLight ? 'text-stone-600' : 'text-cyan-100/80'}`}>
-                                Reflection &gt; Prediction
-                            </div>
-                        ) : null}
-
-                        {!showMirror ? (
-                            <div className="mx-auto mt-4 grid max-w-xl gap-2 sm:mt-5 sm:grid-cols-2">
-                                <Link
-                                    to="/id"
-                                    onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'start_here_action' })}
-                                    className="am-primary-action inline-flex min-h-12 items-center justify-center gap-2 px-5 text-[0.98rem] font-bold sm:min-h-14 sm:text-base"
-                                >
-                                    Start here
-                                    <ArrowRight size={17} />
-                                </Link>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="application/json,.json"
-                                    onChange={uploadSavedChoices}
-                                    className="hidden"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="am-secondary-action inline-flex min-h-12 items-center justify-center gap-2 px-5 text-[0.98rem] font-bold sm:min-h-14 sm:text-base"
-                                >
-                                    <Upload size={17} />
-                                    Load saved setup
-                                </button>
+                            <div className={`mx-auto mt-3 max-w-xl text-sm font-medium leading-6 tracking-normal sm:mt-4 sm:text-base ${isLight ? 'text-stone-600' : 'text-cyan-100/80'}`}>
+                                A rough note, decision, or draft is enough. Make a first version, test the weak point, then improve it.
                             </div>
                         ) : null}
 
@@ -2897,7 +2959,7 @@ export default function HomePage() {
                                     value={text}
                                     maxLength={1000}
                                     aria-describedby="active-mirror-intent-help"
-                                    placeholder="Type anything: make a poster, decide, fix, understand..."
+                                    placeholder="Start messy: I have an idea, but I do not know how to ship it."
                                     onChange={(event) => {
                                         setText(event.target.value);
                                         setPrivateRecallDismissedText('');
@@ -2946,7 +3008,7 @@ export default function HomePage() {
 
                         {!showMirror ? (
                             <div className="mx-auto mt-3 max-w-2xl sm:mt-4">
-                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>Try one</div>
+                                <div className={`mb-2 text-center text-sm font-semibold tracking-normal ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>Start with a move</div>
                                 <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                                 {STARTER_ACTIONS.map((item) => {
                                     const Icon = item.icon;
@@ -2975,7 +3037,32 @@ export default function HomePage() {
                                         className={`inline-flex min-h-9 items-center justify-center gap-2 rounded-full border px-3 text-sm font-semibold transition sm:min-h-10 sm:px-3.5 ${isLight ? 'border-stone-300/70 bg-white/52 text-stone-600 hover:border-blue-400/35 hover:bg-white hover:text-stone-950' : 'border-white/[0.08] bg-white/[0.028] text-zinc-400 hover:border-blue-200/30 hover:bg-blue-200/[0.055] hover:text-white'}`}
                                     >
                                         <Sparkles size={15} className={isLight ? 'text-blue-500' : 'text-blue-200'} />
-                                        Meet Active Mirror
+                                        How this works
+                                    </button>
+                                </div>
+                                <div className={`mt-2.5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-semibold ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>
+                                    <Link
+                                        to="/id"
+                                        onClick={() => trackEvent('cta_clicked', { page: 'home', target: 'private_context_setup' })}
+                                        className={`inline-flex min-h-9 items-center gap-1.5 transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}
+                                    >
+                                        Set a private context
+                                        <ArrowRight size={13} />
+                                    </Link>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="application/json,.json"
+                                        onChange={uploadSavedChoices}
+                                        className="hidden"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className={`inline-flex min-h-9 items-center gap-1.5 transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}
+                                    >
+                                        <Upload size={13} />
+                                        Load saved context
                                     </button>
                                 </div>
                             </div>
@@ -3027,25 +3114,17 @@ export default function HomePage() {
                                     Saved: {savedCount}
                                 </button>
                             ) : null}
-                            {canSaveCurrentChat ? (
+                            {(!showMirror || chatMemoryEnabled) ? (
                                 <button
                                     type="button"
-                                    onClick={saveCurrentChat}
-                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/50 text-stone-600 hover:border-blue-400/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:border-blue-200/30 hover:text-white'}`}
+                                    onClick={toggleChatMemory}
+                                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/54 text-stone-600 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-400 hover:border-cyan-200/30 hover:text-white'}`}
+                                    aria-pressed={chatMemoryEnabled}
                                 >
-                                    <BookmarkPlus size={13} />
-                                    Save chat
+                                    {chatMemoryEnabled ? <Check size={13} /> : <Save size={13} />}
+                                    {chatMemoryEnabled ? 'Thread kept here' : 'Keep thread'}
                                 </button>
                             ) : null}
-                            <button
-                                type="button"
-                                onClick={toggleChatMemory}
-                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/54 text-stone-600 hover:border-cyan-500/35 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.035] text-zinc-400 hover:border-cyan-200/30 hover:text-white'}`}
-                                aria-pressed={chatMemoryEnabled}
-                            >
-                                {chatMemoryEnabled ? <Check size={13} /> : <Save size={13} />}
-                                {chatMemoryEnabled ? 'Chat kept here' : 'Keep chat'}
-                            </button>
                             <button
                                 type="button"
                                 onClick={() => setPrivateRecallOpen(true)}
@@ -3076,7 +3155,17 @@ export default function HomePage() {
                 {showMirror ? (
                     <section className={`grid min-w-0 gap-3 ${hasWorkSurface ? 'lg:grid-cols-[minmax(0,0.95fr)_minmax(340px,0.72fr)] lg:items-start' : ''}`}>
                         <div className="grid min-w-0 gap-3">
-                            <div lang={result?.reply_language || 'en'} data-response-language={result?.reply_language || 'en'}>
+                            <div
+                                ref={resultFocusRef}
+                                tabIndex={-1}
+                                role="region"
+                                aria-live="polite"
+                                aria-atomic="true"
+                                aria-label="Active Mirror result"
+                                className="outline-none"
+                                lang={result?.reply_language || 'en'}
+                                data-response-language={result?.reply_language || 'en'}
+                            >
                                 <MirrorResult
                                     result={result}
                                     intent={lastIntent}
@@ -3089,24 +3178,25 @@ export default function HomePage() {
                                         trackEvent('followup_clicked', { page: 'home', source });
                                         reflect(nextIntent, source);
                                     }}
+                                    onCreateArtifact={(kind, options = {}) => createArtifact(kind, options)}
                                 />
                             </div>
                             {showKeepChatNudge ? (
-                                <div className={`grid gap-3 rounded-lg border p-3.5 sm:ml-12 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 bg-white/62 text-stone-600' : 'border-cyan-200/14 bg-cyan-200/[0.045] text-zinc-400'}`}>
+                                <div className={`grid gap-3 border-y py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 text-stone-600' : 'border-cyan-200/14 text-zinc-400'}`}>
                                     <div className="min-w-0 text-sm leading-6">
-                                        This chat stays until this tab closes. Keep it here for later?
+                                        This working thread stays until this tab closes. Keep it on this device?
                                     </div>
                                     <button
                                         type="button"
                                         onClick={toggleChatMemory}
-                                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition ${isLight ? 'border-cyan-500/24 bg-cyan-50 text-cyan-800 hover:border-cyan-500/45 hover:bg-white' : 'border-cyan-200/24 bg-cyan-200/[0.08] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.12]'}`}
+                                        className={`inline-flex min-h-11 items-center justify-center gap-2 px-3.5 text-sm font-semibold transition ${isLight ? 'border border-cyan-500/24 bg-cyan-50 text-cyan-800 hover:border-cyan-500/45 hover:bg-white' : 'border border-cyan-200/24 bg-cyan-200/[0.08] text-cyan-50 hover:border-cyan-100/40 hover:bg-cyan-200/[0.12]'}`}
                                     >
                                         <Save size={15} />
-                                        Keep it
+                                        Keep thread
                                     </button>
                                 </div>
                             ) : null}
-                            {!busy && result && !isConversationResult(result) && !['privacy_hold', 'setup_ready', 'artifact_first'].includes(result.kind) ? (
+                            {!busy && result && !usingWorkingMoment && !isConversationResult(result) && !['privacy_hold', 'setup_ready', 'artifact_first'].includes(result.kind) ? (
                                 <div className="grid gap-3 sm:pl-12">
                                     <div className="flex flex-wrap gap-2">
                                         {followUps.map((item) => {

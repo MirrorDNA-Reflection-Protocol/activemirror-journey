@@ -69,7 +69,7 @@ if (ledger) {
     'Live app: `https://activemirror.ai/app/`',
     'SWFI/client work: out of scope unless Paul explicitly switches lanes.',
     'Start from the user outcome, not the architecture.',
-    'Keep the first screen simple: `What do you want?`',
+    'Keep the first screen simple: `Bring the unfinished thing.`',
     'Bad news, partial status, and limits must be stated before success language.',
     'For a topic that will last more than one session, create a topic packet from `docs/TOPIC_PACKET_TEMPLATE.md`, save it under `docs/topic-packets/`',
   ]) {

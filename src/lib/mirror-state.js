@@ -284,19 +284,21 @@ function defaultMatches(item, key) {
         && (item?.savedAt === key || `${item?.question || ''}::${item?.move || ''}` === key);
 }
 
-function normalizeMirrorDefault({ question, move, source = 'reflection', savedAt } = {}) {
+function normalizeMirrorDefault({ question, move, workingRead, source = 'reflection', savedAt } = {}) {
     return {
         question: cleanDefaultText(question),
         move: cleanDefaultText(move),
+        workingRead: cleanDefaultText(workingRead),
         source: cleanDefaultText(source, 48),
         savedAt: savedAt || new Date().toISOString(),
     };
 }
 
-function normalizeContinuityEntry({ intent, question, move, source = 'reflection', savedAt } = {}) {
+function normalizeContinuityEntry({ intent, question, move, workingRead, source = 'reflection', savedAt } = {}) {
     return {
         intent: cleanDefaultText(intent || question, 220),
         move: cleanDefaultText(move, 220),
+        workingRead: cleanDefaultText(workingRead, 260),
         source: cleanDefaultText(source, 48),
         savedAt: savedAt || new Date().toISOString(),
     };
@@ -439,8 +441,8 @@ export function getMirrorDefaults() {
 }
 
 /** Save one approved reflection pattern as a browser-local default. */
-export function saveMirrorDefault({ question, move, source = 'reflection' } = {}) {
-    const item = normalizeMirrorDefault({ question, move, source });
+export function saveMirrorDefault({ question, move, workingRead, source = 'reflection' } = {}) {
+    const item = normalizeMirrorDefault({ question, move, workingRead, source });
 
     if (!item.question && !item.move) return getActiveMirrorDefault();
 
@@ -466,8 +468,8 @@ export function getContinuityLedger() {
 }
 
 /** Save one user-approved continuity entry. Never called automatically. */
-export function saveContinuityEntry({ intent, question, move, source = 'reflection' } = {}) {
-    const item = normalizeContinuityEntry({ intent, question, move, source });
+export function saveContinuityEntry({ intent, question, move, workingRead, source = 'reflection' } = {}) {
+    const item = normalizeContinuityEntry({ intent, question, move, workingRead, source });
     if (!item.intent && !item.move) return getContinuityLedger();
 
     const current = _read();

@@ -9,6 +9,7 @@ Use this wiki when a thread, agent, or contributor needs to know what Active Mir
 - [Current Product Map](./current-product-map.md)
 - [User Flow](./user-flow.md)
 - [Language Guide](./language-guide.md)
+- [Paul Desai Biography](./paul-desai.md)
 - [Research References](./research-references.md)
 - [Build And Deploy Runbook](./build-and-deploy.md)
 - [Open Questions](./open-questions.md)
@@ -47,7 +48,7 @@ Default target:
 Consumer Active Mirror starts with one thing:
 
 ```text
-What do you want?
+Bring the unfinished thing.
 ```
 
 Everything else should help the user get from that sentence to a useful next move, a small output, or a saved preference they explicitly chose.

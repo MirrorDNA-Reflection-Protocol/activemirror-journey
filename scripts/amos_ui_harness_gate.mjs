@@ -435,7 +435,7 @@ function selfTest() {
     assert(allowed.decision === 'allow', 'UI harness request should allow');
     assert(allowed.performed_live_action === false, 'UI harness must not perform live action');
     assert(allowed.runtime_adapter_result.input_hash.length === 64, 'UI harness should carry runtime input hash');
-    assert(allowed.receipt.ui_harness_receipt.ui_projection.entry_question === 'What do you want?', 'UI harness should preserve entry question');
+    assert(allowed.receipt.ui_harness_receipt.ui_projection.entry_question === 'Bring the unfinished thing.', 'UI harness should preserve entry question');
 
     const blocked = gateUiHarness(readJson(path.join(contractDir, 'ui_harness.live_blocked.example.json'), 'blocked ui harness request'), { ...defaults, timestamp: '20260707T000301Z' });
     assert(!blocked.ok, 'live UI harness request should block');

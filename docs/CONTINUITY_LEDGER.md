@@ -17,7 +17,7 @@ It exists to prevent repo confusion, repeated strategy loops, stale deploy assum
 ## Standing Rules
 
 - Start from the user outcome, not the architecture.
-- Keep the first screen simple: `What do you want?`
+- Keep the first screen simple: `Bring the unfinished thing.`
 - Keep consumer copy short, normal, and non-technical.
 - Do not expose model names publicly until routing and policy are settled.
 - Do not expose client names or confidential deployment details.

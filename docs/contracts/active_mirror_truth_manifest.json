@@ -20,6 +20,7 @@
     "src/components/ReflectionCardActions.jsx",
     "src/components/TruthStateNotice.jsx",
     "src/components/MirrorFeedback.jsx",
+    "src/components/MirrorMoment.jsx",
     "src/lib/first-turn-fallback.js",
     "src/lib/local-mirror-sense.js",
     "src/lib/mirror-state.js",
@@ -89,7 +90,8 @@
         "src/pages/HomePage.jsx",
         "src/pages/DeviceExperience.jsx",
         "src/lib/privacy-events.js",
-        "src/lib/mirror-state.js"
+        "src/lib/mirror-state.js",
+        "src/components/MirrorMoment.jsx"
       ]
     },
     {

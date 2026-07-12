@@ -1,27 +1,29 @@
 # User Flow
 
-Last checked: 2026-07-08.
+Last checked: 2026-07-12.
 
 ## First Screen
 
-The first screen should ask:
+The first screen should lead with:
 
 ```text
-What do you want?
+Bring the unfinished thing.
 ```
 
 Primary paths:
 
-- `Start here` opens `/id`.
-- `Load saved setup` imports an Active Mirror setup JSON file.
-- The input lets the user type directly without setup.
-- `Try one` offers five low-friction starts: `Make`, `Decide`, `Fix`,
-  `Understand`, and `Fun`.
-- `Meet Active Mirror` opens a short guided explanation with personality,
+- The input is primary and lets the user type directly without setup.
+- `Set a private context` opens `/id` as a secondary path.
+- `Load saved context` imports an Active Mirror setup JSON file.
+- `Start with a move` offers five low-friction starts: `Make`, `Decide`, `Fix`,
+  `Understand`, and `Talk`.
+- `How this works` opens a short guided explanation with personality,
   not a technical product tour.
 
-The launcher can offer many activities after the first click, but the first
-screen should stay limited to the five moves above.
+The first useful response is a working read: what was heard, a bounded
+observation, a first draft, explicit `Challenge` and `Improve` actions, and an
+`Evidence and boundary` disclosure. `Public draft` creates a reviewable draft;
+it must never imply publication.
 
 ## Setup Flow
 

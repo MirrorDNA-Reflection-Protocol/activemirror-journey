@@ -38,13 +38,12 @@ const required = [
     [homePage, 'setHomeChatContinuityEnabled(true', 'home page has explicit enable path'],
     [homePage, 'clearHomeChatContinuity({ keepEnabled:', 'home page can clear current chat'],
     [homePage, 'showKeepChatNudge', 'home page nudges after a useful answer instead of hiding the option'],
-    [homePage, 'This chat stays until this tab closes. Keep it here for later?', 'visible post-answer copy describes session lifetime accurately'],
-    [homePage, 'Keep it', 'visible post-answer enable action stays plain'],
-    [homePage, 'Save chat', 'visible saved chat action stays plain'],
+    [homePage, 'This working thread stays until this tab closes. Keep it on this device?', 'visible post-answer copy describes session lifetime accurately'],
+    [homePage, 'Keep thread', 'visible post-answer enable action stays plain'],
     [homePage, 'Saved chats', 'visible saved chat section stays plain'],
     [homePage, 'Open chat', 'visible saved chat restore action stays plain'],
-    [homePage, 'Keep chat', 'visible opt-in copy stays plain'],
-    [homePage, 'Chat kept here', 'visible enabled state is plain'],
+    [homePage, 'Keep thread', 'visible opt-in copy stays plain'],
+    [homePage, 'Thread kept here', 'visible enabled state is plain'],
     [homePage, 'Clear', 'visible clear control exists'],
 ];
 

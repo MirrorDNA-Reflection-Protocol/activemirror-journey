@@ -13,6 +13,7 @@ const scanFiles = [
     'src/pages/Privacy.jsx',
     'src/pages/Terms.jsx',
     'src/components/MirrorFeedback.jsx',
+    'src/components/MirrorMoment.jsx',
     'src/components/ReflectionCardActions.jsx',
 ];
 
@@ -71,16 +72,16 @@ const bannedConsumerTerms = [
 ];
 
 const requiredTerms = [
-    { pattern: /What do you want\?/i, label: 'front-door question' },
-    { pattern: /Start here/i, label: 'front-door start button' },
-    { pattern: /Load saved setup/i, label: 'front-door upload button' },
-    { pattern: /Type anything: make a poster, decide, fix, understand/i, label: 'plain first-use helper' },
+    { pattern: /Bring the unfinished thing\./i, label: 'front-door creation promise' },
+    { pattern: /Set a private context/i, label: 'front-door private-context path' },
+    { pattern: /Load saved context/i, label: 'front-door upload button' },
+    { pattern: /Start messy: I have an idea, but I do not know how to ship it\./i, label: 'plain first-use helper' },
     { pattern: /Make/i, label: 'front-door starter: make' },
     { pattern: /Decide/i, label: 'front-door starter: decide' },
     { pattern: /Fix/i, label: 'front-door starter: fix' },
     { pattern: /Understand/i, label: 'front-door starter: understand' },
-    { pattern: /Fun/i, label: 'front-door starter: fun' },
-    { pattern: /Surprise me/i, label: 'front-door starter: fun caption' },
+    { pattern: /Talk/i, label: 'front-door starter: talk' },
+    { pattern: /Think aloud/i, label: 'front-door starter: talk caption' },
     { pattern: /Save only if you choose/i, label: 'privacy choice promise' },
     { pattern: /Set it up\./i, label: 'setup: quick setup headline' },
     { pattern: /What are you here for\?/i, label: 'setup: help question' },
@@ -91,10 +92,11 @@ const requiredTerms = [
     { pattern: /Start chat/i, label: 'setup: start chat' },
     { pattern: /Saved on this device/i, label: 'setup: saved confirmation' },
     { pattern: /Keep a copy/i, label: 'setup: portable download' },
-    { pattern: /Another angle/i, label: 'first-use follow-up: another angle' },
-    { pattern: /Check it/i, label: 'first-use follow-up: answer check' },
-    { pattern: /Draft it/i, label: 'first-use follow-up: draft it' },
-    { pattern: /Pick the move/i, label: 'loop brake follow-up' },
+    { pattern: /Working read/i, label: 'first response working-read heading' },
+    { pattern: /Challenge/i, label: 'first response challenge action' },
+    { pattern: /Improve/i, label: 'first response improve action' },
+    { pattern: /Evidence and boundary/i, label: 'first response evidence action' },
+    { pattern: /Public draft/i, label: 'first response public draft remains bounded' },
 ];
 
 const mainEntry = read('src/main.jsx');

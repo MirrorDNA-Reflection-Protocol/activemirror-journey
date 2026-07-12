@@ -31,6 +31,8 @@ export const CONVERSATION_PERSONALITY_CONTRACT = Object.freeze({
 });
 
 const EXPLICIT_REFLECTION_PATTERN = /\b(?:help me (?:decide|choose|figure out|plan|fix|solve|understand)|what should i do|what do i do|how should i|which (?:one|option) should i|give me (?:advice|a recommendation|a plan|a next step|a next move)|(?:next|best) (?:step|move)|make (?:a|the) decision|compare (?:my|the|these) options)\b/i;
+const EXPLICIT_CHAT_PATTERN = /\b(?:just talk|talk (?:to|with) me|chat with me|keep me company|no advice|without advice|no exercises?|without exercises?|no homework|tell me a joke|make me laugh|be silly|how are you)\b/i;
+const BARE_GREETING_PATTERN = /^(?:hey|hi|hello|yo|how are you|what'?s up)[\s.!?]*$/i;
 const SESSION_CONTEXT_TONES = new Set(['warm', 'direct', 'short', 'careful', 'playful']);
 
 function cleanText(value) {
@@ -57,7 +59,8 @@ function maskSessionContextText(value, limit = 480) {
 export function conversationRouteFor(intent, { source = 'typed' } = {}) {
     const text = cleanText(intent);
     if (source !== 'typed' || !text || EXPLICIT_REFLECTION_PATTERN.test(text)) return 'reflection';
-    return 'chat';
+    if (EXPLICIT_CHAT_PATTERN.test(text) || BARE_GREETING_PATTERN.test(text)) return 'chat';
+    return 'reflection';
 }
 
 export function normalizeSessionContextMessages(messages = []) {

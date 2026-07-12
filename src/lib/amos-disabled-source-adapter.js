@@ -47,7 +47,7 @@ export function createDisabledSourceAdapterProjection(uiHarnessReceipt) {
     performedLiveAction: false,
     route: projection.route || '/app/',
     surface: projection.surface || 'consumer_app',
-    entryQuestion: projection.entry_question || 'What do you want?',
+    entryQuestion: projection.entry_question || 'Bring the unfinished thing.',
     runtimeResult: runtime.result || 'not_run',
     inputHash: runtime.input_hash || '',
     blockedActions: [...DISABLED_SOURCE_ADAPTER_CONTRACT.blockedActions],

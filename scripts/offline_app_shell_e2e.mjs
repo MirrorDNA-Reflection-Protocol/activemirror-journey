@@ -89,7 +89,7 @@ try {
     });
 
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    await page.getByText('What do you want?', { exact: true }).waitFor({ state: 'visible' });
+    await page.getByText('Bring the unfinished thing.', { exact: true }).waitFor({ state: 'visible' });
     await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
     });
@@ -105,7 +105,7 @@ try {
     offlineStarted = true;
     await context.setOffline(true);
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.getByText('What do you want?', { exact: true }).waitFor({ state: 'visible' });
+    await page.getByText('Bring the unfinished thing.', { exact: true }).waitFor({ state: 'visible' });
     const offlineState = await page.evaluate(() => ({
         online: navigator.onLine,
         controlled: Boolean(navigator.serviceWorker.controller),
@@ -128,7 +128,7 @@ try {
         serviceWorkerRegistered: onlineState.registrations.some((scope) => scope.endsWith('/app/')),
         appShellCachePresent: onlineState.caches.some((name) => name.startsWith('active-mirror-app-shell-')),
         onlineViewportFits: onlineState.viewportFits,
-        offlineReloadRendered: offlineState.bodyText.includes('What do you want?'),
+        offlineReloadRendered: offlineState.bodyText.includes('Bring the unfinished thing.'),
         offlineBrowserState: offlineState.online === false,
         offlineServiceWorkerControlled: offlineState.controlled,
         offlineViewportFits: offlineState.viewportFits,

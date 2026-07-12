@@ -14,6 +14,7 @@ const scanFiles = [
     'src/pages/Privacy.jsx',
     'src/pages/FeedbackDashboard.jsx',
     'src/components/MirrorFeedback.jsx',
+    'src/components/MirrorMoment.jsx',
     'src/components/ReflectionCardActions.jsx',
     'src/components/TruthStateNotice.jsx',
 ];
@@ -24,6 +25,7 @@ const frontDoorFiles = new Set([
     'src/pages/DeviceExperience.jsx',
     'src/pages/FeedbackDashboard.jsx',
     'src/components/MirrorFeedback.jsx',
+    'src/components/MirrorMoment.jsx',
     'src/components/ReflectionCardActions.jsx',
     'src/components/TruthStateNotice.jsx',
 ]);
@@ -129,7 +131,10 @@ for (const file of scanFiles) {
         }
         if (frontDoorFiles.has(file)) {
             for (const rule of blockedFrontDoorLanguage) {
-                if (rule.label === 'front-door receipt machinery' && /\bmirror\.receipt\b/.test(line)) continue;
+                if (
+                    rule.label === 'front-door receipt machinery'
+                    && /\b(?:mirror|source)\.receipt\b|\breceipt\.(?:context_used|context_excluded|memory_decision)\b/.test(line)
+                ) continue;
                 if (rule.pattern.test(line)) {
                     failures.push(`${file}:${index + 1} ${rule.label}: ${line.trim()}`);
                 }

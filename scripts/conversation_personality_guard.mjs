@@ -45,6 +45,7 @@ for (const intent of [
     'Help me decide between these options.',
     'What should my next move be?',
     'No advice, just talk, but help me decide between A and B.',
+    'I am building solo with a rough idea for a weekly customer brief, but no dashboard or signup flow yet.',
 ]) {
     check(conversationRouteFor(intent) === 'reflection', `decision or next-move ask should use reflection: ${intent}`);
 }

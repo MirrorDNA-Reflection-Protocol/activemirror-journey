@@ -8,7 +8,7 @@
     "route": "/app/",
     "runtime_adapter_request": ".mirror/CONTRACTS/amos/browser_runtime_adapter.consumer.example.json",
     "ui_intent": {
-      "entry_question": "What do you want?",
+      "entry_question": "Bring the unfinished thing.",
       "primary_action": "local_chat_turn",
       "response_surface": "inline_answer",
       "secondary_surface": "receipt_status",
