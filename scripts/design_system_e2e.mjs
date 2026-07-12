@@ -11,6 +11,7 @@ const outputDir = path.resolve(process.env.ACTIVE_MIRROR_E2E_OUTPUT || 'outputs/
 const consoleEvents = [];
 const pageErrors = [];
 const networkFailures = [];
+const eventRequests = [];
 const assertions = {};
 const journeys = [];
 
@@ -264,6 +265,28 @@ async function runJourney(browser, config) {
             }),
         });
     });
+    await context.route('https://gateway.activemirror.ai/v1/events', async (route) => {
+        const request = route.request();
+        let payload = null;
+        try {
+            payload = JSON.parse(request.postData() || 'null');
+        } catch {
+            payload = null;
+        }
+        eventRequests.push({
+            journey: config.label,
+            method: request.method(),
+            payload,
+        });
+        await route.fulfill({
+            status: 204,
+            headers: {
+                'Access-Control-Allow-Origin': new URL(baseUrl).origin,
+                'Cache-Control': 'no-store',
+                'X-Active-Mirror-E2E-Fixture': 'privacy-event',
+            },
+        });
+    });
     await context.addInitScript(() => localStorage.setItem('mirror-theme', 'dark'));
     await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
     const page = await context.newPage();
@@ -386,6 +409,17 @@ try {
 }
 
 const consoleErrors = consoleEvents.filter((event) => event.type === 'error');
+const allowedEventKeys = new Set(['event', 'session', 'ts', 'page', 'surface']);
+const invalidEventRequests = eventRequests.filter(({ method, payload }) => {
+    if (method !== 'POST' || !payload || typeof payload !== 'object' || Array.isArray(payload)) return true;
+    if (Object.keys(payload).some((key) => !allowedEventKeys.has(key))) return true;
+    if (!/^[a-z0-9_]{1,64}$/.test(String(payload.event || ''))) return true;
+    if (!/^[a-z0-9-]{1,64}$/i.test(String(payload.session || ''))) return true;
+    if (Number.isNaN(Date.parse(String(payload.ts || '')))) return true;
+    return ['page', 'surface'].some((key) => !/^[a-z0-9_-]{1,64}$/i.test(String(payload[key] || '')));
+});
+assert('browser.privacy_event_fixture_observed', eventRequests.length > 0, `${eventRequests.length}`);
+assert('browser.privacy_event_metadata_only', invalidEventRequests.length === 0, JSON.stringify(invalidEventRequests));
 assert('browser.console_errors_absent', consoleErrors.length === 0 && pageErrors.length === 0, JSON.stringify({ consoleErrors, pageErrors }));
 assert('browser.unexpected_network_failures_absent', networkFailures.length === 0, JSON.stringify(networkFailures));
 
@@ -410,7 +444,7 @@ const report = {
         'gradient, font-CDN, nested-surface, and horizontal-overflow runtime checks',
         'reduced motion at mobile viewport',
         'Hindi local fallback language binding and text fit',
-        'isolated read-only gateway fixtures for enterprise stream and health status',
+        'isolated gateway fixtures for enterprise stream, health status, and metadata-only privacy events',
         'console, page, and network failures',
     ],
     unchecked_scope: [
@@ -422,6 +456,7 @@ const report = {
 };
 
 await fs.writeFile(path.join(outputDir, 'console-logs.json'), `${JSON.stringify({ consoleEvents, pageErrors }, null, 2)}\n`);
+await fs.writeFile(path.join(outputDir, 'privacy-event-requests.json'), `${JSON.stringify(eventRequests, null, 2)}\n`);
 await fs.writeFile(path.join(outputDir, 'network-failures.json'), `${JSON.stringify(networkFailures, null, 2)}\n`);
 await fs.writeFile(path.join(outputDir, 'test-report.json'), `${JSON.stringify(report, null, 2)}\n`);
 
