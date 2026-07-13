@@ -130,6 +130,71 @@ html {
     letter-spacing: 0;
 }
 
+/*
+ * Older public routes were composed with dark-only Tailwind utilities before
+ * the shared theme existed. Keep the repair scoped to those tagged routes so
+ * the established adaptive surfaces and the self-contained MirrorProd surface
+ * keep their own contracts.
+ */
+[data-theme="light"] .am-theme-parity {
+    background-color: var(--am-canvas);
+    color: var(--am-ink);
+}
+
+[data-theme="light"] .am-theme-parity.text-white,
+[data-theme="light"] .am-theme-parity .text-white,
+[data-theme="light"] .am-theme-parity [class*="text-zinc-100"],
+[data-theme="light"] .am-theme-parity [class*="text-zinc-200"],
+[data-theme="light"] .am-theme-parity [class*="text-zinc-300"] {
+    color: var(--am-ink);
+}
+
+[data-theme="light"] .am-theme-parity [class*="text-zinc-400"] {
+    color: var(--am-muted);
+}
+
+[data-theme="light"] .am-theme-parity [class*="text-cyan-"] ,
+[data-theme="light"] .am-theme-parity [class*="text-blue-"] {
+    color: var(--am-focus);
+}
+
+[data-theme="light"] .am-theme-parity [class*="text-teal-"] {
+    color: var(--am-primary);
+}
+
+[data-theme="light"] .am-theme-parity [class*="text-emerald-"] {
+    color: var(--am-verified);
+}
+
+[data-theme="light"] .am-theme-parity [class*="text-amber-"] {
+    color: var(--am-warning);
+}
+
+[data-theme="light"] .am-theme-parity [class*="text-red-"] {
+    color: var(--am-danger);
+}
+
+[data-theme="light"] .am-theme-parity [class*="hover:text-white"]:hover {
+    color: var(--am-ink);
+}
+
+[data-theme="light"] .am-theme-parity.bg-black,
+[data-theme="light"] .am-theme-parity [class*="bg-black/"] {
+    background-color: var(--am-surface-subtle);
+}
+
+[data-theme="light"] .am-theme-parity [class*="bg-white/"] {
+    background-color: var(--am-surface);
+}
+
+[data-theme="light"] .am-theme-parity [class*="border-white/"] {
+    border-color: var(--am-border);
+}
+
+[data-theme="light"] .am-theme-parity [class*="ring-white/"] {
+    --tw-ring-color: var(--am-border);
+}
+
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;

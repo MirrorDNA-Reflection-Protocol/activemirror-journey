@@ -909,7 +909,7 @@ export default function Enterprise() {
     }, [location.pathname]);
 
     return (
-        <div className="min-h-dvh overflow-hidden bg-black text-white selection:bg-emerald-500/30">
+        <div className="am-theme-parity min-h-dvh overflow-hidden bg-black text-white selection:bg-emerald-500/30">
             <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <main className="relative z-10 mx-auto max-w-6xl px-5 py-8 sm:py-12">

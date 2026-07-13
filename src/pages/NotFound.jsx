@@ -5,7 +5,7 @@ import MirrorLogo from '../components/MirrorLogo';
 
 export default function NotFound() {
     return (
-        <div className="relative min-h-screen font-sans text-white overflow-x-hidden selection:bg-teal-500/30 flex items-center justify-center">
+        <div className="am-theme-parity relative min-h-screen font-sans text-white overflow-x-hidden selection:bg-teal-500/30 flex items-center justify-center">
             {/* AMBIENT LAYERS */}
             <div className="fixed inset-0 z-0 bg-[var(--am-canvas)]"></div>
 

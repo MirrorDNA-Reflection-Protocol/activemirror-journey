@@ -58,7 +58,7 @@ export default function App() {
         <ThemeProvider>
             <BrowserRouter basename={basename}>
                 <ScrollToTop />
-                <Suspense fallback={<div className="min-h-screen bg-black text-white" />}>
+                <Suspense fallback={<div className="min-h-screen bg-[var(--am-canvas)] text-[var(--am-ink)]" />}>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/id" element={<Start />} />

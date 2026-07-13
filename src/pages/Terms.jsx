@@ -12,7 +12,7 @@ const prohibited = [
 
 export default function Terms() {
     return (
-        <div className="min-h-dvh bg-black text-white">
+        <div className="am-theme-parity min-h-dvh bg-black text-white">
             <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <main className="relative z-10 mx-auto max-w-3xl px-5 py-10 sm:py-14">

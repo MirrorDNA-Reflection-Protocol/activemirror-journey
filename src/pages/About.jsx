@@ -15,7 +15,7 @@ const whatItAvoids = [
 
 export default function About() {
     return (
-        <div className="min-h-dvh bg-[var(--am-canvas)] text-white">
+        <div className="am-theme-parity min-h-dvh bg-[var(--am-canvas)] text-white">
             <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <main className="relative z-10 mx-auto max-w-4xl px-5 py-10 sm:py-14">

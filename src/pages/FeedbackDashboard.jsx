@@ -165,7 +165,7 @@ export default function FeedbackDashboard() {
     }, []);
 
     return (
-        <div className="relative min-h-dvh overflow-x-hidden bg-black text-white">
+        <div className="am-theme-parity relative min-h-dvh overflow-x-hidden bg-black text-white">
             <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">

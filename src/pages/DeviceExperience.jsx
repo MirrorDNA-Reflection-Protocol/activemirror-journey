@@ -412,7 +412,7 @@ export default function DeviceExperience() {
 
     if (isPhoneView) {
         return (
-            <div className="min-h-dvh overflow-x-hidden bg-black text-white">
+            <div className="am-theme-parity min-h-dvh overflow-x-hidden bg-black text-white">
                 <div className="fixed inset-0 bg-[var(--am-canvas)]" />
                 <header className="fixed inset-x-0 top-0 z-20 flex items-center justify-between border-b border-white/10 bg-black/75 px-4 py-3 backdrop-blur-xl">
                     <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-300">
@@ -528,7 +528,7 @@ export default function DeviceExperience() {
     }
 
     return (
-        <div className="min-h-dvh overflow-x-hidden bg-black text-white">
+        <div className="am-theme-parity min-h-dvh overflow-x-hidden bg-black text-white">
             <div className="fixed inset-0 bg-[var(--am-canvas)]" />
 
             <header className="relative z-10 border-b border-white/10 bg-black/55 px-4 py-3 backdrop-blur-xl">
