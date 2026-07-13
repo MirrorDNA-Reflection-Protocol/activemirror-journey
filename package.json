@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:design && npm run guard:continuity && npm run guard:chat-continuity && npm run guard:conversation && npm run guard:private-recall && npm run guard:amos-contracts && npm run guard:memory-proposal && npm run guard:approval-request && npm run guard:artifact-export && npm run guard:audit-log && npm run guard:receipt-chain && npm run guard:runtime-integration && npm run guard:shadow-adapter && npm run guard:readonly-app-adapter && npm run guard:browser-runtime-adapter && npm run guard:ui-harness && npm run guard:disabled-source-adapter && npm run guard:source-adapter-import-applied && npm run guard:source-adapter-invocation-contract && npm run guard:front-door && npm run guard:language && npm run guard:multilingual && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
+        "prebuild": "npm run guard:canonical && npm run guard:mirror && npm run guard:design && npm run guard:continuity && npm run guard:chat-continuity && npm run guard:conversation && npm run guard:private-recall && npm run guard:mirror-intro && npm run guard:amos-contracts && npm run guard:memory-proposal && npm run guard:approval-request && npm run guard:artifact-export && npm run guard:audit-log && npm run guard:receipt-chain && npm run guard:runtime-integration && npm run guard:shadow-adapter && npm run guard:readonly-app-adapter && npm run guard:browser-runtime-adapter && npm run guard:ui-harness && npm run guard:disabled-source-adapter && npm run guard:source-adapter-import-applied && npm run guard:source-adapter-invocation-contract && npm run guard:front-door && npm run guard:language && npm run guard:multilingual && npm run guard:friction && npm run guard:challenge && npm run guard:redaction && npm run truth",
         "build": "vite build --base=/app/ && cp dist/index.html dist/404.html",
         "prebuild:deploy": "npm run prebuild",
         "build:deploy": "VITE_ACTIVE_MIRROR_REMOTE_EVENTS=true vite build --base=/app/ && cp dist/index.html dist/404.html",
@@ -22,6 +22,7 @@
         "guard:chat-continuity": "node scripts/chat_continuity_guard.mjs",
         "guard:conversation": "node scripts/conversation_personality_guard.mjs",
         "guard:private-recall": "node scripts/private_recall_guard.mjs",
+        "guard:mirror-intro": "node scripts/mirror_intro_guard.mjs",
         "guard:front-door": "node scripts/front_door_guard.mjs",
         "guard:language": "node scripts/public_language_guard.mjs",
         "guard:multilingual": "node scripts/multilingual_guard.mjs",

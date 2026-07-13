@@ -17,6 +17,7 @@ const STATE_KEY = 'mirrorState_v1';
 const SESSION_CHAT_KEY = 'activeMirror_homeChat_session_v1';
 const PRIVATE_RECALL_LEGACY_KEY = 'activeMirrorPrivateRecall.v1';
 const SESSION_CONTEXT_MAX_MESSAGES = 4;
+const MIRROR_INTRO_TOPIC_IDS = new Set(['work', 'collaboration', 'ideas', 'availability']);
 
 // ── Default State ──
 
@@ -50,6 +51,7 @@ const DEFAULT_STATE = {
     privateRecall: {
         enabled: false,      // Consent flag only; recall files and text use origin-private stores
     },
+    mirrorIntro: null,       // Explicit user-authored, browser-local representative draft
 
     // Timestamps
     brainScanCompletedAt: null,
@@ -160,6 +162,57 @@ export function setPrivateRecallPreference(enabled) {
         localStorage.removeItem(PRIVATE_RECALL_LEGACY_KEY);
     } catch {}
     return Boolean(next.privateRecall?.enabled);
+}
+
+function cleanIntroText(value, limit = 220) {
+    return String(value || '').replace(/\s+/g, ' ').trim().slice(0, limit);
+}
+
+function normalizeMirrorIntro(value = {}) {
+    if (!value || typeof value !== 'object') return null;
+
+    const name = cleanIntroText(value.name, 80);
+    const summary = cleanIntroText(value.summary, 220);
+    const openTo = cleanIntroText(value.openTo, 220);
+    if (!name && !summary && !openTo) return null;
+
+    const topics = Array.isArray(value.topics)
+        ? [...new Set(value.topics
+            .map((topic) => cleanIntroText(topic, 48))
+            .filter((topic) => MIRROR_INTRO_TOPIC_IDS.has(topic)))]
+            .slice(0, 4)
+        : [];
+
+    return {
+        version: 1,
+        name,
+        summary,
+        openTo,
+        topics,
+        boundary: cleanIntroText(value.boundary, 220),
+        disclosure: true,
+        authority: 'draft',
+        updatedAt: value.updatedAt || new Date().toISOString(),
+    };
+}
+
+/** Read the one explicit browser-local representative draft, if the user saved one. */
+export function getMirrorIntro() {
+    return normalizeMirrorIntro(_read().mirrorIntro);
+}
+
+/** Save only an explicitly confirmed representative draft. This never sends or publishes it. */
+export function saveMirrorIntro(draft = {}) {
+    const intro = normalizeMirrorIntro({ ...draft, updatedAt: new Date().toISOString() });
+    if (!intro?.name || !intro?.summary || !intro?.openTo || !intro?.topics?.length) {
+        throw new Error('invalid_mirror_intro');
+    }
+    return setState({ mirrorIntro: intro }).mirrorIntro;
+}
+
+/** Remove the locally saved representative draft. */
+export function deleteMirrorIntro() {
+    return setState({ mirrorIntro: null }).mirrorIntro;
 }
 
 /** Save BrainScan results (called from Start.jsx COMPLETE phase). */

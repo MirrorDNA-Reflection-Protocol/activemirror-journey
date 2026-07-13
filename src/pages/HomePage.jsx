@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, LoaderCircle, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, LoaderCircle, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, UserRoundCheck, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
 import MirrorMoment from '../components/MirrorMoment';
 import PrivateRecallPanel from '../components/PrivateRecallPanel';
 import PrivateRecallSuggestions from '../components/PrivateRecallSuggestions';
+import MirrorIntroPanel from '../components/MirrorIntroPanel';
 import TrustStatusRail, { TrustStateMark } from '../components/TrustStatusRail';
 import { NeedsSources } from '../components/TruthStateNotice';
 import { useTheme } from '../contexts/ThemeContext';
@@ -23,6 +24,7 @@ import {
     clearHomeChatContinuity,
     clearContinuityLedger,
     clearMirrorDefault,
+    deleteMirrorIntro,
     clearSessionHomeChat,
     deleteHomeChatThread,
     deleteContinuityEntry,
@@ -33,12 +35,14 @@ import {
     getContinuityLedger,
     getHomeChatContinuity,
     getMirrorDefaults,
+    getMirrorIntro,
     getSessionHomeChat,
     importMirrorSettings,
     restoreHomeChatThread,
     saveContinuityEntry,
     saveHomeChatContinuity,
     saveHomeChatThread,
+    saveMirrorIntro,
     saveSessionHomeChat,
     saveMirrorDefault,
     setHomeChatContinuityEnabled,
@@ -2094,6 +2098,8 @@ export default function HomePage() {
     const [privateRecallStatus, setPrivateRecallStatus] = useState(() => getPrivateRecallSnapshot());
     const [privateRecallMatches, setPrivateRecallMatches] = useState([]);
     const [privateRecallDismissedText, setPrivateRecallDismissedText] = useState('');
+    const [mirrorIntro, setMirrorIntro] = useState(() => getMirrorIntro());
+    const [mirrorIntroOpen, setMirrorIntroOpen] = useState(false);
     const [importStatus, setImportStatus] = useState('');
     const [loopCount, setLoopCount] = useState(0);
     const [processingBoundary, setProcessingBoundary] = useState('local_device');
@@ -2569,6 +2575,37 @@ export default function HomePage() {
     function clearContinuity() {
         setContinuityLedger(clearContinuityLedger());
         trackEvent('continuity_cleared', { page: 'home', source: 'memory_drawer' });
+    }
+
+    function openMirrorIntro() {
+        setMirrorIntroOpen(true);
+        trackEvent('mirror_intro_opened', { page: 'home', source: mirrorIntro ? 'existing_intro' : 'new_intro' });
+    }
+
+    function saveMirrorIntroHere(draft) {
+        try {
+            const saved = saveMirrorIntro(draft);
+            setMirrorIntro(saved);
+            trackEvent('mirror_intro_saved', { page: 'home', source: 'explicit_save' });
+            return saved;
+        } catch {
+            trackEvent('mirror_intro_save_failed', { page: 'home', source: 'validation' });
+            return null;
+        }
+    }
+
+    function deleteMirrorIntroHere() {
+        deleteMirrorIntro();
+        setMirrorIntro(null);
+        trackEvent('mirror_intro_deleted', { page: 'home', source: 'explicit_delete' });
+    }
+
+    function refineMirrorIntro(preview) {
+        if (!preview) return;
+        setText(`Help me make this introduction clear, honest, and human. Keep the sentence that says Active Mirror is an AI representative, and do not suggest that it can contact people for me.\n\n${preview}`);
+        setMirrorIntroOpen(false);
+        trackEvent('mirror_intro_refine_started', { page: 'home', source: 'draft_to_chat' });
+        window.setTimeout(() => inputRef.current?.focus(), 60);
     }
 
     function currentChatSnapshot({ includeSessionContext = false } = {}) {
@@ -3069,6 +3106,14 @@ export default function HomePage() {
                                         <Upload size={13} />
                                         Load saved context
                                     </button>
+                                    <button
+                                        type="button"
+                                        onClick={openMirrorIntro}
+                                        className={`inline-flex min-h-9 items-center gap-1.5 transition ${isLight ? 'hover:text-stone-950' : 'hover:text-white'}`}
+                                    >
+                                        <UserRoundCheck size={13} />
+                                        {mirrorIntro ? 'Intro ready' : 'Make an intro'}
+                                    </button>
                                 </div>
                             </div>
                         ) : null}
@@ -3285,6 +3330,14 @@ export default function HomePage() {
                 onEnable={turnOnPrivateRecall}
                 onTurnOff={turnOffPrivateRecallHere}
                 onClear={clearPrivateRecallHere}
+            />
+            <MirrorIntroPanel
+                open={mirrorIntroOpen}
+                intro={mirrorIntro}
+                onClose={() => setMirrorIntroOpen(false)}
+                onSave={saveMirrorIntroHere}
+                onDelete={deleteMirrorIntroHere}
+                onRefine={refineMirrorIntro}
             />
         </div>
     );
