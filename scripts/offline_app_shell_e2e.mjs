@@ -4,8 +4,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium } from 'playwright';
+import { startProductionBundleServer } from './production_bundle_server.mjs';
 
-const baseUrl = String(process.env.ACTIVE_MIRROR_E2E_BASE_URL || 'http://127.0.0.1:4179/app/');
+let baseUrl = String(process.env.ACTIVE_MIRROR_E2E_BASE_URL || '').trim();
 const outputDir = path.resolve(process.env.ACTIVE_MIRROR_E2E_OUTPUT || 'outputs/offline-app-shell-e2e');
 
 async function sha256(filePath) {
@@ -38,8 +39,13 @@ let browser;
 let context;
 let page;
 let report;
+let bundleServer;
 
 try {
+    if (!baseUrl) {
+        bundleServer = await startProductionBundleServer();
+        baseUrl = bundleServer.baseUrl;
+    }
     browser = await chromium.launch({ headless: true });
     context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await context.route('https://gateway.activemirror.ai/v1/events', async (route) => {
@@ -90,9 +96,6 @@ try {
 
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     await page.getByText('Bring the unfinished thing.', { exact: true }).waitFor({ state: 'visible' });
-    await page.evaluate(async () => {
-        await navigator.serviceWorker.ready;
-    });
     await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 15000 });
     const onlineState = await page.evaluate(async () => ({
         controlled: Boolean(navigator.serviceWorker.controller),
@@ -225,4 +228,5 @@ try {
 } finally {
     if (context) await context.close().catch(() => {});
     if (browser) await browser.close().catch(() => {});
+    if (bundleServer) await bundleServer.close().catch(() => {});
 }

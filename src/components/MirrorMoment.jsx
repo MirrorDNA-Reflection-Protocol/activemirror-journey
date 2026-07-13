@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BookmarkPlus, Check, Copy, FileText, PencilLine, ScanSearch, Sparkles } from 'lucide-react';
+import { BookmarkPlus, Check, Copy, FileText, LockKeyhole, PencilLine, ScanSearch, Sparkles } from 'lucide-react';
 import { TrustStateMark } from './TrustStatusRail';
 
 const TRUST_STATES = new Set(['proposed', 'verified', 'rejected', 'rolled_back']);
@@ -54,6 +54,7 @@ export default function MirrorMoment({
     onChallenge,
     onImprove,
     onPublicNote,
+    onOpenSaved,
     busy = false,
 }) {
     const [copiedFallback, setCopiedFallback] = useState(false);
@@ -217,6 +218,30 @@ export default function MirrorMoment({
                     </button>
                 ) : null}
             </div>
+
+            {remembered ? (
+                <div
+                    className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--am-border)] pt-3"
+                    data-testid="mirror-private-record"
+                >
+                    <div className="flex min-w-0 items-start gap-2.5">
+                        <LockKeyhole size={15} className="mt-0.5 shrink-0 text-[var(--am-primary)]" aria-hidden="true" />
+                        <div className="min-w-0">
+                            <p className="text-sm font-semibold text-[var(--am-ink)]">Private record</p>
+                            <p className="mt-0.5 text-sm leading-6 text-[var(--am-muted)]">Saved by you on this browser. Sharing stays your choice.</p>
+                        </div>
+                    </div>
+                    {typeof onOpenSaved === 'function' ? (
+                        <button
+                            type="button"
+                            onClick={onOpenSaved}
+                            className="am-secondary-action inline-flex min-h-10 shrink-0 items-center justify-center px-3 text-xs font-semibold"
+                        >
+                            Open saved record
+                        </button>
+                    ) : null}
+                </div>
+            ) : null}
 
             <details className="mt-4 border-t border-[var(--am-border)] pt-3" data-testid="mirror-evidence">
                 <summary className="cursor-pointer text-sm font-semibold text-[var(--am-muted)] transition hover:text-[var(--am-ink)]">

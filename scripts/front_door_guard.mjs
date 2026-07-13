@@ -102,6 +102,7 @@ const requiredTerms = [
 const mainEntry = read('src/main.jsx');
 const viteConfig = read('vite.config.js');
 const offlineE2E = read('scripts/offline_app_shell_e2e.mjs');
+const productionBundleServer = read('scripts/production_bundle_server.mjs');
 const privacyEvents = read('src/lib/privacy-events.js');
 
 if (!mainEntry.includes(".register(`${import.meta.env.BASE_URL}service-worker.js`")) {
@@ -127,6 +128,12 @@ if (!viteConfig.includes("PRIVATE_RECALL_RUNTIME_CACHE = 'active-mirror-private-
 }
 if (!offlineE2E.includes('context.setOffline(true)') || !offlineE2E.includes('playwright-trace.zip')) {
     failures.push('missing real-browser offline reload and trace evidence harness');
+}
+if (!offlineE2E.includes('startProductionBundleServer') || !offlineE2E.includes('navigator.serviceWorker.controller')) {
+    failures.push('offline shell E2E must exercise the production bundle with a bounded service-worker check');
+}
+if (!productionBundleServer.includes("'service-worker.js'") || !productionBundleServer.includes("request.method || ''")) {
+    failures.push('missing bounded local production-bundle server for browser E2E');
 }
 if (!read('src/pages/HomePage.jsx').includes('if (!navigator.onLine)') || !privacyEvents.includes('if (!navigator.onLine) return;')) {
     failures.push('known-offline use must not attempt model or telemetry network routes');

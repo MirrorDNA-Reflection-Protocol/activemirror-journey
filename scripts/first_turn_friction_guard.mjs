@@ -206,8 +206,12 @@ check(
 );
 check(
     homePage.includes('saveContinuityEntry({') &&
-    homePage.includes('Saved by you') &&
-    homePage.includes('Only on this browser. Delete it anytime.') &&
+    homePage.includes('Private records') &&
+    homePage.includes('Saved only after you chose it, on this browser.') &&
+    homePage.includes('Delete it anytime.') &&
+    homePage.includes('Sharing stays your choice.') &&
+    homePage.includes('onClearContinuity') &&
+    homePage.includes('onDeleteContinuity?.(entry.savedAt)') &&
     homePage.includes("['typed', 'follow_up', 'surface', 'saved_context']"),
     'saved continuity UI must stay user-owned, local, and source-check capable'
 );

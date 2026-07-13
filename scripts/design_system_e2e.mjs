@@ -5,8 +5,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium } from 'playwright';
+import { startProductionBundleServer } from './production_bundle_server.mjs';
 
-const baseUrl = String(process.env.ACTIVE_MIRROR_E2E_BASE_URL || 'http://127.0.0.1:4179/app/');
+let baseUrl = String(process.env.ACTIVE_MIRROR_E2E_BASE_URL || '').trim();
 const outputDir = path.resolve(process.env.ACTIVE_MIRROR_E2E_OUTPUT || 'outputs/design-system-e2e');
 const consoleEvents = [];
 const pageErrors = [];
@@ -383,7 +384,12 @@ await fs.rm(outputDir, { recursive: true, force: true });
 await fs.mkdir(outputDir, { recursive: true });
 
 let browser;
+let bundleServer;
 try {
+    if (!baseUrl) {
+        bundleServer = await startProductionBundleServer();
+        baseUrl = bundleServer.baseUrl;
+    }
     browser = await chromium.launch({ headless: true });
     await runJourney(browser, {
         label: 'desktop-1440',
@@ -407,6 +413,7 @@ try {
     };
 } finally {
     if (browser) await browser.close().catch(() => {});
+    if (bundleServer) await bundleServer.close().catch(() => {});
 }
 
 const consoleErrors = consoleEvents.filter((event) => event.type === 'error');

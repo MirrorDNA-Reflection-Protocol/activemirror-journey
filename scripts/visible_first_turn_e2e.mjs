@@ -16,6 +16,7 @@ const selectors = {
     observation: '[data-testid="mirror-moment-observation"]',
     sayThis: '[data-testid="mirror-moment-say-this"]',
     threadRecord: '[data-testid="mirror-thread-record"]',
+    privateRecord: '[data-testid="mirror-private-record"]',
     evidence: '[data-testid="mirror-evidence"]',
 };
 
@@ -196,6 +197,19 @@ async function runViewport(browser, config) {
             }
         }, workingRead);
         assert.equal(await saveNoteControl.innerText(), 'Saved', 'save note should acknowledge explicit local storage');
+
+        const privateRecord = moment.locator(selectors.privateRecord);
+        await privateRecord.waitFor({ state: 'visible' });
+        assertIncludes(await privateRecord.innerText(), 'Private record', 'private record');
+        assertIncludes(await privateRecord.innerText(), 'Saved by you on this browser.', 'private record');
+        assertIncludes(await privateRecord.innerText(), 'Sharing stays your choice.', 'private record');
+        await privateRecord.getByRole('button', { name: 'Open saved record', exact: true }).click();
+        const savedRecordDrawer = page.getByRole('dialog', { name: 'Saved here' });
+        await savedRecordDrawer.waitFor({ state: 'visible' });
+        const savedRecordText = await savedRecordDrawer.innerText();
+        assertIncludes(savedRecordText, 'Private records', 'saved record drawer');
+        assert.match(savedRecordText, /private record\s*·\s*sharing is your choice/i, 'saved record drawer did not show the private sharing boundary');
+        await page.getByRole('button', { name: 'Close saved' }).last().click();
 
         const visualState = await page.evaluate((requiredSelectors) => {
             const visible = (element) => {

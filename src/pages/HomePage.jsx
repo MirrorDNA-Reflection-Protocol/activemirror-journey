@@ -1394,7 +1394,7 @@ function NextMoveSurface({ mirror, onRemember, remembered, allowRemember = true,
     );
 }
 
-function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreateArtifact, disabled, onSourceChecked, onRemember, remembered }) {
+function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreateArtifact, disabled, onSourceChecked, onRemember, onOpenSaved, remembered }) {
     const { theme } = useTheme();
     const isLoading = Boolean(disabled && intent && !result);
     const mirror = result?.mirror || (isLoading ? LOADING_MIRROR : SAMPLE_MIRROR);
@@ -1522,6 +1522,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
                         intent: `Create a short public build note from this working thread. Remove private details, treat any unverified statement as a question to resolve, and make it a draft for review rather than a release. Original request: ${intent}`,
                         mirror,
                     })}
+                    onOpenSaved={onOpenSaved}
                 />
                 {showSourceCheck ? (
                     <NeedsSources
@@ -1892,8 +1893,8 @@ function MemoryDrawer({
                                 <section className="rounded-lg border border-cyan-300/12 bg-cyan-300/[0.045] p-3">
                                     <div className="mb-3 flex items-start justify-between gap-3">
                                         <div>
-                                            <div className="text-sm font-semibold text-cyan-50">Saved by you</div>
-                                            <div className="mt-1 text-xs leading-5 text-zinc-400">Only on this browser. Delete it anytime.</div>
+                                            <div className="text-sm font-semibold text-cyan-50">Private records</div>
+                                            <div className="mt-1 text-xs leading-5 text-zinc-400">Saved only after you chose it, on this browser. Delete it anytime. Sharing stays your choice.</div>
                                         </div>
                                         <button
                                             type="button"
@@ -1918,6 +1919,10 @@ function MemoryDrawer({
                                                     </button>
                                                 </div>
                                                 <div className="text-sm leading-6 text-zinc-300">{entry.intent || 'Saved reflection'}</div>
+                                                <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-400">
+                                                    <Lock size={12} aria-hidden="true" />
+                                                    Private record · sharing is your choice
+                                                </div>
                                                 {entry.workingRead ? (
                                                     <div className="mt-2 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.055] px-3 py-2 text-sm leading-6 text-cyan-50">
                                                         <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-100/65">Working read</div>
@@ -3173,6 +3178,7 @@ export default function HomePage() {
                                     disabled={busy}
                                     onSourceChecked={setLastSourceCheck}
                                     onRemember={rememberMirror}
+                                    onOpenSaved={() => setMemoryOpen(true)}
                                     remembered={rememberedKey === mirrorMemoryKey(result?.mirror || {})}
                                     onPrompt={(nextIntent, source = 'surface') => {
                                         trackEvent('followup_clicked', { page: 'home', source });
