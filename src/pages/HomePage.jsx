@@ -2154,6 +2154,13 @@ export default function HomePage() {
     const [importStatus, setImportStatus] = useState('');
     const [loopCount, setLoopCount] = useState(0);
     const [processingBoundary, setProcessingBoundary] = useState('local_device');
+    const [demoPhase, setDemoPhase] = useState('');
+    const demoRunRef = useRef(0);
+    const demoTimersRef = useRef([]);
+
+    useEffect(() => () => {
+        for (const timer of demoTimersRef.current) window.clearTimeout(timer);
+    }, []);
     const [, setLastSourceCheck] = useState(null);
     const followUps = useMemo(() => makeFollowUps(result?.mirror || SAMPLE_MIRROR, loopCount, lastIntent), [result, loopCount, lastIntent]);
     const typingSense = useMemo(() => assessLocalMirrorSense(text, { activeDefault, mirrorDefaults, seed }), [activeDefault, mirrorDefaults, seed, text]);
@@ -2343,6 +2350,7 @@ export default function HomePage() {
     async function reflect(intent, source = 'typed') {
         const cleanIntent = intent.trim();
         if (cleanIntent.length < 4 || busy) return;
+        cancelDemoLoop();
         const shortStartFollowup = source === 'typed' && isShortStartResult(result);
         const starterFollowupKind = source === 'typed' && result?.kind === 'starter' ? lastStarterKind || 'make' : '';
         const selectedMakeBrief = starterFollowupKind === 'make' ? explicitMakeBrief(cleanIntent) : null;
@@ -2733,6 +2741,7 @@ export default function HomePage() {
     }
 
     function clearCurrentChat() {
+        cancelDemoLoop();
         setText('');
         setPrivateRecallMatches([]);
         setPrivateRecallDismissedText('');
@@ -2798,6 +2807,7 @@ export default function HomePage() {
     }
 
     function startFromStarter(item = {}) {
+        cancelDemoLoop();
         setText('');
         setLastIntent(item.intent || item.label || 'starter');
         setLastSource('starter');
@@ -2812,8 +2822,18 @@ export default function HomePage() {
         window.setTimeout(() => inputRef.current?.focus(), 60);
     }
 
-    function startLearnActiveMirror() {
+    function cancelDemoLoop() {
+        demoRunRef.current += 1;
+        for (const timer of demoTimersRef.current) window.clearTimeout(timer);
+        demoTimersRef.current = [];
+        setDemoPhase('');
+    }
+
+    function startLearnActiveMirror(playCount = 0) {
         const intent = 'What is Active Mirror and how do I use it?';
+        cancelDemoLoop();
+        const run = demoRunRef.current;
+        const reducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
         setText('');
         setLastIntent(intent);
         setLastSource('learn');
@@ -2823,9 +2843,29 @@ export default function HomePage() {
         setSendableDraft(null);
         setArtifactBusy('');
         setWorkSurfaceOpen(false);
-        setResult(makeEcosystemResult(intent));
-        trackEvent('learn_active_mirror_clicked', { page: 'home', source: 'launcher' });
-        window.setTimeout(() => inputRef.current?.focus(), 60);
+        trackEvent('learn_active_mirror_clicked', { page: 'home', source: playCount > 0 ? 'replay' : 'launcher' });
+        if (playCount === 0) window.setTimeout(() => inputRef.current?.focus(), 60);
+
+        if (reducedMotion) {
+            setResult(makeEcosystemResult(intent));
+            setDemoPhase('settled');
+            return;
+        }
+
+        setResult(null);
+        setDemoPhase('pending');
+        demoTimersRef.current.push(window.setTimeout(() => {
+            if (demoRunRef.current !== run) return;
+            setResult(makeEcosystemResult(intent));
+            setDemoPhase('settled');
+        }, 2600));
+        if (playCount < 2) {
+            demoTimersRef.current.push(window.setTimeout(() => {
+                if (demoRunRef.current !== run) return;
+                if (document.visibilityState !== 'visible') return;
+                startLearnActiveMirror(playCount + 1);
+            }, 12000));
+        }
     }
 
     function selectMakeFormat(item = {}) {
@@ -3271,7 +3311,7 @@ export default function HomePage() {
                                     result={result}
                                     intent={lastIntent}
                                     turnSource={lastSource}
-                                    disabled={busy}
+                                    disabled={busy || demoPhase === 'pending'}
                                     onSourceChecked={setLastSourceCheck}
                                     onRemember={rememberMirror}
                                     onOpenSaved={() => setMemoryOpen(true)}
@@ -3282,6 +3322,21 @@ export default function HomePage() {
                                     }}
                                     onCreateArtifact={(kind, options = {}) => createArtifact(kind, options)}
                                 />
+                                {demoPhase ? (
+                                    <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 px-1 text-xs ${isLight ? 'text-stone-600' : 'text-zinc-400'}`}>
+                                        <span className="font-semibold">Example turn.</span>
+                                        <span>Bring your own to start.</span>
+                                        {demoPhase === 'settled' ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => startLearnActiveMirror(2)}
+                                                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isLight ? 'border-stone-300/70 bg-white/44 text-stone-600 hover:border-stone-400 hover:bg-white hover:text-stone-950' : 'border-white/10 bg-white/[0.025] text-zinc-400 hover:border-white/25 hover:text-white'}`}
+                                            >
+                                                Replay
+                                            </button>
+                                        ) : null}
+                                    </div>
+                                ) : null}
                             </div>
                             {showKeepChatNudge ? (
                                 <div className={`grid gap-3 border-y py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${isLight ? 'border-cyan-500/18 text-stone-600' : 'border-cyan-200/14 text-zinc-400'}`}>
