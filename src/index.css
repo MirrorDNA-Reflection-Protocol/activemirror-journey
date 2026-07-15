@@ -195,6 +195,45 @@ html {
     --tw-ring-color: var(--am-border);
 }
 
+/*
+ * First-turn wait: the pending working read shows the echoed request
+ * immediately, with token-driven placeholder bars where the read and next
+ * move will land. Arrival uses one soft rise so the swap reads as the same
+ * card resolving, not a new panel. Both respect the reduced-motion block.
+ */
+.am-pending-bar {
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--am-ink) 9%, transparent);
+    animation: am-pending-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes am-pending-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.45;
+    }
+}
+
+.am-rise {
+    animation: am-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes am-rise {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, LoaderCircle, Lock, Moon, PartyPopper, PenLine, Pencil, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, UserRoundCheck, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, BookmarkPlus, BrainCircuit, Check, Code2, Copy, FileText, Image, LoaderCircle, Lock, Moon, PartyPopper, PenLine, Pencil, PencilLine, Save, SlidersHorizontal, Sparkles, Sun, Trash2, Upload, UserRoundCheck, X } from 'lucide-react';
 import ArtifactCard from '../components/ArtifactCard';
 import MirrorMoment from '../components/MirrorMoment';
 import PrivateRecallPanel from '../components/PrivateRecallPanel';
@@ -1432,12 +1432,12 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
     const focusLabelClass = `mb-1 text-[10px] font-semibold uppercase tracking-[0.17em] ${isLight ? 'text-blue-700/55' : 'text-blue-100/55'}`;
 
     if (isLoading) {
-        return <LoadingPanel />;
+        return <PendingRead intent={intent} />;
     }
 
     if (isPrivacyHold) {
         return (
-            <div className="grid gap-3">
+            <div className="am-rise grid gap-3">
                 <div className="flex items-start gap-3">
                     <div className={assistantIconClass}>
                         <MirrorLogo />
@@ -1459,7 +1459,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
 
     if (answerFirst) {
         return (
-            <div className="grid gap-3">
+            <div className="am-rise grid gap-3">
                 <NeedsSources
                     truthState={truthState}
                     intent={intent}
@@ -1476,7 +1476,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
 
     if (isArtifactFirst) {
         return (
-            <div className="grid gap-3">
+            <div className="am-rise grid gap-3">
                 <div className="flex items-start gap-3">
                     <div className={assistantIconClass}>
                         <MirrorLogo />
@@ -1498,7 +1498,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
 
     if (result && !isConversation && !isSetupReady && !isStartHelp) {
         return (
-            <div className="grid gap-3">
+            <div className="am-rise grid gap-3">
                 <MirrorMoment
                     mirror={mirror}
                     intent={intent}
@@ -1545,7 +1545,7 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
     }
 
     return (
-        <div className="grid gap-3">
+        <div className="am-rise grid gap-3">
             <div className="flex items-start gap-3">
                 <div className={assistantIconClass}>
                     <MirrorLogo />
@@ -1589,19 +1589,70 @@ function MirrorResult({ result, intent, turnSource = 'typed', onPrompt, onCreate
     );
 }
 
-function LoadingPanel() {
+function pendingEchoText(value) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!text) return 'No request was captured.';
+    if (text.length <= 170) return text;
+    return `${text.slice(0, 170).trimEnd()}...`;
+}
+
+function PendingRead({ intent }) {
+    const [waitStage, setWaitStage] = useState(0);
+
+    useEffect(() => {
+        const softTimer = window.setTimeout(() => setWaitStage(1), 4000);
+        const slowTimer = window.setTimeout(() => setWaitStage(2), 9000);
+        return () => {
+            window.clearTimeout(softTimer);
+            window.clearTimeout(slowTimer);
+        };
+    }, []);
+
+    const waitStatus = waitStage === 2
+        ? 'Taking longer than usual. Still on it.'
+        : waitStage === 1
+            ? 'Almost there.'
+            : 'Reading it.';
+
     return (
-        <div className="rounded-lg border border-cyan-300/15 bg-cyan-300/[0.045] px-5 py-5">
-            <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-cyan-100">
-                <LoaderCircle size={16} className="animate-spin text-cyan-200" aria-hidden="true" />
-                Finding the useful move
+        <section
+            className="am-surface am-rise min-w-0 max-w-[46rem] overflow-hidden px-4 py-4 sm:px-5 sm:py-5"
+            data-testid="mirror-pending"
+            aria-label="Active Mirror is reading your message"
+        >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--am-muted)]">
+                    <PencilLine size={14} aria-hidden="true" />
+                    <h2 className="font-semibold">Working read</h2>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-medium text-[var(--am-muted)]" role="status" aria-live="polite">
+                    <LoaderCircle size={15} className="animate-spin text-[var(--am-primary)]" aria-hidden="true" />
+                    {waitStatus}
+                </div>
             </div>
-            <div className="grid gap-2">
-                <div className="h-3 w-3/4 rounded-full bg-white/10" />
-                <div className="h-3 w-1/2 rounded-full bg-white/10" />
-                <div className="h-3 w-2/3 rounded-full bg-white/10" />
+
+            <div className="mt-4 grid gap-5 border-t border-[var(--am-border)] pt-4 sm:mt-5 sm:pt-5">
+                <div className="grid min-w-0 gap-1.5 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4" data-testid="mirror-pending-echo">
+                    <p className="text-xs font-semibold text-[var(--am-muted)]">What I heard</p>
+                    <p className="min-w-0 break-words text-sm font-medium leading-6 text-[var(--am-ink)]">&quot;{pendingEchoText(intent)}&quot;</p>
+                </div>
+
+                <div className="grid min-w-0 gap-2 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4" aria-hidden="true">
+                    <p className="text-xs font-semibold text-[var(--am-muted)] sm:pt-1">Working read</p>
+                    <div className="grid gap-2 pt-0.5">
+                        <div className="am-pending-bar h-3 w-4/5" />
+                        <div className="am-pending-bar h-3 w-3/5" />
+                    </div>
+                </div>
+
+                <div className="min-w-0 border-l-2 border-[var(--am-primary-marker)] pl-4 sm:ml-[9rem]" aria-hidden="true">
+                    <p className="text-xs font-semibold text-[var(--am-muted)]">Use this next</p>
+                    <div className="mt-2 grid gap-2">
+                        <div className="am-pending-bar h-3 w-2/3" />
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
     );
 }
 
