@@ -68,11 +68,109 @@ const storyAngles = [
     },
     {
         id: 'proof',
-        title: 'Proof and FAQ',
+        title: 'FAQ and objection',
         promise: 'Answer the real objections before the viewer asks.',
         hook: 'Three buyer questions, one clean preorder answer.',
         risk: 'Review',
         bestFor: 'Product cut, FAQ reel, sales reply',
+    },
+];
+
+const offerPacks = [
+    {
+        id: 'preview',
+        title: 'Guided Quote + Preview',
+        band: 'Entry',
+        timeline: '1-2 working days',
+        promise: 'One campaign idea becomes a story-first concept, production note, and quote direction.',
+        includes: ['story concept', 'shot list', 'quote direction', 'approval checklist'],
+        next: 'Use this when the buyer is interested but not ready to hand over assets.',
+    },
+    {
+        id: 'flagship',
+        title: '24-30s Flagship Vertical',
+        band: 'Core',
+        timeline: '5-7 working days after source review',
+        promise: 'A complete vertical commercial built around one local-business offer.',
+        includes: ['hero reel', 'caption set', 'claim review', 'delivery handoff'],
+        next: 'Use this when the business has source photos, owner approval, and one clear CTA.',
+    },
+    {
+        id: 'variants',
+        title: 'Variant Pack',
+        band: 'Expansion',
+        timeline: '2-4 working days after flagship lock',
+        promise: 'Multiple hooks, endings, and local-language cuts for the same approved offer.',
+        includes: ['3 hooks', '2 endings', 'language pass', 'performance read'],
+        next: 'Use this after the first cut proves which promise and CTA viewers react to.',
+    },
+    {
+        id: 'series',
+        title: 'Story Series',
+        band: 'Continuity',
+        timeline: 'monthly sprint rhythm',
+        promise: 'A repeatable campaign world instead of one-off files.',
+        includes: ['episode map', 'offer calendar', 'asset reuse plan', 'monthly learning note'],
+        next: 'Use this for brands that run offers, launches, or local trust campaigns on a repeat schedule.',
+    },
+];
+
+const verticalPlays = [
+    {
+        id: 'food',
+        title: 'Cafe and food',
+        template: 'food promo reel',
+        buyerMoment: 'weekend plan, delivery decision, group order',
+        assetAsk: '3 food shots, offer, locality, pickup or delivery rule',
+    },
+    {
+        id: 'beauty',
+        title: 'Salon and wellness',
+        template: 'salon transformation reel',
+        buyerMoment: 'before-after curiosity, festive offer, appointment push',
+        assetAsk: 'service photos, offer, staff approval, claim limits',
+    },
+    {
+        id: 'coaching',
+        title: 'Coaching and tuition',
+        template: 'admission announcement',
+        buyerMoment: 'parent concern, result cue, deadline reminder',
+        assetAsk: 'classroom clips, result cue, admissions CTA, disclaimer copy',
+    },
+    {
+        id: 'retail',
+        title: 'Retail and D2C',
+        template: 'flash sale countdown',
+        buyerMoment: 'new arrival, price check, store visit',
+        assetAsk: 'product shots, price rule, offer window, WhatsApp CTA',
+    },
+    {
+        id: 'trust',
+        title: 'Trust awareness',
+        template: 'public safety microdrama',
+        buyerMoment: 'risk hook, check turn, shareable warning',
+        assetAsk: 'approved claim sources, forbidden claims, review URL',
+    },
+];
+
+const trustModes = [
+    {
+        id: 'brief',
+        title: 'Brief export',
+        state: 'Advisory',
+        detail: 'The buyer gets a signed brief, prompt pack, watermark guidance, and approval notes.',
+    },
+    {
+        id: 'finalize',
+        title: 'Certified finalization',
+        state: 'Enforceable after return',
+        detail: 'Rendered media comes back for watermarking, manifest, verification receipt, and final hash.',
+    },
+    {
+        id: 'dfy',
+        title: 'Done-for-you production',
+        state: 'Controlled workflow',
+        detail: 'MirrorProd owns the workflow from approved brief through delivery handoff.',
     },
 ];
 
@@ -134,10 +232,10 @@ const episodeBase = [
 ];
 
 const outputs = [
-    ['6', 'vertical episodes'],
-    ['6', 'WhatsApp cuts'],
-    ['2', 'language passes'],
-    ['1', 'review receipt'],
+    ['4', 'offer tracks'],
+    ['6', 'proof reels'],
+    ['12', 'language lanes'],
+    ['1', 'approval trail'],
 ];
 
 const defaultBrief = {
@@ -188,14 +286,36 @@ const sprintControls = [
     },
 ];
 
+const vaultSignals = [
+    ['54', 'local demo cuts mapped'],
+    ['18', 'Mini-generated cuts found'],
+    ['6', 'buyer verticals templated'],
+    ['3', 'trust modes ready to quote'],
+];
+
 function mediaUrl(kind, fileName) {
     return mediaAssets[kind]?.[fileName] || '';
 }
 
-function makeReceipt(brief, selectedAngle) {
+function makeQuotePlan(selectedPack, selectedVertical, selectedTrustMode) {
+    return {
+        package: selectedPack.title,
+        band: selectedPack.band,
+        vertical: selectedVertical.title,
+        template: selectedVertical.template,
+        timeline: selectedPack.timeline,
+        trust_mode: selectedTrustMode.title,
+        first_deliverable: selectedPack.includes[0],
+    };
+}
+
+function makeReceipt(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode) {
     return [
         ['Campaign', 'Monsoon Cafe Box'],
+        ['Offer track', selectedPack.title],
+        ['Vertical', selectedVertical.title],
         ['Angle', selectedAngle.title],
+        ['Trust mode', selectedTrustMode.title],
         ['Claim sources', brief.assets],
         ['Forbidden claims', brief.guardrails],
         ['Approval state', 'Draft only until owner approval'],
@@ -203,12 +323,15 @@ function makeReceipt(brief, selectedAngle) {
     ];
 }
 
-function makeSprintObjects(brief, selectedAngle, performanceRead) {
+function makeSprintObjects(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, performanceRead) {
     return [
+        ['offer_package', selectedPack.title],
+        ['vertical_template', selectedVertical.template],
         ['business_offer', brief.offer],
         ['target_audience', brief.audience],
         ['source_assets', brief.assets],
         ['story_angle', selectedAngle.title],
+        ['trust_mode', selectedTrustMode.title],
         ['claim_risks', brief.guardrails],
         ['consent_state', 'Owner approval required before likeness or source reuse'],
         ['output_formats', '6 vertical episodes, 6 WhatsApp cuts, 2 language passes'],
@@ -216,13 +339,18 @@ function makeSprintObjects(brief, selectedAngle, performanceRead) {
     ];
 }
 
-function makeSprintReceipt(brief, selectedAngle, performanceRead) {
+function makeSprintReceipt(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, quotePlan, performanceRead) {
     return {
         schema: 'mirrorprod.sprint_receipt.v1',
         campaign: 'Monsoon Cafe Box',
+        offer_package: selectedPack.title,
+        quote_plan: quotePlan,
         business_offer: brief.offer,
         target_audience: brief.audience,
+        vertical: selectedVertical.title,
+        template: selectedVertical.template,
         story_angle: selectedAngle.title,
+        trust_mode: selectedTrustMode.title,
         consent_state: 'owner_approval_required',
         capabilities: {
             generate_video: 'off',
@@ -236,11 +364,16 @@ function makeSprintReceipt(brief, selectedAngle, performanceRead) {
     };
 }
 
-function makeCampaignBrief(brief, selectedAngle, performanceRead) {
+function makeCampaignBrief(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, quotePlan, performanceRead) {
     return [
         'MirrorProd Story Sprint',
         'Receipt schema: mirrorprod.sprint_receipt.v1',
         'Campaign: Monsoon Cafe Box',
+        `Offer track: ${selectedPack.title} (${selectedPack.band})`,
+        `Vertical: ${selectedVertical.title}`,
+        `Template: ${selectedVertical.template}`,
+        `Timeline: ${quotePlan.timeline}`,
+        `Trust mode: ${selectedTrustMode.title} - ${selectedTrustMode.state}`,
         `Goal: ${brief.goal}`,
         `Audience: ${brief.audience}`,
         `Language: ${brief.language}`,
@@ -297,24 +430,37 @@ function getPerformanceRead(values) {
 
 export default function MirrorProdStory() {
     const [brief, setBrief] = useState(defaultBrief);
+    const [packId, setPackId] = useState('preview');
+    const [verticalId, setVerticalId] = useState('food');
+    const [trustModeId, setTrustModeId] = useState('brief');
     const [angleId, setAngleId] = useState('drama');
     const [performance, setPerformance] = useState(performanceDefaults);
     const [copyState, setCopyState] = useState('idle');
 
+    const selectedPack = offerPacks.find((pack) => pack.id === packId) || offerPacks[0];
+    const selectedVertical = verticalPlays.find((vertical) => vertical.id === verticalId) || verticalPlays[0];
+    const selectedTrustMode = trustModes.find((mode) => mode.id === trustModeId) || trustModes[0];
     const selectedAngle = storyAngles.find((angle) => angle.id === angleId) || storyAngles[0];
-    const receipt = useMemo(() => makeReceipt(brief, selectedAngle), [brief, selectedAngle]);
+    const quotePlan = useMemo(
+        () => makeQuotePlan(selectedPack, selectedVertical, selectedTrustMode),
+        [selectedPack, selectedVertical, selectedTrustMode],
+    );
+    const receipt = useMemo(
+        () => makeReceipt(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode),
+        [brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode],
+    );
     const performanceRead = useMemo(() => getPerformanceRead(performance), [performance]);
     const sprintObjects = useMemo(
-        () => makeSprintObjects(brief, selectedAngle, performanceRead),
-        [brief, selectedAngle, performanceRead],
+        () => makeSprintObjects(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, performanceRead),
+        [brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, performanceRead],
     );
     const sprintReceipt = useMemo(
-        () => makeSprintReceipt(brief, selectedAngle, performanceRead),
-        [brief, selectedAngle, performanceRead],
+        () => makeSprintReceipt(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, quotePlan, performanceRead),
+        [brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, quotePlan, performanceRead],
     );
     const campaignBrief = useMemo(
-        () => makeCampaignBrief(brief, selectedAngle, performanceRead),
-        [brief, selectedAngle, performanceRead],
+        () => makeCampaignBrief(brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, quotePlan, performanceRead),
+        [brief, selectedAngle, selectedPack, selectedVertical, selectedTrustMode, quotePlan, performanceRead],
     );
     const storySprintHref = useMemo(() => makeMailto(campaignBrief), [campaignBrief]);
 
@@ -351,15 +497,15 @@ export default function MirrorProdStory() {
             <section className="mps-hero">
                 <div className="mps-hero-copy">
                     <p className="mps-kicker">MirrorProd Story OS</p>
-                    <h1>Turn one offer into a short-video series.</h1>
+                    <h1>Short-drama commercials for Indian businesses.</h1>
                     <p>
-                        India-first business microdramas: lock the brief, choose the angle, build six scenes, review
-                        claims, and learn the next cut.
+                        One offer becomes a guided quote, a reviewable story sprint, proof reels, language cuts, and an
+                        approval trail before anything is produced or posted.
                     </p>
                     <div className="mps-hero-actions">
                         <a href="#brief-lock" className="mps-primary">
                             <ClipboardCheck size={18} aria-hidden="true" />
-                            Start the demo brief
+                            Build a quote
                         </a>
                         <a href="#episode-board" className="mps-secondary">
                             <PlaySquare size={18} aria-hidden="true" />
@@ -398,10 +544,90 @@ export default function MirrorProdStory() {
                 ))}
             </section>
 
+            <section className="mps-section mps-offer-layout" id="offer-vault">
+                <div className="mps-section-head">
+                    <p>Offer vault</p>
+                    <h2>Sell packages, not generic video generation.</h2>
+                </div>
+                <div className="mps-offer-grid">
+                    {offerPacks.map((pack) => (
+                        <button
+                            key={pack.id}
+                            type="button"
+                            className={`mps-offer-card ${pack.id === packId ? 'is-selected' : ''}`}
+                            onClick={() => setPackId(pack.id)}
+                        >
+                            <span>{pack.band}</span>
+                            <strong>{pack.title}</strong>
+                            <p>{pack.promise}</p>
+                            <small>{pack.timeline}</small>
+                        </button>
+                    ))}
+                </div>
+                <div className="mps-quote-panel">
+                    <div className="mps-pack-top">
+                        <BadgeCheck size={30} aria-hidden="true" />
+                        <div>
+                            <span>Guided quote</span>
+                            <h3>{selectedPack.title}</h3>
+                        </div>
+                    </div>
+                    <dl className="mps-quote-list">
+                        <div>
+                            <dt>Vertical</dt>
+                            <dd>{selectedVertical.title}</dd>
+                        </div>
+                        <div>
+                            <dt>Timeline</dt>
+                            <dd>{quotePlan.timeline}</dd>
+                        </div>
+                        <div>
+                            <dt>First deliverable</dt>
+                            <dd>{quotePlan.first_deliverable}</dd>
+                        </div>
+                        <div>
+                            <dt>Trust mode</dt>
+                            <dd>{selectedTrustMode.title}</dd>
+                        </div>
+                    </dl>
+                    <p>{selectedPack.next}</p>
+                </div>
+            </section>
+
+            <section className="mps-section mps-playbook-layout">
+                <div className="mps-section-head">
+                    <p>India playbook</p>
+                    <h2>Pick the buyer moment before the camera style.</h2>
+                </div>
+                <div className="mps-vertical-grid">
+                    {verticalPlays.map((vertical) => (
+                        <button
+                            key={vertical.id}
+                            type="button"
+                            className={`mps-vertical ${vertical.id === verticalId ? 'is-selected' : ''}`}
+                            onClick={() => setVerticalId(vertical.id)}
+                        >
+                            <span>{vertical.template}</span>
+                            <strong>{vertical.title}</strong>
+                            <p>{vertical.buyerMoment}</p>
+                            <small>{vertical.assetAsk}</small>
+                        </button>
+                    ))}
+                </div>
+                <div className="mps-vault-strip" aria-label="MirrorProd leverage inventory">
+                    {vaultSignals.map(([value, label]) => (
+                        <div key={label}>
+                            <strong>{value}</strong>
+                            <span>{label}</span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             <section className="mps-section mps-brief-grid" id="brief-lock">
                 <div className="mps-section-head">
-                    <p>Brief lock</p>
-                    <h2>The video starts from business truth, not a blank prompt.</h2>
+                    <p>Guided brief</p>
+                    <h2>The quote starts from business truth, not a blank prompt.</h2>
                 </div>
                 <form className="mps-form" aria-label="MirrorProd Story brief">
                     <label>
@@ -514,11 +740,32 @@ export default function MirrorProdStory() {
                         </div>
                     </div>
                     <ul>
-                        <li><FileCheck2 size={17} aria-hidden="true" /> Six episode scripts and scene notes</li>
-                        <li><MessageCircle size={17} aria-hidden="true" /> WhatsApp share copy and reply starter</li>
+                        <li><FileCheck2 size={17} aria-hidden="true" /> {selectedPack.includes.join(', ')}</li>
+                        <li><MessageCircle size={17} aria-hidden="true" /> {selectedVertical.buyerMoment}</li>
                         <li><Languages size={17} aria-hidden="true" /> {brief.language}</li>
-                        <li><ShieldCheck size={17} aria-hidden="true" /> Claims held for owner review</li>
+                        <li><ShieldCheck size={17} aria-hidden="true" /> {selectedTrustMode.detail}</li>
                     </ul>
+                </div>
+            </section>
+
+            <section className="mps-section mps-trust-grid">
+                <div className="mps-section-head">
+                    <p>Trust layer</p>
+                    <h2>Choose how far MirrorProd owns the proof.</h2>
+                </div>
+                <div className="mps-trust-list">
+                    {trustModes.map((mode) => (
+                        <button
+                            key={mode.id}
+                            type="button"
+                            className={`mps-trust ${mode.id === trustModeId ? 'is-selected' : ''}`}
+                            onClick={() => setTrustModeId(mode.id)}
+                        >
+                            <span>{mode.state}</span>
+                            <strong>{mode.title}</strong>
+                            <p>{mode.detail}</p>
+                        </button>
+                    ))}
                 </div>
             </section>
 
@@ -634,8 +881,9 @@ export default function MirrorProdStory() {
                 <Sparkles size={32} aria-hidden="true" />
                 <h2>Review-first demo. Nothing posts from this page.</h2>
                 <p>
-                    This screen proves the product loop: brief, angle, episode board, consent state, pack, and learning.
-                    It does not generate new video, upload source files, or publish a campaign.
+                    This screen proves the product loop: offer vault, guided quote, brief, angle, episode board, consent
+                    state, pack, proof mode, and learning. It does not generate new video, upload source files, or
+                    publish a campaign.
                 </p>
                 <div className="mps-close-actions">
                     <a href="#brief-lock" className="mps-primary">

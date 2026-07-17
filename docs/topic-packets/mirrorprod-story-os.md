@@ -31,6 +31,11 @@ Turn the India short-form and microdrama opportunity into a public, review-first
   - `/Users/mirror-pro/repos/activemirror-site/videos/mprod-*.mp4`
   - `/Users/mirror-pro/repos/activemirror-site/videos/posters/cafe-scam-alert.jpg`
   - `/Users/mirror-pro/repos/activemirror-site/videos/posters/mprod-*.jpg`
+  - `/Users/mirror-pro/Documents/New project/mirrorprod_agentic_video_factory_v1/README.md`
+  - `/Users/mirror-pro/Documents/activemirror-videos-backup/`
+  - `/Users/mirror-pro/.mirrordna/MIRRORPROD_STRATEGY.md`
+  - `mirror-admin@100.114.247.53:/Users/mirror-admin/repos/mirrorprod-life/`
+  - `mirror-admin@100.114.247.53:/Users/mirror-admin/Downloads/MirrorProd_Trust_Layer_Brief_v1.md`
 - Links:
   - `https://www.lumikai.com/post/india-s-interactive-media-economy-state-of-interactive-media-report-2025`
   - `https://sensortower.com/blog/state-of-short-drama-apps-2025`
@@ -50,6 +55,7 @@ Turn the India short-form and microdrama opportunity into a public, review-first
 - Unknowns:
   - why the previous MirrorProd public route was reverted
   - whether MirrorProd should become a public route, sales artifact, or standalone brand
+  - which Mini `mirrorprod-life` services are safe to port into a public/operator backend
 
 ## Rules And Boundaries
 
@@ -104,8 +110,17 @@ Turn the India short-form and microdrama opportunity into a public, review-first
   - production deploy sub-gates passed from the deploy bridge after updating stale QA expectations and rerunning cache-warmed checks
   - Sprint Receipt v1 is modeled on the page with native sprint objects, six consent/capability switches, and a JSON-style handoff object
   - final deployed Worker version is `32c8e12f-7652-435d-9a4a-817bb64549a0`
+  - Mini SSH transport is reachable at `mirror-admin@100.114.247.53` with hostname `active-mirror-hub.local`
+  - Mini has `mirrorprod-life` with creative, export, localization, render, trust, analytics, status, graph, packet, and verification surfaces
+  - Mini `mirrorprod-life/templates/index.json` maps food, salon/wellness, retail, coaching, repair, event, and testimonial verticals with 12 language lanes
+  - local MacBook media backup has 54 video/image files under `/Users/mirror-pro/Documents/activemirror-videos-backup`
+  - local factory skeleton has script, storyboard, prompt, render, stitch, caption, governance, and provenance agents
+  - trust-layer brief defines brief export, certified finalization, and done-for-you production modes
+  - current product-source route now models an offer vault, India vertical selector, guided quote panel, and trust-mode selector before the story sprint handoff
 - Unchecked:
-  - whether the Mini has newer MirrorProd assets
+  - whether `mirrorprod-life` is currently healthy as a running service set
+  - whether generated Mini media has rights/consent suitable for public display
+  - whether any quoted package can become real pricing without Paul approval
 - Evidence paths:
   - this packet
   - `docs/CONTINUITY_LEDGER.md`
@@ -116,18 +131,50 @@ Turn the India short-form and microdrama opportunity into a public, review-first
   - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-sprint-receipt-mobile.png`
   - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/live-mirrorprod-sprint-receipt-desktop.png`
   - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/live-mirrorprod-sprint-receipt-mobile.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-offer-vault-desktop.png`
+  - `/Users/mirror-pro/repos/activemirror-journey/output/playwright/mirrorprod-offer-vault-mobile.png`
 
 ## Bad News
 
-- The Mini is still unavailable, so newer Mini-only MirrorProd assets were not swept.
+- The Mini is reachable by SSH, but Mini control-plane health was not proven in this slice.
+- Mini and local media were inventoried, not copied into the public app.
+- Mini-generated media rights and consent are not proven for public use.
 - This page is a review-first demo, not an automated generation/upload product.
 - Video generation/upload credentials are not part of this build.
 
 ## Next Move
 
-- Decide whether this remains an Active Mirror product route or becomes a standalone MirrorProd sales surface.
+- Turn `mirrorprod-life` into an operator/backend candidate only after a separate service-health and consent audit.
+- If this stays public, deploy only the built Vite app bundle through the deploy bridge; do not broad-copy old MirrorProd route directories.
 
 ## Update Log
+
+### 2026-07-09 Offer Vault + Guided Quote
+
+- Changed: upgraded the MirrorProd Story route from a story-sprint demo into a clearer business-facing offer surface.
+- Product reason:
+  - MirrorProd should sell verified short-drama advertising packages for Indian businesses, not generic AI video generation.
+  - The page now starts from offer tracks, buyer verticals, quote direction, and proof mode before any sprint handoff.
+- Files touched:
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `docs/topic-packets/mirrorprod-story-os.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Local/Mini leverage checked:
+  - local `mirrorprod_agentic_video_factory_v1`
+  - local 54-item video backup
+  - mirrored MirrorProd strategy memo
+  - Mini `mirrorprod-life`
+  - Mini trust-layer brief
+- Tools/gates used:
+  - `npm run build:deploy`
+- Deploy status:
+  - local source build passed
+  - not yet packaged to deploy bridge in this log entry
+- Remaining risk:
+  - offer bands are product categories, not approved pricing
+  - `mirrorprod-life` is a candidate backend/operator source, not a proven live service
+  - media rights for Mini-generated clips are not proven
 
 ### 2026-07-09 Sprint Receipt v1
 

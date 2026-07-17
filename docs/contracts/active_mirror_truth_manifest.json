@@ -15,6 +15,7 @@
     "src/pages/Enterprise.jsx",
     "src/pages/Research.jsx",
     "src/pages/FeedbackDashboard.jsx",
+    "src/pages/MirrorProdStory.jsx",
     "src/pages/Privacy.jsx",
     "src/pages/Terms.jsx",
     "src/components/ReflectionCardActions.jsx",
@@ -169,6 +170,16 @@
         "src/pages/Research.jsx",
         "public/llms.txt",
         ".mirror/SOURCE_LEDGER.md"
+      ]
+    },
+    {
+      "claim_id": "mirrorprod_story_offer_surface",
+      "pattern": "\\b(?:MirrorProd|short-drama|commercials for Indian businesses|offer tracks|proof reels|language lanes|approval trail|guided quote|quote direction|working days|monthly sprint rhythm|local demo cuts mapped|Mini-generated cuts found|buyer verticals templated|trust modes ready to quote|trust mode|brief export|certified finalization|done-for-you production|sprint_receipt|owner approval|consent|required|watermark|manifest|final hash|provenance|nothing posts|source files|post to channels|approval checklist)\\b",
+      "verification_state": "source_backed",
+      "source_refs": [
+        "src/pages/MirrorProdStory.jsx",
+        "docs/topic-packets/mirrorprod-story-os.md",
+        "docs/CONTINUITY_LEDGER.md"
       ]
     }
   ]

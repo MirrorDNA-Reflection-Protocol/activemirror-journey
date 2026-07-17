@@ -144,6 +144,7 @@ For a topic that will last more than one session, create a topic packet from `do
 ## Topic Packets
 
 - [AMOS Cognitive Mesh v0.1](./topic-packets/amos-cognitive-mesh-v0-1.md)
+- [Company Mirror and Evidence Router](./topic-packets/company-mirror-evidence-router.md)
 - [MirrorProd Story OS](./topic-packets/mirrorprod-story-os.md)
 
 ## Update Rule
@@ -161,6 +162,38 @@ After each bounded Active Mirror site task, append a new dated entry with:
 Do not turn this into a strategy essay. Keep it operational.
 
 ## Ledger Entries
+
+### 2026-07-09: MirrorProd Offer Vault + Guided Quote
+
+- Changed: upgraded the MirrorProd Story route with a business-facing offer vault, India vertical selector, guided quote panel, trust-mode selector, and richer sprint receipt handoff.
+- Product reason:
+  - MirrorProd should present as verified short-drama advertising for Indian businesses, not generic AI video generation.
+  - The buyer should see packages, vertical fit, proof mode, and quote direction before any production or posting claim.
+- Files touched:
+  - `src/pages/MirrorProdStory.jsx`
+  - `src/pages/MirrorProdStory.css`
+  - `docs/topic-packets/mirrorprod-story-os.md`
+  - `docs/CONTINUITY_LEDGER.md`
+- Local/Mini leverage checked:
+  - `/Users/mirror-pro/Documents/New project/mirrorprod_agentic_video_factory_v1/`
+  - `/Users/mirror-pro/Documents/activemirror-videos-backup/`
+  - `/Users/mirror-pro/.mirrordna/MIRRORPROD_STRATEGY.md`
+  - `mirror-admin@100.114.247.53:/Users/mirror-admin/repos/mirrorprod-life/`
+  - `mirror-admin@100.114.247.53:/Users/mirror-admin/Downloads/MirrorProd_Trust_Layer_Brief_v1.md`
+- Tools and gates used:
+  - `npm run build:deploy`
+- Deploy status:
+  - local source build passed
+  - deploy bridge packaging not yet run for this slice
+- Public routes checked:
+  - pending browser smoke for local `/app/mirrorprod-story/`
+- Bad news or limits:
+  - Mini SSH is reachable, but Mini control-plane health was not proven here.
+  - Mini-generated media rights and consent are not proven for public use.
+  - Offer bands are product categories, not approved public pricing.
+  - This still does not generate video, upload source files, auto-post, or run `mirrorprod-life` as a backend.
+- Next safe move:
+  - Run local browser smoke, then package through the deploy bridge only if this route is being publicly refreshed.
 
 ### 2026-07-09: MirrorProd Sprint Receipt v1
 
