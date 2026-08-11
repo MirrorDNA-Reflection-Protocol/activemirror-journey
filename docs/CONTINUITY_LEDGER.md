@@ -2327,3 +2327,49 @@ Do not turn this into a strategy essay. Keep it operational.
 - Next safe move: package this source build into the deploy repo, keep
   MirrorProd assets out of Active Mirror, deploy static app assets, then run
   static/browser smoke. Full model canary remains blocked until the Mini returns.
+
+### 2026-08-11: Crawler-Readable Research And Distribution Control Center
+
+- Context: the public `/research/` route redirected to `/app/research/`, whose
+  initial HTML was a generic JavaScript app shell with no paper title, author,
+  abstract, DOI, or citation metadata.
+- Changed:
+  - Added a checked eight-record Zenodo catalog for exact creator `Desai, Paul`.
+  - Rebuilt the in-app research page around The Electric Mind, the DOI archive,
+    and the public Mirror Ledger.
+  - Added static `/research/` and `/research/electric-mind/` generators with
+    canonical metadata, JSON-LD, Highwire-style citation tags, recommended
+    citation, download links, and the published PDF digest.
+  - Added a fail-closed catalog/build guard and wired static generation into
+    normal and deploy builds.
+  - Updated vulnerable lockfile-resolved PDF.js, PostCSS, React Router, and
+    transitive packages without force or major-version changes.
+  - Recorded the multi-session handoff in
+    `docs/topic-packets/research-distribution-control-center.md`.
+- Tools and gates used:
+  - `npm run build:deploy`
+  - `npm run guard:research`
+  - scoped design, language, redaction, continuity, and truth gates
+  - `npm audit` (`0` remaining vulnerabilities after lockfile-safe updates)
+  - Playwright desktop and 390px mobile snapshots with zero console errors
+  - deploy bridge preflight and Cloudflare Worker dry run
+- Verification results:
+  - Source build passed, including static generation and the eight-record guard.
+  - Dedicated thesis and collection pages rendered without desktop/mobile
+    overflow in reviewed screenshots.
+  - The packaged Worker returns crawler-readable research HTML at the legacy
+    `/app/research/` alias with `/research/` as canonical.
+  - Deploy bridge preflight passed, including exact-copy packaging, identity
+    capsule verification, local build, media/link guards, and Worker dry run.
+- Deploy status: source-ready and locally packaged only. No production deploy
+  was run; the current live site remains unchanged.
+- Bad news or limits:
+  - Search indexing and Google Scholar inclusion are outcomes to monitor, not
+    claims this build can guarantee.
+  - Postiz is selected as the central open-source scheduler but is not installed;
+    the Mini was unreachable and exact OAuth identities are not yet proven.
+  - Each provider requires one initial OAuth connection. Future dispatch remains
+    bound to exact content, exact destination, schedule, approval hash, and TTL.
+- Next safe move: commit and push the canonical source; open a non-deploying
+  deploy-bridge pull request; merge/deploy only through the production gate;
+  then install Postiz on the Mini and connect each exact social identity once.

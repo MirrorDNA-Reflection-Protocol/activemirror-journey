@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "active-mirror-research/v1",
+  "snapshot": {
+    "fetchedAt": "2026-08-11T10:30:00Z",
+    "exactCreator": "Desai, Paul",
+    "source": "https://zenodo.org/api/records?q=metadata.creators.person_or_org.name:%22Desai,%20Paul%22&sort=mostviewed&size=25",
+    "recordCount": 8
+  },
+  "featured": {
+    "slug": "electric-mind",
+    "title": "The Electric Mind",
+    "subtitle": "Why India's AI boom will be built in substations before server halls — and how investors can own the sequence",
+    "author": "Paul Desai",
+    "publishedAt": "2026-08-11",
+    "type": "Public thesis",
+    "horizon": "Five-year horizon",
+    "abstract": "India's AI build-out will depend on more than models and GPUs. This thesis argues that the binding constraint is firm, high-quality electricity delivered to the correct physical node. It maps the sequence from substations, transmission, transformers, cables and meters through firm generation, storage and grid software, and publishes six dated forecasts so the argument can be scored through 2032.",
+    "notice": "Independent analysis for research and discussion. This is a thesis, not professional or personalised investment advice, a solicitation, or a guarantee of returns.",
+    "keywords": [
+      "India",
+      "artificial intelligence",
+      "AI infrastructure",
+      "data centres",
+      "electricity",
+      "power grid",
+      "substations",
+      "transformers",
+      "transmission",
+      "energy storage",
+      "forecasting"
+    ],
+    "sha256": "d267603ef53ce67f46b8c37baa803e912e93ae45f004c9d76dc99e05aa6b7286",
+    "links": {
+      "page": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/tree/main/papers/the-electric-mind-2026",
+      "pdf": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/releases/download/electric-mind-v1.0.0/The_Electric_Mind_India_AI_Power_Thesis_August_2026.pdf",
+      "release": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/releases/tag/electric-mind-v1.0.0",
+      "citation": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/blob/main/CITATION.cff",
+      "linkedin": "https://www.linkedin.com/posts/pauldesai_the-electric-mind-activity-7492868409634746368-sa3i"
+    }
+  },
+  "publications": [
+    {
+      "id": 18910362,
+      "title": "Structured Contextual Distillation v4: Deployment Benchmarks and Artifact-Backed Evidence from 10 Months of AI State Management",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2026-03-08",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18910362",
+      "conceptDoi": "10.5281/zenodo.18910361",
+      "abstract": "An artifact-backed systems paper on a ten-month AI state-management deployment. It includes rerunnable measurement scripts, ten benchmark tables, redacted sample data, protocol schemas and a claim ledger covering event-store integrity, authority controls, mutation integrity, cross-agent handoffs and context survivability.",
+      "recordUrl": "https://zenodo.org/records/18910362",
+      "fileUrl": "https://zenodo.org/api/records/18910362/files/SCD_v4_10_package.zip/content"
+    },
+    {
+      "id": 18888291,
+      "title": "MirrorDNA: Personal AI Infrastructure on Consumer Hardware",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2026-03-06",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18888291",
+      "conceptDoi": "10.5281/zenodo.18888290",
+      "abstract": "Introduces Personal AI Infrastructure as a computing model in which individuals operate AI systems on hardware they own and control, then documents a ten-month consumer-hardware implementation and its operational footprint.",
+      "recordUrl": "https://zenodo.org/records/18888291",
+      "fileUrl": "https://zenodo.org/api/records/18888291/files/MirrorDNA_Sovereign_Infrastructure_v2.pdf/content"
+    },
+    {
+      "id": 18712299,
+      "title": "The Orchestrator Model: A Human-Centered Architecture for Multi-AI Cognitive Extension",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2026-02-20",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18712299",
+      "conceptDoi": "10.5281/zenodo.18711201",
+      "abstract": "Presents an alternative to autonomy-first multi-AI systems: a human-centered architecture that keeps authority with the operator while distributing computation across different AI systems. The paper formalizes authority envelopes, identity continuity and inter-model arbitration.",
+      "recordUrl": "https://zenodo.org/records/18712299",
+      "fileUrl": "https://zenodo.org/api/records/18712299/files/orchestrator_model_full_v3.pdf/content"
+    },
+    {
+      "id": 18629531,
+      "title": "Structured Contextual Distillation (SCD v3.1): A Deterministic, Vendor-Independent Protocol for Persistent, Verifiable Agent State",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2026-02-13",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18629531",
+      "conceptDoi": "10.5281/zenodo.17787618",
+      "abstract": "A deterministic external-state protocol that relocates agent memory from volatile model internals to protected filesystem artifacts. The current record incorporates a hardware correction and reports sequential-transition and cross-vendor handoff tests.",
+      "recordUrl": "https://zenodo.org/records/18629531",
+      "fileUrl": "https://zenodo.org/api/records/18629531/files/SCD_v31_Academic_Paper.pdf/content"
+    },
+    {
+      "id": 18629363,
+      "title": "Number-Theoretic Graphs with Small-World Navigability: Percolation, Structure, and Greedy Routing in MirrorDNA",
+      "authors": ["Desai, Paul", "Claude Code", "Grok 4"],
+      "publishedAt": "2026-02-13",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18629363",
+      "conceptDoi": "10.5281/zenodo.18540444",
+      "abstract": "Studies deterministic graphs defined by prime-sum and power-of-two-difference rules, with results on connectivity, clustering, distance bounds, automorphisms and greedy routing. The record includes reproducible evidence and clearly labels its remaining conjecture.",
+      "recordUrl": "https://zenodo.org/records/18629363",
+      "fileUrl": "https://zenodo.org/api/records/18629363/files/MirrorDNA_NumberTheoretic_Graphs_v2.pdf/content"
+    },
+    {
+      "id": 18212082,
+      "title": "Layered Governance for Large Language Model Systems: Separating Structural Authority Enforcement from Content Safety",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2025-12-18",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18212082",
+      "conceptDoi": "10.5281/zenodo.18212081",
+      "abstract": "Separates authority violations from harmful-content requests and evaluates them as different problem classes. The paper proposes a layered pipeline in which a deterministic structural gate and a probabilistic content classifier can be tested and evolved independently.",
+      "recordUrl": "https://zenodo.org/records/18212082",
+      "fileUrl": "https://zenodo.org/api/records/18212082/files/Layered_Governance_LLM_Systems.pdf/content"
+    },
+    {
+      "id": 18212080,
+      "title": "Governance and Boundary Conditions for Reflective AI Systems: Structural Enforcement Beyond Prompt Alignment",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2025-12-17",
+      "type": "Preprint",
+      "doi": "10.5281/zenodo.18212080",
+      "conceptDoi": "10.5281/zenodo.18212079",
+      "abstract": "Argues that persistent memory, tool use and agentic behavior move some safety questions beyond prompt-level instructions. It presents a narrower structural framework for memory controls, authority boundaries, configuration drift, failure modes and auditability.",
+      "recordUrl": "https://zenodo.org/records/18212080",
+      "fileUrl": "https://zenodo.org/api/records/18212080/files/Governance_Reflective_AI_Systems.pdf/content"
+    },
+    {
+      "id": 17926416,
+      "title": "Erratum: SCD Paper v3.1 — Hardware Specification Correction",
+      "authors": ["Desai, Paul"],
+      "publishedAt": "2025-12-14",
+      "type": "Correction",
+      "doi": "10.5281/zenodo.17926416",
+      "conceptDoi": "10.5281/zenodo.17926415",
+      "abstract": "Corrects the deployment hardware in the original SCD v3.1 paper from 16 GB to 24 GB memory. The record states that the correction does not change the results, analysis or conclusions and points readers to the incorporated update.",
+      "recordUrl": "https://zenodo.org/records/17926416",
+      "fileUrl": "https://zenodo.org/api/records/17926416/files/ERRATUM_SCD_v3.1.md/content"
+    }
+  ],
+  "ledger": {
+    "title": "Mirror Ledger",
+    "description": "A public forecast ledger and research-drop archive. Monday updates score dated forecasts; Wednesday, Friday and Sunday drafts cover international AI, crypto and reflective AI. Drafting is scheduled, but publication remains a separate approval step.",
+    "links": {
+      "repository": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger",
+      "forecast": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/blob/main/predictions.yaml",
+      "drops": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/tree/main/drops",
+      "queue": "https://github.com/MirrorDNA-Reflection-Protocol/mirror-ledger/blob/main/drops/TOPIC_QUEUE.md",
+      "publisher": "https://github.com/MirrorDNA-Reflection-Protocol/mirrorpublish"
+    }
+  }
+}
+
